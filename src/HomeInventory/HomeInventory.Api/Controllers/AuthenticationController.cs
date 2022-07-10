@@ -14,7 +14,7 @@ public class AuthenticationController : ControllerBase
         _authenticationService = authenticationService;
     }
 
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest body, CancellationToken cancellationToken = default)
     {
         var result = await _authenticationService.RegisterAsync(body.FirstName, body.LastName, body.Email, body.Password, cancellationToken);
@@ -22,7 +22,7 @@ public class AuthenticationController : ControllerBase
         return Ok(responseBody);
     }
 
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest body, CancellationToken cancellationToken = default)
     {
         var result = await _authenticationService.AuthenticateAsync(body.Email, body.Password, cancellationToken);
