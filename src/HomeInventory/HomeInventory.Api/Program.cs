@@ -1,5 +1,6 @@
 using HomeInventory.Application;
 using HomeInventory.Infrastructure;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 [assembly: ApiController]
@@ -25,6 +26,12 @@ var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
 
+    app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
+    app.Map("/error", (HttpContext context) =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        return Results.Problem(detail: exception?.Message, extensions: new Dictionary<string, object?> { ["application"] = "HomeInventory" });
+    });
     app.UseHttpsRedirection();
 
     app.UseAuthorization();
