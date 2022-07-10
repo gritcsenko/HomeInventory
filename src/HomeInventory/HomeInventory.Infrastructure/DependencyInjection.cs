@@ -1,6 +1,8 @@
 ﻿using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Services;
 using HomeInventory.Infrastructure.Authentication;
+using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
         services.AddSingleton<IDateTimeService, SystemDateTimeService>();
+        services.AddScoped<IUserRepository, UserRepository>();
         return services;
     }
 }

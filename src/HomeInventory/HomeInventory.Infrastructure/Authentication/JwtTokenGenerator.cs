@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Services;
+using HomeInventory.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,7 +20,7 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
         _jwtSettings = jwtOptionsAccessor.Value;
     }
 
-    public async Task<string> GenerateTokenAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         await ValueTask.CompletedTask;
 
@@ -28,10 +29,11 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            //new Claim(JwtRegisteredClaimNames.GivenName, firstName),
-            //new Claim(JwtRegisteredClaimNames.FamilyName, lastName),
+            new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+            new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
         };
         var utcNow = _dateTimeService.Now.UtcDateTime;
         var payload = new JwtPayload(_jwtSettings.Issuer, _jwtSettings.Audience, claims, null, utcNow.Add(_jwtSettings.Expiry));
