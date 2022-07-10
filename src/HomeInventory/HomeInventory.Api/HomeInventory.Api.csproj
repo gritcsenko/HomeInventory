@@ -18,8 +18,4 @@
     <ProjectReference Include="..\HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

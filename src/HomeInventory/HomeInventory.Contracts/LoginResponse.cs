@@ -1,7 +1,7 @@
 ﻿namespace HomeInventory.Contracts;
 
 public record class LoginResponse(
-    string Id,
+    Guid Id,
     string FirstName,
     string LastName,
     string Token);
