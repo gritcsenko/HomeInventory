@@ -10,13 +10,11 @@ using NSubstitute;
 namespace HomeInventory.Tests.Systems.Handlers;
 public class RegisterCommandHandlerTests : BaseTest
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly RegisterCommand _command;
 
     public RegisterCommandHandlerTests()
     {
-        _userRepository = Substitute.For<IUserRepository>();
-
         _command = Fixture.Create<RegisterCommand>();
     }
 
@@ -64,7 +62,7 @@ public class RegisterCommandHandlerTests : BaseTest
         // Then
         result.Should().NotBeNull();
         result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Code == error.Code && e.Description == error.Description && e.Type == error.Type);
+        result.Errors.Should().ContainSingle(e => e.Equals(error));
         _ = _userRepository.DidNotReceiveWithAnyArgs().AddUserAsync(Arg.Any<User>());
     }
 }

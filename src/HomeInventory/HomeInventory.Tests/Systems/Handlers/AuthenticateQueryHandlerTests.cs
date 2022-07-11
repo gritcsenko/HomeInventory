@@ -12,14 +12,12 @@ namespace HomeInventory.Tests.Systems.Handlers;
 
 public class AuthenticateQueryHandlerTests : BaseTest
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IAuthenticationTokenGenerator _tokenGenerator;
+    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly IAuthenticationTokenGenerator _tokenGenerator = Substitute.For<IAuthenticationTokenGenerator>();
     private readonly User _user;
 
     public AuthenticateQueryHandlerTests()
     {
-        _userRepository = Substitute.For<IUserRepository>();
-        _tokenGenerator = Substitute.For<IAuthenticationTokenGenerator>();
         _user = Fixture.Create<User>();
     }
 
@@ -67,7 +65,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // Then
         result.Should().NotBeNull();
         result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Code == error.Code && e.Description == error.Description && e.Type == error.Type);
+        result.Errors.Should().ContainSingle(e => e.Equals(error));
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
     }
 
@@ -86,7 +84,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // Then
         result.Should().NotBeNull();
         result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Code == error.Code && e.Description == error.Description && e.Type == error.Type);
+        result.Errors.Should().ContainSingle(e => e.Equals(error));
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
     }
 }

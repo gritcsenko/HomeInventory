@@ -15,14 +15,12 @@ namespace HomeInventory.Tests.Systems.Controllers;
 
 public class AuthenticationControllerTests : BaseTest
 {
-    private readonly ISender _mediator;
+    private readonly ISender _mediator = Substitute.For<ISender>();
     private readonly RegisterRequest _registerRequest;
     private readonly LoginRequest _loginRequest;
 
     public AuthenticationControllerTests()
     {
-        _mediator = Substitute.For<ISender>();
-
         _registerRequest = Fixture.Create<RegisterRequest>();
         _loginRequest = Fixture.Create<LoginRequest>();
     }
