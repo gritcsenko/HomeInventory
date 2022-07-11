@@ -13,20 +13,18 @@ using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 
-public class AuthenticationControllerTests
+public class AuthenticationControllerTests : BaseTest
 {
-    private readonly Fixture _fixture;
     private readonly ISender _mediator;
     private readonly RegisterRequest _registerRequest;
     private readonly LoginRequest _loginRequest;
 
     public AuthenticationControllerTests()
     {
-        _fixture = new Fixture();
         _mediator = Substitute.For<ISender>();
 
-        _registerRequest = _fixture.Create<RegisterRequest>();
-        _loginRequest = _fixture.Create<LoginRequest>();
+        _registerRequest = Fixture.Create<RegisterRequest>();
+        _loginRequest = Fixture.Create<LoginRequest>();
     }
 
     private AuthenticationController CreateSut(bool withHttpContext = false)
@@ -48,12 +46,12 @@ public class AuthenticationControllerTests
             r.FirstName == _registerRequest.FirstName
             && r.LastName == _registerRequest.LastName
             && r.Email == _registerRequest.Email
-            && r.Password == _registerRequest.Password))
-            .Returns(_fixture.Create<RegistrationResult>());
+            && r.Password == _registerRequest.Password), CancellationToken)
+            .Returns(Fixture.Create<RegistrationResult>());
 
         var sut = CreateSut();
         // When
-        var result = await sut.RegisterAsync(_registerRequest);
+        var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
         // Then
         result.Should().BeAssignableTo<IStatusCodeActionResult>()
             .Which.StatusCode.Should().Be(StatusCodes.Status200OK);
@@ -63,12 +61,12 @@ public class AuthenticationControllerTests
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
         // Given
-        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password))
-            .Returns(_fixture.Create<AuthenticateResult>());
+        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password), CancellationToken)
+            .Returns(Fixture.Create<AuthenticateResult>());
 
         var sut = CreateSut();
         // When
-        var result = await sut.LoginAsync(_loginRequest);
+        var result = await sut.LoginAsync(_loginRequest, CancellationToken);
         // Then
         result.Should().BeAssignableTo<IStatusCodeActionResult>()
             .Which.StatusCode.Should().Be(StatusCodes.Status200OK);
@@ -78,18 +76,18 @@ public class AuthenticationControllerTests
     public async Task RegisterAsync_OnSuccess_ReturnsRegistrationId()
     {
         // Given
-        var expectedId = _fixture.Create<Guid>();
+        var expectedId = Fixture.Create<Guid>();
 
         _mediator.Send(Arg.Is<RegisterCommand>(r =>
             r.FirstName == _registerRequest.FirstName
             && r.LastName == _registerRequest.LastName
             && r.Email == _registerRequest.Email
-            && r.Password == _registerRequest.Password))
+            && r.Password == _registerRequest.Password), CancellationToken)
             .Returns(new RegistrationResult(expectedId));
 
         var sut = CreateSut();
         // When
-        var result = await sut.RegisterAsync(_registerRequest);
+        var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
         // Then
         result.Should().BeAssignableTo<ObjectResult>()
             .Which.Value.Should().BeOfType<RegisterResponse>()
@@ -101,15 +99,15 @@ public class AuthenticationControllerTests
     public async Task LoginAsync_OnSuccess_ReturnsRegistrationIdAndToken()
     {
         // Given
-        var expectedId = _fixture.Create<Guid>();
-        var expectedToken = _fixture.Create<string>();
+        var expectedId = Fixture.Create<Guid>();
+        var expectedToken = Fixture.Create<string>();
 
-        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password))
+        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password), CancellationToken)
             .Returns(new AuthenticateResult(expectedId, expectedToken));
 
         var sut = CreateSut();
         // When
-        var result = await sut.LoginAsync(_loginRequest);
+        var result = await sut.LoginAsync(_loginRequest, CancellationToken);
         // Then
         result.Should().BeAssignableTo<ObjectResult>()
             .Which.Value.Should().BeOfType<LoginResponse>()
@@ -128,12 +126,12 @@ public class AuthenticationControllerTests
             r.FirstName == _registerRequest.FirstName
             && r.LastName == _registerRequest.LastName
             && r.Email == _registerRequest.Email
-            && r.Password == _registerRequest.Password))
+            && r.Password == _registerRequest.Password), CancellationToken)
             .Returns(error);
 
         var sut = CreateSut(withHttpContext: true);
         // When
-        var result = await sut.RegisterAsync(_registerRequest);
+        var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
         // Then
         var objectResult = result.Should().BeAssignableTo<ObjectResult>().Subject;
         objectResult.StatusCode.Should().NotBe(StatusCodes.Status200OK);
@@ -148,12 +146,12 @@ public class AuthenticationControllerTests
         // Given
         var error = Errors.Authentication.InvalidCredentials;
 
-        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password))
+        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password), CancellationToken)
             .Returns(error);
 
         var sut = CreateSut(withHttpContext: true);
         // When
-        var result = await sut.LoginAsync(_loginRequest);
+        var result = await sut.LoginAsync(_loginRequest, CancellationToken);
         // Then
         var objectResult = result.Should().BeAssignableTo<ObjectResult>().Subject;
         objectResult.StatusCode.Should().NotBe(StatusCodes.Status200OK);

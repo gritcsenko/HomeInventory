@@ -15,7 +15,7 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr
 
     public async Task<ErrorOr<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        if (await _userRepository.FindByEmailAsync(request.Email, cancellationToken) is not null)
+        if (await _userRepository.HasEmailAsync(request.Email, cancellationToken))
         {
             return Domain.Errors.User.DuplicateEmail;
         }

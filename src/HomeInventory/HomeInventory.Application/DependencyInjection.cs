@@ -1,5 +1,8 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("HomeInventory.Tests")]
 
 namespace HomeInventory.Application;
 

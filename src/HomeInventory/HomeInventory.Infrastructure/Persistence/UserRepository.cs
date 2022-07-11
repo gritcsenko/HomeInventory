@@ -15,4 +15,9 @@ internal class UserRepository : IUserRepository
     {
         return _users.FirstOrDefault(u => u.Email == email);
     }
+
+    public async Task<bool> HasEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return _users.Any(u => u.Email == email);
+    }
 }

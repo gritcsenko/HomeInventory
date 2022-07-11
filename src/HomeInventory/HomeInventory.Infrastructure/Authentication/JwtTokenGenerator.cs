@@ -13,32 +13,35 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 {
     private readonly IDateTimeService _dateTimeService;
     private readonly JwtSettings _jwtSettings;
+    private readonly JwtHeader _header;
 
     public JwtTokenGenerator(IDateTimeService dateTimeService, IOptions<JwtSettings> jwtOptionsAccessor)
     {
         _dateTimeService = dateTimeService;
         _jwtSettings = jwtOptionsAccessor.Value;
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+        var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        _header = new JwtHeader(signingCredentials);
     }
 
     public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         await ValueTask.CompletedTask;
 
-        var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)), SecurityAlgorithms.HmacSha256);
-        var header = new JwtHeader(signingCredentials);
-
-        var claims = new[]
-        {
+        var securityToken = new JwtSecurityToken(_header, CreatePayload(
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
             new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        };
-        var utcNow = _dateTimeService.Now.UtcDateTime;
-        var payload = new JwtPayload(_jwtSettings.Issuer, _jwtSettings.Audience, claims, null, utcNow.Add(_jwtSettings.Expiry));
+            new Claim(JwtRegisteredClaimNames.Email, user.Email)));
 
-        var securityToken = new JwtSecurityToken(header, payload);
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
+    }
+
+    private JwtPayload CreatePayload(params Claim[] claims)
+    {
+        var utcNow = _dateTimeService.Now.UtcDateTime;
+        return new JwtPayload(_jwtSettings.Issuer, _jwtSettings.Audience, claims, utcNow, utcNow.Add(_jwtSettings.Expiry));
     }
 }
