@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HomeInventory.Api.Controllers;
 
 [Route("api/[controller]")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : ApiController
 {
     private readonly IAuthenticationService _authenticationService;
 
@@ -18,15 +18,13 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest body, CancellationToken cancellationToken = default)
     {
         var result = await _authenticationService.RegisterAsync(body.FirstName, body.LastName, body.Email, body.Password, cancellationToken);
-        var responseBody = new RegisterResponse(result.Id);
-        return Ok(responseBody);
+        return Match(result, x => Ok(new RegisterResponse(x.Id)));
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest body, CancellationToken cancellationToken = default)
     {
         var result = await _authenticationService.AuthenticateAsync(body.Email, body.Password, cancellationToken);
-        var responseBody = new LoginResponse(result.Id, result.Token);
-        return Ok(responseBody);
+        return Match(result, x => Ok(new LoginResponse(x.Id, x.Token)));
     }
 }

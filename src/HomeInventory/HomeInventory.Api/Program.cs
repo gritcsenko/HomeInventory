@@ -1,7 +1,9 @@
+using HomeInventory.Api.Common.Errors;
 using HomeInventory.Application;
 using HomeInventory.Infrastructure;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 [assembly: ApiController]
 
@@ -15,9 +17,11 @@ var builder = WebApplication.CreateBuilder(args);
     {
         o.SuppressAsyncSuffixInActionNames = true;
     });
+    builder.Services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
 }
 
 var app = builder.Build();
@@ -30,7 +34,7 @@ var app = builder.Build();
     app.Map("/error", (HttpContext context) =>
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-        return Results.Problem(detail: exception?.Message, extensions: new Dictionary<string, object?> { ["application"] = "HomeInventory" });
+        return Results.Problem(detail: exception?.Message);
     });
     app.UseHttpsRedirection();
 

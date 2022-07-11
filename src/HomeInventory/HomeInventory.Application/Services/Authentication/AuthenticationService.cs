@@ -1,5 +1,7 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
+﻿using ErrorOr;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
 
 namespace HomeInventory.Application.Services.Authentication;
@@ -15,27 +17,27 @@ internal class AuthenticationService : IAuthenticationService
         _userRepository = userRepository;
     }
 
-    public async Task<AuthenticateResult> AuthenticateAsync(string email, string password, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<AuthenticateResult>> AuthenticateAsync(string email, string password, CancellationToken cancellationToken = default)
     {
         if (await _userRepository.FindByEmailAsync(email, cancellationToken) is not User user)
         {
-            throw new Exception("DoesNoExist");
+            return Errors.Authentication.InvalidCredentials;
         }
 
         if (user.Password != password)
         {
-            throw new Exception("Invalid password");
+            return Errors.Authentication.InvalidCredentials;
         }
 
         var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);
         return new AuthenticateResult(user.Id, token);
     }
 
-    public async Task<RegistrationResult> RegisterAsync(string firstName, string lastName, string email, string password, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<RegistrationResult>> RegisterAsync(string firstName, string lastName, string email, string password, CancellationToken cancellationToken = default)
     {
         if (await _userRepository.FindByEmailAsync(email, cancellationToken) is not null)
         {
-            throw new Exception("AlreadyExist");
+            return Errors.User.DuplicateEmail;
         }
 
         var user = new User

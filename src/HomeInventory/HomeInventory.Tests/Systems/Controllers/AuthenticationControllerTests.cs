@@ -3,6 +3,7 @@ using FluentAssertions;
 using HomeInventory.Api.Controllers;
 using HomeInventory.Application.Services.Authentication;
 using HomeInventory.Contracts;
+using HomeInventory.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -98,5 +99,49 @@ public class AuthenticationControllerTests
             .Subject.Deconstruct(out var actualId, out var actualToken);
         actualId.Should().Be(expectedId);
         actualToken.Should().Be(expectedToken);
+    }
+
+    [Fact]
+    public async Task RegisterAsync_OnFailure_ReturnsError()
+    {
+        // Given
+        var body = _fixture.Create<RegisterRequest>();
+        var error = Errors.User.DuplicateEmail;
+
+        _service.RegisterAsync(body.FirstName, body.LastName, body.Email, body.Password)
+            .Returns(error);
+
+        var sut = new AuthenticationController(_service);
+        sut.ControllerContext = new ControllerContext() { HttpContext = new DefaultHttpContext() };
+        // When
+        var result = await sut.RegisterAsync(body);
+        // Then
+        var objectResult = result.Should().BeAssignableTo<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().NotBe(StatusCodes.Status200OK);
+        var details = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        details.Title.Should().Be(error.Code);
+        details.Detail.Should().Be(error.Description);
+    }
+
+    [Fact]
+    public async Task LoginAsync_OnFailure_ReturnsError()
+    {
+        // Given
+        var body = _fixture.Create<LoginRequest>();
+        var error = Errors.Authentication.InvalidCredentials;
+
+        _service.AuthenticateAsync(body.Email, body.Password)
+            .Returns(error);
+
+        var sut = new AuthenticationController(_service);
+        sut.ControllerContext = new ControllerContext() { HttpContext = new DefaultHttpContext() };
+        // When
+        var result = await sut.LoginAsync(body);
+        // Then
+        var objectResult = result.Should().BeAssignableTo<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().NotBe(StatusCodes.Status200OK);
+        var details = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        details.Title.Should().Be(error.Code);
+        details.Detail.Should().Be(error.Description);
     }
 }
