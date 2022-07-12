@@ -21,11 +21,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         _user = Fixture.Create<User>();
     }
 
-    private AuthenticateQueryHandler CreateSut()
-    {
-        var sut = new AuthenticateQueryHandler(_tokenGenerator, _userRepository);
-        return sut;
-    }
+    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -34,10 +30,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var query = new AuthenticateQuery(_user.Email, _user.Password);
         var token = Fixture.Create<string>();
 
-        _userRepository.FindByEmailAsync(query.Email, CancellationToken)
-            .Returns(_user);
-        _tokenGenerator.GenerateTokenAsync(_user, CancellationToken)
-            .Returns(token);
+        _userRepository.FindByEmailAsync(query.Email, CancellationToken).Returns(_user);
+        _tokenGenerator.GenerateTokenAsync(_user, CancellationToken).Returns(token);
 
         var sut = CreateSut();
         // When
@@ -56,8 +50,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // Given
         var error = Errors.Authentication.InvalidCredentials;
         var query = Fixture.Create<AuthenticateQuery>();
-        _userRepository.FindByEmailAsync(query.Email, CancellationToken)
-            .Returns(default(User?));
+        _userRepository.FindByEmailAsync(query.Email, CancellationToken).Returns(default(User?));
 
         var sut = CreateSut();
         // When
@@ -75,8 +68,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // Given
         var error = Errors.Authentication.InvalidCredentials;
         var query = new AuthenticateQuery(_user.Email, Fixture.Create<string>());
-        _userRepository.FindByEmailAsync(query.Email, CancellationToken)
-            .Returns(_user);
+        _userRepository.FindByEmailAsync(query.Email, CancellationToken).Returns(_user);
 
         var sut = CreateSut();
         // When

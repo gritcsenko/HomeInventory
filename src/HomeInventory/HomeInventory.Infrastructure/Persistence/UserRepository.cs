@@ -1,10 +1,17 @@
 ﻿using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Entities;
+using MapsterMapper;
 
 namespace HomeInventory.Infrastructure.Persistence;
 internal class UserRepository : IUserRepository
 {
     private static readonly ICollection<User> _users = new List<User>();
+    private readonly IMapper _mapper;
+
+    public UserRepository(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
 
     public async Task AddUserAsync(User user, CancellationToken cancellationToken = default)
     {
