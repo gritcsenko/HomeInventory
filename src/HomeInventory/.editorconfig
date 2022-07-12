@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# CA2016: Forward the 'CancellationToken' parameter to methods
+dotnet_diagnostic.CA2016.severity = warning
+
+# IDE0008: Use explicit type
+csharp_style_var_elsewhere = true
