@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Application.Interfaces.Services;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

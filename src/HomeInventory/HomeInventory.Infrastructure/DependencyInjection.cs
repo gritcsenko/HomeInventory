@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
-using HomeInventory.Application.Interfaces.Services;
+using HomeInventory.Domain;
 using HomeInventory.Infrastructure.Authentication;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Services;
