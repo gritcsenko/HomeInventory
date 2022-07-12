@@ -1,3 +1,5 @@
-﻿namespace HomeInventory.Application.Authentication.Commands.Register;
+﻿using HomeInventory.Domain.ValueObjects;
 
-public record class RegistrationResult(Guid Id);
+namespace HomeInventory.Application.Authentication.Commands.Register;
+
+public record class RegistrationResult(UserId Id);

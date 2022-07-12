@@ -1,6 +1,9 @@
 ﻿using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.ValueObjects;
 using MapsterMapper;
+using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Infrastructure.Persistence;
 internal class UserRepository : IUserRepository
@@ -13,18 +16,24 @@ internal class UserRepository : IUserRepository
         _mapper = mapper;
     }
 
-    public async Task AddUserAsync(User user, CancellationToken cancellationToken = default)
+    public async Task<OneOf<Success>> AddAsync(User entity, CancellationToken cancellationToken = default)
     {
-        _users.Add(user);
+        _users.Add(entity);
+        return new Success();
     }
 
-    public async Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
+    public async Task<OneOf<User, NotFound>> FindByIdAsync(UserId id, CancellationToken cancellationToken = default)
     {
-        return _users.FirstOrDefault(u => u.Email == email);
+        return _users.FirstOrDefault(u => u.Id == id) ?? (OneOf<User, NotFound>)new NotFound();
     }
 
     public async Task<bool> HasEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return _users.Any(u => u.Email == email);
+    }
+
+    public async Task<OneOf<User, NotFound>> FindByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        return _users.FirstOrDefault(u => u.Email == email) ?? (OneOf<User, NotFound>)new NotFound();
     }
 }

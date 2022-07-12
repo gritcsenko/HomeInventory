@@ -1,9 +1,12 @@
 ﻿using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.ValueObjects;
+using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Application.Interfaces.Persistence;
-public interface IUserRepository
+
+public interface IUserRepository : IRepository<User, UserId>
 {
-    Task AddUserAsync(User user, CancellationToken cancellationToken = default);
-    Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<OneOf<User, NotFound>> FindByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<bool> HasEmailAsync(string email, CancellationToken cancellationToken = default);
 }
