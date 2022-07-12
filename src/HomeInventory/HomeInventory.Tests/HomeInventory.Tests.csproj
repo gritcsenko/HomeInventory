@@ -36,9 +36,4 @@
     <ProjectReference Include="..\HomeInventory.Api\HomeInventory.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Fixtures\" />
-  </ItemGroup>
-
 </Project>

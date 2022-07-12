@@ -18,18 +18,13 @@ public class RegisterCommandHandlerTests : BaseTest
         _command = Fixture.Create<RegisterCommand>();
     }
 
-    private RegisterCommandHandler CreateSut()
-    {
-        var sut = new RegisterCommandHandler(_userRepository);
-        return sut;
-    }
+    private RegisterCommandHandler CreateSut() => new(_userRepository);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
     {
         // Given
-        _userRepository.HasEmailAsync(_command.Email, CancellationToken)
-            .Returns(false);
+        _userRepository.HasEmailAsync(_command.Email, CancellationToken).Returns(false);
 
         _userRepository.AddUserAsync(Arg.Is<User>(r =>
             r.FirstName == _command.FirstName
@@ -53,8 +48,7 @@ public class RegisterCommandHandlerTests : BaseTest
         // Given
         var error = Errors.User.DuplicateEmail;
 
-        _userRepository.HasEmailAsync(_command.Email, CancellationToken)
-            .Returns(true);
+        _userRepository.HasEmailAsync(_command.Email, CancellationToken).Returns(true);
 
         var sut = CreateSut();
         // When

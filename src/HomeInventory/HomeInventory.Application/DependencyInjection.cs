@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mapster;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.CompilerServices;
 
@@ -10,7 +10,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddMediatR(typeof(DependencyInjection).Assembly);
+        TypeAdapterConfig.GlobalSettings.Scan(typeof(DependencyInjection).Assembly);
         return services;
     }
 }

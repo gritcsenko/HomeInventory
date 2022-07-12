@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HomeInventory.Api.Controllers;
 
-public class ApiController : ControllerBase
+public class ApiControllerBase : ControllerBase
 {
     protected IActionResult Problem(IReadOnlyCollection<Error> errors)
     {
