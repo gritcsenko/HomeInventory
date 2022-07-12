@@ -5,10 +5,11 @@ using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain;
+using HomeInventory.Tests.Helpers;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Controllers;
@@ -16,102 +17,87 @@ namespace HomeInventory.Tests.Systems.Controllers;
 public class AuthenticationControllerTests : BaseTest
 {
     private readonly ISender _mediator = Substitute.For<ISender>();
+    private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly RegisterRequest _registerRequest;
+    private readonly RegisterCommand _registerCommand;
     private readonly LoginRequest _loginRequest;
+    private readonly AuthenticateQuery _authenticateQuery;
 
     public AuthenticationControllerTests()
     {
         _registerRequest = Fixture.Create<RegisterRequest>();
+        _registerCommand = Fixture.Create<RegisterCommand>();
         _loginRequest = Fixture.Create<LoginRequest>();
+        _authenticateQuery = Fixture.Create<AuthenticateQuery>();
+
+        _mapper.Map<RegisterCommand>(_registerRequest).Returns(_registerCommand);
+        _mapper.Map<AuthenticateQuery>(_loginRequest).Returns(_authenticateQuery);
     }
 
-    private AuthenticationController CreateSut(bool withHttpContext = false)
-    {
-        var sut = new AuthenticationController(_mediator);
-        if (withHttpContext)
-        {
-            sut.ControllerContext = new ControllerContext() { HttpContext = new DefaultHttpContext() };
-        }
-
-        return sut;
-    }
+    private AuthenticationController CreateSut() => new(_mediator, _mapper);
 
     [Fact]
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         // Given
-        _mediator.Send(Arg.Is<RegisterCommand>(r =>
-            r.FirstName == _registerRequest.FirstName
-            && r.LastName == _registerRequest.LastName
-            && r.Email == _registerRequest.Email
-            && r.Password == _registerRequest.Password), CancellationToken)
-            .Returns(Fixture.Create<RegistrationResult>());
-
+        var registrationResult = Fixture.Create<RegistrationResult>();
+        var expectedResultValue = Fixture.Create<RegisterResponse>();
+        _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
+        _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
         var sut = CreateSut();
         // When
         var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
         // Then
-        result.Should().BeAssignableTo<IStatusCodeActionResult>()
-            .Which.StatusCode.Should().Be(StatusCodes.Status200OK);
+        result.Should().HaveStatusCode(StatusCodes.Status200OK)
+            .And.HaveValue(expectedResultValue);
     }
 
     [Fact]
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
         // Given
-        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password), CancellationToken)
-            .Returns(Fixture.Create<AuthenticateResult>());
-
+        var authenticationResult = Fixture.Create<AuthenticateResult>();
+        var expectedResultValue = Fixture.Create<LoginResponse>();
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
+        _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
         var sut = CreateSut();
         // When
         var result = await sut.LoginAsync(_loginRequest, CancellationToken);
         // Then
-        result.Should().BeAssignableTo<IStatusCodeActionResult>()
-            .Which.StatusCode.Should().Be(StatusCodes.Status200OK);
+        result.Should().HaveStatusCode(StatusCodes.Status200OK)
+            .And.HaveValue(expectedResultValue);
     }
 
     [Fact]
     public async Task RegisterAsync_OnSuccess_ReturnsRegistrationId()
     {
         // Given
-        var expectedId = Fixture.Create<Guid>();
-
-        _mediator.Send(Arg.Is<RegisterCommand>(r =>
-            r.FirstName == _registerRequest.FirstName
-            && r.LastName == _registerRequest.LastName
-            && r.Email == _registerRequest.Email
-            && r.Password == _registerRequest.Password), CancellationToken)
-            .Returns(new RegistrationResult(expectedId));
-
+        var registrationResult = Fixture.Create<RegistrationResult>();
+        var expectedResultValue = Fixture.Create<RegisterResponse>();
+        _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
+        _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
         var sut = CreateSut();
         // When
         var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
         // Then
-        result.Should().BeAssignableTo<ObjectResult>()
-            .Which.Value.Should().BeOfType<RegisterResponse>()
-            .Subject.Deconstruct(out var actualId);
-        actualId.Should().Be(expectedId);
+        result.Should().HaveStatusCode(StatusCodes.Status200OK)
+            .And.HaveValue(expectedResultValue);
     }
 
     [Fact]
     public async Task LoginAsync_OnSuccess_ReturnsRegistrationIdAndToken()
     {
         // Given
-        var expectedId = Fixture.Create<Guid>();
-        var expectedToken = Fixture.Create<string>();
-
-        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password), CancellationToken)
-            .Returns(new AuthenticateResult(expectedId, expectedToken));
-
+        var authenticationResult = Fixture.Create<AuthenticateResult>();
+        var expectedResultValue = Fixture.Create<LoginResponse>();
+        _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
         var sut = CreateSut();
         // When
         var result = await sut.LoginAsync(_loginRequest, CancellationToken);
         // Then
-        result.Should().BeAssignableTo<ObjectResult>()
-            .Which.Value.Should().BeOfType<LoginResponse>()
-            .Subject.Deconstruct(out var actualId, out var actualToken);
-        actualId.Should().Be(expectedId);
-        actualToken.Should().Be(expectedToken);
+        result.Should().HaveStatusCode(StatusCodes.Status200OK)
+            .And.HaveValue(expectedResultValue);
     }
 
     [Fact]
@@ -119,23 +105,15 @@ public class AuthenticationControllerTests : BaseTest
     {
         // Given
         var error = Errors.User.DuplicateEmail;
-
-        _mediator.Send(Arg.Is<RegisterCommand>(r =>
-            r.FirstName == _registerRequest.FirstName
-            && r.LastName == _registerRequest.LastName
-            && r.Email == _registerRequest.Email
-            && r.Password == _registerRequest.Password), CancellationToken)
-            .Returns(error);
-
-        var sut = CreateSut(withHttpContext: true);
+        _mediator.Send(_registerCommand, CancellationToken).Returns(error);
+        var sut = CreateSut().WithHttpContext();
         // When
         var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
         // Then
-        var objectResult = result.Should().BeAssignableTo<ObjectResult>().Subject;
-        objectResult.StatusCode.Should().NotBe(StatusCodes.Status200OK);
-        var details = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        details.Title.Should().Be(error.Code);
-        details.Detail.Should().Be(error.Description);
+        var details = result.Should().NotHaveStatusCode(StatusCodes.Status200OK)
+            .And.HaveValueAssignableTo<ProblemDetails>()
+            .Which.Should().Match(x => x.Title == error.Code)
+            .And.Match(x => x.Detail == error.Description);
     }
 
     [Fact]
@@ -143,18 +121,14 @@ public class AuthenticationControllerTests : BaseTest
     {
         // Given
         var error = Errors.Authentication.InvalidCredentials;
-
-        _mediator.Send(Arg.Is<AuthenticateQuery>(r => r.Email == _loginRequest.Email && r.Password == _loginRequest.Password), CancellationToken)
-            .Returns(error);
-
-        var sut = CreateSut(withHttpContext: true);
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(error);
+        var sut = CreateSut().WithHttpContext();
         // When
         var result = await sut.LoginAsync(_loginRequest, CancellationToken);
         // Then
-        var objectResult = result.Should().BeAssignableTo<ObjectResult>().Subject;
-        objectResult.StatusCode.Should().NotBe(StatusCodes.Status200OK);
-        var details = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
-        details.Title.Should().Be(error.Code);
-        details.Detail.Should().Be(error.Description);
+        var details = result.Should().NotHaveStatusCode(StatusCodes.Status200OK)
+            .And.HaveValueAssignableTo<ProblemDetails>()
+            .Which.Should().Match(x => x.Title == error.Code)
+            .And.Match(x => x.Detail == error.Description);
     }
 }

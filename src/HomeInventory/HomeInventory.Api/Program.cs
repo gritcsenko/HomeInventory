@@ -1,15 +1,16 @@
-using HomeInventory.Api.Common.Errors;
+using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Infrastructure;
+using Mapster;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 [assembly: ApiController]
 
 var builder = WebApplication.CreateBuilder(args);
 {
     // Add services to the container.
+    builder.Services.AddApi();
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -17,7 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
     {
         o.SuppressAsyncSuffixInActionNames = true;
     });
-    builder.Services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
