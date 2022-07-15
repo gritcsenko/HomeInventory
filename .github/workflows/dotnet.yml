@@ -18,9 +18,23 @@ jobs:
       with:
         dotnet-version: 6.x
         include-prerelease: false
+    - uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget
     - name: Restore dependencies
       run: dotnet restore ./src/HomeInventory --verbosity normal
     - name: Build
       run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained false --verbosity normal
     - name: Test
-      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal
+      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults"
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotnet-results
+        path: TestResults
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
