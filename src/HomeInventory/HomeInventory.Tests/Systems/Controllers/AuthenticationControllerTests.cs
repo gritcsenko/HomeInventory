@@ -5,6 +5,7 @@ using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain;
+using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using MapsterMapper;
 using MediatR;
@@ -25,6 +26,8 @@ public class AuthenticationControllerTests : BaseTest
 
     public AuthenticationControllerTests()
     {
+        Fixture.Customize(new UserIdCustomization());
+
         _registerRequest = Fixture.Create<RegisterRequest>();
         _registerCommand = Fixture.Create<RegisterCommand>();
         _loginRequest = Fixture.Create<LoginRequest>();

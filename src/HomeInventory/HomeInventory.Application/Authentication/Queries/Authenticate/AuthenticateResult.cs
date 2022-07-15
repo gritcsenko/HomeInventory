@@ -1,3 +1,5 @@
-﻿namespace HomeInventory.Application.Authentication.Queries.Authenticate;
+﻿using HomeInventory.Domain.ValueObjects;
 
-public record class AuthenticateResult(Guid Id, string Token);
+namespace HomeInventory.Application.Authentication.Queries.Authenticate;
+
+public record class AuthenticateResult(UserId Id, string Token);

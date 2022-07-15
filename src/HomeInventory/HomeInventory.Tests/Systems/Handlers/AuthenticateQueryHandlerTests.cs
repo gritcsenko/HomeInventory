@@ -5,8 +5,10 @@ using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Systems.Controllers;
 using NSubstitute;
+using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -18,6 +20,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
     public AuthenticateQueryHandlerTests()
     {
+        Fixture.Customize(new UserIdCustomization());
         _user = Fixture.Create<User>();
     }
 
@@ -50,7 +53,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // Given
         var error = Errors.Authentication.InvalidCredentials;
         var query = Fixture.Create<AuthenticateQuery>();
-        _userRepository.FindByEmailAsync(query.Email, CancellationToken).Returns(default(User?));
+        _userRepository.FindByEmailAsync(query.Email, CancellationToken).Returns(new NotFound());
 
         var sut = CreateSut();
         // When

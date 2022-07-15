@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
-using HomeInventory.Domain.Entities;
 using MediatR;
 
 namespace HomeInventory.Application.Authentication.Queries.Authenticate;
@@ -18,7 +17,8 @@ internal class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, Err
 
     public async Task<ErrorOr<AuthenticateResult>> Handle(AuthenticateQuery request, CancellationToken cancellationToken)
     {
-        if (await _userRepository.FindByEmailAsync(request.Email, cancellationToken) is not User user)
+        var result = await _userRepository.FindByEmailAsync(request.Email, cancellationToken);
+        if (result.TryPickT1(out _, out var user))
         {
             return Domain.Errors.Authentication.InvalidCredentials;
         }

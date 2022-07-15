@@ -1,34 +1,42 @@
 ﻿using ErrorOr;
 using HomeInventory.Application.Interfaces.Persistence;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.ValueObjects;
 using MediatR;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;
 internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<RegistrationResult>>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUserIdFactory _userIdFactory;
 
-    public RegisterCommandHandler(IUserRepository userRepository)
+    public RegisterCommandHandler(IUserRepository userRepository, IUserIdFactory userIdFactory)
     {
         _userRepository = userRepository;
+        _userIdFactory = userIdFactory;
     }
 
     public async Task<ErrorOr<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        if (await _userRepository.HasEmailAsync(request.Email, cancellationToken))
-        {
-            return Domain.Errors.User.DuplicateEmail;
-        }
+        return await _userRepository.HasEmailAsync(request.Email, cancellationToken)
+            ? Errors.User.DuplicateEmail
+            : await _userIdFactory.CreateNew().Match<Task<ErrorOr<RegistrationResult>>>(
+                async userId => await AddUserAsync(request, userId, cancellationToken),
+                async error => Errors.User.UserIdCreation);
+    }
 
-        var user = new User
+    private async Task<RegistrationResult> AddUserAsync(RegisterCommand request, UserId userId, CancellationToken cancellationToken)
+    {
+        var user = new User(userId)
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
             Password = request.Password,
         };
-        await _userRepository.AddUserAsync(user, cancellationToken);
+        await _userRepository.AddAsync(user, cancellationToken);
 
-        return new RegistrationResult(user.Id);
+        return new RegistrationResult(userId);
     }
 }

@@ -1,4 +1,9 @@
-﻿namespace HomeInventory.Domain;
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("HomeInventory.Tests")]
+
+namespace HomeInventory.Domain;
+
 public interface IDateTimeService
 {
     DateTimeOffset Now { get; }
