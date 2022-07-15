@@ -1,0 +1,26 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main", "feature/*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build and Test .NET
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.x
+        include-prerelease: true
+    - name: Restore dependencies
+      run: dotnet restore ./src/HomeInventory
+    - name: Build
+      run: dotnet build  ./src/HomeInventory --no-restore
+    - name: Test
+      run: dotnet test  ./src/HomeInventory --no-build --verbosity normal
