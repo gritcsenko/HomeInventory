@@ -10,24 +10,28 @@ public class UserId : GuidValueObject<UserId>, IIdentityValue
     }
 }
 
-public class UserIdFactory : GuidValueObjectFactory<UserId>
+public interface IUserIdFactory : IValueObjectFactory<UserId, Guid>
 {
-    public UserIdFactory()
-        : base(UserIdValidator.Default)
+    public ErrorOr<UserId> CreateNew();
+}
+
+public class UserIdFactory : GuidValueObjectFactory<UserId>, IUserIdFactory
+{
+    public UserIdFactory(IUserIdValidator validator)
+        : base(validator)
     {
     }
+
+    public ErrorOr<UserId> CreateNew() => Create(Guid.NewGuid());
 
     protected override UserId CreateObject(Guid value) => new(value, EqualityComparer);
 }
 
-public static class UserIdFactoryExtensions
+public interface IUserIdValidator : IValueValidator<Guid>
 {
-    public static ErrorOr<UserId> CreateNew(this IValueObjectFactory<UserId, Guid> factory) => factory.Create(Guid.NewGuid());
 }
 
-public class UserIdValidator : GuidValueValidator
+public class UserIdValidator : GuidValueValidator, IUserIdValidator
 {
-    public static new IValueValidator<Guid> Default { get; } = new UserIdValidator();
-
     public override bool IsValid(Guid value) => base.IsValid(value) && !value.Equals(Guid.Empty);
 }

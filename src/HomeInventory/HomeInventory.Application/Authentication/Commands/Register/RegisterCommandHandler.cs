@@ -9,9 +9,9 @@ namespace HomeInventory.Application.Authentication.Commands.Register;
 internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<RegistrationResult>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IValueObjectFactory<UserId, Guid> _userIdFactory;
+    private readonly IUserIdFactory _userIdFactory;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IValueObjectFactory<UserId, Guid> userIdFactory)
+    public RegisterCommandHandler(IUserRepository userRepository, IUserIdFactory userIdFactory)
     {
         _userRepository = userRepository;
         _userIdFactory = userIdFactory;

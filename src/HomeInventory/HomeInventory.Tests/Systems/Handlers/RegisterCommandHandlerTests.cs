@@ -15,7 +15,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly IValueObjectFactory<UserId, Guid> _userIdFactory = Substitute.For<IValueObjectFactory<UserId, Guid>>();
+    private readonly IUserIdFactory _userIdFactory = Substitute.For<IUserIdFactory>();
     private readonly RegisterCommand _command;
 
     public RegisterCommandHandlerTests()
@@ -31,7 +31,7 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         // Given
         _userRepository.HasEmailAsync(_command.Email, CancellationToken).Returns(false);
-        _userIdFactory.Create(Arg.Any<Guid>()).ReturnsForAnyArgs(Fixture.Create<UserId>());
+        _userIdFactory.CreateNew().ReturnsForAnyArgs(Fixture.Create<UserId>());
         _userRepository.AddAsync(Arg.Is<User>(r =>
             r.FirstName == _command.FirstName
             && r.LastName == _command.LastName
@@ -54,7 +54,7 @@ public class RegisterCommandHandlerTests : BaseTest
         // Given
         var error = Errors.User.UserIdCreation;
         _userRepository.HasEmailAsync(_command.Email, CancellationToken).Returns(false);
-        _userIdFactory.Create(Arg.Any<Guid>()).ReturnsForAnyArgs(ErrorOr.Error.Failure());
+        _userIdFactory.CreateNew().ReturnsForAnyArgs(ErrorOr.Error.Failure());
 
         var sut = CreateSut();
         // When

@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Domain.Entities;
 
-public class Goods
+public class Product
 {
     public Guid Id { get; init; } = Guid.NewGuid();
     public string Name { get; init; } = null!;
