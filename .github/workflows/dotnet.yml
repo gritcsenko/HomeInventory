@@ -21,6 +21,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ./src/HomeInventory --verbosity normal
     - name: Build
-      run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained true --verbosity normal
+      run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained false --verbosity normal
     - name: Test
       run: dotnet test ./src/HomeInventory --no-build --verbosity normal
