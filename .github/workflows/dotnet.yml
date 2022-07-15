@@ -19,8 +19,8 @@ jobs:
         dotnet-version: 6.x
         include-prerelease: false
     - name: Restore dependencies
-      run: dotnet restore ./src/HomeInventory
+      run: dotnet restore ./src/HomeInventory --verbosity normal
     - name: Build
-      run: dotnet build  ./src/HomeInventory --no-restore
+      run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained true --verbosity normal
     - name: Test
-      run: dotnet test  ./src/HomeInventory --no-build --verbosity normal
+      run: dotnet test ./src/HomeInventory --no-build --verbosity normal
