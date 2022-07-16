@@ -23,13 +23,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Infrastructur
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B9874B50-CF57-458A-B8F8-4BC68E13148C}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		Dockerfile = Dockerfile
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9AD3FEAC-AE79-4EF0-A851-4A5A7418DC5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.Tests", "HomeInventory.Tests\HomeInventory.Tests.csproj", "{919E8563-54C2-4AD6-8299-F978C78FF334}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Tests", "HomeInventory.Tests\HomeInventory.Tests.csproj", "{919E8563-54C2-4AD6-8299-F978C78FF334}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

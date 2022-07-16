@@ -8,6 +8,8 @@ public class ValueObject<TObject, TValue> : IValueObject<TObject, TValue>
 
     protected ValueObject(TValue value, IEqualityComparer<TValue> equalityComparer) => (_value, _equalityComparer) = (value, equalityComparer);
 
+    protected TValue Value => _value;
+
     public bool Equals(TObject? other) => ReferenceEquals(other, this) || (other is not null && EqualsCore(other));
 
     public override bool Equals(object? obj) => obj is TObject entity && Equals(entity);

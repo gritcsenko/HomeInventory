@@ -18,22 +18,26 @@ internal class UserRepository : IUserRepository
 
     public async Task<OneOf<Success>> AddAsync(User entity, CancellationToken cancellationToken = default)
     {
+        await ValueTask.CompletedTask;
         _users.Add(entity);
         return new Success();
     }
 
     public async Task<OneOf<User, NotFound>> FindByIdAsync(UserId id, CancellationToken cancellationToken = default)
     {
+        await ValueTask.CompletedTask;
         return _users.FirstOrDefault(u => u.Id == id) ?? (OneOf<User, NotFound>)new NotFound();
     }
 
     public async Task<bool> HasEmailAsync(string email, CancellationToken cancellationToken = default)
     {
+        await ValueTask.CompletedTask;
         return _users.Any(u => u.Email == email);
     }
 
     public async Task<OneOf<User, NotFound>> FindByEmailAsync(string email, CancellationToken cancellationToken)
     {
+        await ValueTask.CompletedTask;
         return _users.FirstOrDefault(u => u.Email == email) ?? (OneOf<User, NotFound>)new NotFound();
     }
 }
