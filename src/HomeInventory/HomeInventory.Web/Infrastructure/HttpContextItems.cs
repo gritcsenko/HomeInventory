@@ -1,8 +1,9 @@
 ﻿using ErrorOr;
+using Microsoft.AspNetCore.Http;
 
-namespace HomeInventory.Api.Common.Http;
+namespace HomeInventory.Web.Infrastructure;
 
-public static class HttpContextItems
+internal static class HttpContextItems
 {
     public static HttpContextItem<IEnumerable<Error>> Errors { get; } = new HttpContextItem<IEnumerable<Error>> { Name = nameof(Errors) };
 

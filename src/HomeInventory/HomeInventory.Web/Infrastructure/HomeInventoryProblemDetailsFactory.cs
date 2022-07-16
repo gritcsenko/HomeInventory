@@ -1,11 +1,11 @@
-﻿using HomeInventory.Api.Common.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
-namespace HomeInventory.Api.Common.Errors;
+namespace HomeInventory.Web.Infrastructure;
 
 public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 {
