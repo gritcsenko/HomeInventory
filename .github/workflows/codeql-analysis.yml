@@ -63,7 +63,11 @@ jobs:
 
     #   If the Autobuild fails above, remove it and uncomment the following three lines. 
     #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.x
+        include-prerelease: true
     - run: |
        echo "Run, Build Application using script"
        dotnet build ./src/HomeInventory --configuration Release --self-contained false --verbosity normal
