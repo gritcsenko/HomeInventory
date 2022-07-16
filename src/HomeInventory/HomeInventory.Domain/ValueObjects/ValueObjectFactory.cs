@@ -15,13 +15,11 @@ public abstract class ValueObjectFactory<TObject, TValue> : IValueObjectFactory<
 
     protected IEqualityComparer<TValue> EqualityComparer { get; }
 
-    public ErrorOr<TObject> Create(TValue value)
-    {
-        if (!Validator.IsValid(value))
-            return Error.Validation();
+    public ErrorOr<TObject> Create(TValue value) => IsValid(value) ? CreateObject(value) : GetValidationError();
 
-        return CreateObject(value);
-    }
+    protected virtual bool IsValid(TValue value) => Validator.IsValid(value);
+
+    protected virtual ErrorOr<TObject> GetValidationError() => Error.Validation();
 
     protected abstract TObject CreateObject(TValue value);
 }

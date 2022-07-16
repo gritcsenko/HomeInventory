@@ -23,7 +23,7 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr
             ? Errors.User.DuplicateEmail
             : await _userIdFactory.CreateNew().Match<Task<ErrorOr<RegistrationResult>>>(
                 async userId => await AddUserAsync(request, userId, cancellationToken),
-                async error => Errors.User.UserIdCreation);
+                async error => { await ValueTask.CompletedTask; return Errors.User.UserIdCreation; });
     }
 
     private async Task<RegistrationResult> AddUserAsync(RegisterCommand request, UserId userId, CancellationToken cancellationToken)

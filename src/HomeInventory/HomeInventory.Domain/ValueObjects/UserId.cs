@@ -12,7 +12,7 @@ public class UserId : GuidValueObject<UserId>, IIdentityValue
 
 public interface IUserIdFactory : IValueObjectFactory<UserId, Guid>
 {
-    public ErrorOr<UserId> CreateNew();
+    ErrorOr<UserId> CreateNew();
 }
 
 public class UserIdFactory : GuidValueObjectFactory<UserId>, IUserIdFactory

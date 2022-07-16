@@ -7,6 +7,8 @@ public class GuidValueObject<TObject> : ValueObject<TObject, Guid>
         : base(value, equalityComparer)
     {
     }
+
+    public override string ToString() => Value.ToString();
 }
 
 public class GuidValueValidator : ValueValidator<Guid>
