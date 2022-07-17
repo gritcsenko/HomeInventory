@@ -1,5 +1,7 @@
 ﻿using Mapster;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("HomeInventory.Tests")]
@@ -10,7 +12,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        TypeAdapterConfig.GlobalSettings.Scan(typeof(DependencyInjection).Assembly);
+        var currentAssembly = Assembly.GetExecutingAssembly();
+        TypeAdapterConfig.GlobalSettings.Scan(currentAssembly);
+        services.AddMediatR(currentAssembly);
         return services;
     }
 }

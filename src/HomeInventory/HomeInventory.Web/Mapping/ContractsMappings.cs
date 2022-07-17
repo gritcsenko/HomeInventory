@@ -1,14 +1,17 @@
 ﻿using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
+using HomeInventory.Domain.ValueObjects;
 using Mapster;
 
-namespace HomeInventory.Api.Common.Mapping;
+namespace HomeInventory.Web.Mapping;
 
-public class ContractsMappings : IRegister
+internal class ContractsMappings : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
+        config.NewConfig<UserId, Guid>().MapWith(x => (Guid)x);
+
         config.NewConfig<RegisterRequest, RegisterCommand>();
         config.NewConfig<RegistrationResult, RegisterResponse>();
 

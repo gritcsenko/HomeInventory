@@ -1,8 +1,9 @@
 ﻿using ErrorOr;
-using HomeInventory.Api.Common.Http;
+using HomeInventory.Web.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HomeInventory.Api.Controllers;
+namespace HomeInventory.Web.Controllers;
 
 public class ApiControllerBase : ControllerBase
 {

@@ -5,7 +5,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HomeInventory.Api.Controllers;
+namespace HomeInventory.Web.Controllers;
 
 [Route("api/[controller]")]
 public class AuthenticationController : ApiControllerBase
