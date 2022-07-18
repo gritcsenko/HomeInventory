@@ -1,7 +1,8 @@
-﻿using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Entities;
-public class User : Entity<User, UserId>
+public class User : AggregateRoot<User, UserId>
 {
     public User(UserId id)
         : base(id)

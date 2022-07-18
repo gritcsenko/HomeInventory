@@ -1,26 +1,31 @@
 ﻿namespace HomeInventory.Domain.ValueObjects;
 
-public class ValueObject<TObject, TValue> : IValueObject<TObject, TValue>
-    where TObject : notnull, ValueObject<TObject, TValue>
+public abstract class ValueObject<TObject> : IValueObject<TObject>
+    where TObject : notnull, ValueObject<TObject>
 {
-    private readonly TValue _value;
-    private readonly IEqualityComparer<TValue> _equalityComparer;
+    protected ValueObject()
+    {
+    }
 
-    protected ValueObject(TValue value, IEqualityComparer<TValue> equalityComparer) => (_value, _equalityComparer) = (value, equalityComparer);
+    public static bool operator ==(ValueObject<TObject> left, ValueObject<TObject> right) => left.Equals(right);
 
-    protected TValue Value => _value;
+    public static bool operator !=(ValueObject<TObject> left, ValueObject<TObject> right) => !left.Equals(right);
 
-    public bool Equals(TObject? other) => ReferenceEquals(other, this) || (other is not null && EqualsCore(other));
+    public sealed override bool Equals(object? obj) => Equals(obj as TObject);
 
-    public override bool Equals(object? obj) => obj is TObject entity && Equals(entity);
+    public sealed override int GetHashCode() => GetHashCodeCore();
 
-    public override int GetHashCode() => _value is null ? 0 : _equalityComparer.GetHashCode(_value);
+    public bool Equals(TObject? other) => other is TObject obj && (ReferenceEquals(obj, this) || EqualsCore(obj));
 
-    protected virtual bool EqualsCore(TObject other) => _equalityComparer.Equals(_value, other._value);
+    protected virtual bool EqualsCore(TObject other) => GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
 
-    public static bool operator ==(ValueObject<TObject, TValue> a, ValueObject<TObject, TValue> b) => a.Equals(b);
+    protected virtual int GetHashCodeCore() => GetEqualityComponents().Aggregate(new HashCode(), Combine).ToHashCode();
 
-    public static bool operator !=(ValueObject<TObject, TValue> a, ValueObject<TObject, TValue> b) => !a.Equals(b);
+    protected abstract IEnumerable<object> GetEqualityComponents();
 
-    public static explicit operator TValue(ValueObject<TObject, TValue> obj) => obj._value;
+    private static HashCode Combine(HashCode hash, object obj)
+    {
+        hash.Add(obj);
+        return hash;
+    }
 }

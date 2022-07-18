@@ -2,24 +2,10 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public abstract class ValueObjectFactory<TObject, TValue> : IValueObjectFactory<TObject, TValue>
-    where TObject : notnull, ValueObject<TObject, TValue>
+public abstract class ValueObjectFactory<TObject>
+    where TObject : notnull, ValueObject<TObject>
 {
-    protected ValueObjectFactory(IValueValidator<TValue>? validator = null, IEqualityComparer<TValue>? equalityComparer = null)
-    {
-        Validator = validator ?? ValueValidator<TValue>.None;
-        EqualityComparer = equalityComparer ?? EqualityComparer<TValue>.Default;
-    }
+    protected ErrorOr<TObject> GetValidationError() => GetValidationErrorCore();
 
-    protected IValueValidator<TValue> Validator { get; }
-
-    protected IEqualityComparer<TValue> EqualityComparer { get; }
-
-    public ErrorOr<TObject> Create(TValue value) => IsValid(value) ? CreateObject(value) : GetValidationError();
-
-    protected virtual bool IsValid(TValue value) => Validator.IsValid(value);
-
-    protected virtual ErrorOr<TObject> GetValidationError() => Error.Validation();
-
-    protected abstract TObject CreateObject(TValue value);
+    protected virtual Error GetValidationErrorCore() => Error.Validation();
 }
