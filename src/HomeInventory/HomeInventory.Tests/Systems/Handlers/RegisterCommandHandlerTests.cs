@@ -2,42 +2,45 @@ using AutoFixture;
 using FluentAssertions;
 using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Interfaces.Persistence;
+using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Systems.Controllers;
+using MapsterMapper;
 using NSubstitute;
-using OneOf;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly IUserIdFactory _userIdFactory = Substitute.For<IUserIdFactory>();
+    private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly RegisterCommand _command;
+    private readonly UserHasEmailSpecification _userHasEmailSpecification;
+    private readonly CreateUserSpecification _createUserSpecification;
 
     public RegisterCommandHandlerTests()
     {
-        _command = Fixture.Create<RegisterCommand>();
         Fixture.Customize(new UserIdCustomization());
+
+        _command = Fixture.Create<RegisterCommand>();
+
+        _userHasEmailSpecification = new UserHasEmailSpecification(_command.Email);
+        _createUserSpecification = new CreateUserSpecification(_command.FirstName, _command.LastName, _command.Email, _command.Password);
+        _mapper.Map<UserHasEmailSpecification>(_command).Returns(_userHasEmailSpecification);
+        _mapper.Map<CreateUserSpecification>(_command).Returns(_createUserSpecification);
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository, _userIdFactory);
+    private RegisterCommandHandler CreateSut() => new(_userRepository, _mapper);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
     {
         // Given
-        _userRepository.HasEmailAsync(_command.Email, CancellationToken).Returns(false);
-        _userIdFactory.CreateNew().ReturnsForAnyArgs(Fixture.Create<UserId>());
-        _userRepository.AddAsync(Arg.Is<User>(r =>
-            r.FirstName == _command.FirstName
-            && r.LastName == _command.LastName
-            && r.Email == _command.Email
-            && r.Password == _command.Password), CancellationToken)
-            .Returns(Task.FromResult<OneOf<Success>>(new Success()));
+        var user = Fixture.Create<User>();
+        _userRepository.HasAsync(_userHasEmailSpecification, CancellationToken).Returns(false);
+        _userRepository.CreateAsync(_createUserSpecification, CancellationToken).Returns(user);
 
         var sut = CreateSut();
         // When
@@ -46,15 +49,15 @@ public class RegisterCommandHandlerTests : BaseTest
         result.Should().NotBeNull();
         result.IsError.Should().BeFalse();
         result.Value.Should().NotBeNull();
+        result.Value.Id.Should().Be(user.Id);
     }
 
     [Fact]
-    public async Task Handle_OnUserIdCreation_ReturnsError()
+    public async Task Handle_OnUserCreation_ReturnsError()
     {
         // Given
-        var error = Errors.User.UserIdCreation;
-        _userRepository.HasEmailAsync(_command.Email, CancellationToken).Returns(false);
-        _userIdFactory.CreateNew().ReturnsForAnyArgs(ErrorOr.Error.Failure());
+        _userRepository.HasAsync(_userHasEmailSpecification, CancellationToken).Returns(false);
+        _userRepository.CreateAsync(_createUserSpecification, CancellationToken).Returns(new None());
 
         var sut = CreateSut();
         // When
@@ -62,17 +65,15 @@ public class RegisterCommandHandlerTests : BaseTest
         // Then
         result.Should().NotBeNull();
         result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Equals(error));
-        _ = _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>());
+        result.Errors.Should().HaveCount(1).And.OnlyContain(e => e.Equals(Errors.User.UserCreation));
     }
 
     [Fact]
     public async Task Handle_OnFailure_ReturnsError()
     {
         // Given
-        var error = Errors.User.DuplicateEmail;
 
-        _userRepository.HasEmailAsync(_command.Email, CancellationToken).Returns(true);
+        _userRepository.HasAsync(_userHasEmailSpecification, CancellationToken).Returns(true);
 
         var sut = CreateSut();
         // When
@@ -80,7 +81,7 @@ public class RegisterCommandHandlerTests : BaseTest
         // Then
         result.Should().NotBeNull();
         result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Equals(error));
-        _ = _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>());
+        result.Errors.Should().HaveCount(1).And.OnlyContain(e => e.Equals(Errors.User.DuplicateEmail));
+        _ = _userRepository.DidNotReceiveWithAnyArgs().CreateAsync(_createUserSpecification);
     }
 }

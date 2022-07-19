@@ -2,10 +2,8 @@
 
 namespace HomeInventory.Domain.Aggregates;
 
-public class Inventory<T>
+public class Inventory : Stock
 {
-    public Stock<T> Stock { get; init; } = null!;
-
-    public IReadOnlyCollection<Material<T>> Materials { get; init; } = Array.Empty<Material<T>>();
+    public IReadOnlyCollection<Material> Materials { get; init; } = Array.Empty<Material>();
 }
 

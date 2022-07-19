@@ -1,14 +1,15 @@
 ﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Entities;
-public interface IEntity<TIdentity>
-    where TIdentity : notnull, IIdentityValue
+public interface IEntity<TEntity>
+    where TEntity : notnull, IEntity<TEntity>
 {
-    TIdentity Id { get; }
+
 }
 
-public interface IEntity<TEntity, TIdentity> : IEntity<TIdentity>, IEquatable<TEntity>
-    where TIdentity : notnull, IIdentityValue
-    where TEntity : notnull, IEntity<TEntity, TIdentity>
+public interface IEntity<TEntity, TIdentifier> : IEntity<TEntity>, IEquatable<TEntity>
+    where TIdentifier : notnull, IIdentifierObject<TIdentifier>
+    where TEntity : notnull, IEntity<TEntity, TIdentifier>
 {
+    TIdentifier Id { get; }
 }

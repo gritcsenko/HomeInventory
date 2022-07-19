@@ -6,6 +6,6 @@ internal class UserIdCustomization : ICustomization
 {
     public void Customize(IFixture fixture)
     {
-        fixture.Customize<UserId>(c => c.FromFactory(() => new UserId(Guid.NewGuid(), EqualityComparer<Guid>.Default)));
+        fixture.Customize<UserId>(c => c.FromFactory(() => new UserId(Guid.NewGuid())));
     }
 }

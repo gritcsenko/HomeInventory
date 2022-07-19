@@ -3,7 +3,7 @@
 namespace HomeInventory.Domain.Entities;
 
 public class Entity<TEntity, TIdentity> : IEntity<TEntity, TIdentity>
-    where TIdentity : notnull, IIdentityValue
+    where TIdentity : notnull, IIdentifierObject<TIdentity>
     where TEntity : notnull, Entity<TEntity, TIdentity>
 {
     public Entity(TIdentity id) => Id = id;

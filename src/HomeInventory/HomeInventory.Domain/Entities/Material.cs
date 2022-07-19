@@ -2,10 +2,13 @@
 
 namespace HomeInventory.Domain.Entities;
 
-public class Material<T>
+public class Material : Entity<Material, MaterialId>
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
-    public string Name { get; init; } = null!;
-    public Amount<T> Amount { get; init; } = null!;
-}
+    public Material(MaterialId id)
+        : base(id)
+    {
+    }
 
+    public string Name { get; init; } = null!;
+    public Amount Amount { get; init; } = null!;
+}

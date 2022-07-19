@@ -1,42 +1,48 @@
 ﻿using ErrorOr;
 using HomeInventory.Application.Interfaces.Persistence;
+using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.ValueObjects;
+using MapsterMapper;
 using MediatR;
+using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;
 internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<RegistrationResult>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IUserIdFactory _userIdFactory;
+    private readonly IMapper _mapper;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IUserIdFactory userIdFactory)
+    public RegisterCommandHandler(IUserRepository userRepository, IMapper mapper)
     {
         _userRepository = userRepository;
-        _userIdFactory = userIdFactory;
+        _mapper = mapper;
     }
 
     public async Task<ErrorOr<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        return await _userRepository.HasEmailAsync(request.Email, cancellationToken)
-            ? Errors.User.DuplicateEmail
-            : await _userIdFactory.CreateNew().Match<Task<ErrorOr<RegistrationResult>>>(
-                async userId => await AddUserAsync(request, userId, cancellationToken),
-                async error => { await ValueTask.CompletedTask; return Errors.User.UserIdCreation; });
+        if (await IsUserHasEmailAsync(request, cancellationToken))
+        {
+            return Errors.User.DuplicateEmail;
+        }
+
+        var result = await CreateUserAsync(request, cancellationToken);
+
+        return result.Match<ErrorOr<RegistrationResult>>(
+            user => new RegistrationResult(user.Id),
+            _ => Errors.User.UserCreation);
     }
 
-    private async Task<RegistrationResult> AddUserAsync(RegisterCommand request, UserId userId, CancellationToken cancellationToken)
+    private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var user = new User(userId)
-        {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            Password = request.Password,
-        };
-        await _userRepository.AddAsync(user, cancellationToken);
+        var specification = _mapper.Map<UserHasEmailSpecification>(request);
+        return await _userRepository.HasAsync(specification, cancellationToken);
+    }
 
-        return new RegistrationResult(userId);
+    private async Task<OneOf<User, None>> CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
+    {
+        var specification = _mapper.Map<CreateUserSpecification>(request);
+        return await _userRepository.CreateAsync(specification, cancellationToken);
     }
 }
