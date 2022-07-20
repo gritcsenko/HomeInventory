@@ -36,7 +36,7 @@ public static class DependencyInjection
             .AddVirtualMemorySizeHealthCheck(3L * 1024 * 1024 * 1024 * 1024)
             .AddWindowsServiceHealthCheck("AppIDSvc", _ => true)
             .AddWorkingSetHealthCheck(1024 * 1024 * 1024);
-        services.AddHealthChecksUI(x => x.AddHealthCheckEndpoint("SampleCheck", "/health"))
+        services.AddHealthChecksUI()
             .AddInMemoryStorage();
 
         services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
