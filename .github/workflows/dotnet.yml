@@ -3,6 +3,8 @@ name: .NET
 on:
   push:
     branches: [ "main", "feature/*" ]
+env:
+  CI: true
 
 jobs:
   build:
@@ -31,6 +33,11 @@ jobs:
       run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained false --verbosity normal
     - name: Test
       run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults"
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel: true
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v3
       with:
@@ -38,3 +45,12 @@ jobs:
         path: TestResults
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
