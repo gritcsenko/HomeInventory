@@ -37,7 +37,7 @@ jobs:
       run: |
         dotnet new tool-manifest
         dotnet tool install coveralls.net
-        dotnet tool run csmacnz.Coveralls --lcov --repoToken ${{ secrets.GITHUB_TOKEN }}
+        dotnet tool run csmacnz.Coveralls --lcov  -i ./opencovertests.xml --repoToken ${{ secrets.GITHUB_TOKEN }} -o ./opencovertests.json
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
