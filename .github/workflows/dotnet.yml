@@ -32,7 +32,7 @@ jobs:
     - name: Build
       run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained false --verbosity normal
     - name: Test
-      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults"
+      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults" --collect "Code Coverage;Format=Cobertura" -o ./opencovertests.xml
     - name: Cover
       run: |
         dotnet new tool-manifest
