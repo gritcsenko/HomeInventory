@@ -34,7 +34,10 @@ jobs:
     - name: Test
       run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults"
     - name: Cover
-      run: dotnet tool run csmacnz.Coveralls --lcov --repoToken ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        dotnet new tool-manifest
+        dotnet tool install coveralls.net
+        dotnet tool run csmacnz.Coveralls --lcov --repoToken ${{ secrets.GITHUB_TOKEN }}
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
