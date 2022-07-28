@@ -14,9 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("HomeInventory.Tests")]
-[assembly: ApiController]
-
 namespace HomeInventory.Web;
 
 public static class DependencyInjection

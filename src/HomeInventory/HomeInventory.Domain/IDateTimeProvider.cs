@@ -1,8 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("HomeInventory.Tests")]
-
-namespace HomeInventory.Domain;
+﻿namespace HomeInventory.Domain;
 
 public interface IDateTimeService
 {

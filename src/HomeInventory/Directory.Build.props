@@ -8,4 +8,7 @@
     <AnalysisLevel>preview-all</AnalysisLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="HomeInventory.Tests"/>
+  </ItemGroup>
 </Project>
