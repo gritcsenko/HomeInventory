@@ -7,12 +7,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Web;
 
@@ -31,7 +29,6 @@ public static class DependencyInjection
             .AddProcessAllocatedMemoryHealthCheck(1024 * 1024 * 1024)
             .AddProcessHealthCheck("system", _ => true)
             .AddVirtualMemorySizeHealthCheck(3L * 1024 * 1024 * 1024 * 1024)
-            .AddWindowsServiceHealthCheck("AppIDSvc", _ => true)
             .AddWorkingSetHealthCheck(1024 * 1024 * 1024);
         services.AddHealthChecksUI()
             .AddInMemoryStorage();
