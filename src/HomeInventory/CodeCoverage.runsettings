@@ -34,7 +34,7 @@ Included items must then not match any entries in the exclude list to remain inc
               </Include>
               <Exclude>
                 <ModulePath>.*CPPUnitTestFramework.*</ModulePath>
-                <ModulePath>.*HomeInventory.Api.dll</ModulePath>
+                <ModulePath>HomeInventory.Api.*</ModulePath>
               </Exclude>
               <!-- Specifies additional list of directories where binaries static native instrumentation should be searched. -->
               <IncludeDirectories>
