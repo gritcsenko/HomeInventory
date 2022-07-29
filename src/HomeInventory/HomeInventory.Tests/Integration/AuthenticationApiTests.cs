@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http.Json;
 
 namespace HomeInventory.Tests.Integration;
+[Trait("Category", "Integration")]
 public class AuthenticationApiTests : BaseTest, IAsyncDisposable
 {
     private readonly WebApplicationFactory<Program> _appFactory;
