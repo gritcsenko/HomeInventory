@@ -32,17 +32,7 @@ jobs:
     - name: Build
       run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained false --verbosity normal
     - name: Test
-      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults" --collect "Code Coverage;Format=Cobertura" -o ./opencovertests.xml
-    - name: Cover
-      run: |
-        dotnet new tool-manifest
-        dotnet tool install coveralls.net
-        dotnet tool run csmacnz.Coveralls --lcov  -i ./opencovertests.xml --repoToken ${{ secrets.GITHUB_TOKEN }} -o ./opencovertests.json
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel: true
+      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults" --collect "Code Coverage;Format=Cobertura"
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v3
       with:
@@ -50,12 +40,3 @@ jobs:
         path: TestResults
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}
-  finish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true
