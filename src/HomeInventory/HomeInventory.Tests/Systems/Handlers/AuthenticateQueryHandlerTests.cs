@@ -14,6 +14,7 @@ using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
+[Trait("Category", "Unit")]
 public class AuthenticateQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();

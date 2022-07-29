@@ -12,6 +12,8 @@ using NSubstitute;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
+
+[Trait("Category", "Unit")]
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
