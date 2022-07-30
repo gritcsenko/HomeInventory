@@ -33,7 +33,7 @@ public static class DependencyInjection
 
         services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
 
-        services.AddSingleton<TypeAdapterConfig>(sp => new TypeAdapterConfig());
+        services.AddSingleton(sp => new TypeAdapterConfig());
         services.AddScoped<IMapper, ServiceMapper>();
         services.AddMappingSourceFromCurrentAssembly();
 

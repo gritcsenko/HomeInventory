@@ -23,6 +23,12 @@ internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServic
         return ContainSingle<T>(ServiceLifetime.Singleton);
     }
 
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleScoped<T>()
+        where T : class
+    {
+        return ContainSingle<T>(ServiceLifetime.Scoped);
+    }
+
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle<T>(ServiceLifetime lifetime)
         where T : class
     {

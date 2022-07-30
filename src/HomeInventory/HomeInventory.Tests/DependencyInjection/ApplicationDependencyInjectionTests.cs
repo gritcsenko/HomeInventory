@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using HomeInventory.Application;
+﻿using HomeInventory.Application;
 using HomeInventory.Tests.Helpers;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
