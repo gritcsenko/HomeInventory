@@ -10,7 +10,7 @@ public abstract class BaseMappingsTests : BaseTest
     {
     }
 
-    protected IMapper CreateSut<TMapper>()
+    protected static IMapper CreateSut<TMapper>()
         where TMapper : IRegister, new()
     {
         var config = new TypeAdapterConfig();

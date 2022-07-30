@@ -3,6 +3,7 @@ using FluentAssertions;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Application.Mapping;
+using HomeInventory.Domain.Entities;
 using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Systems.Mapping;
@@ -27,7 +28,7 @@ public class QueryMappingsTests : BaseMappingsTests
         var fixture = new Fixture();
         return new()
         {
-            { fixture.Create<AuthenticateQuery>(), typeof(UserHasEmailSpecification) },
+            { fixture.Create<AuthenticateQuery>(), typeof(FilterSpecification<User>) },
         };
     }
 }

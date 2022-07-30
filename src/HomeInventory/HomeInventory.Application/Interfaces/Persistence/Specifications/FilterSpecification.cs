@@ -1,23 +1,34 @@
-﻿using FastExpressionCompiler;
+﻿using System.Linq.Expressions;
+using FastExpressionCompiler;
 using HomeInventory.Domain.Entities;
-using System.Linq.Expressions;
 
 namespace HomeInventory.Application.Interfaces.Persistence.Specifications;
-public abstract class FilterSpecification<TEntity> : IFilterSpecification<TEntity>, IExpressionSpecification<TEntity, bool>
+
+public abstract class ExpressionSpecification<TEntity, TResult> : IExpressionSpecification<TEntity, TResult>
     where TEntity : notnull, IEntity<TEntity>
 {
-    private readonly Lazy<Expression<Func<TEntity, bool>>> _expression;
-    private readonly Lazy<Func<TEntity, bool>> _compiled;
+    private readonly Lazy<Expression<Func<TEntity, TResult>>> _expression;
+    private readonly Lazy<Func<TEntity, TResult>> _compiled;
 
-    protected FilterSpecification()
+    protected ExpressionSpecification()
     {
-        _expression = new Lazy<Expression<Func<TEntity, bool>>>(ToExpression);
-        _compiled = new Lazy<Func<TEntity, bool>>(() => SpecificationExpression.CompileFast());
+        _expression = new Lazy<Expression<Func<TEntity, TResult>>>(ToExpression);
+        _compiled = new Lazy<Func<TEntity, TResult>>(() => SpecificationExpression.CompileFast());
     }
 
-    public Expression<Func<TEntity, bool>> SpecificationExpression => _expression.Value;
+    public Expression<Func<TEntity, TResult>> SpecificationExpression => _expression.Value;
 
-    public bool IsSatisfiedBy(TEntity entity) => _compiled.Value(entity);
+    protected Func<TEntity, TResult> CompiledExpression => _compiled.Value;
 
-    protected abstract Expression<Func<TEntity, bool>> ToExpression();
+    protected abstract Expression<Func<TEntity, TResult>> ToExpression();
+}
+
+public abstract class FilterSpecification<TEntity> : ExpressionSpecification<TEntity, bool>, IFilterSpecification<TEntity>
+    where TEntity : notnull, IEntity<TEntity>
+{
+    protected FilterSpecification()
+    {
+    }
+
+    public bool IsSatisfiedBy(TEntity entity) => CompiledExpression(entity);
 }

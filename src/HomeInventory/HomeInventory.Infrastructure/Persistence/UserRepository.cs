@@ -19,13 +19,15 @@ internal class UserRepository : IUserRepository
         _userIdFactory = userIdFactory;
     }
 
-    public async Task<OneOf<User, NotFound>> FindFirstOrNotFoundAsync(FilterSpecification<User> specification, CancellationToken cancellationToken = default)
+    public async Task<OneOf<User, NotFound>> FindFirstOrNotFoundAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
+        where TSpecification : class, IFilterSpecification<User>, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
         return _users.FirstOrDefault(specification.IsSatisfiedBy) ?? (OneOf<User, NotFound>)new NotFound();
     }
 
-    public async Task<bool> HasAsync(FilterSpecification<User> specification, CancellationToken cancellationToken = default)
+    public async Task<bool> HasAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
+        where TSpecification : class, IFilterSpecification<User>, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
         return _users.Any(specification.IsSatisfiedBy);
@@ -34,16 +36,16 @@ internal class UserRepository : IUserRepository
     public async Task<OneOf<User, None>> CreateAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
         where TSpecification : ICreateEntitySpecification<User>
     {
+        await Task.CompletedTask;
         return specification switch
         {
-            CreateUserSpecification s => await CreateAsync(s, cancellationToken),
+            CreateUserSpecification s => Create(s),
             _ => new None(),
         };
     }
 
-    private async Task<User> CreateAsync(CreateUserSpecification specification, CancellationToken cancellationToken = default)
+    private User Create(CreateUserSpecification specification)
     {
-        await ValueTask.CompletedTask;
         var userId = _userIdFactory.CreateNew();
         var user = new User(userId)
         {

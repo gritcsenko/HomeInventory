@@ -30,7 +30,7 @@ public class RegisterCommandHandlerTests : BaseTest
 
         _userHasEmailSpecification = new UserHasEmailSpecification(_command.Email);
         _createUserSpecification = new CreateUserSpecification(_command.FirstName, _command.LastName, _command.Email, _command.Password);
-        _mapper.Map<UserHasEmailSpecification>(_command).Returns(_userHasEmailSpecification);
+        _mapper.Map<FilterSpecification<User>>(_command).Returns(_userHasEmailSpecification);
         _mapper.Map<CreateUserSpecification>(_command).Returns(_createUserSpecification);
     }
 

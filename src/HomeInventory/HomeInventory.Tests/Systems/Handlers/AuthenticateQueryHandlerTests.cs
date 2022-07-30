@@ -93,7 +93,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     private UserHasEmailSpecification MapToSpecification(AuthenticateQuery query)
     {
         var specification = new UserHasEmailSpecification(query.Email);
-        _mapper.Map<UserHasEmailSpecification>(query).Returns(specification);
+        _mapper.Map<FilterSpecification<User>>(query).Returns(specification);
         return specification;
     }
 }

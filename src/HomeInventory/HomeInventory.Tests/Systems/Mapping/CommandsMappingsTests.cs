@@ -3,6 +3,7 @@ using FluentAssertions;
 using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Application.Mapping;
+using HomeInventory.Domain.Entities;
 using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Systems.Mapping;
@@ -27,7 +28,7 @@ public class CommandsMappingsTests : BaseMappingsTests
         var fixture = new Fixture();
         return new()
         {
-            { fixture.Create<RegisterCommand>(), typeof(UserHasEmailSpecification) },
+            { fixture.Create<RegisterCommand>(), typeof(FilterSpecification<User>) },
             { fixture.Create<RegisterCommand>(), typeof(CreateUserSpecification) },
         };
     }

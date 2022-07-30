@@ -1,12 +1,12 @@
-﻿using HomeInventory.Domain.Entities;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+using HomeInventory.Domain.Entities;
 
 namespace HomeInventory.Application.Interfaces.Persistence.Specifications;
 
 public class BinarySpecification<T> : FilterSpecification<T>
     where T : notnull, IEntity<T>
 {
-    private static readonly ParameterReplacer _replacer = new();
+    private static readonly ParameterReplacer<T> _replacer = new();
     private readonly FilterSpecification<T> _left;
     private readonly FilterSpecification<T> _right;
     private readonly Func<Expression, Expression, BinaryExpression> _combineFunc;
@@ -25,13 +25,5 @@ public class BinarySpecification<T> : FilterSpecification<T>
         var combined = _combineFunc(leftBody, rightBody);
         var exprBody = _replacer.Visit(combined);
         return Expression.Lambda<Func<T, bool>>(exprBody, _replacer.Parameter);
-    }
-
-    private class ParameterReplacer : ExpressionVisitor
-    {
-        public ParameterExpression Parameter { get; } = Expression.Parameter(typeof(T));
-
-        protected override Expression VisitParameter(ParameterExpression node)
-            => base.VisitParameter(Parameter);
     }
 }
