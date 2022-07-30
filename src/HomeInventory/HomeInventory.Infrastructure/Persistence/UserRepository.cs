@@ -23,14 +23,14 @@ internal class UserRepository : IUserRepository
         where TSpecification : class, IFilterSpecification<User>, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
-        return _users.FirstOrDefault(specification.IsSatisfiedBy) ?? (OneOf<User, NotFound>)new NotFound();
+        return _users.AsQueryable().FirstOrDefault(specification.SpecificationExpression) ?? (OneOf<User, NotFound>)new NotFound();
     }
 
     public async Task<bool> HasAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
         where TSpecification : class, IFilterSpecification<User>, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
-        return _users.Any(specification.IsSatisfiedBy);
+        return _users.AsQueryable().Any(specification.SpecificationExpression);
     }
 
     public async Task<OneOf<User, None>> CreateAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
