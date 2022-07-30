@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="HomeInventory.Tests"/>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
   </ItemGroup>
 </Project>
