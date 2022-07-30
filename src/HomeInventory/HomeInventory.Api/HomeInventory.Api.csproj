@@ -13,7 +13,7 @@
     <ProjectReference Include="..\HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
     <ProjectReference Include="..\HomeInventory.Web\HomeInventory.Web.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute"/>
   </ItemGroup>

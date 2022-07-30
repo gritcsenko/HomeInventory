@@ -33,4 +33,8 @@
     <ProjectReference Include="..\HomeInventory.Api\HomeInventory.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute"/>
+  </ItemGroup>
+
 </Project>
