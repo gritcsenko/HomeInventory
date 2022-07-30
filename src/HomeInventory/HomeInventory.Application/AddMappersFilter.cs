@@ -5,14 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Application;
 
-internal class AddMappers : IStartupFilter
+internal class AddMappersFilter : IStartupFilter
 {
     private readonly IEnumerable<IMappingAssemblySource> _sources;
 
-    public AddMappers(IEnumerable<IMappingAssemblySource> sources)
-    {
-        _sources = sources;
-    }
+    public AddMappersFilter(IEnumerable<IMappingAssemblySource> sources) => _sources = sources;
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         => builder =>

@@ -14,7 +14,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(Assembly.GetExecutingAssembly());
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-        services.AddStartupFilter<AddMappers>();
+        services.AddStartupFilter<AddMappersFilter>();
         services.AddMappingSourceFromCurrentAssembly();
         return services;
     }
@@ -34,16 +34,16 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, Assembly assembly)
-    {
-        services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assembly));
-        return services;
-    }
-
     public static IServiceCollection AddMappingSourceFromCurrentAssembly(this IServiceCollection services)
     {
         var assembly = Assembly.GetCallingAssembly();
         services.AddMappingAssemblySource(assembly);
+        return services;
+    }
+
+    public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, Assembly assembly)
+    {
+        services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assembly));
         return services;
     }
 }
