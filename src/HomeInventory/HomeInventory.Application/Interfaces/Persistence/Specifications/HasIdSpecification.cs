@@ -12,5 +12,5 @@ public class HasIdSpecification<TEntity, TIdentity> : FilterSpecification<TEntit
 
     public HasIdSpecification(TIdentity id) => _id = id;
 
-    protected override Expression<Func<TEntity, bool>> ToExpression() => x => x.Id.Equals(_id);
+    protected override Expression<Func<TEntity, bool>> ToExpressionCore() => x => x.Id.Equals(_id);
 }

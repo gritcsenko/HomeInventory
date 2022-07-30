@@ -9,5 +9,5 @@ internal class UserHasEmailSpecification : FilterSpecification<User>
 
     public UserHasEmailSpecification(string email) => _email = email;
 
-    protected override Expression<Func<User, bool>> ToExpression() => x => x.Email.Equals(_email);
+    protected override Expression<Func<User, bool>> ToExpressionCore() => x => x.Email.Equals(_email);
 }

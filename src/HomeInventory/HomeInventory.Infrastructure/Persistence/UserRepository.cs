@@ -7,6 +7,7 @@ using OneOf;
 using OneOf.Types;
 
 namespace HomeInventory.Infrastructure.Persistence;
+
 internal class UserRepository : IUserRepository
 {
     private static readonly ICollection<User> _users = new List<User>();
@@ -20,17 +21,17 @@ internal class UserRepository : IUserRepository
     }
 
     public async Task<OneOf<User, NotFound>> FindFirstOrNotFoundAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-        where TSpecification : class, IFilterSpecification<User>, IExpressionSpecification<User, bool>
+        where TSpecification : class, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
-        return _users.AsQueryable().FirstOrDefault(specification.SpecificationExpression) ?? (OneOf<User, NotFound>)new NotFound();
+        return _users.AsQueryable().FirstOrDefault(specification.ToExpression()) ?? (OneOf<User, NotFound>)new NotFound();
     }
 
     public async Task<bool> HasAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-        where TSpecification : class, IFilterSpecification<User>, IExpressionSpecification<User, bool>
+        where TSpecification : class, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
-        return _users.AsQueryable().Any(specification.SpecificationExpression);
+        return _users.AsQueryable().Any(specification.ToExpression());
     }
 
     public async Task<OneOf<User, None>> CreateAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)

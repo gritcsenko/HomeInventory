@@ -3,7 +3,7 @@ using HomeInventory.Domain.Entities;
 
 namespace HomeInventory.Application.Interfaces.Persistence.Specifications;
 
-public class BinarySpecification<T> : FilterSpecification<T>
+internal class BinarySpecification<T> : FilterSpecification<T>
     where T : notnull, IEntity<T>
 {
     private static readonly ParameterReplacer<T> _replacer = new();
@@ -18,10 +18,10 @@ public class BinarySpecification<T> : FilterSpecification<T>
         _combineFunc = combineFunc;
     }
 
-    protected override Expression<Func<T, bool>> ToExpression()
+    protected override Expression<Func<T, bool>> ToExpressionCore()
     {
-        var leftBody = _left.SpecificationExpression.Body;
-        var rightBody = _right.SpecificationExpression.Body;
+        var leftBody = _left.ToExpression().Body;
+        var rightBody = _right.ToExpression().Body;
         var combined = _combineFunc(leftBody, rightBody);
         var exprBody = _replacer.Visit(combined);
         return Expression.Lambda<Func<T, bool>>(exprBody, _replacer.Parameter);
