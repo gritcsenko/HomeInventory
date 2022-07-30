@@ -1,17 +1,17 @@
-﻿using AutoFixture;
+﻿using System.Net;
+using System.Net.Http.Json;
+using AutoFixture;
 using FluentAssertions;
 using HomeInventory.Contracts;
 using HomeInventory.Tests.Helpers;
-using HomeInventory.Tests.Systems.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System.Net;
-using System.Net.Http.Json;
 
 namespace HomeInventory.Tests.Integration;
+
 [Trait("Category", "Integration")]
-public class AuthenticationApiTests : BaseTest, IAsyncDisposable
+public class AuthenticationApiTests : BaseTest, IDisposable
 {
     private readonly WebApplicationFactory<Program> _appFactory;
     private readonly HttpClient _client;
@@ -22,9 +22,10 @@ public class AuthenticationApiTests : BaseTest, IAsyncDisposable
         _client = _appFactory.CreateClient();
     }
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
-        await _appFactory.DisposeAsync();
+        _appFactory.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
