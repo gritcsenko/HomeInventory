@@ -1,5 +1,4 @@
-﻿using Ardalis.SmartEnum;
-using ErrorOr;
+﻿using ErrorOr;
 
 namespace HomeInventory.Domain.ValueObjects;
 
@@ -24,13 +23,18 @@ public class Amount : ValueObject<Amount>
 public interface IAmountFactory
 {
     ErrorOr<Amount> Pieces(int value);
+
+    ErrorOr<Amount> Gallons(decimal value);
 }
 
 public class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
 {
-    private static readonly Validator _piecesValidator = new(AmountUnit.Pieces, x => x >= 0m);
+    private static readonly Validator _pieceValidator = new(AmountUnit.Piece, x => x >= 0m);
+    private static readonly Validator _gallonValidator = new(AmountUnit.Gallon, x => x >= 0m);
 
-    public ErrorOr<Amount> Pieces(int value) => Create(value, _piecesValidator);
+    public ErrorOr<Amount> Pieces(int value) => Create(value, _pieceValidator);
+
+    public ErrorOr<Amount> Gallons(decimal value) => Create(value, _gallonValidator);
 
     private ErrorOr<Amount> Create(decimal value, Validator validator) => validator.IsValid(value) ? new Amount(value, validator.Unit) : GetValidationError();
 
@@ -46,18 +50,28 @@ public class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
     }
 }
 
-public class AmountUnit : SmartEnum<AmountUnit>
+public class AmountUnit : Enumeration<AmountUnit, Guid>
 {
-    private AmountUnit(string name, MeasurementType measurement, int value, decimal standardUnitFactor = 1m)
-        : base(name, value)
+    private AmountUnit(string name, MeasurementType measurement)
+        : base(name, Guid.NewGuid())
     {
         Measurement = measurement;
-        StandardUnitFactor = standardUnitFactor;
+    }
+
+    private AmountUnit(string name, AmountUnit baseUnit, decimal ciUnitFactor)
+        : base(name, baseUnit.Value)
+    {
+        Measurement = baseUnit.Measurement;
+        CIUnitFactor = ciUnitFactor;
     }
 
     public MeasurementType Measurement { get; }
 
-    public decimal StandardUnitFactor { get; }
+    public decimal CIUnitFactor { get; } = 1m;
 
-    public static AmountUnit Pieces { get; } = new AmountUnit(nameof(Pieces), MeasurementType.Count, 0);
+    public static AmountUnit Piece { get; } = new AmountUnit(nameof(Piece), MeasurementType.Count);
+
+    public static AmountUnit CubicMeter { get; } = new AmountUnit(nameof(CubicMeter), MeasurementType.Volume);
+
+    public static AmountUnit Gallon { get; } = new AmountUnit(nameof(Gallon), CubicMeter, 0.0037854117840007m);
 }
