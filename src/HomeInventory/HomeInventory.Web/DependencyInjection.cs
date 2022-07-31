@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using HomeInventory.Application;
-using HomeInventory.Domain;
 using HomeInventory.Web.Infrastructure;
 using Mapster;
 using MapsterMapper;
@@ -44,9 +43,6 @@ public static class DependencyInjection
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-
-        services.AddDomain();
-        services.AddApplication();
 
         return services;
     }
