@@ -14,6 +14,17 @@ public class MeasurementTypeTests : BaseTest
         sut.Name.Should().Be(name);
     }
 
+    [Theory]
+    [MemberData(nameof(Keys))]
+    public void CanBeUsedAsDictionaryKey(MeasurementType sut)
+    {
+        var dictionary = MeasurementType.Items.ToDictionary(x => x, x => x.Name);
+
+        var actual = dictionary.ContainsKey(sut);
+
+        actual.Should().BeTrue();
+    }
+
     public static TheoryData<MeasurementType, string> Data()
     {
         return new()
@@ -25,5 +36,16 @@ public class MeasurementTypeTests : BaseTest
             { MeasurementType.Weight, nameof(MeasurementType.Weight) },
             { MeasurementType.Temperature, nameof(MeasurementType.Temperature) },
         };
+    }
+
+
+    public static TheoryData<MeasurementType> Keys()
+    {
+        var data = new TheoryData<MeasurementType>();
+        foreach (var item in MeasurementType.Items)
+        {
+            data.Add(item);
+        }
+        return data;
     }
 }
