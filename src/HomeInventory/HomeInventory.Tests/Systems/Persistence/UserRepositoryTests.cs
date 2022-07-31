@@ -62,8 +62,10 @@ public class UserRepositoryTests : BaseTest
         var sut = CreateSut();
         var expected = await sut.CreateAsync(spec, CancellationToken);
 
-        var actual = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(id), CancellationToken);
+        var result = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(id), CancellationToken);
 
+        var actual = result.AsT0;
+        actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected.AsT0);
     }
 
