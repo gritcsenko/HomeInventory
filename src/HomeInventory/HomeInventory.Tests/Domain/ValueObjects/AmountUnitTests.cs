@@ -7,6 +7,12 @@ namespace HomeInventory.Tests.Domain.ValueObjects;
 [Trait("Category", "Unit")]
 public class AmountUnitTests : BaseTest
 {
+    [Fact]
+    public void Items_Should_NotBeEmpty()
+    {
+        AmountUnit.Items.Should().NotBeEmpty();
+    }
+
     [Theory]
     [MemberData(nameof(Data))]
     public void PropertiesShouldMatch(AmountUnit sut, string name, MeasurementType type, decimal factor)
@@ -22,11 +28,8 @@ public class AmountUnitTests : BaseTest
     {
         var dictionary = AmountUnit.Items.ToDictionary(x => x, x => x.Name);
 
-        var actual = dictionary.ContainsKey(sut);
-
-        actual.Should().BeTrue();
+        dictionary.Should().ContainKey(sut);
     }
-
 
     public static TheoryData<AmountUnit, string, MeasurementType, decimal> Data()
     {

@@ -49,29 +49,3 @@ public class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
         public bool IsValid(decimal value) => _validatorFunc(value);
     }
 }
-
-public class AmountUnit : Enumeration<AmountUnit, Guid>
-{
-    private AmountUnit(string name, MeasurementType measurement)
-        : base(name, Guid.NewGuid())
-    {
-        Measurement = measurement;
-    }
-
-    private AmountUnit(string name, AmountUnit baseUnit, decimal ciUnitFactor)
-        : base(name, baseUnit.Value)
-    {
-        Measurement = baseUnit.Measurement;
-        CIUnitFactor = ciUnitFactor;
-    }
-
-    public MeasurementType Measurement { get; }
-
-    public decimal CIUnitFactor { get; } = 1m;
-
-    public static AmountUnit Piece { get; } = new AmountUnit(nameof(Piece), MeasurementType.Count);
-
-    public static AmountUnit CubicMeter { get; } = new AmountUnit(nameof(CubicMeter), MeasurementType.Volume);
-
-    public static AmountUnit Gallon { get; } = new AmountUnit(nameof(Gallon), CubicMeter, 0.0037854117840007m);
-}

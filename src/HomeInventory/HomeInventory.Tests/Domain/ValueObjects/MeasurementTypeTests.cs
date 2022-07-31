@@ -7,6 +7,12 @@ namespace HomeInventory.Tests.Domain.ValueObjects;
 [Trait("Category", "Unit")]
 public class MeasurementTypeTests : BaseTest
 {
+    [Fact]
+    public void Items_Should_NotBeEmpty()
+    {
+        MeasurementType.Items.Should().NotBeEmpty();
+    }
+
     [Theory]
     [MemberData(nameof(Data))]
     public void PropertiesShouldMatch(MeasurementType sut, string name)
@@ -37,7 +43,6 @@ public class MeasurementTypeTests : BaseTest
             { MeasurementType.Temperature, nameof(MeasurementType.Temperature) },
         };
     }
-
 
     public static TheoryData<MeasurementType> Keys()
     {

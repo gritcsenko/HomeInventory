@@ -7,10 +7,10 @@ public class MeasurementType : Enumeration<MeasurementType, Guid>
     {
     }
 
-    public static MeasurementType Count { get; } = new MeasurementType(nameof(Count));
-    public static MeasurementType Length { get; } = new MeasurementType(nameof(Length));
-    public static MeasurementType Area { get; } = new MeasurementType(nameof(Area));
-    public static MeasurementType Volume { get; } = new MeasurementType(nameof(Volume));
-    public static MeasurementType Weight { get; } = new MeasurementType(nameof(Weight));
-    public static MeasurementType Temperature { get; } = new MeasurementType(nameof(Temperature));
+    public static readonly MeasurementType Count = new(nameof(Count));
+    public static readonly MeasurementType Length = new(nameof(Length));
+    public static readonly MeasurementType Area = new(nameof(Area));
+    public static readonly MeasurementType Volume = new(nameof(Volume));
+    public static readonly MeasurementType Weight = new(nameof(Weight));
+    public static readonly MeasurementType Temperature = new(nameof(Temperature));
 }
