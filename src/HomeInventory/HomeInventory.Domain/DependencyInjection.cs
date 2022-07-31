@@ -1,8 +1,5 @@
 ﻿using HomeInventory.Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("HomeInventory.Tests")]
 
 namespace HomeInventory.Domain;
 

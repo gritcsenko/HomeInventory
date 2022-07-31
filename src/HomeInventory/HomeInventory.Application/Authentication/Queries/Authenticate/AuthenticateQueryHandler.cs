@@ -41,7 +41,7 @@ internal class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, Err
 
     private async Task<OneOf<User, NotFound>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken)
     {
-        var specification = _mapper.Map<UserHasEmailSpecification>(request);
+        var specification = _mapper.Map<FilterSpecification<User>>(request);
         return await _userRepository.FindFirstOrNotFoundAsync(specification, cancellationToken);
     }
 }

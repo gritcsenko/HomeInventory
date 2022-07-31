@@ -7,13 +7,14 @@ using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Tests.Customizations;
-using HomeInventory.Tests.Systems.Controllers;
+using HomeInventory.Tests.Helpers;
 using MapsterMapper;
 using NSubstitute;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
+[Trait("Category", "Unit")]
 public class AuthenticateQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
@@ -92,7 +93,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     private UserHasEmailSpecification MapToSpecification(AuthenticateQuery query)
     {
         var specification = new UserHasEmailSpecification(query.Email);
-        _mapper.Map<UserHasEmailSpecification>(query).Returns(specification);
+        _mapper.Map<FilterSpecification<User>>(query).Returns(specification);
         return specification;
     }
 }

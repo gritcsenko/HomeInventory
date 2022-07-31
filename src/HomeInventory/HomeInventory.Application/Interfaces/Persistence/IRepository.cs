@@ -10,9 +10,11 @@ public interface IRepository<TEntity, TIdentity>
     where TIdentity : notnull, IIdentifierObject<TIdentity>
     where TEntity : IEntity<TEntity, TIdentity>
 {
-    Task<OneOf<TEntity, NotFound>> FindFirstOrNotFoundAsync(FilterSpecification<TEntity> specification, CancellationToken cancellationToken = default);
+    Task<OneOf<TEntity, NotFound>> FindFirstOrNotFoundAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
+        where TSpecification : class, IExpressionSpecification<TEntity, bool>;
 
-    Task<bool> HasAsync(FilterSpecification<TEntity> specification, CancellationToken cancellationToken = default);
+    Task<bool> HasAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
+        where TSpecification : class, IExpressionSpecification<TEntity, bool>;
 
     Task<OneOf<TEntity, None>> CreateAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
         where TSpecification : ICreateEntitySpecification<TEntity>;

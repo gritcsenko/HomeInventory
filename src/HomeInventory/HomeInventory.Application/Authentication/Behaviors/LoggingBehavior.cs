@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Application.Authentication.Behaviors;
+
 internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
      where TRequest : IRequest<TResponse>
 {

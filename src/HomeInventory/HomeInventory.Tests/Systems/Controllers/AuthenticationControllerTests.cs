@@ -15,6 +15,7 @@ using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 
+[Trait("Category", "Unit")]
 public class AuthenticationControllerTests : BaseTest
 {
     private readonly ISender _mediator = Substitute.For<ISender>();

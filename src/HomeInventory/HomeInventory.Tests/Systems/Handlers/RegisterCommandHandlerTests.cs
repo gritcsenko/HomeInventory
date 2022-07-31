@@ -6,12 +6,14 @@ using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Tests.Customizations;
-using HomeInventory.Tests.Systems.Controllers;
+using HomeInventory.Tests.Helpers;
 using MapsterMapper;
 using NSubstitute;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
+
+[Trait("Category", "Unit")]
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
@@ -28,7 +30,7 @@ public class RegisterCommandHandlerTests : BaseTest
 
         _userHasEmailSpecification = new UserHasEmailSpecification(_command.Email);
         _createUserSpecification = new CreateUserSpecification(_command.FirstName, _command.LastName, _command.Email, _command.Password);
-        _mapper.Map<UserHasEmailSpecification>(_command).Returns(_userHasEmailSpecification);
+        _mapper.Map<FilterSpecification<User>>(_command).Returns(_userHasEmailSpecification);
         _mapper.Map<CreateUserSpecification>(_command).Returns(_createUserSpecification);
     }
 

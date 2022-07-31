@@ -1,8 +1,12 @@
-name: .NET
+name: CI Build
 
 on:
   push:
-    branches: [ "main", "feature/*" ]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+env:
+  CI: true
 
 jobs:
   build:
@@ -15,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 7.x
+        dotnet-version: 6.x
         include-prerelease: true
     - name: Cache dependencies
       uses: actions/cache@v3
@@ -29,12 +33,28 @@ jobs:
       run: dotnet restore ./src/HomeInventory --verbosity normal
     - name: Build
       run: dotnet build ./src/HomeInventory --no-restore --configuration Release --self-contained false --verbosity normal
-    - name: Test
-      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal --logger trx --results-directory "TestResults"
-    - name: Upload dotnet test results
-      uses: actions/upload-artifact@v3
+    - name: Test All
+      run: dotnet test ./src/HomeInventory --no-build --configuration Release --verbosity normal
+    - name: Collect Coverage
+      run: dotnet test ./src/HomeInventory --filter Category=Unit --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+    - name: Copy Coverage To Predictable Location
+      run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
+    - name: Code Coverage Summary Report
+      id: report
+      uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        name: dotnet-results
-        path: TestResults
-      # Use always() to always run this step to publish test results when there are test failures
-      if: ${{ always() }}
+        filename: coverage.cobertura.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '60 80'
+    - name: Add Coverage PR Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+      with:
+        recreate: true
+        path: code-coverage-results.md

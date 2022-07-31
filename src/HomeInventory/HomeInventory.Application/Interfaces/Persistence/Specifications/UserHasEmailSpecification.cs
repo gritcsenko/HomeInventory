@@ -1,13 +1,13 @@
-﻿using HomeInventory.Domain.Entities;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+using HomeInventory.Domain.Entities;
 
 namespace HomeInventory.Application.Interfaces.Persistence.Specifications;
 
-public class UserHasEmailSpecification : FilterSpecification<User>
+internal class UserHasEmailSpecification : FilterSpecification<User>
 {
-    public UserHasEmailSpecification(string email) => Email = email;
+    private readonly string _email;
 
-    public string Email { get; }
+    public UserHasEmailSpecification(string email) => _email = email;
 
-    protected override Expression<Func<User, bool>> ToExpression() => x => x.Email.Equals(Email);
+    protected override Expression<Func<User, bool>> ToExpressionCore() => x => x.Email.Equals(_email);
 }

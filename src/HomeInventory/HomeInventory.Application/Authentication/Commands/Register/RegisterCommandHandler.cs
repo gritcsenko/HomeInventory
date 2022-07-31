@@ -36,7 +36,7 @@ internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr
 
     private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var specification = _mapper.Map<UserHasEmailSpecification>(request);
+        var specification = _mapper.Map<FilterSpecification<User>>(request);
         return await _userRepository.HasAsync(specification, cancellationToken);
     }
 

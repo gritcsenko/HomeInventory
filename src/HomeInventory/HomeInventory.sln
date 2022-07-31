@@ -34,7 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9AD3FEAC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Tests", "HomeInventory.Tests\HomeInventory.Tests.csproj", "{919E8563-54C2-4AD6-8299-F978C78FF334}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.Web", "HomeInventory.Web\HomeInventory.Web.csproj", "{0BDF1510-532A-48B1-8BA2-16A71E849FE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Web", "HomeInventory.Web\HomeInventory.Web.csproj", "{0BDF1510-532A-48B1-8BA2-16A71E849FE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

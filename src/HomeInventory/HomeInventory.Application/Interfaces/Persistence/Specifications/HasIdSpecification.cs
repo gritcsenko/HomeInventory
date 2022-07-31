@@ -1,6 +1,6 @@
-﻿using HomeInventory.Domain.Entities;
+﻿using System.Linq.Expressions;
+using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
-using System.Linq.Expressions;
 
 namespace HomeInventory.Application.Interfaces.Persistence.Specifications;
 
@@ -8,9 +8,9 @@ public class HasIdSpecification<TEntity, TIdentity> : FilterSpecification<TEntit
     where TIdentity : notnull, IIdentifierObject<TIdentity>
     where TEntity : IEntity<TEntity, TIdentity>
 {
-    public HasIdSpecification(TIdentity id) => Id = id;
+    private readonly TIdentity _id;
 
-    public TIdentity Id { get; }
+    public HasIdSpecification(TIdentity id) => _id = id;
 
-    protected override Expression<Func<TEntity, bool>> ToExpression() => x => x.Id.Equals(Id);
+    protected override Expression<Func<TEntity, bool>> ToExpressionCore() => x => x.Id.Equals(_id);
 }

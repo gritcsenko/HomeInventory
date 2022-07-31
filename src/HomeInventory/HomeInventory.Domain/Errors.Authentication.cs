@@ -5,6 +5,6 @@ public static partial class Errors
 {
     public static class Authentication
     {
-        public static Error InvalidCredentials = Error.Validation($"{nameof(Authentication)}.{nameof(InvalidCredentials)}", "Invalid credentials");
+        public static Error InvalidCredentials { get; } = Error.Validation($"{nameof(Authentication)}.{nameof(InvalidCredentials)}", "Invalid credentials");
     }
 }
