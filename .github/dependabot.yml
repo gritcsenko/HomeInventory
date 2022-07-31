@@ -5,7 +5,15 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "nuget"
+    directory: "/src/HomeInventory" # Location of package manifests
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/src/HomeInventory" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/.github/workflows" # Location of package manifests
+    schedule:
+      interval: "monthly"
