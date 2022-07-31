@@ -21,6 +21,7 @@ public class InfrastructureDependencyInjectionTests : BaseTest
         _services.AddInfrastructure();
 
         _services.Should().ContainSingleTransient<IConfigureOptions<JwtSettings>>();
+        _services.Should().ContainSingleSingleton<IJwtIdentityGenerator>();
         _services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>();
         _services.Should().ContainSingleSingleton<IDateTimeService>();
         _services.Should().ContainSingleScoped<IUserRepository>();
