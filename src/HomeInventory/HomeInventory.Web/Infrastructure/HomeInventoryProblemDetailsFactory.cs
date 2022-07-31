@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 
 namespace HomeInventory.Web.Infrastructure;
 
@@ -79,13 +79,13 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Type ??= clientErrorData.Link;
         }
 
-        var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
+        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
         if (traceId != null)
         {
             problemDetails.Extensions["traceId"] = traceId;
         }
 
-        var errorCodes = httpContext?.GetItem(HttpContextItems.Errors)?.Select(e => e.Code);
+        var errorCodes = httpContext.GetItem(HttpContextItems.Errors)?.Select(e => e.Code);
         if (errorCodes != null)
         {
             problemDetails.Extensions["errorCodes"] = errorCodes;
