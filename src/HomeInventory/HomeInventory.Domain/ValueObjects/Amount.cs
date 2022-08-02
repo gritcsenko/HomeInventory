@@ -22,19 +22,19 @@ public class Amount : ValueObject<Amount>
 
 public interface IAmountFactory
 {
-    ErrorOr<Amount> Pieces(int value);
-
-    ErrorOr<Amount> Gallons(decimal value);
+    ErrorOr<Amount> Create(decimal value, AmountUnit unit);
 }
 
 public class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
 {
-    private static readonly Validator _pieceValidator = new(AmountUnit.Piece, x => x >= 0m);
-    private static readonly Validator _gallonValidator = new(AmountUnit.Gallon, x => x >= 0m);
+    private static readonly IReadOnlyDictionary<AmountUnit, Validator> _validators = new Validator[]
+    {
+        new(AmountUnit.Piece, x => x >= 0m && decimal.Truncate(x) == x),
+        new(AmountUnit.Gallon, x => x >= 0m),
+        new(AmountUnit.CubicMeter, x => x >= 0m),
+    }.ToDictionary(x => x.Unit);
 
-    public ErrorOr<Amount> Pieces(int value) => Create(value, _pieceValidator);
-
-    public ErrorOr<Amount> Gallons(decimal value) => Create(value, _gallonValidator);
+    public ErrorOr<Amount> Create(decimal value, AmountUnit unit) => Create(value, _validators[unit]);
 
     private ErrorOr<Amount> Create(decimal value, Validator validator) => validator.IsValid(value) ? new Amount(value, validator.Unit) : GetValidationError();
 

@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using HomeInventory.Application;
 using HomeInventory.Web.Infrastructure;
 using Mapster;
@@ -43,6 +45,12 @@ public static class DependencyInjection
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.AddFluentValidation(c =>
+        {
+            c.DisableDataAnnotationsValidation = true;
+        });
+        services.AddValidatorsFromAssemblyContaining<Contracts.Validations.IAssemblyMarker>();
 
         return services;
     }
