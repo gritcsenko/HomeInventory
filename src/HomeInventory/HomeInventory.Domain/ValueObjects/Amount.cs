@@ -1,5 +1,4 @@
-﻿using Ardalis.SmartEnum;
-using ErrorOr;
+﻿using ErrorOr;
 
 namespace HomeInventory.Domain.ValueObjects;
 
@@ -23,14 +22,19 @@ public class Amount : ValueObject<Amount>
 
 public interface IAmountFactory
 {
-    ErrorOr<Amount> Pieces(int value);
+    ErrorOr<Amount> Create(decimal value, AmountUnit unit);
 }
 
 public class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
 {
-    private static readonly Validator _piecesValidator = new(AmountUnit.Pieces, x => x >= 0m);
+    private static readonly IReadOnlyDictionary<AmountUnit, Validator> _validators = new Validator[]
+    {
+        new(AmountUnit.Piece, x => x >= 0m && decimal.Truncate(x) == x),
+        new(AmountUnit.Gallon, x => x >= 0m),
+        new(AmountUnit.CubicMeter, x => x >= 0m),
+    }.ToDictionary(x => x.Unit);
 
-    public ErrorOr<Amount> Pieces(int value) => Create(value, _piecesValidator);
+    public ErrorOr<Amount> Create(decimal value, AmountUnit unit) => Create(value, _validators[unit]);
 
     private ErrorOr<Amount> Create(decimal value, Validator validator) => validator.IsValid(value) ? new Amount(value, validator.Unit) : GetValidationError();
 
@@ -44,20 +48,4 @@ public class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
 
         public bool IsValid(decimal value) => _validatorFunc(value);
     }
-}
-
-public class AmountUnit : SmartEnum<AmountUnit>
-{
-    private AmountUnit(string name, MeasurementType measurement, int value, decimal standardUnitFactor = 1m)
-        : base(name, value)
-    {
-        Measurement = measurement;
-        StandardUnitFactor = standardUnitFactor;
-    }
-
-    public MeasurementType Measurement { get; }
-
-    public decimal StandardUnitFactor { get; }
-
-    public static AmountUnit Pieces { get; } = new AmountUnit(nameof(Pieces), MeasurementType.Count, 0);
 }

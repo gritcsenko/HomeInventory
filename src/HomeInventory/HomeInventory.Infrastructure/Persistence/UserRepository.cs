@@ -2,7 +2,6 @@
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
-using MapsterMapper;
 using OneOf;
 using OneOf.Types;
 
@@ -11,12 +10,10 @@ namespace HomeInventory.Infrastructure.Persistence;
 internal class UserRepository : IUserRepository
 {
     private static readonly ICollection<User> _users = new List<User>();
-    private readonly IMapper _mapper;
     private readonly IUserIdFactory _userIdFactory;
 
-    public UserRepository(IMapper mapper, IUserIdFactory userIdFactory)
+    public UserRepository(IUserIdFactory userIdFactory)
     {
-        _mapper = mapper;
         _userIdFactory = userIdFactory;
     }
 
