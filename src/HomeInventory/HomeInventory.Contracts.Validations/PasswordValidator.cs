@@ -5,24 +5,30 @@ namespace HomeInventory.Contracts.Validations;
 
 internal class PasswordValidator<T> : PropertyValidator<T, string>
 {
-    private readonly IPasswordCharacterSet _requiredSet;
+    private readonly IEnumerable<IPasswordCharacterSet> _requiredSets;
 
-    public PasswordValidator(IPasswordCharacterSet requiredSet)
-    {
-        _requiredSet = requiredSet;
-    }
+    public PasswordValidator(IEnumerable<IPasswordCharacterSet> requiredSets) => _requiredSets = requiredSets.ToArray();
 
     public override string Name => "PasswordValidator";
 
     public override bool IsValid(ValidationContext<T> context, string value)
     {
-        if (value == null || _requiredSet.IsEmpty)
+        if (value == null)
         {
             return true;
         }
 
-        return _requiredSet.ContainsAll(value);
+        foreach (var requiredSet in _requiredSets)
+        {
+            if (!requiredSet.ContainsAll(value))
+            {
+                context.MessageFormatter.AppendArgument("Category", requiredSet.Name);
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    protected override string GetDefaultMessageTemplate(string errorCode) => Localized(errorCode, Name);
+    protected override string GetDefaultMessageTemplate(string errorCode) => "{PropertyName} must contain {Category} characters";
 }

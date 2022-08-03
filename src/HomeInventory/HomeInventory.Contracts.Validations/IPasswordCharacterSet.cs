@@ -2,7 +2,7 @@
 
 internal interface IPasswordCharacterSet
 {
-    bool IsEmpty { get; }
+    string Name { get; }
 
     bool ContainsAll(IEnumerable<char> characters);
 }

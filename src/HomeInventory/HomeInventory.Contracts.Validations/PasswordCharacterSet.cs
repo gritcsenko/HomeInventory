@@ -2,11 +2,11 @@
 
 internal class PasswordCharacterSet : IPasswordCharacterSet
 {
-    private readonly HashSet<char> _set;
+    private readonly Func<char, bool> _condition;
 
-    public PasswordCharacterSet(IEnumerable<char> collection) => _set = new(collection);
+    public PasswordCharacterSet(Func<char, bool> condition, string name) => (_condition, Name) = (condition, name);
 
-    public bool IsEmpty => _set.Count == 0;
+    public string Name { get; }
 
-    public bool ContainsAll(IEnumerable<char> characters) => characters.All(_set.Contains);
+    public bool ContainsAll(IEnumerable<char> characters) => characters.All(_condition);
 }

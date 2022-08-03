@@ -2,28 +2,11 @@
 
 internal static class PasswordCharacterSets
 {
-    public static IPasswordCharacterSet Empty { get; } = new EmptyPasswordCharacterSet();
+    public static IPasswordCharacterSet Numeric { get; } = new PasswordCharacterSet(char.IsDigit, "numeric");
 
-    public static IPasswordCharacterSet Numeric { get; } = new ConditionalPasswordCharacterSet(char.IsDigit);
+    public static IPasswordCharacterSet Uppercase { get; } = new PasswordCharacterSet(char.IsUpper, "uppercase");
 
-    public static IPasswordCharacterSet Uppercase { get; } = new ConditionalPasswordCharacterSet(char.IsUpper);
+    public static IPasswordCharacterSet Lowercase { get; } = new PasswordCharacterSet(char.IsLower, "lowercase");
 
-    public static IPasswordCharacterSet Lowercase { get; } = new ConditionalPasswordCharacterSet(char.IsLower);
-
-    public static IPasswordCharacterSet NonAlphanumeric { get; } = new ConditionalPasswordCharacterSet(char.IsSymbol);
-
-    public static IPasswordCharacterSet UnionWith(this IPasswordCharacterSet set, IPasswordCharacterSet other)
-    {
-        if (set.IsEmpty)
-        {
-            return other;
-        }
-
-        if (other.IsEmpty)
-        {
-            return set;
-        }
-
-        return new CompositePasswordCharacterSet(set, other);
-    }
+    public static IPasswordCharacterSet NonAlphanumeric { get; } = new PasswordCharacterSet(char.IsSymbol, "non-alphanumeric");
 }

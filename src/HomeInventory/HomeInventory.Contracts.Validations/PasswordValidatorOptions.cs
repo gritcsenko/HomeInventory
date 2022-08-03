@@ -10,25 +10,23 @@ internal class PasswordValidatorOptions
 
     public bool NonAlphanumeric { get; set; } = true;
 
-    public IPasswordCharacterSet GetCharacterSet()
+    public IEnumerable<IPasswordCharacterSet> GetCharacterSets()
     {
-        var result = PasswordCharacterSets.Empty;
         if (Numeric)
         {
-            result = result.UnionWith(PasswordCharacterSets.Numeric);
+            yield return PasswordCharacterSets.Numeric;
         }
         if (Uppercase)
         {
-            result = result.UnionWith(PasswordCharacterSets.Uppercase);
+            yield return PasswordCharacterSets.Uppercase;
         }
         if (Lowercase)
         {
-            result = result.UnionWith(PasswordCharacterSets.Lowercase);
+            yield return PasswordCharacterSets.Lowercase;
         }
         if (NonAlphanumeric)
         {
-            result = result.UnionWith(PasswordCharacterSets.NonAlphanumeric);
+            yield return PasswordCharacterSets.NonAlphanumeric;
         }
-        return result;
     }
 }
