@@ -1,9 +1,17 @@
-﻿using HomeInventory.Domain.Entities;
+﻿using System.Collections.Immutable;
+using HomeInventory.Domain.Entities;
 
 namespace HomeInventory.Domain.Aggregates;
 
-public class Inventory : Stock
+public class Inventory
 {
-    public IReadOnlyCollection<Material> Materials { get; init; } = Array.Empty<Material>();
+    public Inventory(Stock stock)
+    {
+        Stock = stock;
+    }
+
+    public Stock Stock { get; init; }
+
+    public IReadOnlyCollection<Material> Materials { get; init; } = ImmutableArray<Material>.Empty;
 }
 

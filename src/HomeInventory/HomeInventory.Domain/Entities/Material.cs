@@ -10,5 +10,6 @@ public class Material : Entity<Material, MaterialId>
     }
 
     public string Name { get; init; } = null!;
+
     public Amount Amount { get; init; } = null!;
 }
