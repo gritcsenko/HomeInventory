@@ -4,7 +4,7 @@ namespace HomeInventory.Contracts.Validations;
 
 internal static class RuleBuilderExtensions
 {
-    public static IRuleBuilderOptions<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, Action<PasswordValidatorOptions>? setOptions = null)
+    public static IRuleBuilderOptions<T, string?> Password<T>(this IRuleBuilder<T, string?> ruleBuilder, Action<PasswordValidatorOptions>? setOptions = null)
     {
         var options = new PasswordValidatorOptions();
         setOptions?.Invoke(options);

@@ -8,5 +8,5 @@ internal class PasswordCharacterSet : IPasswordCharacterSet
 
     public string Name { get; }
 
-    public bool ContainsAll(IEnumerable<char> characters) => characters.All(_condition);
+    public bool ContainsAny(IEnumerable<char> characters) => characters.Any(_condition);
 }

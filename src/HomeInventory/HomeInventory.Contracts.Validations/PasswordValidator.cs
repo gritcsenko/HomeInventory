@@ -3,7 +3,7 @@ using FluentValidation.Validators;
 
 namespace HomeInventory.Contracts.Validations;
 
-internal class PasswordValidator<T> : PropertyValidator<T, string>
+internal class PasswordValidator<T> : PropertyValidator<T, string?>
 {
     private readonly IEnumerable<IPasswordCharacterSet> _requiredSets;
 
@@ -11,7 +11,7 @@ internal class PasswordValidator<T> : PropertyValidator<T, string>
 
     public override string Name => "PasswordValidator";
 
-    public override bool IsValid(ValidationContext<T> context, string value)
+    public override bool IsValid(ValidationContext<T> context, string? value)
     {
         if (value == null)
         {
@@ -20,7 +20,7 @@ internal class PasswordValidator<T> : PropertyValidator<T, string>
 
         foreach (var requiredSet in _requiredSets)
         {
-            if (!requiredSet.ContainsAll(value))
+            if (!requiredSet.ContainsAny(value))
             {
                 context.MessageFormatter.AppendArgument("Category", requiredSet.Name);
                 return false;
