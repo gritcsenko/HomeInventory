@@ -5,7 +5,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.SmartEnum" Version="2.1.0" />
-    <PackageReference Include="ErrorOr" Version="0.2.0" />
+    <PackageReference Include="ErrorOr" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="OneOf" Version="3.0.223" />
   </ItemGroup>
