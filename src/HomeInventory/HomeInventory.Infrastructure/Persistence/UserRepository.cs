@@ -2,6 +2,8 @@
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure.Persistence.Models;
+using MapsterMapper;
 using OneOf;
 using OneOf.Types;
 
@@ -11,10 +13,14 @@ internal class UserRepository : IUserRepository
 {
     private static readonly ICollection<User> _users = new List<User>();
     private readonly IUserIdFactory _userIdFactory;
+    private readonly IDatabaseContext _context;
+    private readonly IMapper _mapper;
 
-    public UserRepository(IUserIdFactory userIdFactory)
+    public UserRepository(IUserIdFactory userIdFactory, IDatabaseContext context, IMapper mapper)
     {
         _userIdFactory = userIdFactory;
+        _context = context;
+        _mapper = mapper;
     }
 
     public async Task<OneOf<User, NotFound>> FindFirstOrNotFoundAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
@@ -32,17 +38,14 @@ internal class UserRepository : IUserRepository
     }
 
     public async Task<OneOf<User, None>> CreateAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
-        where TSpecification : ICreateEntitySpecification<User>
-    {
-        await Task.CompletedTask;
-        return specification switch
+        where TSpecification : ICreateEntitySpecification<User> =>
+        specification switch
         {
-            CreateUserSpecification s => Create(s),
+            CreateUserSpecification s => await CreateAsync(s, cancellationToken),
             _ => new None(),
         };
-    }
 
-    private User Create(CreateUserSpecification specification)
+    private async Task<User> CreateAsync(CreateUserSpecification specification, CancellationToken cancellationToken)
     {
         var userId = _userIdFactory.CreateNew();
         var user = new User(userId)
@@ -53,6 +56,10 @@ internal class UserRepository : IUserRepository
             Password = specification.Password,
         };
         _users.Add(user);
+
+        var model = _mapper.Map<UserModel>(user);
+        await _context.Users.AddAsync(model, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         return user;
     }
 }

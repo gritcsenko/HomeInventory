@@ -5,6 +5,7 @@ using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
+using MapsterMapper;
 using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -13,11 +14,15 @@ namespace HomeInventory.Tests.Systems.Persistence;
 public class UserRepositoryTests : BaseTest
 {
     private readonly IUserIdFactory _userIdFactory;
+    private readonly IDatabaseContext _context;
+    private readonly IMapper _mapper;
 
     public UserRepositoryTests()
     {
         Fixture.Customize(new UserIdCustomization());
         _userIdFactory = Substitute.For<IUserIdFactory>();
+        _context = Substitute.For<IDatabaseContext>();
+        _mapper = Substitute.For<IMapper>();
     }
 
     [Fact]
@@ -69,5 +74,5 @@ public class UserRepositoryTests : BaseTest
         actual.Should().BeEquivalentTo(expected.AsT0);
     }
 
-    private UserRepository CreateSut() => new(_userIdFactory);
+    private UserRepository CreateSut() => new(_userIdFactory, _context, _mapper);
 }
