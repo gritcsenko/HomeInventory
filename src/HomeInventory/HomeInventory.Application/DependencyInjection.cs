@@ -19,31 +19,33 @@ public static class DependencyInjection
         return services;
     }
 
-    public static OptionsBuilder<TOptions> FromConfiguration<TOptions>(this OptionsBuilder<TOptions> builder)
+    public static TOptions AddOptions<TOptions>(this IServiceCollection services, IConfiguration configuration)
+        where TOptions : class, new() =>
+        services.AddOptions(configuration, new TOptions());
+
+    public static TOptions AddOptions<TOptions>(this IServiceCollection services, IConfiguration configuration, TOptions options)
         where TOptions : class
-        => builder.FromConfiguration(typeof(TOptions).Name);
+    {
+        configuration.Bind(typeof(TOptions).Name, options);
+        services.AddSingleton(Options.Create(options));
+        return options;
+    }
+
+    public static OptionsBuilder<TOptions> FromConfiguration<TOptions>(this OptionsBuilder<TOptions> builder)
+        where TOptions : class =>
+        builder.FromConfiguration(typeof(TOptions).Name);
 
     public static OptionsBuilder<TOptions> FromConfiguration<TOptions>(this OptionsBuilder<TOptions> builder, string name)
-        where TOptions : class
-        => builder.Configure<IConfiguration>((options, configuration) => configuration.Bind(name, options));
+        where TOptions : class =>
+        builder.Configure<IConfiguration>((options, configuration) => configuration.Bind(name, options));
 
     public static IServiceCollection AddStartupFilter<T>(this IServiceCollection services)
-        where T : class, IStartupFilter
-    {
+        where T : class, IStartupFilter =>
         services.AddSingleton<IStartupFilter, T>();
-        return services;
-    }
 
-    public static IServiceCollection AddMappingSourceFromCurrentAssembly(this IServiceCollection services)
-    {
-        var assembly = Assembly.GetCallingAssembly();
-        services.AddMappingAssemblySource(assembly);
-        return services;
-    }
+    public static IServiceCollection AddMappingSourceFromCurrentAssembly(this IServiceCollection services) =>
+        services.AddMappingAssemblySource(Assembly.GetCallingAssembly() ?? throw new InvalidOperationException("Calling assembly is unknown"));
 
-    public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, Assembly assembly)
-    {
+    public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, Assembly assembly) =>
         services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assembly));
-        return services;
-    }
 }

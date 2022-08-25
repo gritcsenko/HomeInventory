@@ -24,7 +24,7 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
         _jwtSettings = jwtOptionsAccessor.Value;
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
-        var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var signingCredentials = new SigningCredentials(key, _jwtSettings.Algorithm);
         _header = new(signingCredentials);
     }
 

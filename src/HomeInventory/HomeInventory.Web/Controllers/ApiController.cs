@@ -1,10 +1,13 @@
 ﻿using ErrorOr;
 using HomeInventory.Web.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeInventory.Web.Controllers;
 
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ApiControllerBase : ControllerBase
 {
     protected IActionResult Problem(IReadOnlyCollection<Error> errors)

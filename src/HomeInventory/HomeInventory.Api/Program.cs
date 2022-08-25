@@ -5,7 +5,7 @@ using HomeInventory.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDomain();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddWeb();
 
