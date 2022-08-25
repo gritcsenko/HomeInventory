@@ -10,9 +10,9 @@ public class InventoryController : ApiControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllItems(CancellationToken token = default)
+    public async Task<IActionResult> GetAllItems(CancellationToken cancellationToken = default)
     {
-        await Task.Delay(TimeSpan.Zero, token);
+        await Task.Delay(TimeSpan.Zero, cancellationToken);
         return Ok(Array.Empty<string>());
     }
 }
