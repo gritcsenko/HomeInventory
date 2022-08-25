@@ -13,18 +13,18 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 {
     private readonly IDateTimeService _dateTimeService;
     private readonly IJwtIdentityGenerator _jtiGenerator;
-    private readonly JwtSettings _jwtSettings;
+    private readonly JwtOptions _jwtOptions;
     private readonly JwtHeader _header;
     private readonly JwtSecurityTokenHandler _handler = new();
 
-    public JwtTokenGenerator(IDateTimeService dateTimeService, IJwtIdentityGenerator jtiGenerator, IOptions<JwtSettings> jwtOptionsAccessor)
+    public JwtTokenGenerator(IDateTimeService dateTimeService, IJwtIdentityGenerator jtiGenerator, IOptions<JwtOptions> jwtOptionsAccessor)
     {
         _dateTimeService = dateTimeService;
         _jtiGenerator = jtiGenerator;
-        _jwtSettings = jwtOptionsAccessor.Value;
+        _jwtOptions = jwtOptionsAccessor.Value;
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
-        var signingCredentials = new SigningCredentials(key, _jwtSettings.Algorithm);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
+        var signingCredentials = new SigningCredentials(key, _jwtOptions.Algorithm);
         _header = new(signingCredentials);
     }
 
@@ -48,6 +48,6 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
     private JwtPayload CreatePayload(params Claim[] claims)
     {
         var utcNow = _dateTimeService.Now.UtcDateTime;
-        return new(_jwtSettings.Issuer, _jwtSettings.Audience, claims, notBefore: utcNow, expires: utcNow.Add(_jwtSettings.Expiry));
+        return new(_jwtOptions.Issuer, _jwtOptions.Audience, claims, notBefore: utcNow, expires: utcNow.Add(_jwtOptions.Expiry));
     }
 }

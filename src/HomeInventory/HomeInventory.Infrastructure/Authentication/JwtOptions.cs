@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Infrastructure.Authentication;
 
-internal class JwtSettings
+internal class JwtOptions
 {
     public string Secret { get; init; } = null!;
     public string Issuer { get; init; } = null!;

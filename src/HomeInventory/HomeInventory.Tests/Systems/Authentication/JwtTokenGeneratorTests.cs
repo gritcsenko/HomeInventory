@@ -17,7 +17,7 @@ namespace HomeInventory.Tests.Systems.Authentication;
 public class JwtTokenGeneratorTests : BaseTest
 {
     private readonly IDateTimeService _dateTimeService;
-    private readonly JwtSettings _settings;
+    private readonly JwtOptions _options;
     private readonly User _user;
     private readonly IJwtIdentityGenerator _jtiGenerator;
 
@@ -25,7 +25,7 @@ public class JwtTokenGeneratorTests : BaseTest
     {
         Fixture.Customize(new UserIdCustomization());
         _dateTimeService = Substitute.For<IDateTimeService>();
-        _settings = Fixture.Build<JwtSettings>()
+        _options = Fixture.Build<JwtOptions>()
             .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
             .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)
             .Create();
@@ -37,8 +37,8 @@ public class JwtTokenGeneratorTests : BaseTest
     public async Task GenerateTokenAsync_Should_GenerateCorrectTokenString()
     {
         var sut = CreateSut();
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret));
-        var expectedHeader = new JwtHeader(new SigningCredentials(key, _settings.Algorithm));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
+        var expectedHeader = new JwtHeader(new SigningCredentials(key, _options.Algorithm));
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
         var now = DateTimeOffset.Now;
@@ -50,11 +50,11 @@ public class JwtTokenGeneratorTests : BaseTest
         actualTokenString.Should().NotBeNullOrEmpty();
         var actualToken = new JwtSecurityTokenHandler().ReadJwtToken(actualTokenString);
         actualToken.Header.Should().BeEquivalentTo(expectedHeader);
-        actualToken.Issuer.Should().Be(_settings.Issuer);
-        actualToken.Audiences.Should().Contain(_settings.Audience)
+        actualToken.Issuer.Should().Be(_options.Issuer);
+        actualToken.Audiences.Should().Contain(_options.Audience)
             .And.HaveCount(1);
         actualToken.ValidFrom.Should().Be(validFrom);
-        actualToken.ValidTo.Should().Be(validFrom.Add(_settings.Expiry));
+        actualToken.ValidTo.Should().Be(validFrom.Add(_options.Expiry));
         actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Sub)
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(_user.Id.ToString());
@@ -72,5 +72,5 @@ public class JwtTokenGeneratorTests : BaseTest
             .Which.Should().Be(_user.Email);
     }
 
-    private JwtTokenGenerator CreateSut() => new(_dateTimeService, _jtiGenerator, Options.Create(_settings));
+    private JwtTokenGenerator CreateSut() => new(_dateTimeService, _jtiGenerator, Options.Create(_options));
 }

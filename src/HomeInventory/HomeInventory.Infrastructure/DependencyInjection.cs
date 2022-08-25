@@ -1,5 +1,4 @@
-﻿using System.Text;
-using HomeInventory.Application;
+﻿using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain;
@@ -11,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace HomeInventory.Infrastructure;
 
@@ -29,30 +27,16 @@ public static class DependencyInjection
 
     private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtSettings = services.AddOptions(configuration, new JwtSettings());
+        services.ConfigureOptions<JwtOptionsSetup>();
+
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
         services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
 
         services.AddAuthorization(); // Read https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateLifetime = true,
-
-                    ValidateIssuer = true,
-                    ValidIssuer = jwtSettings.Issuer,
-
-                    ValidateAudience = true,
-                    ValidAudience = jwtSettings.Audience,
-
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
-                    ValidAlgorithms = new[] { jwtSettings.Algorithm },
-                };
-            });
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { });
+        services.ConfigureOptions<JwtBearerOptionsSetup>();
         return services;
     }
 
