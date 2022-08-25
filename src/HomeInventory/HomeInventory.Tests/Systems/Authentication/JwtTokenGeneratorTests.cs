@@ -27,6 +27,7 @@ public class JwtTokenGeneratorTests : BaseTest
         _dateTimeService = Substitute.For<IDateTimeService>();
         _settings = Fixture.Build<JwtSettings>()
             .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
+            .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)
             .Create();
         _user = Fixture.Create<User>();
         _jtiGenerator = Substitute.For<IJwtIdentityGenerator>();
@@ -37,7 +38,7 @@ public class JwtTokenGeneratorTests : BaseTest
     {
         var sut = CreateSut();
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Secret));
-        var expectedHeader = new JwtHeader(new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+        var expectedHeader = new JwtHeader(new SigningCredentials(key, _settings.Algorithm));
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
         var now = DateTimeOffset.Now;
