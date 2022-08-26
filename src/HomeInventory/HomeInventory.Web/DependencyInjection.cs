@@ -114,13 +114,6 @@ public static class DependencyInjection
             return Results.Problem(detail: exception?.Message);
         });
 
-        app.UseHttpsRedirection();
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-
         return app;
     }
 }
