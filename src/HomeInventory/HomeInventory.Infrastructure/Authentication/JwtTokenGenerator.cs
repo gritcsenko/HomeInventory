@@ -2,8 +2,8 @@
 using System.Security.Claims;
 using System.Text;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

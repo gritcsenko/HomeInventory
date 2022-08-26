@@ -1,10 +1,10 @@
 ﻿namespace HomeInventory.Domain.Events;
 
-public class EventComparer : Comparer<IEvent>
+public static class EventComparer
 {
-    public static new IComparer<IEvent> Default { get; } = new EventComparer();
+    public static IComparer<IEvent> Default { get; } = Comparer<IEvent>.Create(Compare);
 
-    public override int Compare(IEvent? x, IEvent? y)
+    private static int Compare(IEvent? x, IEvent? y)
     {
         if (x is null)
         {

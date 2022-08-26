@@ -2,8 +2,8 @@
 using System.Text;
 using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Authentication;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;

@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Extensions;
+
+namespace HomeInventory.Domain.Primitives;
 
 public static class Enumeration
 {

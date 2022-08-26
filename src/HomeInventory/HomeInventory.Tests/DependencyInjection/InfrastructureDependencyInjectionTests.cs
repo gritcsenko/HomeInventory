@@ -1,7 +1,7 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
-using HomeInventory.Domain;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Authentication;

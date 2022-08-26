@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace HomeInventory.Domain.ValueObjects;
+namespace HomeInventory.Domain.Primitives;
 
 public abstract class ValueObject<TObject> : IValueObject<TObject>
     where TObject : notnull, ValueObject<TObject>
@@ -18,11 +18,11 @@ public abstract class ValueObject<TObject> : IValueObject<TObject>
 
     public sealed override int GetHashCode() => GetHashCodeCore(Adapt(EqualityComparer<object>.Default));
 
-    public bool Equals(object? other, IEqualityComparer comparer) => ReferenceEquals(other, this) || (other is TObject obj && EqualsCore(obj, Adapt(comparer)));
+    public bool Equals(object? other, IEqualityComparer comparer) => ReferenceEquals(other, this) || other is TObject obj && EqualsCore(obj, Adapt(comparer));
 
     public int GetHashCode(IEqualityComparer comparer) => GetHashCodeCore(Adapt(comparer));
 
-    public bool Equals(TObject? other) => ReferenceEquals(other, this) || (other is not null && EqualsCore(other, EqualityComparer<object>.Default));
+    public bool Equals(TObject? other) => ReferenceEquals(other, this) || other is not null && EqualsCore(other, EqualityComparer<object>.Default);
 
     protected virtual bool EqualsCore(TObject other, IEqualityComparer<object> comparer) => GetEqualityComponents().SequenceEqual(other.GetEqualityComponents(), comparer);
 

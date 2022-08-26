@@ -8,8 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace HomeInventory.Web.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-public class ApiControllerBase : ControllerBase
+public abstract class ApiControllerBase : ControllerBase
 {
+    protected ApiControllerBase()
+    {
+    }
+
     protected IActionResult Problem(IReadOnlyCollection<Error> errors)
     {
         HttpContext.SetItem(HttpContextItems.Errors, errors);

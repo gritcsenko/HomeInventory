@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace HomeInventory.Domain.ValueObjects;
+namespace HomeInventory.Domain.Primitives;
 
 public interface IValueObject : IStructuralEquatable
 {

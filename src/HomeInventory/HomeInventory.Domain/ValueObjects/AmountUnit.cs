@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives;
+
+namespace HomeInventory.Domain.ValueObjects;
 
 public class AmountUnit : Enumeration<AmountUnit, Guid>
 {
