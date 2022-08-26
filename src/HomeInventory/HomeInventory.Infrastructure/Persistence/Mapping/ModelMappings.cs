@@ -11,15 +11,15 @@ internal class ModelMappings : IRegister
     {
         config.NewConfig<UserId, Guid>().MapWith(id => (Guid)id);
         config.NewConfig<Guid, UserId>()
-            .ConstructUsing(id => MapContext.Current.GetService<IUserIdFactory>().Create(id)
-                .Match(x => x, ReportError<UserId>)
-            );
+            .ConstructUsing(id => CreateUserId(MapContext.Current.GetService<IUserIdFactory>(), id));
         config.NewConfig<User, UserModel>();
-        config.NewConfig<UserModel, User>();
+        config.NewConfig<UserModel, User>()
+            .ConstructUsing(m => new User(CreateUserId(MapContext.Current.GetService<IUserIdFactory>(), m.Id)));
     }
 
-    private static T ReportError<T>(IReadOnlyCollection<Error> errors)
-    {
+    private static UserId CreateUserId(IUserIdFactory factory, Guid id) =>
+        factory.Create(id).Match(x => x, ReportError<UserId>);
+
+    private static T ReportError<T>(IReadOnlyCollection<Error> errors) =>
         throw new InvalidOperationException(errors.First().ToString());
-    }
 }

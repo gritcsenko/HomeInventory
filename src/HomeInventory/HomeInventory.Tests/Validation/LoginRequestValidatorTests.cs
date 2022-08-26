@@ -5,6 +5,7 @@ using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Validation;
 
+[Trait("Category", "Unit")]
 public class LoginRequestValidatorTests : BaseTest
 {
     [Theory]

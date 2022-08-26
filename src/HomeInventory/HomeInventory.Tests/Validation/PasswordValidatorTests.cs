@@ -4,6 +4,8 @@ using HomeInventory.Contracts.Validations;
 using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Validation;
+
+[Trait("Category", "Unit")]
 public class PasswordValidatorTests : BaseTest
 {
     [Theory]
