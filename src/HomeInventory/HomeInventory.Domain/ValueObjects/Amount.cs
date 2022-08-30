@@ -4,22 +4,19 @@ namespace HomeInventory.Domain.ValueObjects;
 
 public class Amount : ValueObject<Amount>
 {
-    private readonly decimal _value;
-    private readonly AmountUnit _unit;
-
     internal Amount(decimal value, AmountUnit unit)
     {
-        _value = value;
-        _unit = unit;
+        Value = value;
+        Unit = unit;
     }
 
-    public decimal Value => _value;
+    public decimal Value { get; }
 
-    public AmountUnit Unit => _unit;
+    public AmountUnit Unit { get; }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return _value;
-        yield return _unit;
+        yield return Value;
+        yield return Unit;
     }
 }

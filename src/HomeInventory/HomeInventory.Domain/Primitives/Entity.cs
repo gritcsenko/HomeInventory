@@ -8,9 +8,9 @@ public abstract class Entity<TEntity, TIdentity> : IEntity<TEntity, TIdentity>
 
     public TIdentity Id { get; }
 
-    public static bool operator ==(Entity<TEntity, TIdentity>? a, TEntity? b) => a is not null && a.Equals(b);
+    public static bool operator ==(Entity<TEntity, TIdentity> a, TEntity b) => a.Equals(b);
 
-    public static bool operator !=(Entity<TEntity, TIdentity>? a, TEntity? b) => !(a == b);
+    public static bool operator !=(Entity<TEntity, TIdentity> a, TEntity b) => !a.Equals(b);
 
     public bool Equals(TEntity? other) => ReferenceEquals(other, this) || other is not null && Id.Equals(other.Id);
 

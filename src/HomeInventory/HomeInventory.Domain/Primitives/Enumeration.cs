@@ -22,27 +22,24 @@ public abstract class Enumeration<TEnum, TKey> : ValueObject<TEnum>, IEnumeratio
 {
     private static readonly Lazy<List<TEnum>> _items = new(() => Enumeration.CollectItems<TEnum>().ToList(), LazyThreadSafetyMode.ExecutionAndPublication);
 
-    private readonly string _name;
-    private readonly TKey _value;
-
     protected Enumeration(string name, TKey value)
     {
-        _name = name;
-        _value = value;
+        Name = name;
+        Value = value;
     }
 
     public static IReadOnlyCollection<TEnum> Items => _items.Value;
 
-    public string Name => _name;
+    public string Name { get; }
 
-    public TKey Value => _value;
+    public TKey Value { get; }
 
     protected static void Add(TEnum item) => _items.Value.Add(item);
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return _value;
-        yield return _name;
+        yield return Value;
+        yield return Name;
     }
 }
 
