@@ -4,13 +4,13 @@ namespace HomeInventory.Domain.ValueObjects;
 
 public class AmountUnit : Enumeration<AmountUnit, Guid>
 {
-    private AmountUnit(string name, MeasurementType measurement)
+    internal AmountUnit(string name, MeasurementType measurement)
         : base(name, Guid.NewGuid())
     {
         Measurement = measurement;
     }
 
-    private AmountUnit(string name, AmountUnit baseUnit, decimal ciUnitFactor)
+    internal AmountUnit(string name, AmountUnit baseUnit, decimal ciUnitFactor)
         : base(name, baseUnit.Value)
     {
         Measurement = baseUnit.Measurement;
