@@ -1,8 +1,6 @@
-﻿using System.Collections;
+﻿namespace HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Domain.Primitives;
-
-public interface IValueObject : IStructuralEquatable
+public interface IValueObject
 {
 }
 

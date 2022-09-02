@@ -14,7 +14,7 @@ public class Amount : ValueObject<Amount>
 
     public AmountUnit Unit { get; }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<object> GetAtomicComponentsCore()
     {
         yield return Value;
         yield return Unit;
