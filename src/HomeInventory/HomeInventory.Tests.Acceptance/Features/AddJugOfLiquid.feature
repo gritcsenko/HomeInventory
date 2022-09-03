@@ -6,14 +6,17 @@
     - The jug is stored in the fridge storage area
     So that I know how much liquid I have and when I need to buy more
 
+Background:
+    Given That today is 12/02/2022 and following environment
+        | Store   | Product | Price | Expiration |
+        | Walmart | Milk    | 2.99  | 12/12/2022 |
+    And following context
+        | Area   |
+        | Fridge |
+
 @Buy
-Scenario: User bought 1 gallon jug of milk from store
-    Given Registered user
-    And Today's date is 12/02/2022
-    And Store "Walmart" to buy products from
-    And User bought a 1 gallon jug of "Milk" at 12/02/2022
-    And User payed $2.99 price in "Walmart"
-    And Jug has absolute expiration date 12/12/2022
+Scenario: User bought a gallon jug of milk from store
+    Given User bought a 1 gallon jug of "Milk" at 12/02/2022 in "Walmart"
     When User stores jug in to the "Fridge" storage area
     Then The "Fridge" storage area should contain 1 gallon jug of "Milk" that will expire at 12/12/2022
     And Accounting has transaction registered: User bought 1 gallon jug of "Milk" at 12/02/2022 in "Walmart" and payed $2.99

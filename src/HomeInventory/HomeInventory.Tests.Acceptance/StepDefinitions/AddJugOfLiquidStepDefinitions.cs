@@ -3,63 +3,54 @@ namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 [Binding]
 public class AddJugOfLiquidStepDefinitions
 {
-    // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
+    private readonly ScenarioContext _context;
 
-    [Given(@"Registered user")]
-    public void GivenRegisteredUser()
+    // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
+    public AddJugOfLiquidStepDefinitions(ScenarioContext context)
     {
         // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata
         // To use the multiline text or the table argument of the scenario,
         // additional string/Table parameters can be defined on the step definition
         // method.
-        throw new PendingStepException();
+        _context = context;
     }
 
-    [Given(@"Today's date is (\d{2}/\d{2}/\d{4})")]
-    public void GivenTodaysDateIs(DateOnly todayDate)
+    [Given(@"That today is (\d{2}/\d{2}/\d{4}) and following environment")]
+    public void GivenThatTodayIsAndFollowingEnvironment(DateOnly todayDate, Table table)
+    {
+        _context.Set(todayDate, "Today");
+    }
+
+    [Given(@"following context")]
+    public void GivenFollowingContext(Table table)
     {
         throw new PendingStepException();
     }
 
-    [Given(@"Store ""([^""]*)"" to buy products from")]
-    public void GivenStoreToBuyProductsFrom(string storeName)
+    [Given(@"User bought a (\d+(\.\d+)?) gallon jug of ""([^""]*)"" at (\d{2}/\d{2}/\d{4}) in ""([^""]*)""")]
+    public void GivenUserBoughtJugToday(decimal volume, string productName, DateOnly buyDate, string storeName)
     {
-        throw new PendingStepException();
-    }
-
-    [Given(@"User bought a (\d+(\.\d+)?) gallon jug of ""([^""]*)"" at (\d{2}/\d{2}/\d{4})")]
-    public void GivenUserBoughtJugToday(decimal volume, string productName, DateOnly buyDate)
-    {
-        throw new PendingStepException();
-    }
-
-    [Given(@"User payed \$(\d+\.\d{2}) price in ""([^""]*)""")]
-    public void GivenUserPayedPriceAtStore(decimal price, string storeName)
-    {
-        throw new PendingStepException();
-    }
-
-    [Given(@"Jug has absolute expiration date (\d{2}/\d{2}/\d{4})")]
-    public void GivenJugHasAbsoluteExpirationDate(DateOnly expirationDate)
-    {
-        throw new PendingStepException();
+        _context.Set(volume, "Gallons");
+        _context.Set(productName, "Product");
+        _context.Set(buyDate, "BuyDate");
+        _context.Set(storeName, "Store");
     }
 
     [When(@"User stores jug in to the ""([^""]*)"" storage area")]
-    public void WhenUserStoresJugInToTheStorageArea(string storageeAreaName)
+    public void WhenUserStoresJugInToTheStorageArea(string storageAreaName)
     {
-        throw new PendingStepException();
+        _context.Set(storageAreaName, "Area");
     }
 
     [Then(@"The ""([^""]*)"" storage area should contain (\d+(\.\d+)?) gallon jug of ""([^""]*)"" that will expire at (\d{2}/\d{2}/\d{4})")]
-    public void ThenTheStorageAreaShouldContainGallonJugOf(string storageeAreaName, decimal volume, string productName, DateOnly expirationDate)
+    public void ThenTheStorageAreaShouldContainGallonJugOf(string storageAreaName, decimal volume, string productName, DateOnly expirationDate)
     {
-        throw new PendingStepException();
+        _context.Pending();
     }
 
     [Then(@"Accounting has transaction registered: User bought (\d+(\.\d+)?) gallon jug of ""([^""]*)"" at (\d{2}/\d{2}/\d{4}) in ""([^""]*)"" and payed \$(.*)")]
     public void ThenAccountingHasTransactionRegisteredUserBoughtGallonJugOfAtInAndPayed(decimal volume, string productName, DateOnly buyDate, string storeName, decimal price)
     {
-        throw new PendingStepException();
+        _context.Pending();
     }
 }
