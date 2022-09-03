@@ -88,12 +88,14 @@ namespace HomeInventory.Tests.Acceptance.Features
                         "Store",
                         "Product",
                         "Price",
-                        "Expiration"});
+                        "Expiration",
+                        "UnitVolume"});
             table1.AddRow(new string[] {
                         "Walmart",
                         "Milk",
                         "2.99",
-                        "12/12/2022"});
+                        "12/12/2022",
+                        "1"});
 #line 10
     testRunner.Given("That today is 12/02/2022 and following environment", ((string)(null)), table1, "Given ");
 #line hidden
@@ -102,7 +104,7 @@ namespace HomeInventory.Tests.Acceptance.Features
             table2.AddRow(new string[] {
                         "Fridge"});
 #line 13
-    testRunner.And("following context", ((string)(null)), table2, "And ");
+    testRunner.And("Following context", ((string)(null)), table2, "And ");
 #line hidden
         }
         
@@ -145,8 +147,8 @@ this.FeatureBackground();
                         "at 12/12/2022", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 22
-    testRunner.And("Accounting has transaction registered: User bought 1 gallon jug of \"Milk\" at 12/0" +
-                        "2/2022 in \"Walmart\" and payed $2.99", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+    testRunner.And("A transaction was registered: User bought 1 gallon jug of \"Milk\" at 12/02/2022 in" +
+                        " \"Walmart\" and payed $2.99", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

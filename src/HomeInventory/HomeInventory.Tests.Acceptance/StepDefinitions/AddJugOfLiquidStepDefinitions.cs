@@ -1,3 +1,5 @@
+using HomeInventory.Tests.Acceptance.Support;
+
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 
 [Binding]
@@ -15,42 +17,56 @@ public class AddJugOfLiquidStepDefinitions
         _context = context;
     }
 
-    [Given(@"That today is (\d{2}/\d{2}/\d{4}) and following environment")]
-    public void GivenThatTodayIsAndFollowingEnvironment(DateOnly todayDate, Table table)
+    [Given(@$"That today is {Patterns.DateOnly} and following environment")]
+    public void GivenThatTodayIsAndFollowingEnvironment(string todayDateText, Table table)
     {
-        _context.Set(todayDate, "Today");
+        _context.Set(todayDateText.ParseDate(), "Today");
+        var products = new List<AvailableProductData>(table.Rows.Count);
+        foreach (var row in table.Rows)
+        {
+            var product = new AvailableProductData(
+                storeName: row["Store"],
+                productName: row["Product"],
+                priceText: row["Price"],
+                dateText: row["Expiration"],
+                volumeText: row["UnitVolume"]);
+            products.Add(product);
+        }
+        _context.Set(products, "Products");
     }
 
-    [Given(@"following context")]
+    [Given(@$"Following context")]
     public void GivenFollowingContext(Table table)
     {
-        throw new PendingStepException();
+        _context.Set(table.Rows.Select(row => row["Area"]).ToArray(), "Areas");
     }
 
-    [Given(@"User bought a (\d+(\.\d+)?) gallon jug of ""([^""]*)"" at (\d{2}/\d{2}/\d{4}) in ""([^""]*)""")]
-    public void GivenUserBoughtJugToday(decimal volume, string productName, DateOnly buyDate, string storeName)
+    [Given(@$"User bought a {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName}")]
+    public void GivenUserBoughtJugToday(decimal volume, string productName, string buyDateText, string storeName)
     {
         _context.Set(volume, "Gallons");
         _context.Set(productName, "Product");
-        _context.Set(buyDate, "BuyDate");
+        _context.Set(buyDateText.ParseDate(), "BuyDate");
         _context.Set(storeName, "Store");
     }
 
-    [When(@"User stores jug in to the ""([^""]*)"" storage area")]
+    [When(@$"User stores jug in to the {Patterns.QuotedName} storage area")]
     public void WhenUserStoresJugInToTheStorageArea(string storageAreaName)
     {
         _context.Set(storageAreaName, "Area");
     }
 
-    [Then(@"The ""([^""]*)"" storage area should contain (\d+(\.\d+)?) gallon jug of ""([^""]*)"" that will expire at (\d{2}/\d{2}/\d{4})")]
-    public void ThenTheStorageAreaShouldContainGallonJugOf(string storageAreaName, decimal volume, string productName, DateOnly expirationDate)
+    [Then(@$"The {Patterns.QuotedName} storage area should contain {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} that will expire at {Patterns.DateOnly}")]
+    public void ThenTheStorageAreaShouldContainGallonJugOf(string storageAreaName, decimal volume, string productName, string expirationDateText)
     {
+        var expirationDate = expirationDateText.ParseDate();
         _context.Pending();
     }
 
-    [Then(@"Accounting has transaction registered: User bought (\d+(\.\d+)?) gallon jug of ""([^""]*)"" at (\d{2}/\d{2}/\d{4}) in ""([^""]*)"" and payed \$(.*)")]
-    public void ThenAccountingHasTransactionRegisteredUserBoughtGallonJugOfAtInAndPayed(decimal volume, string productName, DateOnly buyDate, string storeName, decimal price)
+    [Then(@$"A transaction was registered: User bought {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName} and payed {Patterns.Price}")]
+    public void ThenAccountingHasTransactionRegisteredUserBoughtGallonJugOfAtInAndPayed(decimal volume, string productName, string buyDateText, string storeName, decimal price)
     {
+        var buyDate = buyDateText.ParseDate();
         _context.Pending();
     }
 }
