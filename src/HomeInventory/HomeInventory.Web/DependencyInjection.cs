@@ -2,7 +2,10 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HomeInventory.Application;
+using HomeInventory.Web.Configuration;
+using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.Middleware;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,6 +38,8 @@ public static class DependencyInjection
             .AddInMemoryStorage();
 
         services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
+        services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+        services.AddScoped<CorrelationIdMiddleware>();
 
         services.AddSingleton(sp => new TypeAdapterConfig());
         services.AddScoped<IMapper, ServiceMapper>();
@@ -113,6 +118,8 @@ public static class DependencyInjection
             var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
             return Results.Problem(detail: exception?.Message);
         });
+
+        app.UseMiddleware<CorrelationIdMiddleware>();
 
         return app;
     }
