@@ -45,7 +45,7 @@ public static class DependencyInjection
         return services.AddDbContext<IDatabaseContext, DatabaseContext>((sp, builder) =>
         {
             var env = sp.GetRequiredService<IHostEnvironment>();
-            builder.UseInMemoryDatabase("HomeInventory");
+            builder.UseInMemoryDatabase("HomeInventory").UseApplicationServiceProvider(sp);
             builder.EnableDetailedErrors(!env.IsProduction());
             builder.EnableSensitiveDataLogging(!env.IsProduction());
         });

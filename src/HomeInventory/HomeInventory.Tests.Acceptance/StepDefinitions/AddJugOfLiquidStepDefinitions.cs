@@ -1,3 +1,4 @@
+using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
 
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;
@@ -6,15 +7,17 @@ namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 public class AddJugOfLiquidStepDefinitions
 {
     private readonly ScenarioContext _context;
+    private readonly IHomeInventoryAPIDriver _apiDriver;
 
     // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-    public AddJugOfLiquidStepDefinitions(ScenarioContext context)
+    public AddJugOfLiquidStepDefinitions(ScenarioContext context, IHomeInventoryAPIDriver apiDriver)
     {
         // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata
         // To use the multiline text or the table argument of the scenario,
         // additional string/Table parameters can be defined on the step definition
         // method.
         _context = context;
+        _apiDriver = apiDriver;
     }
 
     [Given(@$"That today is {Patterns.DateOnly} and following environment")]
@@ -64,7 +67,7 @@ public class AddJugOfLiquidStepDefinitions
     }
 
     [Then(@$"A transaction was registered: User bought {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName} and payed {Patterns.Price}")]
-    public void ThenAccountingHasTransactionRegisteredUserBoughtGallonJugOfAtInAndPayed(decimal volume, string productName, string buyDateText, string storeName, decimal price)
+    public void ThenTransactionRegisteredWithUserBoughtGallonJugAndPayed(decimal volume, string productName, string buyDateText, string storeName, decimal price)
     {
         var buyDate = buyDateText.ParseDate();
         _context.Pending();

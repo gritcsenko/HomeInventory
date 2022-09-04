@@ -116,11 +116,11 @@ namespace HomeInventory.Tests.Acceptance.Features
         [Xunit.SkippableFactAttribute(DisplayName="User bought a gallon jug of milk from store")]
         [Xunit.TraitAttribute("FeatureTitle", "AddJugOfLiquid")]
         [Xunit.TraitAttribute("Description", "User bought a gallon jug of milk from store")]
-        [Xunit.TraitAttribute("Category", "Buy")]
+        [Xunit.TraitAttribute("Category", "WI21")]
         public void UserBoughtAGallonJugOfMilkFromStore()
         {
             string[] tagsOfScenario = new string[] {
-                    "Buy"};
+                    "WI21"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("User bought a gallon jug of milk from store", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 18
