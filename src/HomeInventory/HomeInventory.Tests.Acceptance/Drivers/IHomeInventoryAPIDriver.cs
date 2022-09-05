@@ -1,21 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
+﻿namespace HomeInventory.Tests.Acceptance.Drivers;
 
-namespace HomeInventory.Tests.Acceptance.Drivers;
-
-public interface IHomeInventoryAPIDriver : IDisposable, IAsyncDisposable
+public interface IHomeInventoryAPIDriver : IApiDriver
 {
-    TestServer Server { get; }
+    IAuthenticationAPIDriver Authentication { get; }
 
-    IServiceProvider Services { get; }
-
-    WebApplicationFactoryClientOptions ClientOptions { get; }
-
-    HttpClient CreateClient();
-
-    HttpClient CreateClient(WebApplicationFactoryClientOptions options);
-
-    HttpClient CreateDefaultClient(params DelegatingHandler[] handlers);
-
-    HttpClient CreateDefaultClient(Uri baseAddress, params DelegatingHandler[] handlers);
+    void SetToday(DateOnly today);
 }

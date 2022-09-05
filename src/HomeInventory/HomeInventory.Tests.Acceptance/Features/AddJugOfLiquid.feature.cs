@@ -96,6 +96,12 @@ namespace HomeInventory.Tests.Acceptance.Features
                         "2.99",
                         "12/12/2022",
                         "1"});
+            table1.AddRow(new string[] {
+                        "Lidl",
+                        "Water",
+                        "0.99",
+                        "12/12/2032",
+                        "1"});
 #line 10
     testRunner.Given("That today is 12/02/2022 and following environment", ((string)(null)), table1, "Given ");
 #line hidden
@@ -103,8 +109,23 @@ namespace HomeInventory.Tests.Acceptance.Features
                         "Area"});
             table2.AddRow(new string[] {
                         "Fridge"});
-#line 13
+            table2.AddRow(new string[] {
+                        "Pantry"});
+#line 14
     testRunner.And("Following context", ((string)(null)), table2, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                        "FirstName",
+                        "LastName",
+                        "Email",
+                        "Password"});
+            table3.AddRow(new string[] {
+                        "Casual",
+                        "User",
+                        "Causal.User@someorg.email",
+                        "Pa$$w0rd"});
+#line 18
+    testRunner.And("Registered users", ((string)(null)), table3, "And ");
 #line hidden
         }
         
@@ -123,7 +144,7 @@ namespace HomeInventory.Tests.Acceptance.Features
                     "WI21"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("User bought a gallon jug of milk from store", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 18
+#line 23
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -136,17 +157,18 @@ this.ScenarioInitialize(scenarioInfo);
 #line 9
 this.FeatureBackground();
 #line hidden
-#line 19
-    testRunner.Given("User bought a 1 gallon jug of \"Milk\" at 12/02/2022 in \"Walmart\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 24
+    testRunner.Given("User \"Causal.User@someorg.email\" bought a 1 gallon jug of \"Milk\" at 12/02/2022 in" +
+                        " \"Walmart\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 20
+#line 25
     testRunner.When("User stores jug in to the \"Fridge\" storage area", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 21
+#line 26
     testRunner.Then("The \"Fridge\" storage area should contain 1 gallon jug of \"Milk\" that will expire " +
                         "at 12/12/2022", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 22
+#line 27
     testRunner.And("A transaction was registered: User bought 1 gallon jug of \"Milk\" at 12/02/2022 in" +
                         " \"Walmart\" and payed $2.99", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden

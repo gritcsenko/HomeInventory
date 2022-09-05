@@ -1,5 +1,7 @@
+using HomeInventory.Contracts;
 using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
+using Humanizer;
 
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 
@@ -23,7 +25,7 @@ public class AddJugOfLiquidStepDefinitions
     [Given(@$"That today is {Patterns.DateOnly} and following environment")]
     public void GivenThatTodayIsAndFollowingEnvironment(string todayDateText, Table table)
     {
-        _context.Set(todayDateText.ParseDate(), "Today");
+        _apiDriver.SetToday(todayDateText.ParseDate());
         var products = new List<AvailableProductData>(table.Rows.Count);
         foreach (var row in table.Rows)
         {
@@ -41,12 +43,32 @@ public class AddJugOfLiquidStepDefinitions
     [Given(@$"Following context")]
     public void GivenFollowingContext(Table table)
     {
-        _context.Set(table.Rows.Select(row => row["Area"]).ToArray(), "Areas");
+        var name = table.Header.First();
+        _context.Set(table.Rows.Select(row => row[name]).ToArray(), name.Pluralize());
     }
 
-    [Given(@$"User bought a {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName}")]
-    public void GivenUserBoughtJugToday(decimal volume, string productName, string buyDateText, string storeName)
+    [Given(@"Registered users")]
+    public async Task GivenRegisteredUsers(Table table)
     {
+        var users = new Dictionary<Guid, RegisterRequest>(table.Rows.Count);
+        foreach (var row in table.Rows)
+        {
+            var request = new RegisterRequest(
+                FirstName: row["FirstName"],
+                LastName: row["LastName"],
+                Email: row["Email"],
+                Password: row["Password"]);
+            var response = await _apiDriver.Authentication.RegisterAsync(request);
+            users.Add(response.Id, request);
+        }
+        _context.Set(users, "RegisteredUsers");
+    }
+
+    [Given(@$"User {Patterns.QuotedName} bought a {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName}")]
+    public async Task GivenUserBoughtJugToday(string email, decimal volume, string productName, string buyDateText, string storeName)
+    {
+        var response = await LoginUserAsync(email);
+
         _context.Set(volume, "Gallons");
         _context.Set(productName, "Product");
         _context.Set(buyDateText.ParseDate(), "BuyDate");
@@ -71,5 +93,15 @@ public class AddJugOfLiquidStepDefinitions
     {
         var buyDate = buyDateText.ParseDate();
         _context.Pending();
+    }
+
+    private async Task<LoginResponse> LoginUserAsync(string email)
+    {
+        var registeredUsers = _context.Get<IReadOnlyDictionary<Guid, RegisterRequest>>("RegisteredUsers");
+        var password = registeredUsers.Values.First(u => u.Email == email).Password;
+        var request = new LoginRequest(email, password);
+        var response = await _apiDriver.Authentication.LoginAsync(request);
+        _context.Set(response, "Login");
+        return response;
     }
 }
