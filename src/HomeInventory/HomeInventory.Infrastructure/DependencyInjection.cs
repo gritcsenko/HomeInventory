@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Infrastructure;
@@ -19,7 +20,7 @@ public static class DependencyInjection
     {
         services.AddAuth(configuration);
         services.AddDatbase();
-        services.AddSingleton<IDateTimeService, SystemDateTimeService>();
+        services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddMappingSourceFromCurrentAssembly();
         return services;
