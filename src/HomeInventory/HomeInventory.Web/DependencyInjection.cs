@@ -80,7 +80,7 @@ public static class DependencyInjection
             });
         });
 
-        services.AddFluentValidation(c =>
+        services.AddFluentValidationAutoValidation(c =>
         {
             c.DisableDataAnnotationsValidation = true;
         });
