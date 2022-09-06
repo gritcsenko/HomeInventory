@@ -27,13 +27,6 @@ public static class DependencyInjection
         // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/monitor-app-health
         // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-6.0
         services.AddHealthChecks()
-            .AddDiskStorageHealthCheck(x => x.CheckAllDrives = true)
-            .AddFolder(x => x.AddFolder("C:\\"))
-            .AddPrivateMemoryHealthCheck(1024 * 1024 * 1024)
-            .AddProcessAllocatedMemoryHealthCheck(1024 * 1024 * 1024)
-            .AddProcessHealthCheck("system", _ => true)
-            .AddVirtualMemorySizeHealthCheck(3L * 1024 * 1024 * 1024 * 1024)
-            .AddWorkingSetHealthCheck(1024 * 1024 * 1024);
         services.AddHealthChecksUI()
             .AddInMemoryStorage();
 
