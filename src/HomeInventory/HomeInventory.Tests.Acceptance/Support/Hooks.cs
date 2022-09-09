@@ -19,9 +19,7 @@ internal class Hooks
     }
 
     [AfterScenario(Order = 1)]
-    public async Task Cleanup(IObjectContainer objectContainer)
+    public void Cleanup(IObjectContainer objectContainer)
     {
-        var driver = objectContainer.Resolve<IHomeInventoryAPIDriver>();
-        await driver.Testing.ClearDatabaseAsync();
     }
 }
