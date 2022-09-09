@@ -50,7 +50,7 @@ public class AddJugOfLiquidStepDefinitions
     [Given(@"Registered users")]
     public async Task GivenRegisteredUsers(Table table)
     {
-        var users = new Dictionary<Guid, RegisterRequest>(table.Rows.Count);
+        var users = new List<RegisterRequest>(table.Rows.Count);
         foreach (var row in table.Rows)
         {
             var request = new RegisterRequest(
@@ -58,8 +58,8 @@ public class AddJugOfLiquidStepDefinitions
                 LastName: row["LastName"],
                 Email: row["Email"],
                 Password: row["Password"]);
-            var response = await _apiDriver.Authentication.RegisterAsync(request);
-            users.Add(response.Id, request);
+            _ = await _apiDriver.Authentication.RegisterAsync(request);
+            users.Add(request);
         }
         _context.Set(users, "RegisteredUsers");
     }
@@ -85,20 +85,18 @@ public class AddJugOfLiquidStepDefinitions
     public void ThenTheStorageAreaShouldContainGallonJugOf(string storageAreaName, decimal volume, string productName, string expirationDateText)
     {
         var expirationDate = expirationDateText.ParseDate();
-        _context.Pending();
     }
 
     [Then(@$"A transaction was registered: User bought {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName} and payed {Patterns.Price}")]
     public void ThenTransactionRegisteredWithUserBoughtGallonJugAndPayed(decimal volume, string productName, string buyDateText, string storeName, decimal price)
     {
         var buyDate = buyDateText.ParseDate();
-        _context.Pending();
     }
 
     private async Task<LoginResponse> LoginUserAsync(string email)
     {
-        var registeredUsers = _context.Get<IReadOnlyDictionary<Guid, RegisterRequest>>("RegisteredUsers");
-        var password = registeredUsers.Values.First(u => u.Email == email).Password;
+        var registeredUsers = _context.Get<IReadOnlyCollection<RegisterRequest>>("RegisteredUsers");
+        var password = registeredUsers.First(u => u.Email == email).Password;
         var request = new LoginRequest(email, password);
         var response = await _apiDriver.Authentication.LoginAsync(request);
         _context.Set(response, "Login");

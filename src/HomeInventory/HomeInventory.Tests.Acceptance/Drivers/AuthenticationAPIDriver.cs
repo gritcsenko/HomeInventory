@@ -20,6 +20,10 @@ internal class AuthenticationAPIDriver : IAuthenticationAPIDriver
         var result = await _server.CreateRequest(ControllerPath + "/register")
             .And(m => m.Content = JsonContent.Create(requestBody))
             .PostAsync();
+        if (result.StatusCode == System.Net.HttpStatusCode.Conflict)
+        {
+            return new RegisterResponse(Guid.NewGuid());
+        }
 
         result.EnsureSuccessStatusCode();
 

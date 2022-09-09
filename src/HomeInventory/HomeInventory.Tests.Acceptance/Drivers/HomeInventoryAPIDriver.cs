@@ -12,14 +12,18 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
 {
     private readonly ITestingConfiguration _configuration;
     private readonly Lazy<IAuthenticationAPIDriver> _lazyAuthentication;
+    private readonly Lazy<ITestingAPIDriver> _lazyTesting;
 
     public HomeInventoryAPIDriver(ITestingConfiguration configuration)
     {
         _configuration = configuration;
-        _lazyAuthentication = new Lazy<IAuthenticationAPIDriver>(CreateAuthentication, true);
+        _lazyAuthentication = new(CreateAuthentication, true);
+        _lazyTesting = new(CreateTesting, true);
     }
 
     public IAuthenticationAPIDriver Authentication => _lazyAuthentication.Value;
+
+    public ITestingAPIDriver Testing => _lazyTesting.Value;
 
     public void SetToday(DateOnly today) =>
         Services.GetRequiredService<FixedTestingDateTimeService>().Now = today.ToDateTime(TimeOnly.FromTimeSpan(TimeSpan.Zero).AddHours(12));
@@ -46,4 +50,6 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
     }
 
     private AuthenticationAPIDriver CreateAuthentication() => new(Server);
+
+    private TestingAPIDriver CreateTesting() => new(Server);
 }
