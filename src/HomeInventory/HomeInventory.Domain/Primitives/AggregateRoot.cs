@@ -1,18 +1,18 @@
-﻿using HomeInventory.Domain.Events;
+﻿using System.Collections.Concurrent;
 
 namespace HomeInventory.Domain.Primitives;
 public abstract class AggregateRoot<TAggregate, TIdentity> : Entity<TAggregate, TIdentity>
     where TIdentity : notnull, IIdentifierObject<TIdentity>
     where TAggregate : notnull, AggregateRoot<TAggregate, TIdentity>
 {
-    private readonly SortedSet<IEvent> _events = new(EventComparer.Default);
+    private readonly ConcurrentQueue<IDomainEvent> _events = new();
 
     protected AggregateRoot(TIdentity id)
         : base(id)
     {
     }
 
-    public IReadOnlyCollection<IEvent> Events => _events;
+    public IReadOnlyCollection<IDomainEvent> Events => _events;
 
-    protected bool Publish(IEvent @event) => _events.Add(@event);
+    protected void Publish(IDomainEvent @event) => _events.Enqueue(@event);
 }
