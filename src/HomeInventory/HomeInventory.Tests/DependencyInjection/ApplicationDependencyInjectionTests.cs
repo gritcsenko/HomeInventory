@@ -18,7 +18,6 @@ public class ApplicationDependencyInjectionTests : BaseTest
         _services.AddApplication();
         var provider = _factory.CreateServiceProvider(_services);
 
-        _services.Should().ContainSingleTransient<IMediator>(provider);
         _services.Should().ContainSingleSingleton(typeof(IPipelineBehavior<,>));
         _services.Should().ContainSingleSingleton<IStartupFilter>(provider);
         _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
