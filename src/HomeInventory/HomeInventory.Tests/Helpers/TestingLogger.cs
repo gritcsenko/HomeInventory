@@ -7,6 +7,9 @@ public abstract class TestingLogger<T> : ILogger<T>
     private readonly AsyncLocal<ITestingScope?> _currentScope = new();
 
     public IDisposable BeginScope<TState>(TState state)
+#if NET7_0_OR_GREATER
+        where TState : notnull
+#endif
     {
         var parent = _currentScope.Value;
         var scope = new TestingScope<TState>(state, this, parent);

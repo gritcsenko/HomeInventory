@@ -14,7 +14,7 @@ internal class JwtBearerOptionsSetup : IPostConfigureOptions<JwtBearerOptions>
         _jwtOptions = optionsAccessor.Value;
     }
 
-    public void PostConfigure(string name, JwtBearerOptions options)
+    public void PostConfigure(string? name, JwtBearerOptions options)
     {
         if (name == JwtBearerDefaults.AuthenticationScheme)
         {

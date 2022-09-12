@@ -28,7 +28,7 @@ public class InfrastructureDependencyInjectionTests : BaseTest
     {
         var providers = new List<IConfigurationProvider>{
             new MemoryConfigurationProvider(new MemoryConfigurationSource{
-                InitialData = new Dictionary<string, string>{
+                InitialData = new Dictionary<string, string?>{
                     ["JwtOptions:Secret"] = "Some Secret",
                 },
             })

@@ -26,8 +26,12 @@ internal class CorrelationIdMiddleware : IMiddleware
     {
         if (context.Request.Headers.TryGetValue(HeaderNames.CorrelationId, out var correlationId))
         {
-            _generator.SetCorrelationId(correlationId);
-            return correlationId;
+            var idText = correlationId.ToString();
+            if (idText is not null)
+            {
+                _generator.SetCorrelationId(idText);
+                return idText;
+            }
         }
 
         var newId = _generator.GetCorrelationId();
