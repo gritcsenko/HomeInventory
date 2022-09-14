@@ -22,7 +22,6 @@ public class InfrastructureDependencyInjectionTests : BaseTest
 {
     private readonly IServiceCollection _services = new ServiceCollection();
     private readonly IServiceProviderFactory<IServiceCollection> _factory = new DefaultServiceProviderFactory();
-    private readonly IConfiguration _configuration;
 
     public InfrastructureDependencyInjectionTests()
     {
@@ -33,8 +32,7 @@ public class InfrastructureDependencyInjectionTests : BaseTest
                 },
             })
         };
-        _configuration = new ConfigurationRoot(providers);
-        _services.AddSingleton(_configuration);
+        _services.AddSingleton<IConfiguration>(new ConfigurationRoot(providers));
         _services.AddSingleton(Substitute.For<IUserIdFactory>());
         _services.AddSingleton(Substitute.For<IHostEnvironment>());
         _services.AddSingleton(Substitute.For<IMapper>());
@@ -43,7 +41,7 @@ public class InfrastructureDependencyInjectionTests : BaseTest
     [Fact]
     public void ShouldRegister()
     {
-        _services.AddInfrastructure(_configuration);
+        _services.AddInfrastructure();
         var provider = _factory.CreateServiceProvider(_services);
 
         _services.Should().ContainSingleTransient<IConfigureOptions<JwtOptions>>(provider);
