@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using FluentAssertions.Collections;
+using FluentAssertions.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Helpers;
@@ -11,37 +12,30 @@ internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServic
     {
     }
 
-    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleTransient<T>()
-        where T : class
-    {
-        return ContainSingle<T>(ServiceLifetime.Transient);
-    }
+    public AndWhichConstraint<ObjectAssertions, T> ContainSingleTransient<T>(IServiceProvider provider)
+        where T : class =>
+        ContainSingle<T>(ServiceLifetime.Transient, provider);
 
-    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleSingleton<T>()
-        where T : class
-    {
-        return ContainSingle<T>(ServiceLifetime.Singleton);
-    }
+    public AndWhichConstraint<ObjectAssertions, T> ContainSingleSingleton<T>(IServiceProvider provider)
+        where T : class =>
+        ContainSingle<T>(ServiceLifetime.Singleton, provider);
 
-    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleScoped<T>()
-        where T : class
-    {
-        return ContainSingle<T>(ServiceLifetime.Scoped);
-    }
+    public AndWhichConstraint<ObjectAssertions, T> ContainSingleScoped<T>(IServiceProvider provider)
+        where T : class =>
+        ContainSingle<T>(ServiceLifetime.Scoped, provider);
+
+    public AndWhichConstraint<ObjectAssertions, T> ContainSingle<T>(ServiceLifetime lifetime, IServiceProvider provider)
+        where T : class =>
+        ContainSingle<T>(lifetime)
+            .Which.GetInstance(provider).Should().BeAssignableTo<T>();
 
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle<T>(ServiceLifetime lifetime)
-        where T : class
-    {
-        return ContainSingle(typeof(T), lifetime);
-    }
+        where T : class =>
+        ContainSingle(typeof(T), lifetime);
 
-    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleSingleton(Type serviceType)
-    {
-        return ContainSingle(serviceType, ServiceLifetime.Singleton);
-    }
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleSingleton(Type serviceType) =>
+        ContainSingle(serviceType, ServiceLifetime.Singleton);
 
-    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime)
-    {
-        return ContainSingle(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
-    }
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime) =>
+        ContainSingle(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
 }

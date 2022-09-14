@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain;
+﻿using HomeInventory.Domain.Primitives;
+
+namespace HomeInventory.Domain.Extensions;
 
 public static class DateTimeServiceExtensions
 {
