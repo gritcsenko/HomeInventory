@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain;
+﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Infrastructure.Services;
 internal class SystemDateTimeService : IDateTimeService

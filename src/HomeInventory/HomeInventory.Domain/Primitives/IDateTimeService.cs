@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public interface IDateTimeService
 {
