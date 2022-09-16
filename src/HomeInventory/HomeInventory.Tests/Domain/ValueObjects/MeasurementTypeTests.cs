@@ -7,24 +7,50 @@ namespace HomeInventory.Tests.Domain.ValueObjects;
 [Trait("Category", "Unit")]
 public class MeasurementTypeTests : BaseTest
 {
-    [Theory]
-    [MemberData(nameof(Data))]
-    public void PropertiesShouldMatch(MeasurementType sut, string name, int value)
+    [Fact]
+    public void Items_Should_NotBeEmpty()
     {
-        sut.Name.Should().Be(name);
-        sut.Value.Should().Be(value);
+        MeasurementType.Items.Should().NotBeEmpty();
     }
 
-    public static TheoryData<MeasurementType, string, int> Data()
+    [Theory]
+    [MemberData(nameof(Data))]
+    public void PropertiesShouldMatch(MeasurementType sut, string name)
+    {
+        sut.Name.Should().Be(name);
+    }
+
+    [Theory]
+    [MemberData(nameof(Keys))]
+    public void CanBeUsedAsDictionaryKey(MeasurementType sut)
+    {
+        var dictionary = MeasurementType.Items.ToDictionary(x => x, x => x.Name);
+
+        var actual = dictionary.ContainsKey(sut);
+
+        actual.Should().BeTrue();
+    }
+
+    public static TheoryData<MeasurementType, string> Data()
     {
         return new()
         {
-            { MeasurementType.Count, nameof(MeasurementType.Count), 0 },
-            { MeasurementType.Length, nameof(MeasurementType.Length), 1 },
-            { MeasurementType.Area, nameof(MeasurementType.Area), 2 },
-            { MeasurementType.Volume, nameof(MeasurementType.Volume), 3 },
-            { MeasurementType.Weight, nameof(MeasurementType.Weight), 4 },
-            { MeasurementType.Temperature, nameof(MeasurementType.Temperature), 5 },
+            { MeasurementType.Count, nameof(MeasurementType.Count) },
+            { MeasurementType.Length, nameof(MeasurementType.Length) },
+            { MeasurementType.Area, nameof(MeasurementType.Area) },
+            { MeasurementType.Volume, nameof(MeasurementType.Volume) },
+            { MeasurementType.Weight, nameof(MeasurementType.Weight) },
+            { MeasurementType.Temperature, nameof(MeasurementType.Temperature) },
         };
+    }
+
+    public static TheoryData<MeasurementType> Keys()
+    {
+        var data = new TheoryData<MeasurementType>();
+        foreach (var item in MeasurementType.Items)
+        {
+            data.Add(item);
+        }
+        return data;
     }
 }

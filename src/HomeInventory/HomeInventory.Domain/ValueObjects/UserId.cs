@@ -7,6 +7,4 @@ public sealed class UserId : GuidIdentifierObject<UserId>
         : base(value)
     {
     }
-
-    public static explicit operator Guid(UserId obj) => obj.Value;
 }

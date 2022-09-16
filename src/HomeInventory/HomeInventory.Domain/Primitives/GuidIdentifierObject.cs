@@ -9,7 +9,7 @@ public abstract class GuidIdentifierObject<TObject> : ValueObject<TObject>, IIde
 
     public Guid Id => Value;
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<object> GetAtomicComponentsCore()
     {
         yield return Value;
     }

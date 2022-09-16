@@ -7,6 +7,4 @@ public sealed class ProductId : GuidIdentifierObject<ProductId>
         : base(value)
     {
     }
-
-    public static explicit operator Guid(ProductId obj) => obj.Value;
 }
