@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.ValueObjects;
+﻿using ErrorOr;
+
+namespace HomeInventory.Domain.ValueObjects;
 public class UserId : GuidIdentifierObject<UserId>
 {
     internal UserId(Guid value)
@@ -12,9 +14,14 @@ public class UserId : GuidIdentifierObject<UserId>
 public interface IUserIdFactory
 {
     UserId CreateNew();
+    ErrorOr<UserId> Create(Guid id);
 }
 
 internal class UserIdFactory : ValueObjectFactory<UserId>, IUserIdFactory
 {
-    public UserId CreateNew() => new(Guid.NewGuid());
+    public ErrorOr<UserId> Create(Guid id) => id == Guid.Empty ? GetValidationError() : CreateCore(id);
+
+    public UserId CreateNew() => CreateCore(Guid.NewGuid());
+
+    private UserId CreateCore(Guid id) => new(id);
 }
