@@ -1,7 +1,7 @@
 ﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
-public class ProductId : GuidIdentifierObject<ProductId>
+public sealed class ProductId : GuidIdentifierObject<ProductId>
 {
     internal ProductId(Guid value)
         : base(value)
@@ -9,14 +9,4 @@ public class ProductId : GuidIdentifierObject<ProductId>
     }
 
     public static explicit operator Guid(ProductId obj) => obj.Value;
-}
-
-public interface IProductIdFactory
-{
-    ProductId CreateNew();
-}
-
-internal class ProductIdFactory : ValueObjectFactory<ProductId>, IProductIdFactory
-{
-    public ProductId CreateNew() => new(Guid.NewGuid());
 }
