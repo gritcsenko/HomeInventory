@@ -78,11 +78,6 @@ public static class DependencyInjection
             return Results.Problem(detail: exception?.Message);
         });
 
-        app.UseHttpsRedirection();
-
-        app.UseAuthorization();
-
-        app.MapControllers();
 
         return app;
     }

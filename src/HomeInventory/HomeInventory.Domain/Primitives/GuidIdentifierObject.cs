@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.ValueObjects;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public abstract class GuidIdentifierObject<TObject> : ValueObject<TObject>, IIdentifierObject<TObject>
     where TObject : notnull, GuidIdentifierObject<TObject>
@@ -6,6 +6,8 @@ public abstract class GuidIdentifierObject<TObject> : ValueObject<TObject>, IIde
     protected GuidIdentifierObject(Guid value) => Value = value;
 
     protected Guid Value { get; }
+
+    public Guid Id => Value;
 
     protected override IEnumerable<object> GetEqualityComponents()
     {

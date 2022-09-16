@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Interfaces.Persistence.Specifications;
 

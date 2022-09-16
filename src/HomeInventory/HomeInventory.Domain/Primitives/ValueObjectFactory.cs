@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
 
-namespace HomeInventory.Domain.ValueObjects;
+namespace HomeInventory.Domain.Primitives;
 
 public abstract class ValueObjectFactory<TObject>
     where TObject : notnull, ValueObject<TObject>

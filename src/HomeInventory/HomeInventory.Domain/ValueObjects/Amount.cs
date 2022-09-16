@@ -1,5 +1,6 @@
 ﻿using Ardalis.SmartEnum;
 using ErrorOr;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
 
