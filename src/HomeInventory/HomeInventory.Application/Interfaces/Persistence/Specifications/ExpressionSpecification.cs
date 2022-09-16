@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using FastExpressionCompiler;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Interfaces.Persistence.Specifications;
 

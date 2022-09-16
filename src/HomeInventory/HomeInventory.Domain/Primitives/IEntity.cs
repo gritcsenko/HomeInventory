@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.ValueObjects;
-
-namespace HomeInventory.Domain.Entities;
+﻿namespace HomeInventory.Domain.Primitives;
 public interface IEntity<TEntity>
     where TEntity : notnull, IEntity<TEntity>
 {

@@ -1,6 +1,5 @@
 ﻿using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.Primitives;
 using OneOf;
 using OneOf.Types;
 

@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Domain;

@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.ValueObjects;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public abstract class ValueObject<TObject> : IValueObject<TObject>
     where TObject : notnull, ValueObject<TObject>

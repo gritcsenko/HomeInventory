@@ -1,7 +1,4 @@
-﻿using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.ValueObjects;
-
-namespace HomeInventory.Domain.Aggregates;
+﻿namespace HomeInventory.Domain.Primitives;
 public abstract class AggregateRoot<TAggregate, TIdentity> : Entity<TAggregate, TIdentity>
     where TIdentity : notnull, IIdentifierObject<TIdentity>
     where TAggregate : notnull, AggregateRoot<TAggregate, TIdentity>

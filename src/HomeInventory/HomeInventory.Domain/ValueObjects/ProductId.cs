@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives;
+
+namespace HomeInventory.Domain.ValueObjects;
 public class ProductId : GuidIdentifierObject<ProductId>
 {
     internal ProductId(Guid value)

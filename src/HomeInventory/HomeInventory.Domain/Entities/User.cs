@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Entities;
