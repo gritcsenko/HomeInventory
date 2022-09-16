@@ -10,7 +10,7 @@ internal class ContractsMappings : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<UserId, Guid>().MapWith(x => (Guid)x);
+        config.NewConfig<UserId, Guid>().MapWith(x => x.Id);
 
         config.NewConfig<RegisterRequest, RegisterCommand>();
         config.NewConfig<RegistrationResult, RegisterResponse>();

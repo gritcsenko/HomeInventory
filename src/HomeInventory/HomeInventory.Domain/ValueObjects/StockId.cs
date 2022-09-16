@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public class StockId : GuidIdentifierObject<StockId>
+public sealed class StockId : GuidIdentifierObject<StockId>
 {
     public StockId(Guid value)
         : base(value)

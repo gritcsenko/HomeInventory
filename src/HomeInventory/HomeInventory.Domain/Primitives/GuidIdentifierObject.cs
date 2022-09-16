@@ -7,6 +7,8 @@ public abstract class GuidIdentifierObject<TObject> : ValueObject<TObject>, IIde
 
     protected Guid Value { get; }
 
+    public Guid Id => Value;
+
     protected override IEnumerable<object> GetAtomicComponentsCore()
     {
         yield return Value;

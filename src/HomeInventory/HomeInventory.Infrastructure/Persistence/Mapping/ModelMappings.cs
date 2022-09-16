@@ -9,7 +9,7 @@ internal class ModelMappings : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<UserId, Guid>().MapWith(id => (Guid)id);
+        config.NewConfig<UserId, Guid>().MapWith(id => id.Id);
         config.NewConfig<Guid, UserId>()
             .ConstructUsing(id => CreateUserId(MapContext.Current.GetService<IUserIdFactory>(), id));
         config.NewConfig<User, UserModel>();

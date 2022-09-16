@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public class MeasurementType : Enumeration<MeasurementType, Guid>
+public sealed class MeasurementType : Enumeration<MeasurementType, Guid>
 {
     private MeasurementType(string name)
         : base(name, Guid.NewGuid())

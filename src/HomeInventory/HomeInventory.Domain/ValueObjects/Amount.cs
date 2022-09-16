@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public class Amount : ValueObject<Amount>
+public sealed class Amount : ValueObject<Amount>
 {
     internal Amount(decimal value, AmountUnit unit)
     {

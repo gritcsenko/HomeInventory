@@ -3,7 +3,7 @@ using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-internal class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
+internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
 {
     private static readonly IReadOnlyDictionary<AmountUnit, Validator> _validators = new Validator[]
     {

@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public class AmountUnit : Enumeration<AmountUnit, Guid>
+public sealed class AmountUnit : Enumeration<AmountUnit, Guid>
 {
     internal AmountUnit(string name, MeasurementType measurement)
         : base(name, Guid.NewGuid())
