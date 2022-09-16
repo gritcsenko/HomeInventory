@@ -3,13 +3,22 @@ using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
+internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
 {
-    private static readonly Validator _piecesValidator = new(AmountUnit.Pieces, x => x >= 0m);
+    private static readonly IReadOnlyDictionary<AmountUnit, Validator> _validators = new Validator[]
+    {
+        new(AmountUnit.Piece, x => x >= 0m && decimal.Truncate(x) == x),
+        new(AmountUnit.Gallon, x => x >= 0m),
+        new(AmountUnit.CubicMeter, x => x >= 0m),
+    }.ToDictionary(x => x.Unit);
 
-    public ErrorOr<Amount> Pieces(int value) => Create(value, _piecesValidator);
+    public ErrorOr<Amount> Create(decimal value, AmountUnit unit) => Create(value, GetValidator(unit));
 
-    private ErrorOr<Amount> Create(decimal value, Validator validator) => validator.IsValid(value) ? new Amount(value, validator.Unit) : GetValidationError();
+    private static ErrorOr<Validator> GetValidator(AmountUnit unit) =>
+        _validators.TryGetValue(unit, out var validator) ? validator : (ErrorOr<Validator>)Errors.Domain.ValidatorNotFound;
+
+    private ErrorOr<Amount> Create(decimal value, ErrorOr<Validator> validator) =>
+        validator.Match(onValue: v => v.IsValid(value) ? new Amount(value, v.Unit) : GetValidationError(), onError: x => x);
 
     private class Validator
     {

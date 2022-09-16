@@ -8,6 +8,4 @@ public sealed class MaterialId : GuidIdentifierObject<MaterialId>, IIdentifierOb
         : base(value)
     {
     }
-
-    public static explicit operator Guid(MaterialId obj) => obj.Value;
 }
