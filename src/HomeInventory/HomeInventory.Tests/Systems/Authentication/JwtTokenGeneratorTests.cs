@@ -1,12 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using AutoFixture;
 using FluentAssertions;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Infrastructure.Authentication;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
+using HomeInventory.Web.Authentication;
+using HomeInventory.Web.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
@@ -37,7 +37,7 @@ public class JwtTokenGeneratorTests : BaseTest
     public async Task GenerateTokenAsync_Should_GenerateCorrectTokenString()
     {
         var sut = CreateSut();
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
+        var key = new SymmetricSecurityKey(_options.Key);
         var expectedHeader = new JwtHeader(new SigningCredentials(key, _options.Algorithm));
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
