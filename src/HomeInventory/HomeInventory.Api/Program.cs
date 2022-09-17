@@ -2,8 +2,12 @@ using HomeInventory.Application;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Web;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMediatR(typeof(HomeInventory.Application.IAssemblyMarker), typeof(HomeInventory.Infrastructure.IAssemblyMarker));
+
 builder.Services.AddDomain();
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();

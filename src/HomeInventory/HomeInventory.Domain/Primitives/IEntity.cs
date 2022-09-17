@@ -1,5 +1,10 @@
 ﻿namespace HomeInventory.Domain.Primitives;
-public interface IEntity<TEntity>
+
+public interface IEntity
+{
+}
+
+public interface IEntity<TEntity> : IEntity
     where TEntity : notnull, IEntity<TEntity>
 {
 

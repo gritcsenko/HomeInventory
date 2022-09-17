@@ -21,6 +21,7 @@ public class AuthenticationController : ApiControllerBase
         _mapper = mapper;
     }
 
+
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest body, CancellationToken cancellationToken = default)
     {
