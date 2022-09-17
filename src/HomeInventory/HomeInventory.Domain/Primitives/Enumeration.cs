@@ -34,8 +34,6 @@ public abstract class Enumeration<TEnum, TKey> : ValueObject<TEnum>, IEnumeratio
 
     public TKey Value { get; }
 
-    protected static void Add(TEnum item) => _items.Value.Add(item);
-
     protected override IEnumerable<object> GetAtomicComponentsCore()
     {
         yield return Value;

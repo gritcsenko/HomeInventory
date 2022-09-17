@@ -18,9 +18,6 @@ public static class TypeExtensions
         }
     }
 
-    public static string GetFormattedName<T>() =>
-        typeof(T).GetFormattedName();
-
     public static string GetFormattedName(this Type type) =>
         type switch
         {
