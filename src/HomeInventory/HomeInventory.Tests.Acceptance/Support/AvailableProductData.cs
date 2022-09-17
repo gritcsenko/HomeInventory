@@ -2,13 +2,13 @@
 
 public class AvailableProductData
 {
-    public AvailableProductData(string storeName, string productName, string priceText, string dateText, string volumeText)
+    public AvailableProductData(string storeName, string productName, decimal price, DateOnly date, decimal volume)
     {
         StoreName = storeName;
         ProductName = productName;
-        Price = priceText.ParseDecimal();
-        AbsoluteExpiration = dateText.ParseDate();
-        Gallons = volumeText.ParseDecimal();
+        Price = price;
+        AbsoluteExpiration = date;
+        Gallons = volume;
     }
 
     public string StoreName { get; }

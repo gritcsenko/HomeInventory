@@ -23,18 +23,18 @@ public class AddJugOfLiquidStepDefinitions
     }
 
     [Given(@$"That today is {Patterns.DateOnly} and following environment")]
-    public void GivenThatTodayIsAndFollowingEnvironment(string todayDateText, Table table)
+    public void GivenThatTodayIsAndFollowingEnvironment(DateOnly todayDate, Table table)
     {
-        _apiDriver.SetToday(todayDateText.ParseDate());
+        _apiDriver.SetToday(todayDate);
         var products = new List<AvailableProductData>(table.Rows.Count);
         foreach (var row in table.Rows)
         {
             var product = new AvailableProductData(
                 storeName: row["Store"],
                 productName: row["Product"],
-                priceText: row["Price"],
-                dateText: row["Expiration"],
-                volumeText: row["UnitVolume"]);
+                price: row["Price"].ParseDecimal(),
+                date: row["Expiration"].ParseDate(),
+                volume: row["UnitVolume"].ParseDecimal());
             products.Add(product);
         }
         _context.Set(products, "Products");
@@ -65,13 +65,13 @@ public class AddJugOfLiquidStepDefinitions
     }
 
     [Given(@$"User {Patterns.QuotedName} bought a {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName}")]
-    public async Task GivenUserBoughtJugToday(string email, decimal volume, string productName, string buyDateText, string storeName)
+    public async Task GivenUserBoughtJugToday(string email, decimal volume, string productName, DateOnly buyDate, string storeName)
     {
         var response = await LoginUserAsync(email);
 
         _context.Set(volume, "Gallons");
         _context.Set(productName, "Product");
-        _context.Set(buyDateText.ParseDate(), "BuyDate");
+        _context.Set(buyDate, "BuyDate");
         _context.Set(storeName, "Store");
     }
 
@@ -82,15 +82,13 @@ public class AddJugOfLiquidStepDefinitions
     }
 
     [Then(@$"The {Patterns.QuotedName} storage area should contain {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} that will expire at {Patterns.DateOnly}")]
-    public void ThenTheStorageAreaShouldContainGallonJugOf(string storageAreaName, decimal volume, string productName, string expirationDateText)
+    public void ThenTheStorageAreaShouldContainGallonJugOf(string storageAreaName, decimal volume, string productName, DateOnly expirationDate)
     {
-        var expirationDate = expirationDateText.ParseDate();
     }
 
     [Then(@$"A transaction was registered: User bought {Patterns.CountWithDecimals} gallon jug of {Patterns.QuotedName} at {Patterns.DateOnly} in {Patterns.QuotedName} and payed {Patterns.Price}")]
-    public void ThenTransactionRegisteredWithUserBoughtGallonJugAndPayed(decimal volume, string productName, string buyDateText, string storeName, decimal price)
+    public void ThenTransactionRegisteredWithUserBoughtGallonJugAndPayed(decimal volume, string productName, DateOnly buyDate, string storeName, decimal price)
     {
-        var buyDate = buyDateText.ParseDate();
     }
 
     private async Task<LoginResponse> LoginUserAsync(string email)
