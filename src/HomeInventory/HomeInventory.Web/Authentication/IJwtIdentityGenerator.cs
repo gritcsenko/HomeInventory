@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Infrastructure.Authentication;
+﻿namespace HomeInventory.Web.Authentication;
 
 public interface IJwtIdentityGenerator
 {

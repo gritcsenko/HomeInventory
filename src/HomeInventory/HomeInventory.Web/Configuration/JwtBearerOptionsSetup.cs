@@ -1,9 +1,8 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HomeInventory.Infrastructure.Authentication;
+namespace HomeInventory.Web.Configuration;
 
 internal class JwtBearerOptionsSetup : IPostConfigureOptions<JwtBearerOptions>
 {
@@ -33,7 +32,7 @@ internal class JwtBearerOptionsSetup : IPostConfigureOptions<JwtBearerOptions>
         ValidAudiences = new[] { _jwtOptions.Audience },
 
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
+        IssuerSigningKey = new SymmetricSecurityKey(_jwtOptions.Key),
 
         ValidAlgorithms = new[] { _jwtOptions.Algorithm },
     };

@@ -3,11 +3,13 @@ using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeInventory.Web.Controllers;
 
 [Route("api/[controller]")]
+[AllowAnonymous]
 public class AuthenticationController : ApiControllerBase
 {
     private readonly ISender _mediator;
