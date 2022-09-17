@@ -2,6 +2,8 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HomeInventory.Application;
+using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Infrastructure;
@@ -16,7 +18,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
 
 namespace HomeInventory.Web;
 
@@ -42,36 +43,21 @@ public static class DependencyInjection
             .AddApplicationPart(Assembly.GetExecutingAssembly())
             .AddControllersAsServices();
 
+        services.AddAuthorization(); // Read https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ => { });
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "HomeInventory.Api",
-                Version = "1.0",
-            });
-            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description = "Please enter token",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = JwtBearerDefaults.AuthenticationScheme,
-            });
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                [new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = JwtBearerDefaults.AuthenticationScheme,
-                    }
-                }] = Array.Empty<string>(),
-            });
-        });
+        services.AddSwaggerGen();
+
+        services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
+        services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
+
+        services.ConfigureOptions<JwtOptionsSetup>();
+        services.ConfigureOptions<JwtBearerOptionsSetup>();
+        services.ConfigureOptions<SwaggerGenOptionsSetup>();
 
         services.AddFluentValidationAutoValidation(c =>
         {

@@ -1,6 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
-namespace HomeInventory.Infrastructure.Authentication;
+namespace HomeInventory.Web.Configuration;
 
 internal class JwtOptions
 {
@@ -9,4 +10,5 @@ internal class JwtOptions
     public string Audience { get; init; } = null!;
     public string Algorithm { get; init; } = SecurityAlgorithms.HmacSha256;
     public TimeSpan Expiry { get; init; }
+    public byte[] Key => Encoding.UTF8.GetBytes(Secret);
 }

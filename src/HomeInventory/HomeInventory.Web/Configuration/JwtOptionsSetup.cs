@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace HomeInventory.Infrastructure.Authentication;
+namespace HomeInventory.Web.Configuration;
 
 internal class JwtOptionsSetup : IConfigureOptions<JwtOptions>
 {

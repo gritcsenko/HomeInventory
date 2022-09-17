@@ -1,13 +1,13 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Web.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HomeInventory.Infrastructure.Authentication;
+namespace HomeInventory.Web.Authentication;
 
 internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 {
@@ -23,7 +23,7 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
         _jtiGenerator = jtiGenerator;
         _jwtOptions = jwtOptionsAccessor.Value;
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
+        var key = new SymmetricSecurityKey(_jwtOptions.Key);
         var signingCredentials = new SigningCredentials(key, _jwtOptions.Algorithm);
         _header = new(signingCredentials);
     }
