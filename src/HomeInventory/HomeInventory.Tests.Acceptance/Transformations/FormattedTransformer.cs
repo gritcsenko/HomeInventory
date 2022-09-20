@@ -6,8 +6,5 @@ namespace HomeInventory.Tests.Acceptance.Transformations;
 public class FormattedTransformer
 {
     [StepArgumentTransformation]
-    public DateOnly TransformDate(string dateText)
-    {
-        return dateText.ParseDate();
-    }
+    public DateOnly TransformDate(string dateText) => dateText.ParseDate();
 }
