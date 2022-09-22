@@ -4,7 +4,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ErrorOr" Version="1.0.0" />
+    <PackageReference Include="ErrorOr" Version="1.0.1" />
     <PackageReference Include="MediatR.Contracts" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="OneOf" Version="3.0.223" />
