@@ -22,5 +22,5 @@ public class DateTimeServiceExtensionsTests : BaseTest
         result.Day.Should().Be(dateTime.Day);
     }
 
-    private IDateTimeService CreateSut(DateTimeOffset dateTime) => new FixedTestingDateTimeService { Now = dateTime };
+    private static IDateTimeService CreateSut(DateTimeOffset dateTime) => new FixedTestingDateTimeService { Now = dateTime };
 }

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using HomeInventory.Domain.Extensions;
+using HomeInventory.Tests.Helpers;
 using NetArchTest.Rules;
 
 namespace HomeInventory.Tests.Architecture;
@@ -24,12 +24,12 @@ public class ArchitectureTests
 {
     [Theory]
     [InlineData(typeof(HomeInventory.Domain.AssemblyReference), new string[0])]
-    [InlineData(typeof(HomeInventory.Application.AssemblyReference), new[] { Namespaces.Domain })]
-    [InlineData(typeof(HomeInventory.Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
-    [InlineData(typeof(HomeInventory.Contracts.AssemblyReference), new string[0])]
-    [InlineData(typeof(HomeInventory.Contracts.Validations.AssemblyReference), new[] { Namespaces.Contracts })]
-    [InlineData(typeof(HomeInventory.Web.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
-    [InlineData(typeof(HomeInventory.Api.AssemblyReference), new[] { Namespaces.Web, Namespaces.Infrastructure })]
+    [InlineData(typeof(Application.AssemblyReference), new[] { Namespaces.Domain })]
+    [InlineData(typeof(Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
+    [InlineData(typeof(Contracts.AssemblyReference), new string[0])]
+    [InlineData(typeof(Contracts.Validations.AssemblyReference), new[] { Namespaces.Contracts })]
+    [InlineData(typeof(Web.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
+    [InlineData(typeof(Api.AssemblyReference), new[] { Namespaces.Web, Namespaces.Infrastructure })]
     public void Should_NotHaveBadDependencies(Type assemblyMarkerType, IEnumerable<string> allowed)
     {
         var assembly = assemblyMarkerType.Assembly;
@@ -46,7 +46,7 @@ public class ArchitectureTests
     [Fact]
     public void CommandHandlers_Should_HaveDependencyOn_Domain()
     {
-        var assembly = HomeInventory.Application.AssemblyReference.Assembly;
+        var assembly = Application.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()
@@ -61,7 +61,7 @@ public class ArchitectureTests
     [Fact]
     public void QueryHandlers_Should_HaveDependencyOn_Domain()
     {
-        var assembly = HomeInventory.Application.AssemblyReference.Assembly;
+        var assembly = Application.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()
@@ -76,7 +76,7 @@ public class ArchitectureTests
     [Fact]
     public void Controllers_Should_HaveDependencyOn_MediatRAndMapster()
     {
-        var assembly = HomeInventory.Web.AssemblyReference.Assembly;
+        var assembly = Web.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()
