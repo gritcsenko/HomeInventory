@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using FluentValidation;
 using HomeInventory.Application.Authentication.Behaviors;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -11,17 +12,12 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-        services.AddStartupFilter<AddMappersFilter>();
-        services.AddMappingSourceFromCurrentAssembly();
+        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        services.AddSingleton<IStartupFilter, AddMappersFilter>();
+        services.AddMappingAssemblySource(AssemblyReference.Assembly);
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);
         return services;
     }
-
-    public static IServiceCollection AddStartupFilter<T>(this IServiceCollection services)
-        where T : class, IStartupFilter =>
-        services.AddSingleton<IStartupFilter, T>();
-
-    public static IServiceCollection AddMappingSourceFromCurrentAssembly(this IServiceCollection services) =>
-        services.AddMappingAssemblySource(Assembly.GetCallingAssembly() ?? throw new InvalidOperationException("Calling assembly is unknown"));
 
     public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, Assembly assembly) =>
         services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assembly));

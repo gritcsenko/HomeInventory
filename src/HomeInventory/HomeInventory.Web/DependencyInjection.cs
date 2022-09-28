@@ -37,7 +37,7 @@ public static class DependencyInjection
 
         services.AddSingleton(sp => new TypeAdapterConfig());
         services.AddScoped<IMapper, ServiceMapper>();
-        services.AddMappingSourceFromCurrentAssembly();
+        services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
         services.AddControllers(o => o.SuppressAsyncSuffixInActionNames = true)
             .AddApplicationPart(Assembly.GetExecutingAssembly())
@@ -63,7 +63,7 @@ public static class DependencyInjection
         {
             c.DisableDataAnnotationsValidation = true;
         });
-        services.AddValidatorsFromAssemblyContaining(typeof(Contracts.Validations.AssemblyReference));
+        services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
 
         return services;
     }
