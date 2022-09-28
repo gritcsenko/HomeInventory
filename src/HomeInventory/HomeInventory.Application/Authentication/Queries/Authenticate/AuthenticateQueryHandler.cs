@@ -1,15 +1,15 @@
 ﻿using ErrorOr;
 using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using MapsterMapper;
-using MediatR;
 using OneOf;
 using OneOf.Types;
 
 namespace HomeInventory.Application.Authentication.Queries.Authenticate;
-internal class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, ErrorOr<AuthenticateResult>>
+internal class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, AuthenticateResult>
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
     private readonly IUserRepository _userRepository;

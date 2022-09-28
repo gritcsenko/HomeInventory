@@ -1,15 +1,15 @@
 ﻿using ErrorOr;
+using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
 using MapsterMapper;
-using MediatR;
 using OneOf;
 using OneOf.Types;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;
-internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<RegistrationResult>>
+internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegistrationResult>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
