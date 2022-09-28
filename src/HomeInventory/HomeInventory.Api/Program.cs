@@ -6,7 +6,7 @@ using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMediatR(typeof(HomeInventory.Application.IAssemblyMarker), typeof(HomeInventory.Infrastructure.IAssemblyMarker));
+builder.Services.AddMediatR(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly);
 
 builder.Services.AddDomain();
 builder.Services.AddInfrastructure();
