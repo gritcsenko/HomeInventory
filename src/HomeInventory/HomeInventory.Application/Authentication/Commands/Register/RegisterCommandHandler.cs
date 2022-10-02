@@ -1,14 +1,14 @@
 ﻿using FluentResults;
+using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
 using MapsterMapper;
-using MediatR;
 using OneOf;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;
-internal class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<RegistrationResult>>
+internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegistrationResult>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
