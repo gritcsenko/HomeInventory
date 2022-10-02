@@ -3,8 +3,8 @@ using FluentAssertions;
 using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using MapsterMapper;
@@ -49,7 +49,7 @@ public class RegisterCommandHandlerTests : BaseTest
         var result = await sut.Handle(_command, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsError.Should().BeFalse();
+        result.IsFailed.Should().BeFalse();
         result.Value.Should().NotBeNull();
         result.Value.Id.Should().Be(user.Id);
     }
@@ -66,8 +66,8 @@ public class RegisterCommandHandlerTests : BaseTest
         var result = await sut.Handle(_command, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().HaveCount(1).And.OnlyContain(e => e.Equals(Errors.User.UserCreation));
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().HaveCount(1).And.OnlyContain(e => e is UserCreationError);
     }
 
     [Fact]
@@ -82,8 +82,8 @@ public class RegisterCommandHandlerTests : BaseTest
         var result = await sut.Handle(_command, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().HaveCount(1).And.OnlyContain(e => e.Equals(Errors.User.DuplicateEmail));
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().HaveCount(1).And.OnlyContain(e => e is DuplicateEmailError);
         _ = _userRepository.DidNotReceiveWithAnyArgs().CreateAsync(_createUserSpecification);
     }
 }

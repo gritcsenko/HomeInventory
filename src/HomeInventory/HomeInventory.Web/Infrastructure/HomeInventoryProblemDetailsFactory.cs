@@ -85,7 +85,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Extensions["traceId"] = traceId;
         }
 
-        var errorCodes = httpContext.GetItem(HttpContextItems.Errors)?.Select(e => e.Code);
+        var errorCodes = httpContext.GetItem(HttpContextItems.Errors)?.Select(e => e.GetType().Name);
         if (errorCodes != null)
         {
             problemDetails.Extensions["errorCodes"] = errorCodes;

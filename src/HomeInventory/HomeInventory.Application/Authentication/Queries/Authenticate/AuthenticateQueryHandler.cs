@@ -1,15 +1,15 @@
-﻿using ErrorOr;
+﻿using FluentResults;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Errors;
 using MapsterMapper;
 using MediatR;
 using OneOf;
-using OneOf.Types;
 
 namespace HomeInventory.Application.Authentication.Queries.Authenticate;
-internal class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, ErrorOr<AuthenticateResult>>
+internal class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, Result<AuthenticateResult>>
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
     private readonly IUserRepository _userRepository;
@@ -22,24 +22,24 @@ internal class AuthenticateQueryHandler : IRequestHandler<AuthenticateQuery, Err
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<AuthenticateResult>> Handle(AuthenticateQuery request, CancellationToken cancellationToken)
+    public async Task<Result<AuthenticateResult>> Handle(AuthenticateQuery request, CancellationToken cancellationToken)
     {
         var result = await TryFindUserAsync(request, cancellationToken);
         if (result.TryPickT1(out _, out var user))
         {
-            return Domain.Errors.Authentication.InvalidCredentials;
+            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
         }
 
         if (user.Password != request.Password)
         {
-            return Domain.Errors.Authentication.InvalidCredentials;
+            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
         }
 
         var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);
         return new AuthenticateResult(user.Id, token);
     }
 
-    private async Task<OneOf<User, NotFound>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken)
+    private async Task<OneOf<User, OneOf.Types.NotFound>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken)
     {
         var specification = _mapper.Map<FilterSpecification<User>>(request);
         return await _userRepository.FindFirstOrNotFoundAsync(specification, cancellationToken);

@@ -1,9 +1,10 @@
 using AutoFixture;
 using FluentAssertions;
+using FluentResults;
 using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
-using HomeInventory.Domain;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Controllers;
@@ -108,31 +109,31 @@ public class AuthenticationControllerTests : BaseTest
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         // Given
-        var error = Errors.User.DuplicateEmail;
-        _mediator.Send(_registerCommand, CancellationToken).Returns(error);
+        var error = new DuplicateEmailError();
+        _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Fail<RegistrationResult>(error));
         var sut = CreateSut().WithHttpContext();
         // When
         var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
         // Then
         var details = result.Should().NotHaveStatusCode(StatusCodes.Status200OK)
             .And.HaveValueAssignableTo<ProblemDetails>()
-            .Which.Should().Match(x => x.Title == error.Code)
-            .And.Match(x => x.Detail == error.Description);
+            .Which.Should().Match(x => x.Title == error.GetType().Name)
+            .And.Match(x => x.Detail == error.Message);
     }
 
     [Fact]
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
         // Given
-        var error = Errors.Authentication.InvalidCredentials;
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(error);
+        var error = new InvalidCredentialsError();
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Fail<AuthenticateResult>(error));
         var sut = CreateSut().WithHttpContext();
         // When
         var result = await sut.LoginAsync(_loginRequest, CancellationToken);
         // Then
         var details = result.Should().NotHaveStatusCode(StatusCodes.Status200OK)
             .And.HaveValueAssignableTo<ProblemDetails>()
-            .Which.Should().Match(x => x.Title == error.Code)
-            .And.Match(x => x.Detail == error.Description);
+            .Which.Should().Match(x => x.Title == error.GetType().Name)
+            .And.Match(x => x.Detail == error.Message);
     }
 }
