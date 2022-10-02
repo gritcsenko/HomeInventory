@@ -63,7 +63,7 @@ public static class DependencyInjection
         {
             c.DisableDataAnnotationsValidation = true;
         });
-        services.AddValidatorsFromAssemblyContaining<Contracts.Validations.IAssemblyMarker>();
+        services.AddValidatorsFromAssemblyContaining(typeof(Contracts.Validations.AssemblyReference));
 
         return services;
     }
