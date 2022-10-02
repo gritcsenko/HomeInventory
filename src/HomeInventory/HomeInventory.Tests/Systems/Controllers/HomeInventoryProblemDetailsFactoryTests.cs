@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using AutoFixture;
 using FluentAssertions;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -117,7 +118,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
     {
         var sut = CreateSut();
-        var errors = new[] { HomeInventory.Domain.Errors.User.UserCreation };
+        var errors = new[] { new UserCreationError() };
         _context.Items.Returns(new Dictionary<object, object?> { ["Errors"] = errors });
 
         var details = sut.CreateProblemDetails(_context);
@@ -125,7 +126,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Should().NotBeNull();
         details.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
-            .Which.Should().BeEquivalentTo(new[] { errors[0].Code });
+            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
     [Fact]
@@ -214,7 +215,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateValidationProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
     {
         var sut = CreateSut();
-        var errors = new[] { HomeInventory.Domain.Errors.User.UserCreation };
+        var errors = new[] { new UserCreationError() };
         _context.Items.Returns(new Dictionary<object, object?> { ["Errors"] = errors });
 
         var details = sut.CreateValidationProblemDetails(_context, _state);
@@ -222,7 +223,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Should().NotBeNull();
         details.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
-            .Which.Should().BeEquivalentTo(new[] { errors[0].Code });
+            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
     private HomeInventoryProblemDetailsFactory CreateSut() => new(_optionsAccessor);

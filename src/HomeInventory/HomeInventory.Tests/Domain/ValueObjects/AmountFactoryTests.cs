@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using FluentAssertions;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Helpers;
 
@@ -16,8 +17,8 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(0m, unknownUnit);
 
-        result.IsError.Should().BeTrue();
-        result.Errors[0].Should().Be(HomeInventory.Domain.Errors.Domain.ValidatorNotFound);
+        result.IsFailed.Should().BeTrue();
+        result.Errors[0].Should().BeAssignableTo<ValidatorNotFoundError>();
     }
 
     [Fact]
@@ -28,7 +29,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, AmountUnit.Piece);
 
-        result.IsError.Should().BeTrue();
+        result.IsFailed.Should().BeTrue();
     }
 
     [Theory]
@@ -40,7 +41,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, unit);
 
-        result.IsError.Should().BeTrue();
+        result.IsFailed.Should().BeTrue();
     }
 
     [Theory]
@@ -52,7 +53,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, unit);
 
-        result.IsError.Should().BeFalse();
+        result.IsFailed.Should().BeFalse();
         var amount = result.Value;
         amount.Value.Should().Be(value);
         amount.Unit.Should().Be(unit);

@@ -1,8 +1,8 @@
-﻿using ErrorOr;
+﻿using FluentResults;
 
 namespace HomeInventory.Domain.ValueObjects;
 
 public interface IAmountFactory
 {
-    ErrorOr<Amount> Create(decimal value, AmountUnit unit);
+    Result<Amount> Create(decimal value, AmountUnit unit);
 }

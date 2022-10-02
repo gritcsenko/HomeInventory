@@ -1,5 +1,4 @@
-﻿using ErrorOr;
-using HomeInventory.Domain.Entities;
+﻿using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Mapster;
@@ -17,9 +16,5 @@ internal class ModelMappings : IRegister
             .ConstructUsing(m => new User(CreateUserId(MapContext.Current.GetService<IUserIdFactory>(), m.Id)));
     }
 
-    private static UserId CreateUserId(IUserIdFactory factory, Guid id) =>
-        factory.Create(id).Match(x => x, ReportError<UserId>);
-
-    private static T ReportError<T>(IReadOnlyCollection<Error> errors) =>
-        throw new InvalidOperationException(errors.First().ToString());
+    private static UserId CreateUserId(IUserIdFactory factory, Guid id) => factory.Create(id).Value;
 }

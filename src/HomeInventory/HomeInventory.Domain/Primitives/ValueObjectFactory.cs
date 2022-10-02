@@ -1,11 +1,12 @@
-﻿using ErrorOr;
+﻿using FluentResults;
+using HomeInventory.Domain.Errors;
 
 namespace HomeInventory.Domain.Primitives;
 
 public abstract class ValueObjectFactory<TObject>
     where TObject : notnull, ValueObject<TObject>
 {
-    protected ErrorOr<TObject> GetValidationError() => GetValidationErrorCore();
+    protected Result<TObject> GetValidationError<TValue>(TValue value) => Result.Fail<TObject>(GetValidationErrorCore(value));
 
-    protected virtual Error GetValidationErrorCore() => Error.Validation();
+    protected virtual Error GetValidationErrorCore<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
 }

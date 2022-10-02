@@ -1,9 +1,9 @@
-﻿using ErrorOr;
+﻿using FluentResults;
 
 namespace HomeInventory.Domain.ValueObjects;
 
 public interface IUserIdFactory
 {
     UserId CreateNew();
-    ErrorOr<UserId> Create(Guid id);
+    Result<UserId> Create(Guid id);
 }
