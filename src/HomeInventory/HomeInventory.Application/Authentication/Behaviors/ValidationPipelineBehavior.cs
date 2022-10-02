@@ -1,11 +1,12 @@
-﻿using ErrorOr;
+﻿using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
+using HomeInventory.Domain.Errors;
 using MediatR;
 
 namespace HomeInventory.Application.Authentication.Behaviors;
-internal class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, ErrorOr<TResponse>>
-     where TRequest : IRequest<ErrorOr<TResponse>>
+internal class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>>
+     where TRequest : IRequest<Result<TResponse>>
 {
     private readonly IReadOnlyCollection<IValidator<TRequest>> _validators;
 
@@ -14,7 +15,7 @@ internal class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavi
         _validators = validators.ToArray();
     }
 
-    public async Task<ErrorOr<TResponse>> Handle(TRequest request, RequestHandlerDelegate<ErrorOr<TResponse>> next, CancellationToken cancellationToken)
+    public async Task<Result<TResponse>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse>> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any())
         {
@@ -37,8 +38,8 @@ internal class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavi
             return await next();
         }
 
-        return ErrorOr<TResponse>.From(errors);
+        return Result.Fail<TResponse>(errors);
     }
 
-    private static Error ConvertToError(ValidationFailure failure) => Error.Validation(failure.ErrorCode, failure.ErrorMessage);
+    private static Error ConvertToError(ValidationFailure failure) => new ValidationError(failure.ErrorMessage);
 }
