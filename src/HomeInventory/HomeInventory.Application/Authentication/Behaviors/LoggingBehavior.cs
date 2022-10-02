@@ -14,7 +14,7 @@ internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
 
     public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger) => _logger = logger;
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{Request} was sent and expecting {Response}", RequestName, ResponseName);
         var response = await next();
