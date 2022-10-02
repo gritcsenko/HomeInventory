@@ -1,11 +1,11 @@
-﻿using ErrorOr;
+﻿using FluentResults;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Infrastructure;
 
 internal static class HttpContextItems
 {
-    public static HttpContextItem<IEnumerable<Error>> Errors { get; } = new HttpContextItem<IEnumerable<Error>> { Name = nameof(Errors) };
+    public static HttpContextItem<IEnumerable<IError>> Errors { get; } = new HttpContextItem<IEnumerable<IError>> { Name = nameof(Errors) };
 
     public static void SetItem<T>(this HttpContext context, HttpContextItem<T> item, T? value)
         where T : class

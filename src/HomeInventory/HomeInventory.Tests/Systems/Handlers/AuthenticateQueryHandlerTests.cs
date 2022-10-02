@@ -4,8 +4,8 @@ using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using MapsterMapper;
@@ -46,7 +46,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsError.Should().BeFalse();
+        result.IsFailed.Should().BeFalse();
         result.Value.Should().NotBeNull();
         result.Value.Id.Should().Be(_user.Id);
         result.Value.Token.Should().Be(token);
@@ -56,7 +56,6 @@ public class AuthenticateQueryHandlerTests : BaseTest
     public async Task Handle_OnNotFound_ReturnsError()
     {
         // Given
-        var error = Errors.Authentication.InvalidCredentials;
         var query = Fixture.Create<AuthenticateQuery>();
         var specification = MapToSpecification(query);
         _userRepository.FindFirstOrNotFoundAsync(specification, CancellationToken).Returns(new NotFound());
@@ -66,8 +65,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Equals(error));
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e is InvalidCredentialsError);
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
     }
 
@@ -75,7 +74,6 @@ public class AuthenticateQueryHandlerTests : BaseTest
     public async Task Handle_OnBadPassword_ReturnsError()
     {
         // Given
-        var error = Errors.Authentication.InvalidCredentials;
         var query = new AuthenticateQuery(_user.Email, Fixture.Create<string>());
         var specification = MapToSpecification(query);
         _userRepository.FindFirstOrNotFoundAsync(specification, CancellationToken).Returns(_user);
@@ -85,8 +83,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Equals(error));
+        result.IsFailed.Should().BeTrue();
+        result.Errors.Should().ContainSingle(e => e is InvalidCredentialsError);
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
     }
 

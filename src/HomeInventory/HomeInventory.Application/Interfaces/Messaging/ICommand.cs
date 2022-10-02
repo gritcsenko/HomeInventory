@@ -1,9 +1,9 @@
-﻿using ErrorOr;
+﻿using FluentResults;
 using MediatR;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 
-public interface ICommand<TResponse> : IRequest<ErrorOr<TResponse>>
+public interface ICommand<TResponse> : IRequest<Result<TResponse>>
 {
 }
 

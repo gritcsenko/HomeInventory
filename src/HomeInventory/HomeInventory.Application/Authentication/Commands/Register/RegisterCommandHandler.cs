@@ -1,12 +1,11 @@
-﻿using ErrorOr;
+﻿using FluentResults;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Errors;
 using MapsterMapper;
 using OneOf;
-using OneOf.Types;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;
 internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegistrationResult>
@@ -20,18 +19,18 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
         _mapper = mapper;
     }
 
-    public async Task<ErrorOr<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<Result<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         if (await IsUserHasEmailAsync(request, cancellationToken))
         {
-            return Errors.User.DuplicateEmail;
+            return Result.Fail<RegistrationResult>(new DuplicateEmailError());
         }
 
         var result = await CreateUserAsync(request, cancellationToken);
 
-        return result.Match<ErrorOr<RegistrationResult>>(
+        return result.Match(
             user => new RegistrationResult(user.Id),
-            _ => Errors.User.UserCreation);
+            _ => Result.Fail<RegistrationResult>(new UserCreationError()));
     }
 
     private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken)
@@ -40,7 +39,7 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
         return await _userRepository.HasAsync(specification, cancellationToken);
     }
 
-    private async Task<OneOf<User, None>> CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
+    private async Task<OneOf<User, OneOf.Types.None>> CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
         var specification = _mapper.Map<CreateUserSpecification>(request);
         return await _userRepository.CreateAsync(specification, cancellationToken);

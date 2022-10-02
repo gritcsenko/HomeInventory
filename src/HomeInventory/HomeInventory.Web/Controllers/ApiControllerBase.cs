@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+﻿using FluentResults;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,21 +15,20 @@ public abstract class ApiControllerBase : ControllerBase
     {
     }
 
-    protected IActionResult Problem(IReadOnlyCollection<Error> errors)
+    protected IActionResult Problem(IReadOnlyCollection<IError> errors)
     {
         HttpContext.SetItem(HttpContextItems.Errors, errors);
         var firstError = errors.First();
-        var statusCode = firstError.Type switch
+
+        var statusCode = firstError switch
         {
-            ErrorType.Failure => StatusCodes.Status500InternalServerError,
-            ErrorType.Unexpected => StatusCodes.Status417ExpectationFailed,
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            var x => (int)x,
+            ConflictError => StatusCodes.Status409Conflict,
+            ValidationError => StatusCodes.Status400BadRequest,
+            NotFoundError => StatusCodes.Status404NotFound,
+            _ => StatusCodes.Status500InternalServerError,
         };
-        return Problem(detail: firstError.Description, statusCode: statusCode, title: firstError.Code);
+        return Problem(detail: firstError.Message, statusCode: statusCode, title: firstError.GetType().Name);
     }
 
-    protected IActionResult Match<T>(ErrorOr<T> errorOrResult, Func<T, IActionResult> onValue) => errorOrResult.Match(onValue, Problem);
+    protected IActionResult Match<T>(Result<T> errorOrResult, Func<T, IActionResult> onValue) => errorOrResult.IsSuccess ? onValue(errorOrResult.Value) : Problem(errorOrResult.Errors);
 }

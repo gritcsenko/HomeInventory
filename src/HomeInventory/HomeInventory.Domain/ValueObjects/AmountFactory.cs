@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+﻿using FluentResults;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
@@ -12,13 +13,13 @@ internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
         new(AmountUnit.CubicMeter, x => x >= 0m),
     }.ToDictionary(x => x.Unit);
 
-    public ErrorOr<Amount> Create(decimal value, AmountUnit unit) => Create(value, GetValidator(unit));
+    public Result<Amount> Create(decimal value, AmountUnit unit) => Create(value, GetValidator(unit));
 
-    private static ErrorOr<Validator> GetValidator(AmountUnit unit) =>
-        _validators.TryGetValue(unit, out var validator) ? validator : (ErrorOr<Validator>)Errors.Domain.ValidatorNotFound;
+    private static Result<Validator> GetValidator(AmountUnit unit) =>
+        _validators.TryGetValue(unit, out var validator) ? validator : Result.Fail<Validator>(new ValidatorNotFoundError(unit));
 
-    private ErrorOr<Amount> Create(decimal value, ErrorOr<Validator> validator) =>
-        validator.Match(onValue: v => v.IsValid(value) ? new Amount(value, v.Unit) : GetValidationError(), onError: x => x);
+    private Result<Amount> Create(decimal value, Result<Validator> validationResult) =>
+        validationResult.Bind(v => v.IsValid(value) ? new Amount(value, v.Unit) : GetValidationError((value, v.Unit)));
 
     private class Validator
     {
