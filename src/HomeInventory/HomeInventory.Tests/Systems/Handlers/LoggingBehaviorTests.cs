@@ -30,7 +30,7 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        var response = await sut.Handle(_request, CancellationToken, () => Task.FromResult(_response));
+        var response = await sut.Handle(_request, () => Task.FromResult(_response), CancellationToken);
 
         response.Value.Should().Be(_response.Value);
     }
@@ -40,13 +40,13 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        _ = await sut.Handle(_request, CancellationToken, () =>
+        _ = await sut.Handle(_request, () =>
         {
             _logger
                 .Received(1)
                 .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
             return Task.FromResult(_response);
-        });
+        }, CancellationToken);
     }
 
     [Fact]
@@ -54,11 +54,11 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        _ = await sut.Handle(_request, CancellationToken, () =>
+        _ = await sut.Handle(_request, () =>
         {
             _logger.ClearReceivedCalls();
             return Task.FromResult(_response);
-        });
+        }, CancellationToken);
 
         _logger
             .Received(1)
