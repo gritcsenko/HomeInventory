@@ -14,7 +14,7 @@ internal class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavi
         _validators = validators.ToArray();
     }
 
-    public async Task<ErrorOr<TResponse>> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<ErrorOr<TResponse>> next)
+    public async Task<ErrorOr<TResponse>> Handle(TRequest request, RequestHandlerDelegate<ErrorOr<TResponse>> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any())
         {
