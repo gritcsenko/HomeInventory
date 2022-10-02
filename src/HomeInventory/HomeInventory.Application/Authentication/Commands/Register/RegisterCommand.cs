@@ -1,9 +1,8 @@
-﻿using FluentResults;
-using MediatR;
+﻿using HomeInventory.Application.Interfaces.Messaging;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;
 public record class RegisterCommand(
     string FirstName,
     string LastName,
     string Email,
-    string Password) : IRequest<Result<RegistrationResult>>;
+    string Password) : ICommand<RegistrationResult>;
