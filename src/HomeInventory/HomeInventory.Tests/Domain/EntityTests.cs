@@ -35,7 +35,7 @@ public class EntityTests : BaseTest
         var id = Fixture.Create<EntityId>();
         var sut = new TestEntity(id);
 
-        var result = sut.Equals(default(TestEntity?));
+        var result = sut.Equals(default);
 
         result.Should().BeFalse();
     }

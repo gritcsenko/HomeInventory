@@ -10,7 +10,5 @@ internal class LoginRequestValidator : AbstractValidator<LoginRequest>
         RuleFor(x => x.Email).EmailAddress();
 
         RuleFor(x => x.Password).NotEmpty();
-        RuleFor(x => x.Password).MinimumLength(8);
-        RuleFor(x => x.Password).Password();
     }
 }

@@ -17,7 +17,7 @@ public static class DependencyInjection
         services.AddDatbase();
         services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddMappingSourceFromCurrentAssembly();
+        services.AddMappingAssemblySource(AssemblyReference.Assembly);
         return services;
     }
 
