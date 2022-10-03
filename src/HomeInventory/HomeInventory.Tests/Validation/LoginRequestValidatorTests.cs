@@ -46,10 +46,5 @@ public class LoginRequestValidatorTests : BaseTest
         { null, "123456789sS$" },
         { "anonymous.user@none.email", null },
         { "anonymous.user@none.email", "" },
-        { "anonymous.user@none.email", "1234sS$" },
-        { "anonymous.user@none.email", "123456789sS" },
-        { "anonymous.user@none.email", "123456789s$" },
-        { "anonymous.user@none.email", "123456789S$" },
-        { "anonymous.user@none.email", "sssssssssS$" },
     };
 }
