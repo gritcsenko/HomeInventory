@@ -36,6 +36,12 @@ internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServic
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleSingleton(Type serviceType) =>
         ContainSingle(serviceType, ServiceLifetime.Singleton);
 
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleton(Type serviceType) =>
+        Contain(serviceType, ServiceLifetime.Singleton);
+
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime) =>
         ContainSingle(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
+
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime) =>
+        Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
 }
