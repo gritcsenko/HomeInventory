@@ -6,5 +6,3 @@ public interface IHomeInventoryAPIDriver : IApiDriver
 
     void SetToday(DateOnly today);
 }
-
-

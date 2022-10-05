@@ -7,17 +7,23 @@ namespace HomeInventory.Tests.Acceptance.Drivers;
 
 internal class AuthenticationAPIDriver : IAuthenticationAPIDriver
 {
-    private const string ControllerPath = "/api/Authentication";
-    private TestServer _server;
+    private readonly TestServer _server;
+    private readonly string _basePath;
 
     public AuthenticationAPIDriver(TestServer server)
+        : this(server, "/api/Authentication")
+    {
+    }
+
+    public AuthenticationAPIDriver(TestServer server, string basePath)
     {
         _server = server;
+        _basePath = basePath;
     }
 
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest requestBody)
     {
-        var result = await _server.CreateRequest(ControllerPath + "/register")
+        var result = await _server.CreateRequest(_basePath + "/register")
             .And(m => m.Content = JsonContent.Create(requestBody))
             .PostAsync();
         if (result.StatusCode == System.Net.HttpStatusCode.Conflict)
@@ -33,7 +39,7 @@ internal class AuthenticationAPIDriver : IAuthenticationAPIDriver
 
     public async Task<LoginResponse> LoginAsync(LoginRequest requestBody)
     {
-        var result = await _server.CreateRequest(ControllerPath + "/login")
+        var result = await _server.CreateRequest(_basePath + "/login")
             .And(m => m.Content = JsonContent.Create(requestBody))
             .PostAsync();
 
@@ -43,5 +49,3 @@ internal class AuthenticationAPIDriver : IAuthenticationAPIDriver
         return body.ThrowIfNull().Value;
     }
 }
-
-

@@ -19,5 +19,3 @@ public interface IApiDriver : IDisposable, IAsyncDisposable
 
     HttpClient CreateDefaultClient(Uri baseAddress, params DelegatingHandler[] handlers);
 }
-
-

@@ -3,4 +3,3 @@ internal interface ITestingConfiguration
 {
     public string EnvironmentName { get; }
 }
-

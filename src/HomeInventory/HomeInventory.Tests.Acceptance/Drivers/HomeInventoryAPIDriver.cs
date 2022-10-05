@@ -18,6 +18,7 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
         _configuration = configuration;
         _lazyAuthentication = new(CreateAuthentication, true);
     }
+
     public IAuthenticationAPIDriver Authentication => _lazyAuthentication.Value;
 
     public void SetToday(DateOnly today) =>
