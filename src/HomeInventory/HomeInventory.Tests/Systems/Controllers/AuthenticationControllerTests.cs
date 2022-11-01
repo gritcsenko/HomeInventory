@@ -1,6 +1,7 @@
 using AutoFixture;
 using FluentAssertions;
 using FluentResults;
+using FluentValidation;
 using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
@@ -21,6 +22,9 @@ public class AuthenticationControllerTests : BaseTest
 {
     private readonly ISender _mediator = Substitute.For<ISender>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
+    private readonly IValidator<RegisterRequest> _registerValidator = Substitute.For<IValidator<RegisterRequest>>();
+    private readonly IValidator<LoginRequest> _loginValidator = Substitute.For<IValidator<LoginRequest>>();
+
     private readonly RegisterRequest _registerRequest;
     private readonly RegisterCommand _registerCommand;
     private readonly LoginRequest _loginRequest;
@@ -39,7 +43,7 @@ public class AuthenticationControllerTests : BaseTest
         _mapper.Map<AuthenticateQuery>(_loginRequest).Returns(_authenticateQuery);
     }
 
-    private AuthenticationController CreateSut() => new(_mediator, _mapper);
+    private AuthenticationController CreateSut() => new(_mediator, _mapper, _registerValidator, _loginValidator);
 
     [Fact]
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()

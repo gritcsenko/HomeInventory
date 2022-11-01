@@ -45,7 +45,7 @@ public class UserRepositoryTests : BaseTest
     }
 
     [Fact]
-    public async Task HasAsync_Should_RetrunTrue_WhenUserAdded()
+    public async Task HasAsync_Should_ReturnTrue_WhenUserAdded()
     {
         var id = Fixture.Create<UserId>();
         _userIdFactory.CreateNew().Returns(id);
@@ -59,7 +59,7 @@ public class UserRepositoryTests : BaseTest
     }
 
     [Fact]
-    public async Task FindFirstOrNotFoundAsync_Should_RetrunCorrectUser_WhenUserAdded()
+    public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
         var id = Fixture.Create<UserId>();
         _userIdFactory.CreateNew().Returns(id);

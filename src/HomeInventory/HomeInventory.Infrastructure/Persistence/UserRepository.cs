@@ -2,6 +2,7 @@
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
 using MapsterMapper;
 using OneOf;
@@ -11,7 +12,6 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal class UserRepository : IUserRepository
 {
-    private static readonly ICollection<User> _users = new List<User>();
     private readonly IUserIdFactory _userIdFactory;
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
@@ -27,14 +27,21 @@ internal class UserRepository : IUserRepository
         where TSpecification : class, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
-        return _users.AsQueryable().FirstOrDefault(specification.ToExpression()) ?? (OneOf<User, NotFound>)new NotFound();
+        var expression = specification.ToExpression().Map().To<UserModel>();
+        if (_context.Users.FirstOrDefault(expression) is { } userModel)
+        {
+            return _mapper.Map<User>(userModel);
+        }
+
+        return new NotFound();
     }
 
     public async Task<bool> HasAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
         where TSpecification : class, IExpressionSpecification<User, bool>
     {
         await ValueTask.CompletedTask;
-        return _users.AsQueryable().Any(specification.ToExpression());
+        var expression = specification.ToExpression().Map().To<UserModel>();
+        return _context.Users.Any(expression);
     }
 
     public async Task<OneOf<User, None>> CreateAsync<TSpecification>(TSpecification specification, CancellationToken cancellationToken = default)
@@ -55,9 +62,9 @@ internal class UserRepository : IUserRepository
             Email = specification.Email,
             Password = specification.Password,
         };
-        _users.Add(user);
 
         var model = _mapper.Map<UserModel>(user);
+
         await _context.Users.AddAsync(model, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
         return user;
