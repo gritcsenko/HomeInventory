@@ -5,14 +5,14 @@ public interface IEntity
 }
 
 public interface IEntity<TEntity> : IEntity
-    where TEntity : notnull, IEntity<TEntity>
+    where TEntity : IEntity<TEntity>
 {
 
 }
 
-public interface IEntity<TEntity, TIdentifier> : IEntity<TEntity>, IEquatable<TEntity>
-    where TIdentifier : notnull, IIdentifierObject<TIdentifier>
-    where TEntity : notnull, IEntity<TEntity, TIdentifier>
+public interface IEntity<TEntity, out TIdentifier> : IEntity<TEntity>, IEquatable<TEntity>
+    where TIdentifier : IIdentifierObject<TIdentifier>
+    where TEntity : IEntity<TEntity, TIdentifier>
 {
     TIdentifier Id { get; }
 }

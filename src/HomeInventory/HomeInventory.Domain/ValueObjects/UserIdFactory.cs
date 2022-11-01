@@ -9,5 +9,5 @@ internal sealed class UserIdFactory : ValueObjectFactory<UserId>, IUserIdFactory
 
     public UserId CreateNew() => CreateCore(Guid.NewGuid());
 
-    private UserId CreateCore(Guid id) => new(id);
+    private static UserId CreateCore(Guid id) => new(id);
 }
