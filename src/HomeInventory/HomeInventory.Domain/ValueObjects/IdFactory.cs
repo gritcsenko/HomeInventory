@@ -10,14 +10,14 @@ internal sealed class IdFactory<TId, TValue> : ValueObjectFactory<TId>, IIdFacto
     private readonly Func<TValue, bool> _isValidFunc;
     private readonly Func<TValue> _generateNewValueFunc;
 
-    public IdFactory(Func<TValue, TId> createIdFunc, Func<TValue, bool> isValidFunc, Func<TValue> generateNewValueFunc)
+    public IdFactory(Func<TValue, bool> isValidFunc, Func<TValue, TId> createIdFunc, Func<TValue> generateNewValueFunc)
     {
         _createIdFunc = createIdFunc;
         _isValidFunc = isValidFunc;
         _generateNewValueFunc = generateNewValueFunc;
     }
 
-    public IResult<TId> CreateFrom(TValue id) => Result.FailIf(!_isValidFunc(id), GetValidationError(id)).Bind(() => Result.Ok(_createIdFunc(id)));
+    public IResult<TId> CreateFrom(TValue id) => TryCreate(id, _isValidFunc, _createIdFunc);
 
     public TId CreateNew() => _createIdFunc(_generateNewValueFunc());
 }

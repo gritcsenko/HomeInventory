@@ -7,6 +7,6 @@ public static class GuidIdFactory
     public static IIdFactory<TId, Guid> Create<TId>(Func<Guid, TId> createIdFunc)
         where TId : IIdentifierObject<TId>
     {
-        return new IdFactory<TId, Guid>(createIdFunc, id => id != Guid.Empty, Guid.NewGuid);
+        return new IdFactory<TId, Guid>(id => id != Guid.Empty, createIdFunc, Guid.NewGuid);
     }
 }
