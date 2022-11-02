@@ -17,8 +17,13 @@ public class DomainDependencyInjectionTests : BaseTest
         _services.AddDomain();
         var provider = _factory.CreateServiceProvider(_services);
 
-        _services.Should().ContainSingleTransient<IUserIdFactory>(provider);
-        _services.Should().ContainSingleTransient<IMaterialIdFactory>(provider);
-        _services.Should().ContainSingleTransient<IProductIdFactory>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<UserId>>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<UserId, Guid>>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<MaterialId>>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<MaterialId, Guid>>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<ProductId>>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<ProductId, Guid>>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<StorageAreaId>>(provider);
+        _services.Should().ContainSingleTransient<IIdFactory<StorageAreaId, Guid>>(provider);
     }
 }

@@ -13,14 +13,14 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [Trait("Category", "Unit")]
 public class UserRepositoryTests : BaseTest
 {
-    private readonly IUserIdFactory _userIdFactory;
+    private readonly IIdFactory<UserId> _userIdFactory;
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
 
     public UserRepositoryTests()
     {
         Fixture.Customize(new UserIdCustomization());
-        _userIdFactory = Substitute.For<IUserIdFactory>();
+        _userIdFactory = Substitute.For<IIdFactory<UserId>>();
         _context = Substitute.For<IDatabaseContext>();
         _mapper = Substitute.For<IMapper>();
     }

@@ -12,11 +12,11 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal class UserRepository : IUserRepository
 {
-    private readonly IUserIdFactory _userIdFactory;
+    private readonly IIdFactory<UserId> _userIdFactory;
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
 
-    public UserRepository(IUserIdFactory userIdFactory, IDatabaseContext context, IMapper mapper)
+    public UserRepository(IIdFactory<UserId> userIdFactory, IDatabaseContext context, IMapper mapper)
     {
         _userIdFactory = userIdFactory;
         _context = context;

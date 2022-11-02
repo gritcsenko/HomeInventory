@@ -19,7 +19,7 @@ public class InfrastructureDependencyInjectionTests : BaseTest
 
     public InfrastructureDependencyInjectionTests()
     {
-        _services.AddSingleton(Substitute.For<IUserIdFactory>());
+        _services.AddSingleton(Substitute.For<IIdFactory<UserId>>());
         _services.AddSingleton(Substitute.For<IHostEnvironment>());
         _services.AddSingleton(Substitute.For<IMapper>());
     }

@@ -17,7 +17,7 @@ public class ModelMappingsTests : BaseMappingsTests
     [MemberData(nameof(Data))]
     public void ShouldMap(object instance, Type destination)
     {
-        Services.AddSingleton<IUserIdFactory>(new UserIdFactory());
+        Services.AddSingleton<IIdFactory<UserId>>(GuidIdFactory.Create(id => new UserId(id)));
         var sut = CreateSut<ModelMappings>();
         var source = instance.GetType();
 

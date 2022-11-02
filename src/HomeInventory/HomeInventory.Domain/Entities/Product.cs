@@ -9,7 +9,9 @@ public class Product : Entity<Product, ProductId>
         : base(id)
     {
     }
+
     public string Name { get; init; } = null!;
+
     public Amount Amount { get; init; } = null!;
 }
 

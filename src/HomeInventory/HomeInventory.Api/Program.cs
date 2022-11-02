@@ -8,6 +8,7 @@ using Serilog;
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
+
 try
 {
     var builder = WebApplication.CreateBuilder(args);
@@ -15,10 +16,11 @@ try
     builder.Host.UseSerilog(ConfigureSerilog, preserveStaticLogger: false, writeToProviders: false);
     builder.Services.AddMediatR(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly);
 
-    builder.Services.AddDomain();
-    builder.Services.AddInfrastructure();
-    builder.Services.AddApplication();
-    builder.Services.AddWeb();
+    builder.Services
+        .AddDomain()
+        .AddInfrastructure()
+        .AddApplication()
+        .AddWeb();
 
     var app = builder.Build();
     app.UseWeb();
@@ -33,7 +35,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "An unhandled exception occured during bootstrapping");
+    Log.Fatal(ex, "An unhandled exception occurred during bootstrapping");
 }
 finally
 {
