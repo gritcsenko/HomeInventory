@@ -19,7 +19,7 @@ internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
         _validators.TryGetValue(unit, out var validator) ? validator : Result.Fail<Validator>(new ValidatorNotFoundError(unit));
 
     private Result<Amount> Create(decimal value, Result<Validator> validationResult) =>
-        validationResult.Bind(v => v.IsValid(value) ? new Amount(value, v.Unit) : GetValidationError((value, v.Unit)));
+        validationResult.Bind(v => Result.FailIf(!v.IsValid(value), GetValidationError((value, v.Unit))).Bind(() => Result.Ok(new Amount(value, v.Unit))));
 
     private class Validator
     {

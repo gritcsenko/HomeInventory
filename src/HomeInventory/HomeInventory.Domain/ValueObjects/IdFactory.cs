@@ -17,7 +17,7 @@ internal sealed class IdFactory<TId, TValue> : ValueObjectFactory<TId>, IIdFacto
         _generateNewValueFunc = generateNewValueFunc;
     }
 
-    public IResult<TId> CreateFrom(TValue id) => !_isValidFunc(id) ? GetValidationError(id) : _createIdFunc(id);
+    public IResult<TId> CreateFrom(TValue id) => Result.FailIf(!_isValidFunc(id), GetValidationError(id)).Bind(() => Result.Ok(_createIdFunc(id)));
 
     public TId CreateNew() => _createIdFunc(_generateNewValueFunc());
 }
