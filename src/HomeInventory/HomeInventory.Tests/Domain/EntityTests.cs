@@ -115,7 +115,7 @@ public class EntityTests : BaseTest
 
         var result = sut.GetHashCode();
 
-        result.Should().Be(id.GetHashCode());
+        result.Should().Be(HashCode.Combine(0, id));
     }
 
     [Fact]

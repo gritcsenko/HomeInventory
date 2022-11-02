@@ -19,7 +19,7 @@ public class AmountUnitTests : BaseTest
     {
         sut.Name.Should().Be(name);
         sut.Measurement.Should().Be(type);
-        sut.CIUnitFactor.Should().Be(factor);
+        sut.MetricUnitFactor.Should().BeApproximately(factor, 0.000_000_000_000_001m);
     }
 
     [Theory]
