@@ -3,6 +3,7 @@ using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Services;
+using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,14 +15,15 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.AddDatbase();
+        services.AddDatabase();
         services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
+        services.TryAddSingleton<ISpecificationEvaluator, SpecificationEvaluator>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
         return services;
     }
 
-    private static IServiceCollection AddDatbase(this IServiceCollection services)
+    private static IServiceCollection AddDatabase(this IServiceCollection services)
     {
         return services.AddDbContext<IDatabaseContext, DatabaseContext>((sp, builder) =>
         {

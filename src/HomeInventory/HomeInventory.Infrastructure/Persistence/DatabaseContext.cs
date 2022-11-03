@@ -12,6 +12,8 @@ internal class DatabaseContext : DbContext, IDatabaseContext
 
     public DbSet<UserModel> Users { get; init; } = null!;
 
+    DbSet<TModel> IDatabaseContext.Set<TModel>() => Set<TModel>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserModelConfiguration());

@@ -1,11 +1,13 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.Entities;
 using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Specifications;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -13,47 +15,62 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [Trait("Category", "Unit")]
 public class UserRepositoryTests : BaseTest
 {
-    private readonly IIdFactory<UserId> _userIdFactory;
-    private readonly IDatabaseContext _context;
-    private readonly IMapper _mapper;
+    private readonly IDatabaseContext _context = Substitute.For<IDatabaseContext>();
+    private readonly IMapper _mapper = Substitute.For<IMapper>();
+    private readonly ISpecificationEvaluator _evaluator = Substitute.For<ISpecificationEvaluator>();
+    private readonly DbSet<UserModel> _set = Substitute.For<DbSet<UserModel>, IQueryable<UserModel>>();
+    private readonly User _user;
+    private readonly UserModel _userModel;
 
     public UserRepositoryTests()
     {
         Fixture.Customize(new UserIdCustomization());
-        _userIdFactory = Substitute.For<IIdFactory<UserId>>();
-        _context = Substitute.For<IDatabaseContext>();
-        _mapper = Substitute.For<IMapper>();
+        _context.Set<UserModel>().Returns(_set);
+        _user = Fixture.Create<User>();
+        _userModel = Fixture.Build<UserModel>()
+            .With(x => x.Id, _user.Id.Id)
+            .With(x => x.Email, _user.Email)
+            .With(x => x.Password, _user.Password)
+            .With(x => x.FirstName, _user.FirstName)
+            .With(x => x.LastName, _user.LastName)
+           .Create();
+        _mapper.Map<UserModel>(_user).Returns(_userModel);
+        _mapper.Map<User>(_userModel).Returns(_user);
+
+        _evaluator.FilterBy(Arg.Any<IQueryable<UserModel>>(), Arg.Any<IFilterSpecification<UserModel>>())
+            .Returns(ci => ci.Arg<IQueryable<UserModel>>().Where(ci.Arg<IFilterSpecification<UserModel>>().QueryExpression));
     }
 
     [Fact]
-    public async Task CreateAsync_Should_CreateUser_AccordingToSpec()
+    public async Task AddAsync_Should_CreateUser_AccordingToSpec()
     {
-        var id = Fixture.Create<UserId>();
-        _userIdFactory.CreateNew().Returns(id);
-        var spec = Fixture.Create<CreateUserSpecification>();
         var sut = CreateSut();
 
-        var result = await sut.CreateAsync(spec, CancellationToken);
+        var actual = await sut.AddAsync(_user, CancellationToken);
 
-        var user = result.AsT0;
-        user.Should().NotBeNull();
-        user.Id.Should().Be(id);
-        user.FirstName.Should().Be(spec.FirstName);
-        user.LastName.Should().Be(spec.LastName);
-        user.Email.Should().Be(spec.Email);
-        user.Password.Should().Be(spec.Password);
+        Received.InOrder(() =>
+        {
+            _ = _set.AddAsync(_userModel, CancellationToken);
+            _ = _context.SaveChangesAsync(CancellationToken);
+        });
+        actual.Should().NotBeNull();
+        actual.Id.Should().Be(_user.Id);
+        actual.FirstName.Should().Be(_user.FirstName);
+        actual.LastName.Should().Be(_user.LastName);
+        actual.Email.Should().Be(_user.Email);
+        actual.Password.Should().Be(_user.Password);
+
     }
 
     [Fact]
     public async Task HasAsync_Should_ReturnTrue_WhenUserAdded()
     {
-        var id = Fixture.Create<UserId>();
-        _userIdFactory.CreateNew().Returns(id);
-        var spec = Fixture.Create<CreateUserSpecification>();
-        var sut = CreateSut();
-        await sut.CreateAsync(spec, CancellationToken);
+        var data = new[] { _userModel }.AsQueryable();
+        _set.AsQueryable().Returns(data);
 
-        var result = await sut.HasAsync(UserSpecifications.HasId(id), CancellationToken);
+        var sut = CreateSut();
+
+        var result = await sut.IsUserHasEmailAsync(_user.Email, CancellationToken);
 
         result.Should().BeTrue();
     }
@@ -61,18 +78,16 @@ public class UserRepositoryTests : BaseTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        var id = Fixture.Create<UserId>();
-        _userIdFactory.CreateNew().Returns(id);
-        var spec = Fixture.Create<CreateUserSpecification>();
+        var data = new[] { _userModel }.AsQueryable();
+        _set.AsQueryable().Returns(data);
         var sut = CreateSut();
-        var expected = await sut.CreateAsync(spec, CancellationToken);
 
-        var result = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(id), CancellationToken);
+        var result = await sut.FindFirstByEmailOrNotFoundUserAsync(_user.Email, CancellationToken);
 
         var actual = result.AsT0;
         actual.Should().NotBeNull();
-        actual.Should().BeEquivalentTo(expected.AsT0);
+        actual.Should().BeEquivalentTo(_user);
     }
 
-    private UserRepository CreateSut() => new(_userIdFactory, _context, _mapper);
+    private UserRepository CreateSut() => new(_context, _mapper, _evaluator);
 }

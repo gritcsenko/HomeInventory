@@ -118,7 +118,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
     {
         var sut = CreateSut();
-        var errors = new[] { new UserCreationError() };
+        var errors = new[] { new DuplicateEmailError() };
         _context.Items.Returns(new Dictionary<object, object?> { ["Errors"] = errors });
 
         var details = sut.CreateProblemDetails(_context);
@@ -215,7 +215,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateValidationProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
     {
         var sut = CreateSut();
-        var errors = new[] { new UserCreationError() };
+        var errors = new[] { new DuplicateEmailError() };
         _context.Items.Returns(new Dictionary<object, object?> { ["Errors"] = errors });
 
         var details = sut.CreateValidationProblemDetails(_context, _state);

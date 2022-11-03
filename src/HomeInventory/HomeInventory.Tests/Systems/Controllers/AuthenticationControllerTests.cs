@@ -2,6 +2,7 @@ using AutoFixture;
 using FluentAssertions;
 using FluentResults;
 using FluentValidation;
+using FluentValidation.Results;
 using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
@@ -41,6 +42,9 @@ public class AuthenticationControllerTests : BaseTest
 
         _mapper.Map<RegisterCommand>(_registerRequest).Returns(_registerCommand);
         _mapper.Map<AuthenticateQuery>(_loginRequest).Returns(_authenticateQuery);
+
+        _registerValidator.ValidateAsync(_registerRequest, CancellationToken).Returns(new ValidationResult());
+        _loginValidator.ValidateAsync(_loginRequest, CancellationToken).Returns(new ValidationResult());
     }
 
     private AuthenticationController CreateSut() => new(_mediator, _mapper, _registerValidator, _loginValidator);
