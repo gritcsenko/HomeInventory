@@ -18,6 +18,10 @@ public class ModelMappingsTests : BaseMappingsTests
     public void ShouldMap(object instance, Type destination)
     {
         Services.AddSingleton(GuidIdFactory.Create(id => new UserId(id)));
+        Services.AddSingleton<IEmailFactory, EmailFactory>();
+        Services.AddSingleton<UserIdConverter>();
+        Services.AddSingleton<EmailConverter>();
+
         var sut = CreateSut<ModelMappings>();
         var source = instance.GetType();
 
@@ -30,6 +34,7 @@ public class ModelMappingsTests : BaseMappingsTests
     {
         var fixture = new Fixture();
         fixture.Customize(new UserIdCustomization());
+        fixture.Customize(new EmailCustomization());
         return new()
         {
             { fixture.Create<UserId>(), typeof(Guid) },

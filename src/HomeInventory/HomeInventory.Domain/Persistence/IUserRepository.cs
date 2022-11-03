@@ -1,0 +1,13 @@
+﻿using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.ValueObjects;
+using OneOf;
+using OneOf.Types;
+
+namespace HomeInventory.Domain.Persistence;
+
+public interface IUserRepository : IRepository<User>
+{
+    Task<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default);
+
+    Task<OneOf<User, NotFound>> FindFirstByEmailOrNotFoundUserAsync(Email email, CancellationToken cancellationToken = default);
+}

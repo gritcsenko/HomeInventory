@@ -1,4 +1,5 @@
 using AutoFixture;
+using AutoMapper;
 using FluentAssertions;
 using FluentResults;
 using FluentValidation;
@@ -10,7 +11,6 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Controllers;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +34,7 @@ public class AuthenticationControllerTests : BaseTest
     public AuthenticationControllerTests()
     {
         Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(new EmailCustomization());
 
         _registerRequest = Fixture.Create<RegisterRequest>();
         _registerCommand = Fixture.Create<RegisterCommand>();

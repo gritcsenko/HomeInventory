@@ -1,21 +1,33 @@
-﻿using HomeInventory.Application.Authentication.Commands.Register;
+﻿using AutoMapper;
+using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
-using Mapster;
 
 namespace HomeInventory.Web.Mapping;
 
-internal class ContractsMappings : IRegister
+internal class ContractsMappings : Profile
 {
-    public void Register(TypeAdapterConfig config)
+    public ContractsMappings()
     {
-        config.NewConfig<UserId, Guid>().MapWith(x => x.Id);
+        CreateMap<UserId, Guid>().ConstructUsing(x => x.Id);
+        CreateMap<string, Email>().ConvertUsing<EmailConverter>();
 
-        config.NewConfig<RegisterRequest, RegisterCommand>();
-        config.NewConfig<RegistrationResult, RegisterResponse>();
+        CreateMap<RegisterRequest, RegisterCommand>();
+        CreateMap<RegistrationResult, RegisterResponse>();
 
-        config.NewConfig<LoginRequest, AuthenticateQuery>();
-        config.NewConfig<AuthenticateResult, LoginResponse>();
+        CreateMap<LoginRequest, AuthenticateQuery>();
+        CreateMap<AuthenticateResult, LoginResponse>();
     }
+}
+
+internal class EmailConverter : IValueConverter<string, Email>, ITypeConverter<string, Email>
+{
+    private readonly IEmailFactory _factory;
+
+    public EmailConverter(IEmailFactory factory) => _factory = factory;
+
+    public Email Convert(string sourceMember, ResolutionContext context) => _factory.CreateFrom(sourceMember).Value;
+
+    public Email Convert(string source, Email destination, ResolutionContext context) => _factory.CreateFrom(source).Value;
 }

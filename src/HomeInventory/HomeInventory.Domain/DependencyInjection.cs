@@ -13,6 +13,7 @@ public static class DependencyInjection
             .AddGuidIdFactory(id => new MaterialId(id))
             .AddGuidIdFactory(id => new ProductId(id))
             .AddGuidIdFactory(id => new StorageAreaId(id));
+        services.AddTransient<IEmailFactory, EmailFactory>();
         return services;
     }
 

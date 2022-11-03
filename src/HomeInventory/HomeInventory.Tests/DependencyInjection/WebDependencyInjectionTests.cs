@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using AutoMapper;
+using FluentAssertions;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Primitives;
@@ -7,8 +8,6 @@ using HomeInventory.Tests.Support;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
-using Mapster;
-using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -23,6 +22,7 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using IConfigurationProvider = Microsoft.Extensions.Configuration.IConfigurationProvider;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
@@ -62,8 +62,7 @@ public class WebDependencyInjectionTests : BaseTest
         _services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
         _services.Should().ContainSingleSingleton<HealthCheckService>(provider);
         _services.Should().ContainSingleSingleton<ProblemDetailsFactory>(provider);
-        _services.Should().ContainSingleSingleton<TypeAdapterConfig>(provider);
-        _services.Should().ContainSingleScoped<IMapper>(provider);
+        _services.Should().ContainSingleTransient<IMapper>(provider);
         _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
         _services.Should().ContainSingleSingleton<IControllerFactory>(provider);
         _services.Should().ContainSingleTransient<ISwaggerProvider>(provider);

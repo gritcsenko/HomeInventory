@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Application.Interfaces.Persistence;
+namespace HomeInventory.Domain.Persistence;
 
 public interface IRepository<TEntity>
     where TEntity : IEntity<TEntity>

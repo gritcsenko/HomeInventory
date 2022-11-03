@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using AutoMapper;
 using FluentAssertions;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Infrastructure.Persistence;
@@ -6,7 +7,6 @@ using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
-using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 
@@ -25,11 +25,12 @@ public class UserRepositoryTests : BaseTest
     public UserRepositoryTests()
     {
         Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(new EmailCustomization());
         _context.Set<UserModel>().Returns(_set);
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()
             .With(x => x.Id, _user.Id.Id)
-            .With(x => x.Email, _user.Email)
+            .With(x => x.Email, _user.Email.Value)
             .With(x => x.Password, _user.Password)
             .With(x => x.FirstName, _user.FirstName)
             .With(x => x.LastName, _user.LastName)

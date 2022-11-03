@@ -43,7 +43,7 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
             new(JwtRegisteredClaimNames.Jti, _jtiGenerator.GenerateNew()),
             new(JwtRegisteredClaimNames.GivenName, user.FirstName),
             new(JwtRegisteredClaimNames.FamilyName, user.LastName),
-            new(JwtRegisteredClaimNames.Email, user.Email)));
+            new(JwtRegisteredClaimNames.Email, user.Email.Value)));
 
     private JwtPayload CreatePayload(params Claim[] claims)
     {

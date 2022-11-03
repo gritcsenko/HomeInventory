@@ -15,7 +15,7 @@ internal static class Namespaces
     public const string Contracts = Prefix + nameof(Contracts);
     public const string ContractsValidation = Contracts + ".Validation";
     public const string MediatR = nameof(MediatR);
-    public const string MapsterMapper = nameof(MapsterMapper);
+    public const string AutoMapper = nameof(AutoMapper);
     public static IEnumerable<string> HomeInventory = new[] { Domain, Application, Infrastructure, Api, Web, Contracts, ContractsValidation };
 }
 
@@ -74,7 +74,7 @@ public class ArchitectureTests
     }
 
     [Fact]
-    public void Controllers_Should_HaveDependencyOn_MediatRAndMapster()
+    public void Controllers_Should_HaveDependencyOn_MediatRAndAutoMapper()
     {
         var assembly = Web.AssemblyReference.Assembly;
 
@@ -84,7 +84,7 @@ public class ArchitectureTests
             .And()
             .AreNotAbstract()
             .Should()
-            .HaveDependencyOnAll(Namespaces.MediatR, Namespaces.MapsterMapper)
+            .HaveDependencyOnAll(Namespaces.MediatR, Namespaces.AutoMapper)
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue();

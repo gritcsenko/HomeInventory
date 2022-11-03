@@ -7,6 +7,7 @@ using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Mapping;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -17,6 +18,8 @@ public class ContractsMappingsTests : BaseMappingsTests
     [MemberData(nameof(Data))]
     public void ShouldMap(object instance, Type destination)
     {
+        Services.AddSingleton<IEmailFactory, EmailFactory>();
+        Services.AddSingleton<EmailConverter>();
         var sut = CreateSut<ContractsMappings>();
         var source = instance.GetType();
 
@@ -29,9 +32,11 @@ public class ContractsMappingsTests : BaseMappingsTests
     {
         var fixture = new Fixture();
         fixture.Customize(new UserIdCustomization());
+        fixture.Customize(new EmailCustomization());
         return new()
         {
             { fixture.Create<UserId>(), typeof(Guid) },
+            { fixture.Create<Email>(), typeof(string) },
             { fixture.Create<RegisterRequest>(), typeof(RegisterCommand) },
             { fixture.Create<RegistrationResult>(), typeof(RegisterResponse) },
             { fixture.Create<LoginRequest>(), typeof(AuthenticateQuery) },

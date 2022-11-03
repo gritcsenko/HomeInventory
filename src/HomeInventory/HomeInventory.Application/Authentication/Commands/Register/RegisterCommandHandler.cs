@@ -1,8 +1,8 @@
 ﻿using FluentResults;
 using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;

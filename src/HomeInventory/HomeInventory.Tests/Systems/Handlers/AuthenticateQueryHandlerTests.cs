@@ -2,9 +2,9 @@
 using FluentAssertions;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using NSubstitute;
@@ -22,6 +22,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     public AuthenticateQueryHandlerTests()
     {
         Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(new EmailCustomization());
         _user = Fixture.Create<User>();
     }
 

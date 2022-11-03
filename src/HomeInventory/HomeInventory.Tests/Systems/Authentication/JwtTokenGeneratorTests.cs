@@ -24,6 +24,7 @@ public class JwtTokenGeneratorTests : BaseTest
     public JwtTokenGeneratorTests()
     {
         Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(new EmailCustomization());
         _dateTimeService = Substitute.For<IDateTimeService>();
         _options = Fixture.Build<JwtOptions>()
             .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
@@ -69,7 +70,7 @@ public class JwtTokenGeneratorTests : BaseTest
             .Which.Should().Be(_user.LastName);
         actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Email)
             .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.Email);
+            .Which.Should().Be(_user.Email.Value);
     }
 
     private JwtTokenGenerator CreateSut() => new(_dateTimeService, _jtiGenerator, Options.Create(_options));

@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using FastExpressionCompiler;
 using FluentAssertions;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
 using HomeInventory.Tests.Helpers;
@@ -18,7 +19,7 @@ public class SpecificationModificationTests : BaseTest
             .With(x => x.Email, email)
             .Create();
         var id = user.Id;
-        var left = new UserHasEmailSpecification(email);
+        var left = new UserHasEmailSpecification(new Email(email));
         var right = new ByIdFilterSpecification<UserModel>(id);
         var sut = left.And(right);
 
@@ -35,7 +36,7 @@ public class SpecificationModificationTests : BaseTest
             .With(x => x.Email, email)
             .Create();
         var id = Fixture.Create<Guid>();
-        var left = new UserHasEmailSpecification(email);
+        var left = new UserHasEmailSpecification(new Email(email));
         var right = new ByIdFilterSpecification<UserModel>(id);
         var sut = left.Or(right);
 

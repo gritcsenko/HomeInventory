@@ -1,9 +1,9 @@
 ﻿using FluentResults;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Persistence;
 using OneOf;
 
 namespace HomeInventory.Application.Authentication.Queries.Authenticate;

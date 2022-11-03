@@ -1,10 +1,10 @@
-﻿using HomeInventory.Application;
-using HomeInventory.Application.Interfaces.Persistence;
+﻿using AutoMapper;
+using HomeInventory.Application;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
 using HomeInventory.Tests.Helpers;
-using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;

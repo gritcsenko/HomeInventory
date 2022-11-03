@@ -2,10 +2,11 @@
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Customizations;
-internal class UserIdCustomization : ICustomization
+
+internal class EmailCustomization : ICustomization
 {
     public void Customize(IFixture fixture)
     {
-        fixture.Customize<UserId>(c => c.FromFactory(() => new UserId(Guid.NewGuid())));
+        fixture.Customize<Email>(c => c.FromFactory<string>(value => new Email(value)));
     }
 }

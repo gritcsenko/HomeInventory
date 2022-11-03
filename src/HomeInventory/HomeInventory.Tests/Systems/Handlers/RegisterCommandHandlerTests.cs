@@ -1,9 +1,9 @@
 using AutoFixture;
 using FluentAssertions;
 using HomeInventory.Application.Authentication.Commands.Register;
-using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
@@ -22,6 +22,7 @@ public class RegisterCommandHandlerTests : BaseTest
     public RegisterCommandHandlerTests()
     {
         Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(new EmailCustomization());
 
         _command = Fixture.Create<RegisterCommand>();
         _userId = Fixture.Create<UserId>();

@@ -1,8 +1,9 @@
-﻿using HomeInventory.Application.Interfaces.Persistence;
+﻿using AutoMapper;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
-using MapsterMapper;
 using OneOf;
 using OneOf.Types;
 
@@ -15,9 +16,9 @@ internal class UserRepository : BaseRepository<UserModel, User>, IUserRepository
     {
     }
 
-    public async Task<bool> IsUserHasEmailAsync(string email, CancellationToken cancellationToken = default) =>
+    public async Task<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default) =>
         await HasAsync(new UserHasEmailSpecification(email), cancellationToken);
 
-    public async Task<OneOf<User, NotFound>> FindFirstByEmailOrNotFoundUserAsync(string email, CancellationToken cancellationToken = default) =>
+    public async Task<OneOf<User, NotFound>> FindFirstByEmailOrNotFoundUserAsync(Email email, CancellationToken cancellationToken = default) =>
         await FindFirstOrNotFoundAsync(new UserHasEmailSpecification(email), cancellationToken);
 }

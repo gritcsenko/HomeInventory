@@ -1,8 +1,8 @@
-﻿using HomeInventory.Application.Interfaces.Persistence;
+﻿using AutoMapper;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
-using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using OneOf;

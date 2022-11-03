@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using FastExpressionCompiler;
 using FluentAssertions;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
 using HomeInventory.Tests.Helpers;
@@ -17,7 +18,7 @@ public class UserHasEmailSpecificationTests : BaseTest
         var user = Fixture.Build<UserModel>()
             .With(x => x.Email, email)
             .Create();
-        var sut = new UserHasEmailSpecification(email);
+        var sut = new UserHasEmailSpecification(new Email(email));
 
         var actual = sut.QueryExpression.CompileFast()(user);
 
@@ -30,7 +31,7 @@ public class UserHasEmailSpecificationTests : BaseTest
         var user = Fixture.Build<UserModel>()
             .With(x => x.Email, Fixture.Create<string>())
             .Create();
-        var sut = new UserHasEmailSpecification(Fixture.Create<string>());
+        var sut = new UserHasEmailSpecification(new Email(Fixture.Create<string>()));
 
         var actual = sut.QueryExpression.CompileFast()(user);
 
