@@ -25,13 +25,11 @@ internal abstract class BaseRepository<TModel, TEntity> : IRepository<TEntity>
         _evaluator = evaluator;
     }
 
-    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
+    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken)
     {
         var model = _mapper.Map<TEntity, TModel>(entity);
 
         await _context.Set<TModel>().AddAsync(model, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-        return entity;
     }
 
     protected async ValueTask<OneOf<TEntity, NotFound>> FindFirstOrNotFoundAsync(IFilterSpecification<TModel> specification, CancellationToken cancellationToken)

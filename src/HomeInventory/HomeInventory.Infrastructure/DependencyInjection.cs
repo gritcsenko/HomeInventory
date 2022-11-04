@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
         services.TryAddSingleton<ISpecificationEvaluator, SpecificationEvaluator>();
         services.AddRepository<User, IUserRepository, UserRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
         return services;
     }

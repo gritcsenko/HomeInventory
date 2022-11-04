@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 

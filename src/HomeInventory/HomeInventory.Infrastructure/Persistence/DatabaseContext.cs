@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
@@ -16,6 +17,7 @@ internal class DatabaseContext : DbContext, IDatabaseContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
         modelBuilder.ApplyConfiguration(new UserModelConfiguration());
     }
 }

@@ -1,15 +1,17 @@
 ﻿using System.Text.Json;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
-    private readonly DatabaseContext _context;
+    private readonly IDatabaseContext _context;
     private readonly IDateTimeService _dateTimeService;
 
-    public UnitOfWork(DatabaseContext context, IDateTimeService dateTimeService)
+    public UnitOfWork(IDatabaseContext context, IDateTimeService dateTimeService)
     {
         _context = context;
         _dateTimeService = dateTimeService;
@@ -64,5 +66,3 @@ internal sealed class UnitOfWork : IUnitOfWork
         }
     }
 }
-
-public record OutboxMessage(Guid Id, DateTimeOffset OccurredOn, string Type, string Content);

@@ -2,8 +2,8 @@
 
 namespace HomeInventory.Domain.Persistence;
 
-public interface IRepository<TEntity>
+public interface IRepository<in TEntity>
     where TEntity : IEntity<TEntity>
 {
-    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
 }

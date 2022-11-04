@@ -10,11 +10,13 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
 {
     private readonly IUserRepository _userRepository;
     private readonly IIdFactory<UserId> _userIdFactory;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IIdFactory<UserId> userIdFactory)
+    public RegisterCommandHandler(IUserRepository userRepository, IIdFactory<UserId> userIdFactory, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _userIdFactory = userIdFactory;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -25,6 +27,7 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
         }
 
         var user = await CreateUserAsync(request, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new RegistrationResult(user.Id);
     }
 
@@ -41,6 +44,7 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
             Email = request.Email,
             Password = request.Password,
         };
-        return await _userRepository.AddAsync(user, cancellationToken);
+        await _userRepository.AddAsync(user, cancellationToken);
+        return user;
     }
 }

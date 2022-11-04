@@ -47,20 +47,12 @@ public class UserRepositoryTests : BaseTest
     {
         var sut = CreateSut();
 
-        var actual = await sut.AddAsync(_user, CancellationToken);
+        await sut.AddAsync(_user, CancellationToken);
 
         Received.InOrder(() =>
         {
             _ = _set.AddAsync(_userModel, CancellationToken);
-            _ = _context.SaveChangesAsync(CancellationToken);
         });
-        actual.Should().NotBeNull();
-        actual.Id.Should().Be(_user.Id);
-        actual.FirstName.Should().Be(_user.FirstName);
-        actual.LastName.Should().Be(_user.LastName);
-        actual.Email.Should().Be(_user.Email);
-        actual.Password.Should().Be(_user.Password);
-
     }
 
     [Fact]

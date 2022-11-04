@@ -16,6 +16,7 @@ public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IIdFactory<UserId> _idFactory = Substitute.For<IIdFactory<UserId>>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly RegisterCommand _command;
     private readonly UserId _userId;
 
@@ -29,14 +30,14 @@ public class RegisterCommandHandlerTests : BaseTest
         _idFactory.CreateNew().Returns(_userId);
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository, _idFactory);
+    private RegisterCommandHandler CreateSut() => new(_userRepository, _idFactory, _unitOfWork);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
     {
         // Given
         _userRepository.IsUserHasEmailAsync(_command.Email, CancellationToken).Returns(false);
-        _userRepository.AddAsync(Arg.Any<User>(), CancellationToken).Returns(ci => ci.Arg<User>());
+        _userRepository.AddAsync(Arg.Any<User>(), CancellationToken).Returns(Task.CompletedTask);
 
         var sut = CreateSut();
         // When
