@@ -27,7 +27,7 @@ internal abstract class BaseRepository<TModel, TEntity> : IRepository<TEntity>
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        var model = _mapper.Map<TModel>(entity);
+        var model = _mapper.Map<TEntity, TModel>(entity);
 
         await _context.Set<TModel>().AddAsync(model, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);

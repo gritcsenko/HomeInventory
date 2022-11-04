@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Application;
+using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
@@ -18,9 +19,18 @@ public static class DependencyInjection
         services.AddDatabase();
         services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
         services.TryAddSingleton<ISpecificationEvaluator, SpecificationEvaluator>();
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddRepository<User, IUserRepository, UserRepository>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
         return services;
+    }
+
+    private static IServiceCollection AddRepository<TEntity, TRepository, TRepositoryImplementation>(this IServiceCollection services)
+        where TEntity : class, IEntity<TEntity>
+        where TRepository : class, IRepository<TEntity>
+        where TRepositoryImplementation : class, TRepository
+    {
+        return services.AddScoped<TRepository, TRepositoryImplementation>()
+            .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>());
     }
 
     private static IServiceCollection AddDatabase(this IServiceCollection services)

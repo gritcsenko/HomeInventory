@@ -3,6 +3,7 @@
 public interface IEntity
 {
 }
+
 public interface IEntityWithId<out TIdentifier> : IEntity
     where TIdentifier : IIdentifierObject<TIdentifier>
 {
