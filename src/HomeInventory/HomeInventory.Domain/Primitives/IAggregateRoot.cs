@@ -4,7 +4,7 @@ namespace HomeInventory.Domain.Primitives;
 
 public interface IAggregateRoot
 {
-    IReadOnlyCollection<IDomainEvent> Events { get; }
+    IReadOnlyCollection<IDomainEvent> GetEvents();
 
     void ClearEvents();
 }

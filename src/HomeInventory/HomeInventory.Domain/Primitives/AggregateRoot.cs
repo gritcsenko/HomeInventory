@@ -13,7 +13,7 @@ public abstract class AggregateRoot<TAggregate, TIdentity> : Entity<TAggregate, 
     {
     }
 
-    public IReadOnlyCollection<IDomainEvent> Events => _events;
+    public IReadOnlyCollection<IDomainEvent> GetEvents() => _events.ToArray();
 
     protected void AddEvent(IDomainEvent @event) => _events.Add(@event);
 

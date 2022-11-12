@@ -34,7 +34,7 @@ internal sealed class UnitOfWork : IUnitOfWork
             .Select(x => x.Entity)
             .SelectMany(root =>
             {
-                var domainEvents = root.Events.ToArray();
+                var domainEvents = root.GetEvents();
                 root.ClearEvents();
                 return domainEvents;
             })
