@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
 
 namespace HomeInventory.Contracts.Validations;
-public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
+
+internal class RegisterRequestValidator : AbstractValidator<RegisterRequest>
 {
     public RegisterRequestValidator()
     {

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using FluentValidation;
 using HomeInventory.Application.Authentication.Behaviors;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -11,8 +12,10 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
         services.AddSingleton<IStartupFilter, AddMappersFilter>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);
         return services;
     }
 
