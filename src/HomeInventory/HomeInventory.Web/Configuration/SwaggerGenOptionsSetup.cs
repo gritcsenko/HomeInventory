@@ -12,7 +12,7 @@ internal class SwaggerGenOptionsSetup : IPostConfigureOptions<SwaggerGenOptions>
     {
     }
 
-    public void PostConfigure(string name, SwaggerGenOptions options)
+    public void PostConfigure(string? name, SwaggerGenOptions options)
     {
         options.SwaggerDoc("v1", new OpenApiInfo
         {

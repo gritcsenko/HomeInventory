@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.x
+        dotnet-version: 7.x
         include-prerelease: true
     - name: Cache dependencies
       uses: actions/cache@v3
