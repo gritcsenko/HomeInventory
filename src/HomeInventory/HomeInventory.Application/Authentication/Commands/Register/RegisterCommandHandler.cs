@@ -23,7 +23,7 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
     {
         if (await IsUserHasEmailAsync(request, cancellationToken))
         {
-            return Result.Fail<RegistrationResult>(new DuplicateEmailError());
+            return new DuplicateEmailError();
         }
 
         var user = await CreateUserAsync(request, cancellationToken);

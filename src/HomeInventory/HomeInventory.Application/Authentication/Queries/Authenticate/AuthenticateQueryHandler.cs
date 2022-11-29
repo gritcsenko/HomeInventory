@@ -23,12 +23,12 @@ internal class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, Authe
         var result = await TryFindUserAsync(request, cancellationToken);
         if (result.TryPickT1(out _, out var user))
         {
-            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
+            return new InvalidCredentialsError();
         }
 
         if (user.Password != request.Password)
         {
-            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
+            return new InvalidCredentialsError();
         }
 
         var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);
