@@ -3,15 +3,33 @@
   <PropertyGroup>
     <UserSecretsId>abc8e7e8-eab5-4b38-8be1-62a2270484f4</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <PublishProfile>DefaultContainer</PublishProfile>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:7.0</ContainerBaseImage>
+    <!--<ContainerRegistry>registry.mycorp.com:1234</ContainerRegistry>-->
+    <ContainerImageTag>0.0.1-alpha1</ContainerImageTag>
+    <ContainerImageTags>0.0.1-alpha1;latest</ContainerImageTags>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Build.Containers" Version="0.2.7" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ContainerPort Include="80" Type="tcp"/>
+    <ContainerLabel Include="certification" Value="certified-by-me"/>
+    <ContainerEnvironmentVariable Include="LOGGER_VERBOSITY" Value="Trace"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Entrypoint Assignment">
+    <ContainerEntrypoint Include="dotnet"/>
+    <ContainerEntrypoint Include="ef"/>
+    <ContainerEntrypoint Include="dotnet;ef"/>
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
     <ProjectReference Include="..\HomeInventory.Web\HomeInventory.Web.csproj" />
