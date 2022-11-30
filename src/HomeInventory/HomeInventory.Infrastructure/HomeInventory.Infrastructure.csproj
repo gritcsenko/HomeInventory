@@ -22,8 +22,4 @@
     <ProjectReference Include="..\HomeInventory.Application\HomeInventory.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Specifications\" />
-  </ItemGroup>
-
 </Project>

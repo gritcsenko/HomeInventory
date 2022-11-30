@@ -1,14 +1,18 @@
 ﻿using System.Reflection;
+using System.Security.Claims;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -45,7 +49,16 @@ public static class DependencyInjection
             .AddApplicationPart(Assembly.GetExecutingAssembly())
             .AddControllersAsServices();
 
-        services.AddAuthorization(); // Read https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0
+        services.AddSingleton<PermissionList>();
+        services.AddSingleton<IAuthorizationHandler, DynamicAuthorizationHandler>();
+
+        services.AddAuthorization(b =>
+        {
+            b.AddPolicy("dynamic", pb => pb
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                .AddRequirements(new DynamicRequirement()));
+        }); // Read https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
@@ -100,8 +113,101 @@ public static class DependencyInjection
             return Results.Problem(detail: exception?.Message);
         });
 
+        app.UseAreaEndpoints();
+        app.CollectEnpointTags(app.ApplicationServices.GetRequiredService<PermissionList>());
+
         app.UseMiddleware<CorrelationIdMiddleware>();
 
         return app;
+    }
+
+    private static IEndpointRouteBuilder UseAreaEndpoints(this IEndpointRouteBuilder builder)
+    {
+        var areas = builder.MapGroup("/api/areas");
+        areas.MapGet("", () => { }).RequireAuthorization("dynamic").WithTags("auth:get-areas", "auth:areas");
+
+        return builder;
+    }
+
+    private static IEndpointRouteBuilder CollectEnpointTags(this IEndpointRouteBuilder builder, PermissionList permissionList)
+    {
+        var datasource = builder.DataSources.First();
+        foreach (var endpoint in datasource.Endpoints)
+        {
+            var tags = endpoint.GetAuthTags();
+
+            foreach (var tag in tags)
+            {
+                permissionList.Add(tag);
+            }
+        }
+
+        return builder;
+    }
+
+    private static IEnumerable<string> GetAuthTags(this Endpoint endpoint)
+    {
+        return endpoint.Metadata
+                .OfType<TagsAttribute>()
+                .SelectMany(a => a.Tags)
+                .Where(a => a?.StartsWith("auth") == true);
+    }
+
+    private class DynamicAuthorizationHandler : AuthorizationHandler<DynamicRequirement>
+    {
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DynamicRequirement requirement)
+        {
+            if (context.Resource is not HttpContext httpContext)
+            {
+                context.Fail(new AuthorizationFailureReason(this, "Context has invalid resource"));
+                return;
+            }
+
+            if (httpContext.GetEndpoint() is not Endpoint endpoint)
+            {
+                context.Fail(new AuthorizationFailureReason(this, "HTTP context has ho endpoint"));
+                return;
+            }
+
+
+            if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) is not string idText)
+            {
+                context.Fail(new AuthorizationFailureReason(this, "User has no id"));
+                return;
+            }
+
+            using var scope = httpContext.RequestServices.CreateScope();
+
+            var userIdFactory = scope.ServiceProvider.GetRequiredService<IIdFactory<UserId, string>>();
+            var userIdResult = userIdFactory.CreateFrom(idText);
+            if (userIdResult.IsFailed)
+            {
+                context.Fail(new AuthorizationFailureReason(this, $"User has invalid id: {string.Join(';', userIdResult.Reasons.Select(r => r.Message))}"));
+                return;
+            }
+            var userId = userIdResult.Value;
+
+            var repository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
+            var tags = endpoint.GetAuthTags();
+            foreach (var tag in tags)
+            {
+                if (await repository.HasPermissionAsync(userId, tag, httpContext.RequestAborted))
+                {
+                    context.Succeed(requirement);
+                    return;
+                }
+            }
+
+            context.Fail(new AuthorizationFailureReason(this, $"User has no permission"));
+        }
+    }
+
+    private class DynamicRequirement : IAuthorizationRequirement
+    {
+    }
+
+    private class PermissionList : HashSet<string>
+    {
     }
 }

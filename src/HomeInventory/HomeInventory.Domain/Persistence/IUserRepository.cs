@@ -10,4 +10,6 @@ public interface IUserRepository : IRepository<User>
     Task<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default);
 
     Task<OneOf<User, NotFound>> FindFirstByEmailOrNotFoundUserAsync(Email email, CancellationToken cancellationToken = default);
+
+    Task<bool> HasPermissionAsync(UserId userId, string tag, CancellationToken cancellationToken = default);
 }

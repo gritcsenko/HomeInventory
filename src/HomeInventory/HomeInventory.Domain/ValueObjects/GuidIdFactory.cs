@@ -9,4 +9,10 @@ public static class GuidIdFactory
     {
         return new IdFactory<TId, Guid>(id => id != Guid.Empty, createIdFunc, Guid.NewGuid);
     }
+
+    public static IIdFactory<TId, string> CreateFromString<TId>(Func<Guid, TId> createIdFunc)
+        where TId : IIdentifierObject<TId>
+    {
+        return new IdFactory<TId, string>(text => Guid.TryParse(text, out var id) && id != Guid.Empty, text => createIdFunc(Guid.Parse(text)), () => Guid.NewGuid().ToString());
+    }
 }

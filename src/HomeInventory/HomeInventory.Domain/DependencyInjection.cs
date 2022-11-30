@@ -20,6 +20,7 @@ public static class DependencyInjection
     private static IServiceCollection AddGuidIdFactory<TId>(this IServiceCollection services, Func<Guid, TId> createIdFunc)
         where TId : IIdentifierObject<TId>
     {
+        services.AddTransient(_ => GuidIdFactory.CreateFromString(createIdFunc));
         services.AddTransient(_ => GuidIdFactory.Create(createIdFunc));
         services.AddTransient<IIdFactory<TId>>(sp => sp.GetRequiredService<IIdFactory<TId, Guid>>());
         return services;
