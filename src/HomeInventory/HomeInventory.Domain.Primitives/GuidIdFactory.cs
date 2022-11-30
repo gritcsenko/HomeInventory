@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-
-namespace HomeInventory.Domain.ValueObjects;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public static class GuidIdFactory
 {

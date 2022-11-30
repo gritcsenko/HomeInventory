@@ -1,6 +1,6 @@
 ﻿using FluentResults;
 
-namespace HomeInventory.Domain.Extensions;
+namespace HomeInventory.Domain;
 
 public static class DictionaryExtensions
 {

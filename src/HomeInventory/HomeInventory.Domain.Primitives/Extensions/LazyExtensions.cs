@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Extensions;
+﻿namespace HomeInventory.Domain;
 
 internal static class LazyExtensions
 {

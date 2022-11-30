@@ -5,6 +5,7 @@ using FluentValidation.AspNetCore;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;

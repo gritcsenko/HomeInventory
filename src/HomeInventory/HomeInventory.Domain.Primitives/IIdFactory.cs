@@ -1,7 +1,6 @@
 ﻿using FluentResults;
-using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Domain.ValueObjects;
+namespace HomeInventory.Domain.Primitives;
 
 public interface IIdFactory<out TId>
     where TId : IIdentifierObject<TId>

@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using OneOf;
 using OneOf.Types;

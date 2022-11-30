@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 

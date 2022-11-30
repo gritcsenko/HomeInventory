@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Persistence;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public interface IUnitOfWork
 {

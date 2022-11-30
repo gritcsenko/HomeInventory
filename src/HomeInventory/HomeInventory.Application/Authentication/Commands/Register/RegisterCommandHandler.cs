@@ -3,6 +3,7 @@ using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Authentication.Commands.Register;

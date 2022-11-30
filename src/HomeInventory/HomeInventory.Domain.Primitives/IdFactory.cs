@@ -1,7 +1,6 @@
 ﻿using FluentResults;
-using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Domain.ValueObjects;
+namespace HomeInventory.Domain.Primitives;
 
 internal sealed class IdFactory<TId, TValue> : ValueObjectFactory<TId>, IIdFactory<TId, TValue>
     where TId : IIdentifierObject<TId>

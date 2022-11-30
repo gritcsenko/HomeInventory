@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Domain.Extensions;
+namespace HomeInventory.Domain;
 
 public static class DateTimeServiceExtensions
 {
