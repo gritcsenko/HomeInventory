@@ -1,7 +1,7 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
-namespace HomeInventory.Domain.Entities;
+namespace HomeInventory.Domain.Aggregates;
 
 public class User : AggregateRoot<User, UserId>
 {
@@ -18,4 +18,3 @@ public class User : AggregateRoot<User, UserId>
 
     public string Password { get; init; } = null!;
 }
-

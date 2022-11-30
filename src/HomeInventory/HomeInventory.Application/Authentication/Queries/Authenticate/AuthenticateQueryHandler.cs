@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using OneOf;

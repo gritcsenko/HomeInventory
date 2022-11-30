@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using AutoMapper;
 using FluentAssertions;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;

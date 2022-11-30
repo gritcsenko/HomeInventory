@@ -2,7 +2,7 @@
 using FluentAssertions;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Tests.Customizations;

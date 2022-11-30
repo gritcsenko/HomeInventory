@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Application;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;

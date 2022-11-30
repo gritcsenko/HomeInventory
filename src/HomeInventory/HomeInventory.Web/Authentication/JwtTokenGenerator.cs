@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Web.Configuration;
 using Microsoft.Extensions.Options;

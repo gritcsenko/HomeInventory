@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;

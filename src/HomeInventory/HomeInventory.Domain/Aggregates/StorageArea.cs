@@ -22,28 +22,25 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
 
     public Result Add(Product item)
     {
-        var node = _products.Find(item);
-        if (node is not null)
+        if (_products.Contains(item))
         {
-            return Result.Fail(new DuplicateProductError(item));
+            return new DuplicateProductError(item);
         }
 
         _products.AddLast(item);
         AddEvent(new ProductAddedEvent(this, item));
-
         return Result.Ok();
     }
 
     public Result Remove(Product item)
     {
-        var node = _products.Find(item);
-        if (node is not null)
+        if (!_products.Contains(item))
         {
-            _products.Remove(item);
-            AddEvent(new ProductRemovedEvent(this, item));
-            return Result.Ok();
+            return new ProductNotFoundError(item);
         }
 
-        return Result.Fail(new ProductNotFoundError(item));
+        _products.Remove(item);
+        AddEvent(new ProductRemovedEvent(this, item));
+        return Result.Ok();
     }
 }
