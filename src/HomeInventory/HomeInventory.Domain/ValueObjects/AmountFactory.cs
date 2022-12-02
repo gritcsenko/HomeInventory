@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives;
+using OneOf;
 
 namespace HomeInventory.Domain.ValueObjects;
 
@@ -13,7 +14,15 @@ internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
         [AmountUnit.CubicMeter] = x => x >= 0m,
     };
 
-    public Result<Amount> Create(decimal value, AmountUnit unit) =>
-        Validators.GetValueOrFail(unit, x => new ValidatorNotFoundError(x))
-            .Bind(v => TryCreate(() => v(value), () => CreateValidationError((value, unit)), () => new Amount(value, unit)));
+    public OneOf<Amount, IError> Create(decimal value, AmountUnit unit)
+    {
+        var validationResult = Validators.GetValueOrFail(unit, x => new ValidatorNotFoundError(x));
+        if (validationResult.HasError<ValidatorNotFoundError>(out var errors))
+        {
+            return CompositeError.Create(errors);
+        }
+
+        var validateFunc = validationResult.Value;
+        return TryCreate(() => validateFunc(value), () => CreateValidationError((value, unit)), () => new Amount(value, unit));
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoFixture;
 using FluentAssertions;
+using HomeInventory.Application.Mapping;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;

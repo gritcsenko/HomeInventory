@@ -1,8 +1,9 @@
 ﻿using FluentResults;
+using OneOf;
 
 namespace HomeInventory.Domain.ValueObjects;
 
 public interface IEmailFactory
 {
-    IResult<Email> CreateFrom(string value);
+    OneOf<Email, IError> CreateFrom(string value);
 }

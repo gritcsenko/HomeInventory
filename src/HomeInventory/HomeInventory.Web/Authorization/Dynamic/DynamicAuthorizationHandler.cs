@@ -6,6 +6,7 @@ using HomeInventory.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using OneOf;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
@@ -33,34 +34,31 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
 
         using var scope = httpContext.RequestServices.CreateScope();
 
-        var userIdResult = CreateId<UserId>(scope, idText);
-        if (userIdResult.IsFailed)
-        {
-            context.Fail(new AuthorizationFailureReason(this, $"User has invalid id: {string.Join(';', userIdResult.Reasons.Select(r => r.Message))}"));
-            return;
-        }
-        var userId = userIdResult.Value;
-
-        var repository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-
-        var permissions = requirement.GetPermissions(endpoint);
-        foreach (var permission in permissions)
-        {
-            if (await repository.HasPermissionAsync(userId, permission.ToString(), httpContext.RequestAborted))
+        await CreateId<UserId>(scope, idText).Match(
+            async userId =>
             {
-                context.Succeed(requirement);
-                return;
-            }
-        }
+                var repository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
-        context.Fail(new AuthorizationFailureReason(this, $"User has no permission"));
+                var permissions = requirement.GetPermissions(endpoint);
+                foreach (var permission in permissions)
+                {
+                    if (await repository.HasPermissionAsync(userId, permission.ToString(), httpContext.RequestAborted))
+                    {
+                        context.Succeed(requirement);
+                        return;
+                    }
+                }
+
+                context.Fail(new AuthorizationFailureReason(this, $"User has no permission"));
+            },
+            error =>
+            {
+                context.Fail(new AuthorizationFailureReason(this, $"User has invalid id: {string.Join(';', error.Reasons.Select(r => r.Message))}"));
+                return Task.CompletedTask;
+            });
     }
 
-    private static IResult<TId> CreateId<TId>(IServiceScope scope, string idText)
-        where TId : IIdentifierObject<TId>
-    {
-        var idFactory = scope.ServiceProvider.GetRequiredService<IIdFactory<TId, string>>();
-        var idResult = idFactory.CreateFrom(idText);
-        return idResult;
-    }
+    private static OneOf<TId, IError> CreateId<TId>(IServiceScope scope, string idText)
+        where TId : IIdentifierObject<TId> =>
+        scope.ServiceProvider.GetRequiredService<IIdFactory<TId, string>>().CreateFrom(idText);
 }

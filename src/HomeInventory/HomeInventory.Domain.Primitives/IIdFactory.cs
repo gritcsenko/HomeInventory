@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using OneOf;
 
 namespace HomeInventory.Domain.Primitives;
 
@@ -8,8 +9,8 @@ public interface IIdFactory<out TId>
     TId CreateNew();
 }
 
-public interface IIdFactory<out TId, in TValue> : IIdFactory<TId>
+public interface IIdFactory<TId, TValue> : IIdFactory<TId>
     where TId : IIdentifierObject<TId>
 {
-    IResult<TId> CreateFrom(TValue id);
+    OneOf<TId, IError> CreateFrom(TValue id);
 }

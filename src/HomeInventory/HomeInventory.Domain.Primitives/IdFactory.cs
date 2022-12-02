@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using OneOf;
 
 namespace HomeInventory.Domain.Primitives;
 
@@ -16,7 +17,7 @@ internal sealed class IdFactory<TId, TValue> : ValueObjectFactory<TId>, IIdFacto
         _generateNewValueFunc = generateNewValueFunc;
     }
 
-    public IResult<TId> CreateFrom(TValue id) => TryCreate(id, _isValidFunc, _createIdFunc);
+    public OneOf<TId, IError> CreateFrom(TValue id) => TryCreate(id, _isValidFunc, _createIdFunc);
 
     public TId CreateNew() => _createIdFunc(_generateNewValueFunc());
 }
