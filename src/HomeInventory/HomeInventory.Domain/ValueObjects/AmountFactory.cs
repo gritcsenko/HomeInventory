@@ -1,6 +1,5 @@
 ﻿using FluentResults;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Extensions;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
