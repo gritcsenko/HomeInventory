@@ -12,7 +12,7 @@ public static class DependencyInjection
     public static IServiceCollection AddDynamicAuthorization(this IServiceCollection services)
     {
         services.AddSingleton<PermissionList>();
-        services.AddSingleton<IAuthorizationHandler, DynamicAuthorizationHandler>();
+        services.AddTransient<IAuthorizationHandler, DynamicAuthorizationHandler>();
 
         // Read https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0
         services.AddAuthorization(b =>

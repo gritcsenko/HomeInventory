@@ -7,8 +7,11 @@ using HomeInventory.Tests.Helpers;
 using HomeInventory.Tests.Support;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
+using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -66,6 +69,16 @@ public class WebDependencyInjectionTests : BaseTest
         _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
         _services.Should().ContainSingleSingleton<IControllerFactory>(provider);
         _services.Should().ContainSingleTransient<ISwaggerProvider>(provider);
+
+        _services.Should().ContainSingleSingleton<PermissionList>(provider);
+        _services.Should().ContainTransient<IAuthorizationHandler>(provider);
+        _services.Should().ContainSingleTransient<IAuthorizationService>(provider);
+        _services.Should().ContainSingleTransient<IAuthorizationPolicyProvider>(provider);
+        _services.Should().ContainSingleTransient<IAuthorizationHandlerProvider>(provider);
+        _services.Should().ContainSingleTransient<IAuthorizationEvaluator>(provider);
+        _services.Should().ContainSingleTransient<IAuthorizationHandlerContextFactory>(provider);
+        _services.Should().ContainSingleTransient<IPolicyEvaluator>(provider);
+        _services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>(provider);
 
         var swaggerOptions = new SwaggerGenOptions();
         _services.Should().ContainSingleTransient<IPostConfigureOptions<SwaggerGenOptions>>(provider)
