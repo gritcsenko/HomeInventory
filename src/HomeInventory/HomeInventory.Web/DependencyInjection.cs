@@ -111,8 +111,6 @@ public static class DependencyInjection
         app.UseAuthentication();
         app.UseDynamicAuthorization();
 
-        app.MapControllers();
-
         return app;
     }
 

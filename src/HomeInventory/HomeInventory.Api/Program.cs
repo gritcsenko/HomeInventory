@@ -25,6 +25,8 @@ try
     var app = builder.Build();
     app.UseWeb();
 
+    app.MapControllers();
+
     app.Run();
 }
 catch (Exception ex)

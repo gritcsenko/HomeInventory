@@ -35,7 +35,7 @@ public class UserRepositoryTests : BaseTest
             .With(x => x.FirstName, _user.FirstName)
             .With(x => x.LastName, _user.LastName)
            .Create();
-        _mapper.Map<UserModel>(_user).Returns(_userModel);
+        _mapper.Map<User, UserModel>(_user).Returns(_userModel);
         _mapper.Map<User>(_userModel).Returns(_user);
 
         _evaluator.FilterBy(Arg.Any<IQueryable<UserModel>>(), Arg.Any<IFilterSpecification<UserModel>>())

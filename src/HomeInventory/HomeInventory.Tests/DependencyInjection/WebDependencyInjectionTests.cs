@@ -57,7 +57,7 @@ public class WebDependencyInjectionTests : BaseTest
         var provider = _factory.CreateServiceProvider(_services);
 
         _services.Should().ContainSingleTransient<IConfigureOptions<JwtOptions>>(provider);
-        _services.Should().ContainSingleTransient<IPostConfigureOptions<JwtBearerOptions>>(provider);
+        _services.Should().ContainSingleTransient<IConfigureOptions<JwtBearerOptions>>(provider);
         _services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
         _services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
         _services.Should().ContainSingleSingleton<HealthCheckService>(provider);
