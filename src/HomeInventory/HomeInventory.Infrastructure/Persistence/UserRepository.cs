@@ -22,7 +22,7 @@ internal class UserRepository : BaseRepository<UserModel, User>, IUserRepository
     public async Task<OneOf<User, NotFound>> FindFirstByEmailOrNotFoundUserAsync(Email email, CancellationToken cancellationToken = default) =>
         await FindFirstOrNotFoundAsync(new UserHasEmailSpecification(email), cancellationToken);
 
-    public async Task<bool> HasPermissionAsync(UserId userId, string tag, CancellationToken cancellationToken = default)
+    public async Task<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
         var userResult = await FindFirstOrNotFoundAsync(new UserHasIdSpecification(userId), cancellationToken);
         return userResult.Match(

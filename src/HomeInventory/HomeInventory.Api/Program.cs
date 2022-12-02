@@ -25,12 +25,6 @@ try
     var app = builder.Build();
     app.UseWeb();
 
-    app.UseHttpsRedirection();
-
-    app.UseAuthentication();
-    app.UseAuthorization();
-
-    app.MapControllers();
     app.Run();
 }
 catch (Exception ex)
