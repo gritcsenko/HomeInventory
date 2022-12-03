@@ -1,10 +1,10 @@
-﻿using AutoFixture;
+﻿using Ardalis.Specification.EntityFrameworkCore;
+using AutoFixture;
 using AutoMapper;
 using FluentAssertions;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Specifications;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +15,8 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [Trait("Category", "Unit")]
 public class UserRepositoryTests : BaseTest
 {
-    private readonly IDatabaseContext _context = Substitute.For<IDatabaseContext>();
+    private readonly IDatabaseContext _context = new DatabaseContext(new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "db").Options);
     private readonly IMapper _mapper = Substitute.For<IMapper>();
-    private readonly ISpecificationEvaluator _evaluator = Substitute.For<ISpecificationEvaluator>();
-    private readonly DbSet<UserModel> _set = Substitute.For<DbSet<UserModel>, IQueryable<UserModel>>();
     private readonly User _user;
     private readonly UserModel _userModel;
 
@@ -26,7 +24,7 @@ public class UserRepositoryTests : BaseTest
     {
         Fixture.Customize(new UserIdCustomization());
         Fixture.Customize(new EmailCustomization());
-        _context.Set<UserModel>().Returns(_set);
+
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()
             .With(x => x.Id, _user.Id.Id)
@@ -34,12 +32,10 @@ public class UserRepositoryTests : BaseTest
             .With(x => x.Password, _user.Password)
             .With(x => x.FirstName, _user.FirstName)
             .With(x => x.LastName, _user.LastName)
-           .Create();
-        _mapper.Map<User, UserModel>(_user).Returns(_userModel);
-        _mapper.Map<User>(_userModel).Returns(_user);
+            .Create();
 
-        _evaluator.FilterBy(Arg.Any<IQueryable<UserModel>>(), Arg.Any<IFilterSpecification<UserModel>>())
-            .Returns(ci => ci.Arg<IQueryable<UserModel>>().Where(ci.Arg<IFilterSpecification<UserModel>>().QueryExpression));
+        _mapper.Map<User, UserModel>(_user).Returns(_userModel);
+        _mapper.Map<UserModel, User>(_userModel).Returns(_user);
     }
 
     [Fact]
@@ -49,18 +45,14 @@ public class UserRepositoryTests : BaseTest
 
         await sut.AddAsync(_user, CancellationToken);
 
-        Received.InOrder(() =>
-        {
-            _ = _set.AddAsync(_userModel, CancellationToken);
-        });
+        _context.Users.Local.Should().HaveCount(1);
     }
 
     [Fact]
     public async Task HasAsync_Should_ReturnTrue_WhenUserAdded()
     {
-        var data = new[] { _userModel }.AsQueryable();
-        _set.AsQueryable().Returns(data);
-
+        _context.Users.Add(_userModel);
+        await _context.SaveChangesAsync();
         var sut = CreateSut();
 
         var result = await sut.IsUserHasEmailAsync(_user.Email, CancellationToken);
@@ -71,8 +63,8 @@ public class UserRepositoryTests : BaseTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        var data = new[] { _userModel }.AsQueryable();
-        _set.AsQueryable().Returns(data);
+        _context.Users.Add(_userModel);
+        await _context.SaveChangesAsync();
         var sut = CreateSut();
 
         var result = await sut.FindFirstByEmailOrNotFoundUserAsync(_user.Email, CancellationToken);
@@ -82,5 +74,5 @@ public class UserRepositoryTests : BaseTest
         actual.Should().BeEquivalentTo(_user);
     }
 
-    private UserRepository CreateSut() => new(_context, _mapper, _evaluator);
+    private UserRepository CreateSut() => new(_context, _mapper, SpecificationEvaluator.Default);
 }

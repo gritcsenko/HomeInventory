@@ -1,5 +1,6 @@
-﻿using AutoFixture;
-using FastExpressionCompiler;
+﻿using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
+using AutoFixture;
 using FluentAssertions;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -11,6 +12,8 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [Trait("Category", "Unit")]
 public class UserHasEmailSpecificationTests : BaseTest
 {
+    private readonly ISpecificationEvaluator _evaluator = new SpecificationEvaluator();
+
     [Fact]
     public void Should_SatisfyWithCorrectEmail()
     {
@@ -18,9 +21,10 @@ public class UserHasEmailSpecificationTests : BaseTest
         var user = Fixture.Build<UserModel>()
             .With(x => x.Email, email)
             .Create();
+        var query = new[] { user }.AsQueryable();
         var sut = new UserHasEmailSpecification(new Email(email));
 
-        var actual = sut.QueryExpression.CompileFast()(user);
+        var actual = _evaluator.GetQuery(query, sut).Any();
 
         actual.Should().BeTrue();
     }
@@ -31,9 +35,10 @@ public class UserHasEmailSpecificationTests : BaseTest
         var user = Fixture.Build<UserModel>()
             .With(x => x.Email, Fixture.Create<string>())
             .Create();
+        var query = new[] { user }.AsQueryable();
         var sut = new UserHasEmailSpecification(new Email(Fixture.Create<string>()));
 
-        var actual = sut.QueryExpression.CompileFast()(user);
+        var actual = _evaluator.GetQuery(query, sut).Any();
 
         actual.Should().BeFalse();
     }

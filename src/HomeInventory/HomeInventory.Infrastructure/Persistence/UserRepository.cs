@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Ardalis.Specification;
+using AutoMapper;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
@@ -9,10 +10,10 @@ using OneOf.Types;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class UserRepository : BaseRepository<UserModel, User>, IUserRepository
+internal class UserRepository : Repository<UserModel, User>, IUserRepository
 {
-    public UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
-        : base(context, mapper, evaluator)
+    public UserRepository(IDatabaseContext dbContext, IMapper mapper, ISpecificationEvaluator evaluator)
+        : base(dbContext, mapper, evaluator)
     {
     }
 

@@ -16,7 +16,7 @@ namespace HomeInventory.Tests.Systems.Authentication;
 [Trait("Category", "Unit")]
 public class JwtTokenGeneratorTests : BaseTest
 {
-    private readonly IDateTimeService _dateTimeService;
+    private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
     private readonly JwtOptions _options;
     private readonly User _user;
     private readonly IJwtIdentityGenerator _jtiGenerator;
@@ -25,7 +25,6 @@ public class JwtTokenGeneratorTests : BaseTest
     {
         Fixture.Customize(new UserIdCustomization());
         Fixture.Customize(new EmailCustomization());
-        _dateTimeService = Substitute.For<IDateTimeService>();
         _options = Fixture.Build<JwtOptions>()
             .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
             .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)

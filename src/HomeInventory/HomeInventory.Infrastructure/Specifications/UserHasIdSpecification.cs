@@ -3,10 +3,10 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.Specifications;
 
-internal class UserHasIdSpecification : FilterSpecification<UserModel>
+internal class UserHasIdSpecification : ByIdFilterSpecification<UserModel>
 {
     public UserHasIdSpecification(UserId id)
-        : base(x => x.Id == id.Id)
+        : base(id.Id)
     {
     }
 }

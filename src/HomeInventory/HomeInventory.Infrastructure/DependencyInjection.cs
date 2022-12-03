@@ -1,10 +1,11 @@
-﻿using HomeInventory.Application;
+﻿using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
+using HomeInventory.Application;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Services;
-using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,7 +19,7 @@ public static class DependencyInjection
     {
         services.AddDatabase();
         services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
-        services.TryAddSingleton<ISpecificationEvaluator, SpecificationEvaluator>();
+        services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
         services.AddRepository<User, IUserRepository, UserRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
@@ -26,7 +27,7 @@ public static class DependencyInjection
     }
 
     private static IServiceCollection AddRepository<TEntity, TRepository, TRepositoryImplementation>(this IServiceCollection services)
-        where TEntity : class, IEntity<TEntity>
+        where TEntity : class, Domain.Primitives.IEntity<TEntity>
         where TRepository : class, IRepository<TEntity>
         where TRepositoryImplementation : class, TRepository
     {
@@ -42,6 +43,7 @@ public static class DependencyInjection
             builder.UseInMemoryDatabase("HomeInventory").UseApplicationServiceProvider(sp);
             builder.EnableDetailedErrors(!env.IsProduction());
             builder.EnableSensitiveDataLogging(!env.IsProduction());
-        });
+        })
+            .AddScoped<DbContext>(sp => sp.GetRequiredService<DatabaseContext>());
     }
 }
