@@ -18,13 +18,32 @@ public class DomainDependencyInjectionTests : BaseTest
         _services.AddDomain();
         var provider = _factory.CreateServiceProvider(_services);
 
-        _services.Should().ContainSingleTransient<IIdFactory<UserId>>(provider);
-        _services.Should().ContainSingleTransient<IIdFactory<UserId, Guid>>(provider);
-        _services.Should().ContainSingleTransient<IIdFactory<MaterialId>>(provider);
-        _services.Should().ContainSingleTransient<IIdFactory<MaterialId, Guid>>(provider);
-        _services.Should().ContainSingleTransient<IIdFactory<ProductId>>(provider);
-        _services.Should().ContainSingleTransient<IIdFactory<ProductId, Guid>>(provider);
-        _services.Should().ContainSingleTransient<IIdFactory<StorageAreaId>>(provider);
-        _services.Should().ContainSingleTransient<IIdFactory<StorageAreaId, Guid>>(provider);
+
+        VerifyIdFactory<UserId>(provider);
+        VerifyIdFactory<MaterialId>(provider);
+        VerifyIdFactory<ProductId>(provider);
+        VerifyIdFactory<StorageAreaId>(provider);
+        VerifyValueFactory<Email, string, EmailFactory>(provider);
+    }
+
+    private void VerifyValueFactory<TObject, TValue, TFactory>(IServiceProvider provider)
+        where TObject : class, IValueObject<TObject>
+        where TFactory : class, IValueObjectFactory<TObject, TValue>
+    {
+        _services.Should().ContainSingleSingleton<TFactory>(provider);
+        _services.Should().ContainSingleSingleton<IValueObjectFactory<TObject, TValue>>(provider);
+    }
+
+    private void VerifyIdFactory<TId>(IServiceProvider provider)
+       where TId : IIdentifierObject<TId>
+    {
+        _services.Should().ContainSingleSingleton<Func<Guid, TId>>(provider);
+        _services.Should().ContainSingleSingleton<IIdFactory<TId>>(provider);
+
+        _services.Should().ContainSingleSingleton<IIdFactory<TId, Guid>>(provider);
+        _services.Should().ContainSingleSingleton<IValueObjectFactory<TId, Guid>>(provider);
+
+        _services.Should().ContainSingleSingleton<IIdFactory<TId, string>>(provider);
+        _services.Should().ContainSingleSingleton<IValueObjectFactory<TId, string>>(provider);
     }
 }

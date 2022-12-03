@@ -20,9 +20,9 @@ public class ModelMappingsTests : BaseMappingsTests
     public void ShouldMap(object instance, Type destination)
     {
         Services.AddSingleton(GuidIdFactory.Create(id => new UserId(id)));
-        Services.AddSingleton<IEmailFactory, EmailFactory>();
         Services.AddSingleton<GuidIdConverter<UserId>>();
-        Services.AddSingleton<EmailConverter>();
+        Services.AddSingleton<IValueObjectFactory<Email, string>, EmailFactory>();
+        Services.AddSingleton<ValueObjectConverter<Email, string>>();
 
         var sut = CreateSut<ModelMappings>();
         var source = instance.GetType();

@@ -4,6 +4,7 @@ using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
@@ -19,8 +20,8 @@ public class ContractsMappingsTests : BaseMappingsTests
     [MemberData(nameof(Data))]
     public void ShouldMap(object instance, Type destination)
     {
-        Services.AddSingleton<IEmailFactory, EmailFactory>();
-        Services.AddSingleton<EmailConverter>();
+        Services.AddSingleton<IValueObjectFactory<Email, string>, EmailFactory>();
+        Services.AddSingleton<ValueObjectConverter<Email, string>>();
         var sut = CreateSut<ContractsMappings>();
         var source = instance.GetType();
 

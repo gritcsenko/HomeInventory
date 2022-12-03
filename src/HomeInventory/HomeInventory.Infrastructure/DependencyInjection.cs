@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
         services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
         services.AddRepository<User, IUserRepository, UserRepository>();
+        services.AddRepository<StorageArea, IStorageAreaRepository, StorageAreaRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
         return services;

@@ -38,7 +38,7 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         // Given
         _userRepository.IsUserHasEmailAsync(_command.Email, CancellationToken).Returns(false);
-        _userRepository.AddAsync(Arg.Any<User>(), CancellationToken).Returns(Task.CompletedTask);
+        _userRepository.AddAsync(Arg.Any<User>(), CancellationToken).Returns(ci => Task.FromResult(ci.Arg<User>()));
 
         var sut = CreateSut();
         // When
