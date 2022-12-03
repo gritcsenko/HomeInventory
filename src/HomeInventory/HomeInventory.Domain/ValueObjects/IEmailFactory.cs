@@ -1,9 +1,7 @@
-﻿using FluentResults;
-using OneOf;
+﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public interface IEmailFactory
+public interface IEmailFactory : IValueObjectFactory<Email, string>
 {
-    OneOf<Email, IError> CreateFrom(string value);
 }

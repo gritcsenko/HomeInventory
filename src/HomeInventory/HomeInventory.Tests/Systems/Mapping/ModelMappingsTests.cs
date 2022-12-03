@@ -21,7 +21,7 @@ public class ModelMappingsTests : BaseMappingsTests
     {
         Services.AddSingleton(GuidIdFactory.Create(id => new UserId(id)));
         Services.AddSingleton<IEmailFactory, EmailFactory>();
-        Services.AddSingleton<UserIdConverter>();
+        Services.AddSingleton<GuidIdConverter<UserId>>();
         Services.AddSingleton<EmailConverter>();
 
         var sut = CreateSut<ModelMappings>();
