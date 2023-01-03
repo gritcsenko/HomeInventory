@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Carter;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HomeInventory.Application;
@@ -69,6 +70,8 @@ public static class DependencyInjection
         });
         services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
 
+        services.AddCarter();
+
         return services;
     }
 
@@ -102,14 +105,14 @@ public static class DependencyInjection
             return Results.Problem(detail: exception?.Message);
         });
 
-        app.UseAreaEndpoints();
-
         app.UseMiddleware<CorrelationIdMiddleware>();
 
         app.UseHttpsRedirection();
 
         app.UseAuthentication();
         app.UseDynamicAuthorization();
+
+        app.MapCarter();
 
         return app;
     }
