@@ -6,7 +6,6 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using NSubstitute;
 
@@ -24,7 +23,7 @@ public class RegisterCommandHandlerTests : BaseTest
     public RegisterCommandHandlerTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
-        Fixture.Customize(new EmailCustomization());
+        Fixture.CustomizeEmail();
 
         _command = Fixture.Create<RegisterCommand>();
         _userId = Fixture.Create<UserId>();

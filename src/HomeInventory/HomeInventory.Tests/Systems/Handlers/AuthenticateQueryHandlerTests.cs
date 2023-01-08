@@ -6,7 +6,6 @@ using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using NSubstitute;
 using OneOf.Types;
@@ -23,7 +22,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     public AuthenticateQueryHandlerTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
-        Fixture.Customize(new EmailCustomization());
+        Fixture.CustomizeEmail();
         _user = Fixture.Create<User>();
     }
 

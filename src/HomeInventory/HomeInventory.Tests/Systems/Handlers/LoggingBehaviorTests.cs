@@ -4,7 +4,6 @@ using FluentResults;
 using HomeInventory.Application.Authentication.Behaviors;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -21,7 +20,7 @@ public class LoggingBehaviorTests : BaseTest
     public LoggingBehaviorTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
-        Fixture.Customize(new EmailCustomization());
+        Fixture.CustomizeEmail();
         _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, Result<AuthenticateResult>>>>();
         _request = Fixture.Create<AuthenticateQuery>();
         _response = Fixture.Create<AuthenticateResult>();

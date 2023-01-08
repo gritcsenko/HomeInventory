@@ -6,7 +6,6 @@ using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Mapping;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +33,7 @@ public class ContractsMappingsTests : BaseMappingsTests
     {
         var fixture = new Fixture();
         fixture.CustomizeGuidId(guid => new UserId(guid));
-        fixture.Customize(new EmailCustomization());
+        fixture.CustomizeEmail();
         return new()
         {
             { fixture.Create<UserId>(), typeof(Guid) },

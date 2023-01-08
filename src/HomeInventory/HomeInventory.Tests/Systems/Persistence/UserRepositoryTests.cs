@@ -6,7 +6,6 @@ using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
@@ -25,7 +24,7 @@ public class UserRepositoryTests : BaseTest
     public UserRepositoryTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
-        Fixture.Customize(new EmailCustomization());
+        Fixture.CustomizeEmail();
 
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()

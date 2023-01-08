@@ -1,9 +1,14 @@
 ﻿using AutoFixture;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Customizations;
 
 namespace HomeInventory.Tests.Helpers;
 
 internal static class FixtureExtensions
 {
-    public static IFixture CustomizeGuidId<TId>(this IFixture fixture, Func<Guid, TId> createFunc) => fixture.Customize(new FromFactoryCustomization<Guid, TId>(createFunc));
+    public static IFixture CustomizeGuidId<TId>(this IFixture fixture, Func<Guid, TId> createFunc) => fixture.CustomizeFromFactory(createFunc);
+
+    public static IFixture CustomizeEmail(this IFixture fixture) => fixture.CustomizeFromFactory((string value) => new Email(value));
+
+    public static IFixture CustomizeFromFactory<TValue, TObject>(this IFixture fixture, Func<TValue, TObject> createFunc) => fixture.Customize(new FromFactoryCustomization<TValue, TObject>(createFunc));
 }
