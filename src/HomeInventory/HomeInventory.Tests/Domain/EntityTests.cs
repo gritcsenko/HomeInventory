@@ -4,6 +4,7 @@ using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Domain;
+
 public class EntityTests : BaseTest
 {
     [Fact]
