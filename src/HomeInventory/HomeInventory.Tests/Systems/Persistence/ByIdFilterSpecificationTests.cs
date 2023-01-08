@@ -11,7 +11,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [Trait("Category", "Unit")]
 public class ByIdFilterSpecificationTests : BaseTest
 {
-    private readonly ISpecificationEvaluator _evaluator = new SpecificationEvaluator();
+    private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
 
     [Fact]
     public void Should_SatisfyWithCorrectId()
