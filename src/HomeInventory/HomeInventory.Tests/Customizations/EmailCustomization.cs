@@ -1,12 +1,11 @@
-﻿using AutoFixture;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Customizations;
 
-internal class EmailCustomization : ICustomization
+internal class EmailCustomization : FromFactoryCustomization<string, Email>
 {
-    public void Customize(IFixture fixture)
+    public EmailCustomization()
+        : base(value => new Email(value))
     {
-        fixture.Customize<Email>(c => c.FromFactory<string>(value => new Email(value)));
     }
 }
