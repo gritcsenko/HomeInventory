@@ -15,7 +15,8 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [Trait("Category", "Unit")]
 public class UserRepositoryTests : BaseTest
 {
-    private readonly IDatabaseContext _context = new DatabaseContext(new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "db").Options);
+    private readonly IDatabaseContext _context = HomeInventory.Domain.TypeExtensions.CreateInstance<DatabaseContext>(GetDatabaseOptions())!;
+
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly User _user;
     private readonly UserModel _userModel;
@@ -37,6 +38,9 @@ public class UserRepositoryTests : BaseTest
         _mapper.Map<User, UserModel>(_user).Returns(_userModel);
         _mapper.Map<UserModel, User>(_userModel).Returns(_user);
     }
+
+    private static DbContextOptions<DatabaseContext> GetDatabaseOptions()
+        => new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "db").Options;
 
     [Fact]
     public async Task AddAsync_Should_CreateUser_AccordingToSpec()
