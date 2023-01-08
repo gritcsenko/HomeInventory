@@ -3,6 +3,7 @@ using AutoFixture;
 using AutoMapper;
 using FluentAssertions;
 using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Tests.Customizations;
@@ -23,7 +24,7 @@ public class UserRepositoryTests : BaseTest
 
     public UserRepositoryTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
         Fixture.Customize(new EmailCustomization());
 
         _user = Fixture.Create<User>();

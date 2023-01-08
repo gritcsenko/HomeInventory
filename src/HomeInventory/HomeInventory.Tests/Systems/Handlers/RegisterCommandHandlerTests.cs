@@ -23,7 +23,7 @@ public class RegisterCommandHandlerTests : BaseTest
 
     public RegisterCommandHandlerTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
         Fixture.Customize(new EmailCustomization());
 
         _command = Fixture.Create<RegisterCommand>();

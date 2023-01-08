@@ -8,6 +8,7 @@ using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Controllers;
@@ -33,7 +34,7 @@ public class AuthenticationControllerTests : BaseTest
 
     public AuthenticationControllerTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
         Fixture.Customize(new EmailCustomization());
 
         _registerRequest = Fixture.Create<RegisterRequest>();

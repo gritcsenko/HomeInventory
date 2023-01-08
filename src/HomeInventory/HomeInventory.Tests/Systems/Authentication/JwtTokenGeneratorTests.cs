@@ -3,6 +3,7 @@ using AutoFixture;
 using FluentAssertions;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Authentication;
@@ -23,7 +24,7 @@ public class JwtTokenGeneratorTests : BaseTest
 
     public JwtTokenGeneratorTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
         Fixture.Customize(new EmailCustomization());
         _options = Fixture.Build<JwtOptions>()
             .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
