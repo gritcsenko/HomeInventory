@@ -12,6 +12,7 @@ internal class ModelMappings : MappingProfile
     {
         CreateMapForId<UserId>();
         CreateMapForId<StorageAreaId>();
+        CreateMapForId<ProductId>();
 
         CreateMapForValue<Email, string>(x => x.Value);
 

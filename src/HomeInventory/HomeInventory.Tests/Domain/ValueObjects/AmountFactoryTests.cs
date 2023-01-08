@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Helpers;
 
@@ -10,15 +9,18 @@ namespace HomeInventory.Tests.Domain.ValueObjects;
 public class AmountFactoryTests : BaseTest
 {
     [Fact]
-    public void Create_Should_Return_ValidatorNotFound_When_UnknownUnit()
+    public void Create_Should_Return_Value_When_UnknownUnit()
     {
         var sut = CreateSut();
+        var value = 0m;
         var unknownUnit = new AmountUnit(Fixture.Create<string>(), MeasurementType.Area);
 
-        var result = sut.Create(0m, unknownUnit);
+        var result = sut.Create(value, unknownUnit);
 
-        result.IsT1.Should().BeTrue();
-        result.AsT1.Should().BeAssignableTo<ValidatorNotFoundError>();
+        result.IsT0.Should().BeTrue();
+        var amount = result.AsT0;
+        amount.Value.Should().Be(value);
+        amount.Unit.Should().Be(unknownUnit);
     }
 
     [Fact]

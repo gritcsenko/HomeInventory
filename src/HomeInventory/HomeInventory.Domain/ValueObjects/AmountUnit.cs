@@ -21,6 +21,8 @@ public sealed class AmountUnit : Enumeration<AmountUnit, Guid>
         MetricUnitFactor = baseUnit.MetricUnitFactor * baseUnitFactor;
     }
 
+    public static readonly AmountUnit Kelvin = new(nameof(Kelvin), MeasurementType.Temperature);
+
     public static readonly AmountUnit Piece = new(nameof(Piece), MeasurementType.Count);
 
     public static readonly AmountUnit CubicMeter = new(nameof(CubicMeter), MeasurementType.Volume);
