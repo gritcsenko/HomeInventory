@@ -34,7 +34,7 @@ public class AuthenticationControllerTests : BaseTest
 
     public AuthenticationControllerTests()
     {
-        Fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.Customize(new EmailCustomization());
 
         _registerRequest = Fixture.Create<RegisterRequest>();

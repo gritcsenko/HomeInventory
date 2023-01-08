@@ -20,7 +20,7 @@ public class LoggingBehaviorTests : BaseTest
 
     public LoggingBehaviorTests()
     {
-        Fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.Customize(new EmailCustomization());
         _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, Result<AuthenticateResult>>>>();
         _request = Fixture.Create<AuthenticateQuery>();

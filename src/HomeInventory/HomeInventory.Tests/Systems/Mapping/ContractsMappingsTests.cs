@@ -33,7 +33,7 @@ public class ContractsMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> Data()
     {
         var fixture = new Fixture();
-        fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
+        fixture.CustomizeGuidId(guid => new UserId(guid));
         fixture.Customize(new EmailCustomization());
         return new()
         {

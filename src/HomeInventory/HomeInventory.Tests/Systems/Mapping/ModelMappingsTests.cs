@@ -49,9 +49,9 @@ public class ModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> Data()
     {
         var fixture = new Fixture();
-        fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
-        fixture.Customize(GuidIdCustomization.Create(guid => new StorageAreaId(guid)));
-        fixture.Customize(GuidIdCustomization.Create(guid => new ProductId(guid)));
+        fixture.CustomizeGuidId(guid => new UserId(guid));
+        fixture.CustomizeGuidId(guid => new StorageAreaId(guid));
+        fixture.CustomizeGuidId(guid => new ProductId(guid));
         fixture.Customize(new EmailCustomization());
         fixture.Customize(new FromFactoryCustomization<int, AmountUnit>(i => AmountUnit.Items.ElementAt(i % AmountUnit.Items.Count)));
         fixture.Customize(new FromFactoryCustomization<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit)));

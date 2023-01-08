@@ -22,7 +22,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
     public AuthenticateQueryHandlerTests()
     {
-        Fixture.Customize(GuidIdCustomization.Create(guid => new UserId(guid)));
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.Customize(new EmailCustomization());
         _user = Fixture.Create<User>();
     }
