@@ -1,4 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
+using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Domain.ValueObjects;
 
@@ -48,4 +50,15 @@ public sealed class AmountUnit : Enumeration<AmountUnit, Guid>
     public bool IsMetric => MetricUnitFactor == 1m;
 
     public decimal ToMetric(decimal value) => value * MetricUnitFactor;
+
+    public static OneOf<AmountUnit, NotFound> TryParse(string name)
+    {
+        foreach (var item in Items)
+        {
+            if (item.Name == name)
+                return item;
+        }
+
+        return new NotFound();
+    }
 }
