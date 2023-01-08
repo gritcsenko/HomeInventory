@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Application.Mapping;
 using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 
@@ -17,5 +18,7 @@ internal class ModelMappings : MappingProfile
         CreateMap<User, UserModel>().ReverseMap();
 
         CreateMap<StorageArea, StorageAreaModel>().ReverseMap();
+        CreateMap<Product, ProductModel>().ReverseMap();
+        CreateMapForValue<Amount, ProductAmountModel, AmountValueObjectConverter>(obj => new ProductAmountModel { Value = obj.Value, UnitName = obj.Unit.Name });
     }
 }
