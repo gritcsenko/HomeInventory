@@ -2,9 +2,9 @@
 
 internal class UserModel : IPersistentModel
 {
-    public Guid Id { get; init; }
-    public string FirstName { get; init; } = null!;
-    public string LastName { get; init; } = null!;
-    public string Email { get; init; } = null!;
-    public string Password { get; init; } = null!;
+    public required Guid Id { get; init; }
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+    public required string Email { get; init; }
+    public required string Password { get; init; }
 }
