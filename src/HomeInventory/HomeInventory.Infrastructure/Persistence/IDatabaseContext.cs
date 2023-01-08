@@ -5,8 +5,6 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal interface IDatabaseContext : IDbContext
 {
-    DbSet<UserModel> Users { get; }
-
     DbSet<TModel> Set<TModel>()
         where TModel : class, IPersistentModel;
 }
