@@ -45,13 +45,13 @@ public class UserRepositoryTests : BaseTest
 
         await sut.AddAsync(_user, CancellationToken);
 
-        _context.Users.Local.Should().HaveCount(1);
+        _context.Set<UserModel>().Local.Should().HaveCount(1);
     }
 
     [Fact]
     public async Task HasAsync_Should_ReturnTrue_WhenUserAdded()
     {
-        _context.Users.Add(_userModel);
+        _context.Set<UserModel>().Add(_userModel);
         await _context.SaveChangesAsync();
         var sut = CreateSut();
 
@@ -63,7 +63,7 @@ public class UserRepositoryTests : BaseTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        _context.Users.Add(_userModel);
+        _context.Set<UserModel>().Add(_userModel);
         await _context.SaveChangesAsync();
         var sut = CreateSut();
 
