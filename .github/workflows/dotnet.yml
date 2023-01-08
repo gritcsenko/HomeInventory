@@ -36,7 +36,7 @@ jobs:
     - name: Unit Tests
       run: dotnet test ./src/HomeInventory/HomeInventory.Tests --no-build --configuration Release --verbosity normal
     - name: Collect Coverage
-      run: dotnet test ./src/HomeInventory --filter Category=Unit --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test ./src/HomeInventory/HomeInventory.Tests --filter Category=Unit --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
     - name: Copy Coverage To Predictable Location
       run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
     - name: Code Coverage Summary Report
