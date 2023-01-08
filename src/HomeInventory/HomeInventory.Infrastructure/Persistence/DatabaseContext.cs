@@ -11,7 +11,13 @@ internal class DatabaseContext : DbContext, IDatabaseContext
     {
     }
 
-    public DbSet<UserModel> Users { get; init; } = null!;
+    public required DbSet<OutboxMessage> OutboxMessages { get; init; }
+
+    public required DbSet<UserModel> Users { get; init; }
+
+    public required DbSet<StorageAreaModel> StorageAreas { get; init; }
+
+    public required DbSet<ProductModel> Products { get; init; }
 
     DbSet<TModel> IDatabaseContext.Set<TModel>() => Set<TModel>();
 
@@ -19,5 +25,8 @@ internal class DatabaseContext : DbContext, IDatabaseContext
     {
         modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
         modelBuilder.ApplyConfiguration(new UserModelConfiguration());
+        modelBuilder.ApplyConfiguration(new StorageAreaModelConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductModelConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductAmountModelConfiguration());
     }
 }
