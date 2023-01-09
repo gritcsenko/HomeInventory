@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Asp.Versioning;
 using Carter;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -10,6 +11,7 @@ using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
+using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -55,14 +57,25 @@ public static class DependencyInjection
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.ConfigureOptions<ConfigureSwaggerOptions>();
+        services.AddSwaggerGen(options =>
+            options.OperationFilter<SwaggerDefaultValues>());
+        services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1);
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.ApiVersionReader = new QueryStringApiVersionReader();
+        }).AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'VVV";
+        });
 
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
         services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
 
         services.ConfigureOptions<JwtOptionsSetup>();
         services.ConfigureOptions<JwtBearerOptionsSetup>();
-        services.ConfigureOptions<SwaggerGenOptionsSetup>();
+        //services.ConfigureOptions<SwaggerGenOptionsSetup>();
 
         services.AddFluentValidationAutoValidation(c =>
         {
@@ -70,7 +83,10 @@ public static class DependencyInjection
         });
         services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
 
-        services.AddCarter();
+        services.AddCarter(configurator: config => config
+            .WithModule<AreaModule>()
+            .WithModule<AuthenticationModule>()
+            .WithModule<PermissionModule>());
 
         return services;
     }
@@ -79,7 +95,16 @@ public static class DependencyInjection
         where TApp : IApplicationBuilder, IEndpointRouteBuilder
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options =>
+        {
+            var descriptions = app.DescribeApiVersions();
+            foreach (var description in descriptions)
+            {
+                var url = $"/swagger/{description.GroupName}/swagger.json";
+                var name = description.GroupName.ToUpperInvariant();
+                options.SwaggerEndpoint(url, name);
+            }
+        });
 
         app.UseHealthChecks("/health", new HealthCheckOptions
         {

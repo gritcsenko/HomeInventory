@@ -10,16 +10,16 @@ using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Helpers;
-using HomeInventory.Web.Controllers;
+using HomeInventory.Web;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 
 [Trait("Category", "Unit")]
-public class AuthenticationControllerTests : BaseTest
+public class AuthenticationModuleTests : BaseTest
 {
     private readonly ISender _mediator = Substitute.For<ISender>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
@@ -30,8 +30,9 @@ public class AuthenticationControllerTests : BaseTest
     private readonly RegisterCommand _registerCommand;
     private readonly LoginRequest _loginRequest;
     private readonly AuthenticateQuery _authenticateQuery;
+    private readonly HttpContext _context;
 
-    public AuthenticationControllerTests()
+    public AuthenticationModuleTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
@@ -46,9 +47,9 @@ public class AuthenticationControllerTests : BaseTest
 
         _registerValidator.ValidateAsync(_registerRequest, CancellationToken).Returns(new ValidationResult());
         _loginValidator.ValidateAsync(_loginRequest, CancellationToken).Returns(new ValidationResult());
-    }
 
-    private AuthenticationController CreateSut() => new(_mediator, _mapper, _registerValidator, _loginValidator);
+        _context = new DefaultHttpContext();
+    }
 
     [Fact]
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
@@ -58,12 +59,11 @@ public class AuthenticationControllerTests : BaseTest
         var expectedResultValue = Fixture.Create<RegisterResponse>();
         _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
         _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
-        var sut = CreateSut();
         // When
-        var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _mediator, _mapper, _registerValidator, _registerRequest, CancellationToken);
         // Then
-        result.Should().HaveStatusCode(StatusCodes.Status200OK)
-            .And.HaveValue(expectedResultValue);
+        result.Should().BeOfType<Ok<RegisterResponse>>()
+            .Which.Should().HaveValue(expectedResultValue);
     }
 
     [Fact]
@@ -74,12 +74,11 @@ public class AuthenticationControllerTests : BaseTest
         var expectedResultValue = Fixture.Create<LoginResponse>();
         _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
-        var sut = CreateSut();
         // When
-        var result = await sut.LoginAsync(_loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _mediator, _mapper, _loginValidator, _loginRequest, CancellationToken);
         // Then
-        result.Should().HaveStatusCode(StatusCodes.Status200OK)
-            .And.HaveValue(expectedResultValue);
+        result.Should().BeOfType<Ok<LoginResponse>>()
+            .Which.Should().HaveValue(expectedResultValue);
     }
 
     [Fact]
@@ -90,12 +89,11 @@ public class AuthenticationControllerTests : BaseTest
         var expectedResultValue = Fixture.Create<RegisterResponse>();
         _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
         _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
-        var sut = CreateSut();
         // When
-        var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _mediator, _mapper, _registerValidator, _registerRequest, CancellationToken);
         // Then
-        result.Should().HaveStatusCode(StatusCodes.Status200OK)
-            .And.HaveValue(expectedResultValue);
+        result.Should().BeOfType<Ok<RegisterResponse>>()
+            .Which.Should().HaveValue(expectedResultValue);
     }
 
     [Fact]
@@ -106,12 +104,11 @@ public class AuthenticationControllerTests : BaseTest
         var expectedResultValue = Fixture.Create<LoginResponse>();
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
         _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
-        var sut = CreateSut();
         // When
-        var result = await sut.LoginAsync(_loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _mediator, _mapper, _loginValidator, _loginRequest, CancellationToken);
         // Then
-        result.Should().HaveStatusCode(StatusCodes.Status200OK)
-            .And.HaveValue(expectedResultValue);
+        result.Should().BeOfType<Ok<LoginResponse>>()
+            .Which.Should().HaveValue(expectedResultValue);
     }
 
     [Fact]
@@ -120,13 +117,11 @@ public class AuthenticationControllerTests : BaseTest
         // Given
         var error = new DuplicateEmailError();
         _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Fail<RegistrationResult>(error));
-        var sut = CreateSut().WithHttpContext();
         // When
-        var result = await sut.RegisterAsync(_registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _mediator, _mapper, _registerValidator, _registerRequest, CancellationToken);
         // Then
-        var details = result.Should().NotHaveStatusCode(StatusCodes.Status200OK)
-            .And.HaveValueAssignableTo<ProblemDetails>()
-            .Which.Should().Match(x => x.Title == error.GetType().Name)
+        result.Should().BeOfType<ProblemHttpResult>()
+            .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
             .And.Match(x => x.Detail == error.Message);
     }
 
@@ -136,13 +131,11 @@ public class AuthenticationControllerTests : BaseTest
         // Given
         var error = new InvalidCredentialsError();
         _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Fail<AuthenticateResult>(error));
-        var sut = CreateSut().WithHttpContext();
         // When
-        var result = await sut.LoginAsync(_loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _mediator, _mapper, _loginValidator, _loginRequest, CancellationToken);
         // Then
-        var details = result.Should().NotHaveStatusCode(StatusCodes.Status200OK)
-            .And.HaveValueAssignableTo<ProblemDetails>()
-            .Which.Should().Match(x => x.Title == error.GetType().Name)
+        result.Should().BeOfType<ProblemHttpResult>()
+            .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
             .And.Match(x => x.Detail == error.Message);
     }
 }

@@ -43,8 +43,6 @@ public static class DependencyInjection
 
         app.UseAuthorization();
 
-        app.UsePermissionsEndpoints();
-
         return app;
     }
 

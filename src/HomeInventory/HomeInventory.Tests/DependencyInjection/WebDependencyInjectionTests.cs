@@ -81,10 +81,10 @@ public class WebDependencyInjectionTests : BaseTest
         _services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>(provider);
 
         var swaggerOptions = new SwaggerGenOptions();
-        _services.Should().ContainSingleTransient<IPostConfigureOptions<SwaggerGenOptions>>(provider)
-            .Which.PostConfigure(string.Empty, swaggerOptions);
+        _services.Should().ContainSingleTransient<IConfigureOptions<SwaggerGenOptions>>(provider)
+            .Which.Configure(swaggerOptions);
         swaggerOptions.SwaggerGeneratorOptions.SwaggerDocs.Should().ContainKey("v1")
-            .WhoseValue.Version.Should().Be("1.0");
+            .WhoseValue.Version.Should().Be("1");
     }
 
     [Fact]
