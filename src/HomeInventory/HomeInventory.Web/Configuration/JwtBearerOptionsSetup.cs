@@ -29,7 +29,7 @@ internal class JwtBearerOptionsSetup : IConfigureOptions<JwtBearerOptions>
         ValidAudiences = new[] { _jwtOptions.Audience },
 
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(_jwtOptions.Key),
+        IssuerSigningKey = _jwtOptions.SecurityKey,
 
         ValidAlgorithms = new[] { _jwtOptions.Algorithm },
     };

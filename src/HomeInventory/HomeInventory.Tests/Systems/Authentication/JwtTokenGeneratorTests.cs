@@ -37,8 +37,7 @@ public class JwtTokenGeneratorTests : BaseTest
     public async Task GenerateTokenAsync_Should_GenerateCorrectTokenString()
     {
         var sut = CreateSut();
-        var key = new SymmetricSecurityKey(_options.Key);
-        var expectedHeader = new JwtHeader(new SigningCredentials(key, _options.Algorithm));
+        var expectedHeader = new JwtHeader(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
         var now = DateTimeOffset.Now;

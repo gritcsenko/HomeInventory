@@ -75,7 +75,6 @@ public static class DependencyInjection
 
         services.ConfigureOptions<JwtOptionsSetup>();
         services.ConfigureOptions<JwtBearerOptionsSetup>();
-        //services.ConfigureOptions<SwaggerGenOptionsSetup>();
 
         services.AddFluentValidationAutoValidation(c =>
         {
