@@ -3,12 +3,14 @@ using Asp.Versioning;
 using Carter;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using FluentValidation.Internal;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
+using HomeInventory.Web.Configuration.Validation;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
 using HomeInventory.Web.OpenApi;
@@ -21,6 +23,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web;
 
@@ -73,7 +76,6 @@ public static class DependencyInjection
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
         services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
 
-        services.ConfigureOptions<JwtOptionsSetup>();
         services.ConfigureOptions<JwtBearerOptionsSetup>();
 
         services.AddFluentValidationAutoValidation(c =>
@@ -81,6 +83,9 @@ public static class DependencyInjection
             c.DisableDataAnnotationsValidation = true;
         });
         services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Transient, filter: r => r.ValidatorType.IsAssignableTo(typeof(IOptionsValidator)), includeInternalTypes: true);
+
+        services.AddOptionsWithValidator<JwtOptions>();
 
         services.AddCarter(configurator: config => config
             .WithModule<AreaModule>()
@@ -152,5 +157,58 @@ public static class DependencyInjection
         var attributes = permissions.Select(p => new AuthorizeAttribute(policy: p.ToString())).ToArray();
 
         return builder.RequireAuthorization(attributes);
+    }
+
+    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, string? configSectionPath = null)
+        where TOptions : class => services.AddOptions<TOptions>()
+            .BindConfiguration(configSectionPath ?? typeof(TOptions).Name)
+            .ValidateWithValidator()
+            .ValidateOnStart();
+
+    private static OptionsBuilder<TOptions> ValidateWithValidator<TOptions>(this OptionsBuilder<TOptions> builder, Action<ValidationStrategy<TOptions>>? validationOptions = null)
+        where TOptions : class
+    {
+        var services = builder.Services;
+        services.AddTransient<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidator<TOptions>>(), validationOptions));
+        return builder;
+    }
+
+    private class FluentOptionsValidator<TOptions> : IValidateOptions<TOptions>
+        where TOptions : class
+    {
+        private readonly Action<ValidationStrategy<TOptions>>? _validationOptions;
+
+        public FluentOptionsValidator(string? name, IValidator<TOptions> validator, Action<ValidationStrategy<TOptions>>? validationOptions)
+        {
+            Name = name;
+            Validator = validator;
+            _validationOptions = validationOptions;
+        }
+
+        public string? Name { get; }
+
+        public IValidator<TOptions> Validator { get; }
+
+        public ValidateOptionsResult Validate(string? name, TOptions options)
+        {
+            // null name is used to configure all named options
+            if (Name != null && name != Name)
+            {
+                // ignored if not validating this instance
+                return ValidateOptionsResult.Skip;
+            }
+
+            var result = _validationOptions is null
+                ? Validator.Validate(options)
+                : Validator.Validate(options, _validationOptions);
+
+
+            if (result.IsValid)
+            {
+                return ValidateOptionsResult.Success;
+            }
+
+            return ValidateOptionsResult.Fail(result.ToString());
+        }
     }
 }
