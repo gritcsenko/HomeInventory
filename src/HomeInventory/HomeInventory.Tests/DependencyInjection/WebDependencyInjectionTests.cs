@@ -41,6 +41,8 @@ public class WebDependencyInjectionTests : BaseTest
             new MemoryConfigurationProvider(new MemoryConfigurationSource{
                 InitialData = new Dictionary<string, string?>{
                     [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Secret)}"] = "Some Secret",
+                    [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Issuer)}"] = "HomeInventory",
+                    [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Audience)}"] = "HomeInventory",
                 },
             })
         };
