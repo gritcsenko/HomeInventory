@@ -9,6 +9,7 @@ using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Infrastructure;
@@ -24,6 +25,8 @@ public static class DependencyInjection
         services.AddRepository<StorageArea, IStorageAreaRepository, StorageAreaRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
+        services.AddHealthChecks()
+            .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
         return services;
     }
 

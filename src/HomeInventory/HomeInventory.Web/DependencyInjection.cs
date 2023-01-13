@@ -4,6 +4,7 @@ using Carter;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Internal;
+using HealthChecks.UI.Client;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web.Authentication;
@@ -110,21 +111,22 @@ public static class DependencyInjection
             }
         });
 
-        app.UseHealthChecks("/health", new HealthCheckOptions
+        app.MapHealthChecks("/health", new HealthCheckOptions
         {
             Predicate = _ => true,
-            ResponseWriter = (ctx, report) => ctx.Response.WriteAsJsonAsync(report)
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
-        app.UseHealthChecks("/health/ready", new HealthCheckOptions
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
-            Predicate = x => x.Tags.Contains("ready"),
-            ResponseWriter = (ctx, report) => ctx.Response.WriteAsJsonAsync(report)
+            Predicate = x => x.Tags.Contains(HealthCheckTags.Ready),
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
-        app.UseHealthChecks("/health/live", new HealthCheckOptions
+        app.MapHealthChecks("/health/live", new HealthCheckOptions
         {
             Predicate = _ => false,
-            ResponseWriter = (ctx, report) => ctx.Response.WriteAsJsonAsync(report)
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
+
         app.UseHealthChecksUI();
 
         app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
