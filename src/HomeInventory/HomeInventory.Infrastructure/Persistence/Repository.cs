@@ -77,14 +77,15 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
 
-    protected TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);
+    protected IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) => _mapper.ProjectTo<TEntity>(query, cancellationToken);
 
     protected async ValueTask<OneOf<TEntity, NotFound>> FindFirstOrNotFoundAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(specification);
-        if (await query.FirstOrDefaultAsync(cancellationToken) is TModel model)
+        var projected = ToEntity(query, cancellationToken);
+        if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
         {
-            return ToEntity(model);
+            return entity;
         }
 
         return new NotFound();
