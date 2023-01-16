@@ -14,6 +14,7 @@ using HomeInventory.Web;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Controllers;
@@ -48,7 +49,16 @@ public class AuthenticationModuleTests : BaseTest
         _registerValidator.ValidateAsync(_registerRequest, CancellationToken).Returns(new ValidationResult());
         _loginValidator.ValidateAsync(_loginRequest, CancellationToken).Returns(new ValidationResult());
 
-        _context = new DefaultHttpContext();
+        var collection = new ServiceCollection();
+        collection.AddSingleton(_mediator);
+        collection.AddSingleton(_mapper);
+        collection.AddSingleton(_registerValidator);
+        collection.AddSingleton(_loginValidator);
+
+        _context = new DefaultHttpContext
+        {
+            RequestServices = collection.BuildServiceProvider()
+        };
     }
 
     [Fact]
@@ -60,7 +70,7 @@ public class AuthenticationModuleTests : BaseTest
         _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
         _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
         // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _mediator, _mapper, _registerValidator, _registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
         // Then
         result.Should().BeOfType<Ok<RegisterResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -75,7 +85,7 @@ public class AuthenticationModuleTests : BaseTest
         _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
         // When
-        var result = await AuthenticationModule.LoginAsync(_context, _mediator, _mapper, _loginValidator, _loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
         // Then
         result.Should().BeOfType<Ok<LoginResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -90,7 +100,7 @@ public class AuthenticationModuleTests : BaseTest
         _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
         _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
         // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _mediator, _mapper, _registerValidator, _registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
         // Then
         result.Should().BeOfType<Ok<RegisterResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -105,7 +115,7 @@ public class AuthenticationModuleTests : BaseTest
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
         _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
         // When
-        var result = await AuthenticationModule.LoginAsync(_context, _mediator, _mapper, _loginValidator, _loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
         // Then
         result.Should().BeOfType<Ok<LoginResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -118,7 +128,7 @@ public class AuthenticationModuleTests : BaseTest
         var error = new DuplicateEmailError();
         _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Fail<RegistrationResult>(error));
         // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _mediator, _mapper, _registerValidator, _registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
         // Then
         result.Should().BeOfType<ProblemHttpResult>()
             .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
@@ -132,7 +142,7 @@ public class AuthenticationModuleTests : BaseTest
         var error = new InvalidCredentialsError();
         _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Fail<AuthenticateResult>(error));
         // When
-        var result = await AuthenticationModule.LoginAsync(_context, _mediator, _mapper, _loginValidator, _loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
         // Then
         result.Should().BeOfType<ProblemHttpResult>()
             .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)

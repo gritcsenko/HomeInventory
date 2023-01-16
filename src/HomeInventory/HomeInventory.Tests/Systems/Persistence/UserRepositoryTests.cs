@@ -67,6 +67,12 @@ public class UserRepositoryTests : BaseTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
+        _mapper.ProjectTo<User>(Arg.Any<IQueryable>(), CancellationToken).Returns(ci =>
+        {
+            var query = ci.Arg<IQueryable>();
+            var userModels = query.Cast<UserModel>();
+            return userModels.Select(x => _user);
+        });
         _context.Set<UserModel>().Add(_userModel);
         await _context.SaveChangesAsync();
         var sut = CreateSut();

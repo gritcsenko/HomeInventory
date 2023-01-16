@@ -13,7 +13,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [Trait("Category", "Unit")]
 public class LoggingBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, Result<AuthenticateResult>>> _logger;
+    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>> _logger;
     private readonly AuthenticateQuery _request;
     private readonly Result<AuthenticateResult> _response;
 
@@ -21,7 +21,7 @@ public class LoggingBehaviorTests : BaseTest
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
-        _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, Result<AuthenticateResult>>>>();
+        _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>>>();
         _request = Fixture.Create<AuthenticateQuery>();
         _response = Fixture.Create<AuthenticateResult>();
     }
@@ -66,5 +66,5 @@ public class LoggingBehaviorTests : BaseTest
             .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
     }
 
-    private LoggingBehavior<AuthenticateQuery, Result<AuthenticateResult>> CreateSut() => new(_logger);
+    private LoggingBehavior<AuthenticateQuery, AuthenticateResult> CreateSut() => new(_logger);
 }
