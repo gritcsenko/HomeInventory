@@ -1,5 +1,4 @@
-﻿using Asp.Versioning.Conventions;
-using HomeInventory.Web.Authorization.Dynamic;
+﻿using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,20 +9,12 @@ namespace HomeInventory.Web;
 internal class PermissionModule : ApiModule
 {
     public PermissionModule()
+        : base("/api/permissions", Permission.AccessPermissions)
     {
     }
 
-    public override void AddRoutes(IEndpointRouteBuilder app)
+    protected override void AddRoutes(RouteGroupBuilder group)
     {
-        var versionSet = GetVersionSet(app);
-
-        var group = app.MapGroup("/api/permissions")
-            .WithOpenApi()
-            .RequireDynamicAuthorization(Permission.AccessPermissions)
-            .WithApiVersionSet(versionSet)
-            .MapToApiVersion(1);
-
-
         group.MapGet("", GetPermissionsAsync)
             .RequireDynamicAuthorization(Permission.ReadPermission);
     }

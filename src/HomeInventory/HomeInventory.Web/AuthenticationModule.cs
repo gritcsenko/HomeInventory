@@ -1,5 +1,4 @@
-﻿using Asp.Versioning.Conventions;
-using HomeInventory.Application.Authentication.Commands.Register;
+﻿using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Web.Authorization.Dynamic;
@@ -13,48 +12,34 @@ namespace HomeInventory.Web;
 internal class AuthenticationModule : ApiModule
 {
     public AuthenticationModule()
+        : base("/api/authentication", Permission.AccessPermissions)
     {
     }
 
-    public override void AddRoutes(IEndpointRouteBuilder app)
+    protected override void AddRoutes(RouteGroupBuilder group)
     {
-        var versionSet = GetVersionSet(app);
+        group.MapPost("register", RegisterAsync)
+            .AllowAnonymous()
+            .WithValidationOf<RegisterRequest>();
 
-        var group = app.MapGroup("/api/authentication")
-            .WithOpenApi()
-            .RequireDynamicAuthorization(Permission.AccessPermissions)
-            .WithApiVersionSet(versionSet)
-        .MapToApiVersion(1);
-
-        group.MapPost("register", RegisterAsync);
-
-        group.MapPost("login", LoginAsync);
+        group.MapPost("login", LoginAsync)
+            .AllowAnonymous()
+            .WithValidationOf<LoginRequest>();
     }
 
-    public static async Task<IResult> RegisterAsync([FromServices] HttpContext context, [FromBody] RegisterRequest body, CancellationToken cancellationToken = default)
+    public static async Task<IResult> RegisterAsync(HttpContext context, [FromBody] RegisterRequest body, CancellationToken cancellationToken = default)
     {
-        var validationResult = await ValidateAsync(context, body, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return Problem(context, validationResult);
-        }
-
-        var mapper = GetMapper(context);
+        var mapper = context.GetMapper();
         var command = mapper.Map<RegisterCommand>(body);
-        var result = await GetSender(context).Send(command, cancellationToken);
-        return Match(context, result, x => Results.Ok(mapper.Map<RegisterResponse>(x)));
+        var result = await context.GetSender().Send(command, cancellationToken);
+        return context.MatchToOk(result, mapper.Map<RegisterResponse>);
     }
 
-    public static async Task<IResult> LoginAsync([FromServices] HttpContext context, [FromBody] LoginRequest body, CancellationToken cancellationToken = default)
+    public static async Task<IResult> LoginAsync(HttpContext context, [FromBody] LoginRequest body, CancellationToken cancellationToken = default)
     {
-        var validationResult = await ValidateAsync(context, body, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return Problem(context, validationResult);
-        }
-        var mapper = GetMapper(context);
+        var mapper = context.GetMapper();
         var query = mapper.Map<AuthenticateQuery>(body);
-        var result = await GetSender(context).Send(query, cancellationToken);
-        return Match(context, result, x => Results.Ok(mapper.Map<LoginResponse>(x)));
+        var result = await context.GetSender().Send(query, cancellationToken);
+        return context.MatchToOk(result, mapper.Map<LoginResponse>);
     }
 }

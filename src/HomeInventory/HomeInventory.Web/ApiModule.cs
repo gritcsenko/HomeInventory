@@ -1,67 +1,42 @@
-﻿using Asp.Versioning.Builder;
-using Asp.Versioning.Conventions;
-using AutoMapper;
+﻿using Asp.Versioning;
 using Carter;
-using FluentResults;
-using FluentValidation;
-using FluentValidation.Results;
-using HomeInventory.Domain.Errors;
-using HomeInventory.Web.Infrastructure;
-using MediatR;
+using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web;
 
 internal abstract class ApiModule : CarterModule
 {
-    protected ApiModule()
+    private readonly string _groupPrefix;
+    private readonly Permission? _permission;
+    private ApiVersion _version = new(1);
+
+    protected ApiModule(string groupPrefix, Permission? permission = null)
     {
+        IncludeInOpenApi();
+        _groupPrefix = groupPrefix;
+        _permission = permission;
     }
 
-    protected static ApiVersionSet GetVersionSet(IEndpointRouteBuilder app) =>
-        app.NewApiVersionSet()
-            .HasApiVersion(1)
-            .ReportApiVersions()
-            .Build();
+    protected void MapToApiVersion(ApiVersion version) => _version = version;
 
-    protected static IResult Problem(HttpContext context, IReadOnlyCollection<IError> errors)
+    public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        context.SetItem(HttpContextItems.Errors, errors);
-        var firstError = errors.First();
+        var versionSet = app.GetVersionSet();
 
-        var statusCode = firstError switch
+        //app.MapGroup("/api/v{version:apiVersion}/...")
+        var group = app.MapGroup(_groupPrefix)
+            .WithApiVersionSet(versionSet)
+            .MapToApiVersion(_version);
+
+        if (_permission.HasValue)
         {
-            ConflictError => StatusCodes.Status409Conflict,
-            ValidationError => StatusCodes.Status400BadRequest,
-            NotFoundError => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status500InternalServerError,
-        };
-        return Results.Problem(detail: firstError.Message, statusCode: statusCode, title: firstError.GetType().Name);
+            group.RequireDynamicAuthorization(_permission.Value);
+        }
+
+        AddRoutes(group);
     }
 
-    protected static IResult Problem(HttpContext context, ValidationResult result)
-    {
-        var errors = result.Errors.Select(x => new Error(x.ErrorMessage)).ToArray();
-        return Problem(context, errors);
-    }
-
-    protected static IResult Match<T>(HttpContext context, Result<T> errorOrResult, Func<T, IResult> onValue) => errorOrResult.IsSuccess
-        ? onValue(errorOrResult.Value)
-        : Problem(context, errorOrResult.Errors);
-
-    protected static ISender GetSender(HttpContext context) => GetService<ISender>(context);
-
-    protected static IMapper GetMapper(HttpContext context) => GetService<IMapper>(context);
-
-    protected static IValidator<T> GetValidator<T>(HttpContext context) => GetService<IValidator<T>>(context);
-
-    protected static Task<ValidationResult> ValidateAsync<T>(HttpContext context, T instance, CancellationToken cancellationToken) =>
-        GetService<IValidator<T>>(context).ValidateAsync(instance, cancellationToken);
-
-    protected static T GetService<T>(HttpContext context)
-        where T : notnull
-        => context.RequestServices.GetRequiredService<T>();
+    protected abstract void AddRoutes(RouteGroupBuilder group);
 }
