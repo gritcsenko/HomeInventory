@@ -2,6 +2,7 @@
 using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
@@ -12,11 +13,11 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     where TModel : class, IPersistentModel
     where TEntity : class, Domain.Primitives.IEntity<TEntity>
 {
-    private readonly IDatabaseContext _dbContext;
+    private readonly DatabaseContext _dbContext;
     private readonly IMapper _mapper;
     private readonly ISpecificationEvaluator _evaluator;
 
-    protected Repository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
+    protected Repository(DatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
     {
         _dbContext = context;
         _mapper = mapper;
@@ -77,15 +78,28 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
 
+    protected TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);
+
     protected IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) => _mapper.ProjectTo<TEntity>(query, cancellationToken);
 
     protected async ValueTask<OneOf<TEntity, NotFound>> FindFirstOrNotFoundAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
-        var query = ApplySpecification(specification);
-        var projected = ToEntity(query, cancellationToken);
-        if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
+        if (specification is ICompiledSingleResultSpecification<TModel> compiled)
         {
-            return entity;
+            var model = await compiled.ExecuteAsync(_dbContext, cancellationToken);
+            if (model is not null)
+            {
+                return ToEntity(model);
+            }
+        }
+        else
+        {
+            var query = ApplySpecification(specification);
+            var projected = ToEntity(query, cancellationToken);
+            if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
+            {
+                return entity;
+            }
         }
 
         return new NotFound();

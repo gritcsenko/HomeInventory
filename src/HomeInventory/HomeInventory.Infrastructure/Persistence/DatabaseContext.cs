@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class DatabaseContext : DbContext, IDatabaseContext
+internal class DatabaseContext : DbContext
 {
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
@@ -18,8 +18,6 @@ internal class DatabaseContext : DbContext, IDatabaseContext
     public required DbSet<StorageAreaModel> StorageAreas { get; init; }
 
     public required DbSet<ProductModel> Products { get; init; }
-
-    DbSet<TModel> IDatabaseContext.Set<TModel>() => Set<TModel>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
