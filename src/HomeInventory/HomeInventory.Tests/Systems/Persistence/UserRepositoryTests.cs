@@ -15,7 +15,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [Trait("Category", "Unit")]
 public class UserRepositoryTests : BaseTest
 {
-    private readonly IDatabaseContext _context = HomeInventory.Domain.TypeExtensions.CreateInstance<DatabaseContext>(GetDatabaseOptions())!;
+    private readonly DatabaseContext _context = HomeInventory.Domain.TypeExtensions.CreateInstance<DatabaseContext>(GetDatabaseOptions())!;
 
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly User _user;

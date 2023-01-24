@@ -7,10 +7,10 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {
-    private readonly IDatabaseContext _context;
+    private readonly DatabaseContext _context;
     private readonly IDateTimeService _dateTimeService;
 
-    public UnitOfWork(IDatabaseContext context, IDateTimeService dateTimeService)
+    public UnitOfWork(DatabaseContext context, IDateTimeService dateTimeService)
     {
         _context = context;
         _dateTimeService = dateTimeService;

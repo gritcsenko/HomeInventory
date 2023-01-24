@@ -8,7 +8,7 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal class StorageAreaRepository : Repository<StorageAreaModel, StorageArea>, IStorageAreaRepository
 {
-    public StorageAreaRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
+    public StorageAreaRepository(DatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
         : base(context, mapper, evaluator)
     {
     }

@@ -12,7 +12,7 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal class UserRepository : Repository<UserModel, User>, IUserRepository
 {
-    public UserRepository(IDatabaseContext dbContext, IMapper mapper, ISpecificationEvaluator evaluator)
+    public UserRepository(DatabaseContext dbContext, IMapper mapper, ISpecificationEvaluator evaluator)
         : base(dbContext, mapper, evaluator)
     {
     }
