@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Extensions;
 
 internal static class RouteHandlerBuilderExtensions
 {

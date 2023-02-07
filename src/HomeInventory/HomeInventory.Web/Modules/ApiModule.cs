@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Carter;
 using HomeInventory.Web.Authorization.Dynamic;
+using HomeInventory.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 

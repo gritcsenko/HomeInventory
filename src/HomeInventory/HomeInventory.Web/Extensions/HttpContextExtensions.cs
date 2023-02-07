@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Extensions;
 
 internal static class HttpContextExtensions
 {
     public static IResult Problem(this HttpContext context, ValidationResult result)
     {
         var errors = result.Errors.Select(x => new ValidationError(x.ErrorMessage)).ToArray();
-        return Problem(context, errors, StatusCodes.Status400BadRequest);
+        return context.Problem(errors, StatusCodes.Status400BadRequest);
     }
 
     public static IResult MatchToOk<T, TResponse>(this HttpContext context, Result<T> errorOrResult, Func<T, TResponse> onValue) =>
@@ -25,19 +25,19 @@ internal static class HttpContextExtensions
     public static IResult Match<T>(this HttpContext context, Result<T> errorOrResult, Func<T, IResult> onValue) =>
         errorOrResult.IsSuccess
             ? onValue(errorOrResult.Value)
-            : Problem(context, errorOrResult.Errors);
+            : context.Problem(errorOrResult.Errors);
 
-    public static ISender GetSender(this HttpContext context) => GetService<ISender>(context);
+    public static ISender GetSender(this HttpContext context) => context.GetService<ISender>();
 
-    public static IMapper GetMapper(this HttpContext context) => GetService<IMapper>(context);
+    public static IMapper GetMapper(this HttpContext context) => context.GetService<IMapper>();
 
-    public static IValidator<T> GetValidator<T>(this HttpContext context) => GetService<IValidator<T>>(context);
+    public static IValidator<T> GetValidator<T>(this HttpContext context) => context.GetService<IValidator<T>>();
 
     public static Task<ValidationResult> ValidateAsync<T>(this HttpContext context, T instance, CancellationToken cancellationToken) =>
-        GetService<IValidator<T>>(context).ValidateAsync(instance, cancellationToken);
+        context.GetService<IValidator<T>>().ValidateAsync(instance, cancellationToken);
 
     public static Task<ValidationResult> ValidateAsync<T>(this HttpContext context, T instance) =>
-        GetService<IValidator<T>>(context).ValidateAsync(instance, context.RequestAborted);
+        context.GetService<IValidator<T>>().ValidateAsync(instance, context.RequestAborted);
 
     public static T GetService<T>(this HttpContext context)
         where T : notnull =>
