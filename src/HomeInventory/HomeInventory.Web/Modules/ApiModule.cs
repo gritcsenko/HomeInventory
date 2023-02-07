@@ -4,7 +4,7 @@ using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Modules;
 
 internal abstract class ApiModule : CarterModule
 {

@@ -1,13 +1,4 @@
-﻿using HomeInventory.Application.Authentication.Commands.Register;
-using HomeInventory.Application.Authentication.Queries.Authenticate;
-using HomeInventory.Contracts;
-using HomeInventory.Web.Authorization.Dynamic;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-
-namespace HomeInventory.Web;
+﻿namespace HomeInventory.Web.Modules;
 
 internal class AuthenticationModule : ApiModule
 {

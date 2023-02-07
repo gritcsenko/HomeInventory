@@ -10,7 +10,7 @@ using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Helpers;
-using HomeInventory.Web;
+using HomeInventory.Web.Modules;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

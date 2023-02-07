@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Modules;
 
 internal class AreaModule : ApiModule
 {

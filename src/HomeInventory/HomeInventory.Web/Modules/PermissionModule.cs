@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Modules;
 
 internal class PermissionModule : ApiModule
 {

@@ -14,6 +14,7 @@ using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Configuration.Validation;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
+using HomeInventory.Web.Modules;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
