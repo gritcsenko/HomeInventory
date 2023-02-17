@@ -2,7 +2,6 @@ using HomeInventory.Application;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Web;
-using MediatR;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -14,7 +13,9 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog(ConfigureSerilog, preserveStaticLogger: false, writeToProviders: false);
-    builder.Services.AddMediatR(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly);
+    builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblies(
+        HomeInventory.Application.AssemblyReference.Assembly,
+        HomeInventory.Infrastructure.AssemblyReference.Assembly));
 
     builder.Services
         .AddDomain()
