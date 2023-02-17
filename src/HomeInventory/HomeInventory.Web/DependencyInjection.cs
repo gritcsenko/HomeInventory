@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Carter;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -50,10 +49,6 @@ public static class DependencyInjection
         }, Type.EmptyTypes);
 
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
-
-        services.AddControllers(o => o.SuppressAsyncSuffixInActionNames = true)
-            .AddApplicationPart(Assembly.GetExecutingAssembly())
-            .AddControllersAsServices();
 
         services.AddDynamicAuthorization();
 

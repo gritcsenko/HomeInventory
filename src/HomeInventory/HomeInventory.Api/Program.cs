@@ -10,23 +10,25 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
+    var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+    {
+        ApplicationName = "HomeInventory",
+        Args = args,
+    });
 
     builder.Host.UseSerilog(ConfigureSerilog, preserveStaticLogger: false, writeToProviders: false);
-    builder.Services.AddMediatR(ConfigureMediatR);
 
     builder.Services
+        .AddMediatR(ConfigureMediatR)
         .AddDomain()
         .AddInfrastructure()
         .AddApplication()
         .AddWeb();
 
-    var app = builder.Build();
-    app.UseWeb();
-
-    app.MapControllers();
-
-    app.Run();
+    await builder
+        .Build()
+        .UseWeb()
+        .RunAsync();
 }
 catch (Exception ex)
 {
@@ -43,8 +45,7 @@ static void ConfigureSerilog(HostBuilderContext context, IServiceProvider servic
         .ReadFrom.Services(services);
 
 static void ConfigureMediatR(MediatRServiceConfiguration configuration) =>
-    configuration.RegisterServicesFromAssemblies(
-        HomeInventory.Application.AssemblyReference.Assembly,
-        HomeInventory.Infrastructure.AssemblyReference.Assembly);
+    configuration
+        .RegisterServicesFromAssemblies(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly);
 
 public partial class Program { }
