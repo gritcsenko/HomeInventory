@@ -13,9 +13,7 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog(ConfigureSerilog, preserveStaticLogger: false, writeToProviders: false);
-    builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblies(
-        HomeInventory.Application.AssemblyReference.Assembly,
-        HomeInventory.Infrastructure.AssemblyReference.Assembly));
+    builder.Services.AddMediatR(ConfigureMediatR);
 
     builder.Services
         .AddDomain()
@@ -43,5 +41,10 @@ static void ConfigureSerilog(HostBuilderContext context, IServiceProvider servic
     configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services);
+
+static void ConfigureMediatR(MediatRServiceConfiguration c) =>
+    c.RegisterServicesFromAssemblies(
+        HomeInventory.Application.AssemblyReference.Assembly,
+        HomeInventory.Infrastructure.AssemblyReference.Assembly);
 
 public partial class Program { }
