@@ -42,8 +42,8 @@ static void ConfigureSerilog(HostBuilderContext context, IServiceProvider servic
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services);
 
-static void ConfigureMediatR(MediatRServiceConfiguration c) =>
-    c.RegisterServicesFromAssemblies(
+static void ConfigureMediatR(MediatRServiceConfiguration configuration) =>
+    configuration.RegisterServicesFromAssemblies(
         HomeInventory.Application.AssemblyReference.Assembly,
         HomeInventory.Infrastructure.AssemblyReference.Assembly);
 
