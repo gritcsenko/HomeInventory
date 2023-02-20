@@ -34,9 +34,24 @@ jobs:
       - name: Build
         run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
         working-directory: ./src/HomeInventory
-      - name: Test All
+      - name: Test Unit
         run: dotnet test HomeInventory.Tests --no-build --no-restore --configuration Release --verbosity normal
         working-directory: ./src/HomeInventory
+      - name: SpecFlow Tests
+        uses: actions/cryptic-wizard/run-specflow-tests@v1.3.1
+        with:
+          test-assembly-path: HomeInventory.Tests.Acceptance/bin/Release/net7
+          test-assembly-dll: HomeInventory.Tests.Acceptance.dll
+          test-execution-json: TestExecution.json
+          configuration: Release
+          output-html: MyTestResults.html
+          build-verbosity: normal
+          test-verbosity: minimal
+          framework: net7
+          no-build: true
+          logger: trx
+          logger-file-name: ../../MyTestResults.trx
+          upload-artifact: false
       - name: Collect Coverage
         run: dotnet test HomeInventory.Tests --filter Category=Unit --no-build --no-restore --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
         working-directory: ./src/HomeInventory
@@ -65,9 +80,11 @@ jobs:
           header: Summary code coverage report
           path: code-coverage-results.md
       - name: Write coverage to Job Summary
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.17
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
           targetdir: "coveragereport" # REQUIRED # The directory where the generated report should be saved.
@@ -93,9 +110,11 @@ jobs:
           header: Detailed code coverage report
           path: coveragereport/SummaryGithub.md
       - name: Write coverage to Job Summary 2
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       - name: Upload coverage report artifact
         uses: actions/upload-artifact@v3.1.2
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
         with:
           name: CoverageReport # Artifact name
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
