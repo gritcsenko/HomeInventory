@@ -1,15 +1,14 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Application.Mapping;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -18,20 +17,8 @@ public class ModelMappingsTests : BaseMappingsTests
 {
     public ModelMappingsTests()
     {
-        Services.AddSingleton(GuidIdFactory.Create(id => new UserId(id)));
-        Services.AddSingleton<GuidIdConverter<UserId>>();
-
-        Services.AddSingleton(GuidIdFactory.Create(id => new StorageAreaId(id)));
-        Services.AddSingleton<GuidIdConverter<StorageAreaId>>();
-
-        Services.AddSingleton(GuidIdFactory.Create(id => new ProductId(id)));
-        Services.AddSingleton<GuidIdConverter<ProductId>>();
-
-        Services.AddSingleton<IValueObjectFactory<Email, string>, EmailFactory>();
-        Services.AddSingleton<ValueObjectConverter<Email, string>>();
-
-        Services.AddSingleton<IAmountFactory, AmountFactory>();
-        Services.AddSingleton<AmountValueObjectConverter>();
+        Services.AddDomain();
+        Services.AddInfrastructure();
     }
 
     [Theory]
