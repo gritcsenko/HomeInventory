@@ -37,6 +37,14 @@ jobs:
       - name: Unit Tests
         run: dotnet test HomeInventory.Tests --no-build --no-restore --configuration Release --verbosity normal
         working-directory: ./src/HomeInventory
+      - name: Acceptance Tests
+        run: dotnet test HomeInventory.Tests.Acceptance --configuration Release --verbosity normal
+        working-directory: ./src/HomeInventory
+      - name: Generate Living Specification
+        run: |
+          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "MyTestResults.html"
+        working-directory: ./src/HomeInventory
       - name: SpecFlow Tests
         uses: cryptic-wizard/run-specflow-tests@v1.3.1
         with:
@@ -48,7 +56,7 @@ jobs:
           build-verbosity: normal
           test-verbosity: minimal
           framework: net7
-          no-build: false
+          no-build: true
           logger: trx
           logger-file-name: ../../MyTestResults.trx
           upload-artifact: false
