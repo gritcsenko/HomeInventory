@@ -62,8 +62,6 @@ jobs:
       with:
         recreate: true
         path: code-coverage-results.md
-      working-directory: ./src/HomeInventory
     - name: Write coverage to Job Summary
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-      working-directory: ./src/HomeInventory
 
