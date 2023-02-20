@@ -29,7 +29,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget
     - name: Restore dependencies
-      run: dotnet restore --configuration Release --verbosity normal
+      run: dotnet restore --verbosity normal
       working-directory: ./src/HomeInventory
     - name: Build
       run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
