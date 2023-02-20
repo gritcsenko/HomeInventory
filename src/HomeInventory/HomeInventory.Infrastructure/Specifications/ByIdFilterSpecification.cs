@@ -20,8 +20,3 @@ internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleR
 
     public Task<TModel?> ExecuteAsync(DatabaseContext context, CancellationToken cancellationToken) => _cachedQuery(context, _id, cancellationToken);
 }
-
-internal interface ICompiledSingleResultSpecification<T>
-{
-    Task<T?> ExecuteAsync(DatabaseContext context, CancellationToken cancellationToken);
-}
