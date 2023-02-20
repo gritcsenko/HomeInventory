@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
         working-directory: ./src/HomeInventory
-      - name: Test Unit
+      - name: Unit Tests
         run: dotnet test HomeInventory.Tests --no-build --no-restore --configuration Release --verbosity normal
         working-directory: ./src/HomeInventory
       - name: SpecFlow Tests
@@ -48,7 +48,7 @@ jobs:
           build-verbosity: normal
           test-verbosity: minimal
           framework: net7
-          no-build: true
+          no-build: false
           logger: trx
           logger-file-name: ../../MyTestResults.trx
           upload-artifact: false
