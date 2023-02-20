@@ -10,14 +10,14 @@ namespace HomeInventory.Web.Modules;
 internal abstract class ApiModule : CarterModule
 {
     private readonly string _groupPrefix;
-    private readonly Permission? _permission;
+    private readonly Permission[] _permissions;
     private ApiVersion _version = new(1);
 
-    protected ApiModule(string groupPrefix, Permission? permission = null)
+    protected ApiModule(string groupPrefix, params Permission[] permissions)
     {
         IncludeInOpenApi();
         _groupPrefix = groupPrefix;
-        _permission = permission;
+        _permissions = permissions;
     }
 
     protected void MapToApiVersion(ApiVersion version) => _version = version;
@@ -31,9 +31,9 @@ internal abstract class ApiModule : CarterModule
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(_version);
 
-        if (_permission.HasValue)
+        if (_permissions.Any())
         {
-            group.RequireDynamicAuthorization(_permission.Value);
+            group.RequireDynamicAuthorization(_permissions);
         }
 
         AddRoutes(group);
