@@ -36,7 +36,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
     {
         if (!_products.Contains(item))
         {
-            return new ProductNotFoundError(item);
+            return Result.Ok();
         }
 
         _products.Remove(item);
