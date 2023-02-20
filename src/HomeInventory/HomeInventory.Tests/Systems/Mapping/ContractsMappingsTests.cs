@@ -34,6 +34,8 @@ public class ContractsMappingsTests : BaseMappingsTests
     {
         var fixture = new Fixture();
         fixture.CustomizeGuidId(guid => new UserId(guid));
+        fixture.CustomizeGuidId(guid => new StorageAreaId(guid));
+        fixture.CustomizeString(name => new StorageAreaName(name));
         fixture.CustomizeEmail();
         return new()
         {
