@@ -76,6 +76,11 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return await GetDbSet().AnyAsync(cancellationToken);
     }
 
+    public IAsyncEnumerable<TEntity> GetAllAsync()
+    {
+        return GetDbSet().AsAsyncEnumerable().Select(ToEntity);
+    }
+
     protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
 
     protected TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);

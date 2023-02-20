@@ -1,7 +1,7 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public interface IReadOnlyRepository<Entity>
-    where Entity : class, IEntity<Entity>
+public interface IReadOnlyRepository<TEntity>
+    where TEntity : class, IEntity<TEntity>
 {
     /// <summary>
     /// Returns the total number of records.
@@ -20,4 +20,6 @@ public interface IReadOnlyRepository<Entity>
     /// source sequence contains any elements; otherwise, false.
     /// </returns>
     Task<bool> AnyAsync(CancellationToken cancellationToken = default);
+
+    IAsyncEnumerable<TEntity> GetAllAsync();
 }
