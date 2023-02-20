@@ -39,6 +39,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: SpecFlow Tests
         uses: cryptic-wizard/run-specflow-tests@v1.3.1
+        working-directory: ./src/HomeInventory
         with:
           test-assembly-path: HomeInventory.Tests.Acceptance/bin/Release/net7
           test-assembly-dll: HomeInventory.Tests.Acceptance.dll
