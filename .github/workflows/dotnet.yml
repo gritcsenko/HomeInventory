@@ -38,7 +38,7 @@ jobs:
         run: dotnet test HomeInventory.Tests --no-build --no-restore --configuration Release --verbosity normal
         working-directory: ./src/HomeInventory
       - name: Acceptance Tests
-        run: dotnet test HomeInventory.Tests.Acceptance--no-build --no-restore --configuration Release --verbosity normal --logger:"trx;verbosity=normal;LogFileName=MyTestResults.trx"
+        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity normal --logger:"trx;verbosity=normal;LogFileName=MyTestResults.trx"
         working-directory: ./src/HomeInventory
       - name: Generate Living Specification
         run: |
