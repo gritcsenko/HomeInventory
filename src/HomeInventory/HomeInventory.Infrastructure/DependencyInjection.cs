@@ -1,10 +1,13 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Application;
+using HomeInventory.Application.Mapping;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +28,15 @@ public static class DependencyInjection
         services.AddRepository<StorageArea, IStorageAreaRepository, StorageAreaRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
+
+        services.AddSingleton<ValueObjectConverter<Email, string>>();
+        services.AddSingleton<GuidIdConverter<UserId>>();
+        services.AddSingleton<GuidIdConverter<StorageAreaId>>();
+        services.AddSingleton<GuidIdConverter<ProductId>>();
+        services.AddSingleton<AmountValueObjectConverter>();
+
         services.AddHealthChecks()
-            .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+             .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
         return services;
     }
 
