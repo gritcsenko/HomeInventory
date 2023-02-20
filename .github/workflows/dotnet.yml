@@ -19,8 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.x
-        include-prerelease: false
+        global-json-file: ./src/global.json
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
@@ -30,13 +29,17 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget
     - name: Restore dependencies
-      run: dotnet restore ./src/HomeInventory --verbosity normal
+      run: dotnet restore --verbosity normal
+      working-directory: ./src/HomeInventory
     - name: Build
-      run: dotnet build ./src/HomeInventory -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
+      run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
+      working-directory: ./src/HomeInventory
     - name: Test All
-      run: dotnet test ./src/HomeInventory --no-build --no-restore --configuration Release --verbosity normal
+      run: dotnet test --no-build --no-restore --configuration Release --verbosity normal
+      working-directory: ./src/HomeInventory
     - name: Collect Coverage
-      run: dotnet test ./src/HomeInventory --filter Category=Unit --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test --filter Category=Unit --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+      working-directory: ./src/HomeInventory
     - name: Copy Coverage To Predictable Location
       run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
     - name: Code Coverage Summary Report
