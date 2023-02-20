@@ -3,7 +3,7 @@ using FluentAssertions;
 using HomeInventory.Domain;
 using HomeInventory.Tests.Helpers;
 
-namespace HomeInventory.Tests.Domain;
+namespace HomeInventory.Tests.Domain.Primitives;
 
 public class TypeExtensionsTests : BaseTest
 {

@@ -4,7 +4,7 @@ using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Helpers;
 using NSubstitute;
 
-namespace HomeInventory.Tests.Domain;
+namespace HomeInventory.Tests.Domain.Primitives;
 
 public class PoolTests : BaseTest
 {
