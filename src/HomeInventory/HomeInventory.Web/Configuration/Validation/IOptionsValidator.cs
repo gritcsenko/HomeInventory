@@ -1,5 +1,7 @@
-﻿namespace HomeInventory.Web.Configuration.Validation;
+﻿using FluentValidation;
 
-internal interface IOptionsValidator
+namespace HomeInventory.Web.Configuration.Validation;
+
+internal interface IOptionsValidator : IValidator
 {
 }

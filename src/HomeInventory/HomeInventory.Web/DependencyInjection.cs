@@ -80,7 +80,8 @@ public static class DependencyInjection
             c.DisableDataAnnotationsValidation = true;
         });
         services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
-        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Transient, filter: r => r.ValidatorType.IsAssignableTo(typeof(IOptionsValidator)), includeInternalTypes: true);
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, filter: r => r.Is<IOptionsValidator>(), includeInternalTypes: true);
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Scoped, filter: r => !r.Is<IOptionsValidator>(), includeInternalTypes: true);
 
         services.AddOptionsWithValidator<JwtOptions>();
 
@@ -157,6 +158,8 @@ public static class DependencyInjection
         return builder.RequireAuthorization(attributes);
     }
 
+    private static bool Is<T>(this AssemblyScanner.AssemblyScanResult result) => result.ValidatorType.IsAssignableTo(typeof(T));
+
     private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, string? configSectionPath = null)
         where TOptions : class => services.AddOptions<TOptions>()
             .BindConfiguration(configSectionPath ?? typeof(TOptions).Name)
@@ -167,7 +170,7 @@ public static class DependencyInjection
         where TOptions : class
     {
         var services = builder.Services;
-        services.AddTransient<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidator<TOptions>>(), validationOptions));
+        services.AddSingleton<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidator<TOptions>>(), validationOptions));
         return builder;
     }
 
