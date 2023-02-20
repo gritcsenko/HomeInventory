@@ -15,6 +15,7 @@ public static class DependencyInjection
             .AddGuidIdFactory(id => new StorageAreaId(id));
 
         services.AddValueObjectFactory<Email, string, EmailFactory>();
+        services.AddSingleton<IAmountFactory, AmountFactory>();
         return services;
     }
 
