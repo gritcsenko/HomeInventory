@@ -45,8 +45,8 @@ public class GetAreaStepDefinitions
         _context.Set(products, "Products");
     }
 
-    [Given(@"Following context")]
-    public void GivenFollowingContext(Table table)
+    [Given(@"Following areas")]
+    public void GivenFollowingAreas(Table table)
     {
         var name = table.Header.First();
         var names = table.Rows.Select(row => row[name]).ToArray();

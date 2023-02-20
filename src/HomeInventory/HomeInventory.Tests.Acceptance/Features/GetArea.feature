@@ -11,7 +11,7 @@ Background:
         | Store   | Product | Price | Expiration | UnitVolume |
         | Walmart | Milk    | 2.99  | 12/12/2022 | 1          |
         | Lidl    | Water   | 0.99  | 12/12/2032 | 1          |
-    And Following context
+    And Following areas
         | Area   |
         | Fridge |
         | Pantry |
