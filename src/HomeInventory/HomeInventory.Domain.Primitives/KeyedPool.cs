@@ -11,7 +11,11 @@ public class KeyedPool<TKey, T> : IKeyedPool<TKey, T>
 
     public int Count => _pools.Values.Sum(pool => pool.Count);
 
-    public void Clear() => _pools.Values.ForEach(pool => pool.Clear());
+    public void Clear()
+    {
+        foreach (var pool in _pools.Values)
+            pool.Clear();
+    }
 
     public IPool<T> Get(TKey key) => _pools.GetOrAdd(key, _poolFactory);
 }

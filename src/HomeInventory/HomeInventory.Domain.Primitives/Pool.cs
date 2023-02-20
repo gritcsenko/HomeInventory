@@ -10,7 +10,7 @@ internal sealed class Pool<T> : IPool<T>
 
     public int Count => _pool.Count;
 
-    public T Pull() => _pool.DequeueOrDefault(_activator.Pull);
+    public T Pull() => _pool.TryDequeue(out var value) ? value : _activator.Pull();
 
     public void Fill(int count)
     {
