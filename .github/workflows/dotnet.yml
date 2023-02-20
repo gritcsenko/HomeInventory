@@ -47,7 +47,7 @@ jobs:
       id: report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: coverage.cobertura.xml
+        filename: ./src/HomeInventory/coverage.cobertura.xml
         badge: true
         fail_below_min: true
         format: markdown
