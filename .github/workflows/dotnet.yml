@@ -35,10 +35,10 @@ jobs:
         run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
         working-directory: ./src/HomeInventory
       - name: Test All
-        run: dotnet test --no-build --no-restore --configuration Release --verbosity normal
+        run: dotnet test --configuration Release --verbosity normal
         working-directory: ./src/HomeInventory
       - name: Collect Coverage
-        run: dotnet test --filter Category=Unit --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+        run: dotnet test --filter Category=Unit --no-build --no-restore --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
         working-directory: ./src/HomeInventory
       - name: Copy Coverage To Predictable Location
         run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
