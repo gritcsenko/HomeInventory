@@ -69,7 +69,7 @@ jobs:
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
           targetdir: "coveragereport" # REQUIRED # The directory where the generated report should be saved.
-          reporttypes: "MarkdownSummaryGithub" # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, Html_Dark, Html_Light, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlInline_AzurePipelines_Light, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MarkdownSummary, MarkdownSummaryGithub, MarkdownDeltaSummary, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, TextDeltaSummary, Xml, XmlSummary
+          reporttypes: "MarkdownSummaryGithub;HtmlInline_AzurePipelines_Dark;Cobertura" # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, Html_Dark, Html_Light, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlInline_AzurePipelines_Light, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MarkdownSummary, MarkdownSummaryGithub, MarkdownDeltaSummary, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, TextDeltaSummary, Xml, XmlSummary
           sourcedirs: "./src/HomeInventory" # Optional directories which contain the corresponding source code (separated by semicolon). The source directories are used if coverage report contains classes without path information.
           historydir: "" # Optional directory for storing persistent coverage information. Can be used in future reports to show coverage evolution.
           plugins: "" # Optional plugin files for custom reports or custom history storage (separated by semicolon).
@@ -82,8 +82,16 @@ jobs:
           license: "" # Optional license for PRO version. Get your license here: https://reportgenerator.io/pro
           customSettings: "" # Optional custom settings (separated by semicolon). See: https://github.com/danielpalme/ReportGenerator/wiki/Settings.
           toolpath: "reportgeneratortool" # Default directory for installing the dotnet tool.
+      - name: Add Coverage PR Comment 2
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+        with:
+          recreate: true
+          path: coveragereport/SummaryGithub.md
       - name: Upload coverage report artifact
-        uses: actions/upload-artifact@v2.2.3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: CoverageReport # Artifact name
-          path: coveragereport # Directory containing files to upload
+          path: coveragereport # A file, directory or wildcard pattern that describes what to upload
+          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
+          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
