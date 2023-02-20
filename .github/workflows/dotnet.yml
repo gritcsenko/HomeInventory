@@ -37,29 +37,6 @@ jobs:
       - name: Unit Tests
         run: dotnet test HomeInventory.Tests --no-build --no-restore --configuration Release --verbosity normal
         working-directory: ./src/HomeInventory
-      - name: Acceptance Tests
-        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity normal --logger:"trx;verbosity=normal;LogFileName=MyTestResults.trx"
-        working-directory: ./src/HomeInventory
-      - name: Generate Living Specification
-        run: |
-          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
-          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "MyTestResults.html"
-        working-directory: ./src/HomeInventory
-      - name: SpecFlow Tests
-        uses: cryptic-wizard/run-specflow-tests@v1.3.1
-        with:
-          test-assembly-path: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
-          test-assembly-dll: HomeInventory.Tests.Acceptance.dll
-          test-execution-json: TestExecution.json
-          configuration: Release
-          output-html: MyTestResults.html
-          build-verbosity: normal
-          test-verbosity: minimal
-          framework: net7
-          no-build: true
-          logger: trx
-          logger-file-name: ../../MyTestResults.trx
-          upload-artifact: false
       - name: Collect Coverage
         run: dotnet test HomeInventory.Tests --filter Category=Unit --no-build --no-restore --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
         working-directory: ./src/HomeInventory
@@ -128,3 +105,26 @@ jobs:
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+      - name: Acceptance Tests
+        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity normal --logger:"trx;verbosity=normal;LogFileName=MyTestResults.trx"
+        working-directory: ./src/HomeInventory
+      - name: Generate Living Specification
+        run: |
+          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "MyTestResults.html"
+        working-directory: ./src/HomeInventory
+      - name: SpecFlow Tests
+        uses: cryptic-wizard/run-specflow-tests@v1.3.1
+        with:
+          test-assembly-path: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
+          test-assembly-dll: HomeInventory.Tests.Acceptance.dll
+          test-execution-json: TestExecution.json
+          configuration: Release
+          output-html: MyTestResults.html
+          build-verbosity: normal
+          test-verbosity: minimal
+          framework: net7
+          no-build: true
+          logger: trx
+          logger-file-name: ../../MyTestResults.trx
+          upload-artifact: false
