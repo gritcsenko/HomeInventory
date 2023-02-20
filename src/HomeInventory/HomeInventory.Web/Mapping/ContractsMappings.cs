@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Application.Authentication.Commands.Register;
+using HomeInventory.Application.Authentication.Queries.Areas;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
@@ -19,5 +20,8 @@ internal class ContractsMappings : MappingProfile
 
         CreateMap<LoginRequest, AuthenticateQuery>();
         CreateMap<AuthenticateResult, LoginResponse>();
+
+        CreateMap<AreasResult, AreaResponse[]>()
+            .ConstructUsing(r => r.Areas.Select(a => new AreaResponse(a.Name.Value)).ToArray());
     }
 }

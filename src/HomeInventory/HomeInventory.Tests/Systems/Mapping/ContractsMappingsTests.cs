@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using HomeInventory.Application.Authentication.Commands.Register;
+using HomeInventory.Application.Authentication.Queries.Areas;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
@@ -42,6 +43,7 @@ public class ContractsMappingsTests : BaseMappingsTests
             { fixture.Create<RegistrationResult>(), typeof(RegisterResponse) },
             { fixture.Create<LoginRequest>(), typeof(AuthenticateQuery) },
             { fixture.Create<AuthenticateResult>(), typeof(LoginResponse) },
+            { fixture.Create<AreasResult>(), typeof(AreaResponse[]) },
         };
     }
 }
