@@ -60,9 +60,9 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
         with:
+          header: "Summary"
           hide: true
           hide_classify: "OUTDATED"
-          header: Summary code coverage report
           path: code-coverage-results.md
       - name: Write coverage to Job Summary
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
@@ -90,9 +90,9 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
         with:
+          header: "Detailed"
           hide: true
           hide_classify: "OUTDATED"
-          header: Detailed code coverage report
           path: coveragereport/SummaryGithub.md
       - name: Write coverage to Job Summary 2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
