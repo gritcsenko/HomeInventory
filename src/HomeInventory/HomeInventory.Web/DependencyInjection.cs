@@ -108,22 +108,7 @@ public static class DependencyInjection
             }
         });
 
-        app.MapHealthChecks("/health", new HealthCheckOptions
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-        });
-        app.MapHealthChecks("/health/ready", new HealthCheckOptions
-        {
-            Predicate = x => x.Tags.Contains(HealthCheckTags.Ready),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-        });
-        app.MapHealthChecks("/health/live", new HealthCheckOptions
-        {
-            Predicate = _ => false,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-        });
-
+        app.MapHealthChecks();
         app.UseHealthChecksUI();
 
         app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
@@ -143,6 +128,25 @@ public static class DependencyInjection
         app.MapCarter();
 
         return app;
+    }
+
+    private static void MapHealthChecks(this IEndpointRouteBuilder app)
+    {
+        app.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+        });
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = x => x.Tags.Contains(HealthCheckTags.Ready),
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+        });
+        app.MapHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = _ => false,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+        });
     }
 
     private static TBuilder RequirePermission<TBuilder>(this TBuilder builder, params Permission[] permissions)
