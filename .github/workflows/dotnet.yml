@@ -46,7 +46,6 @@ jobs:
     - name: Code Coverage Summary Report
       id: report
       uses: irongut/CodeCoverageSummary@v1.3.0
-      working-directory: ./src/HomeInventory
       with:
         filename: coverage.cobertura.xml
         badge: true
@@ -57,13 +56,14 @@ jobs:
         indicators: true
         output: both
         thresholds: '60 80'
+      working-directory: ./src/HomeInventory
     - name: Add Coverage PR Comment
       uses: marocchino/sticky-pull-request-comment@v2
-      working-directory: ./src/HomeInventory
       if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
       with:
         recreate: true
         path: code-coverage-results.md
+      working-directory: ./src/HomeInventory
     - name: Write coverage to Job Summary
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       working-directory: ./src/HomeInventory
