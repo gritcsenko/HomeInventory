@@ -12,7 +12,6 @@ try
 {
     var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     {
-        ApplicationName = "HomeInventory",
         Args = args,
     });
 
