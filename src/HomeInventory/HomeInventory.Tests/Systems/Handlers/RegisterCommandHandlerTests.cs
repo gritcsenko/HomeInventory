@@ -1,6 +1,6 @@
 using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Application.Authentication.Commands.Register;
+using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;

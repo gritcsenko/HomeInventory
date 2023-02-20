@@ -3,7 +3,7 @@ using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Persistence;
 
-namespace HomeInventory.Application.Authentication.Queries.Areas;
+namespace HomeInventory.Application.Cqrs.Queries.Areas;
 
 internal class AllAreasQueryHandler : IQueryHandler<AllAreasQuery, AreasResult>
 {

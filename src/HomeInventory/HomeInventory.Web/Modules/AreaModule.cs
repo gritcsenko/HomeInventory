@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Authentication.Queries.Areas;
+﻿using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Contracts;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Extensions;

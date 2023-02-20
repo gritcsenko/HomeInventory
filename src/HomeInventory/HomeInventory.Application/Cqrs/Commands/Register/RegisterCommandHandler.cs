@@ -6,7 +6,8 @@ using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
-namespace HomeInventory.Application.Authentication.Commands.Register;
+namespace HomeInventory.Application.Cqrs.Commands.Register;
+
 internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegistrationResult>
 {
     private readonly IUserRepository _userRepository;

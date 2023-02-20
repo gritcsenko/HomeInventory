@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using HomeInventory.Application.Authentication.Behaviors;
+using HomeInventory.Application.Cqrs.Behaviors;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using FluentResults;
-using HomeInventory.Application.Authentication.Behaviors;
-using HomeInventory.Application.Authentication.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Behaviors;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Helpers;
 using Microsoft.Extensions.Logging;

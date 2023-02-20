@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using HomeInventory.Application.Authentication.Commands.Register;
-using HomeInventory.Application.Authentication.Queries.Areas;
-using HomeInventory.Application.Authentication.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Application.Cqrs.Queries.Areas;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Primitives;

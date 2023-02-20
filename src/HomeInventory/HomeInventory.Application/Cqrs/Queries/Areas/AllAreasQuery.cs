@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Application.Interfaces.Messaging;
 
-namespace HomeInventory.Application.Authentication.Queries.Areas;
+namespace HomeInventory.Application.Cqrs.Queries.Areas;
 
 public record class AllAreasQuery() : IQuery<AreasResult>;

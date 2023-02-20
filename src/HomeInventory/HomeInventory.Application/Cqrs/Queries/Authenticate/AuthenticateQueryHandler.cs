@@ -6,7 +6,8 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using OneOf;
 
-namespace HomeInventory.Application.Authentication.Queries.Authenticate;
+namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
+
 internal class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, AuthenticateResult>
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
