@@ -46,7 +46,7 @@ internal class CorrelationIdMiddleware : IMiddleware
         context.Response.OnStarting(() =>
         {
             _logger.LogInformation("{CorrelationId} was returned to the caller", correlationId);
-            context.Response.Headers.Add(HeaderNames.CorrelationId, new StringValues(correlationId));
+            context.Response.Headers[HeaderNames.CorrelationId] = new StringValues(correlationId);
             return Task.CompletedTask;
         });
     }
