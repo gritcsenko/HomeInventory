@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
+  <RunConfiguration>
+    <ResultsDirectory>coverage</ResultsDirectory>
+  </RunConfiguration>
   <DataCollectionRunSettings>
     <DataCollectors>
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Attributes>
+          <Sources>
             <Exclude>
-              <Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
-              <Attribute>^System\.Diagnostics\.DebuggerNonUserCodeAttribute$</Attribute>
-              <Attribute>^System\.Runtime\.CompilerServices\.CompilerGeneratedAttribute$</Attribute>
-              <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
-              <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+              <Source>.*\.SourceGenerator\..*</Source>
+              <Source>.*.g.cs$</Source>
             </Exclude>
-          </Attributes>
-          <Functions>
-            <Exclude>
-              <!-- Exclude methods in the Mediator namespace: -->
-              <Function>^Mediator\..*</Function>
-              <Function>^Microsoft\.Extensions\.DependencyInjection\.MediatorDependencyInjectionExtensions\.*</Function>
-            </Exclude>
-          </Functions>
+          </Sources>
         </Configuration>
       </DataCollector>
     </DataCollectors>
