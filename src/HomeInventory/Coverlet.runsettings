@@ -14,6 +14,13 @@
               <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
             </Exclude>
           </Attributes>
+          <Functions>
+            <Exclude>
+              <!-- Exclude methods in the Mediator namespace: -->
+              <Function>^Mediator\..*</Function>
+              <Function>^Microsoft\.Extensions\.DependencyInjection\.MediatorDependencyInjectionExtensions\.*</Function>
+            </Exclude>
+          </Functions>
         </Configuration>
       </DataCollector>
     </DataCollectors>
