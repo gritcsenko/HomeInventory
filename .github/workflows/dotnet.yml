@@ -54,18 +54,18 @@ jobs:
           thresholds: "60 80"
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Summary"
           hide: true
           hide_classify: "OUTDATED"
           path: code-coverage-results.md
       - name: Write coverage to Job Summary
-        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.17
-        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
           targetdir: "coveragereport" # REQUIRED # The directory where the generated report should be saved.
@@ -84,18 +84,18 @@ jobs:
           toolpath: "reportgeneratortool" # Default directory for installing the dotnet tool.
       - name: Add Coverage PR Comment 2
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Detailed"
           hide: true
           hide_classify: "OUTDATED"
           path: coveragereport/SummaryGithub.md
       - name: Write coverage to Job Summary 2
-        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       - name: Upload coverage report artifact
         uses: actions/upload-artifact@v3.1.2
-        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure')}}
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           name: CoverageReport # Artifact name
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
