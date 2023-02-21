@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>>
-    where TRequest : IRequest<Result<TResponse>>
+internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, IResult<TResponse>>
+    where TRequest : IRequest<IResult<TResponse>>
 {
     private static readonly string RequestName = typeof(TRequest).GetFormattedName();
     private static readonly string ResponseName = typeof(TResponse).GetFormattedName();
@@ -15,9 +15,10 @@ internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
 
     public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger) => _logger = logger;
 
-    public async Task<Result<TResponse>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse>> next, CancellationToken cancellationToken)
+    public async Task<IResult<TResponse>> Handle(TRequest request, RequestHandlerDelegate<IResult<TResponse>> next, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{Request} was sent and expecting {Response}", RequestName, ResponseName);
+        _logger.LogInformation("Sending {Request} and expecting {Response}", RequestName, ResponseName);
+
         var response = await next();
         if (response.IsFailed)
         {

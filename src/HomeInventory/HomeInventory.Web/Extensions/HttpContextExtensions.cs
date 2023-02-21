@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using System.Net;
+using AutoMapper;
 using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
@@ -16,13 +18,13 @@ internal static class HttpContextExtensions
     public static IResult Problem(this HttpContext context, ValidationResult result)
     {
         var errors = result.Errors.Select(x => new ValidationError(x.ErrorMessage)).ToArray();
-        return context.Problem(errors, StatusCodes.Status400BadRequest);
+        return context.Problem(errors, HttpStatusCode.BadRequest);
     }
 
-    public static IResult MatchToOk<T, TResponse>(this HttpContext context, Result<T> errorOrResult, Func<T, TResponse> onValue) =>
+    public static IResult MatchToOk<T, TResponse>(this HttpContext context, IResult<T> errorOrResult, Func<T, TResponse> onValue) =>
         context.Match(errorOrResult, x => Results.Ok(onValue(x)));
 
-    public static IResult Match<T>(this HttpContext context, Result<T> errorOrResult, Func<T, IResult> onValue) =>
+    public static IResult Match<T>(this HttpContext context, IResult<T> errorOrResult, Func<T, IResult> onValue) =>
         errorOrResult.IsSuccess
             ? onValue(errorOrResult.Value)
             : context.Problem(errorOrResult.Errors);
@@ -31,54 +33,87 @@ internal static class HttpContextExtensions
 
     public static IMapper GetMapper(this HttpContext context) => context.GetService<IMapper>();
 
-    public static IValidator<T> GetValidator<T>(this HttpContext context) => context.GetService<IValidator<T>>();
-
-    public static Task<ValidationResult> ValidateAsync<T>(this HttpContext context, T instance, CancellationToken cancellationToken) =>
-        context.GetService<IValidator<T>>().ValidateAsync(instance, cancellationToken);
-
     public static Task<ValidationResult> ValidateAsync<T>(this HttpContext context, T instance) =>
-        context.GetService<IValidator<T>>().ValidateAsync(instance, context.RequestAborted);
+        context.GetValidator<T>().ValidateAsync(instance, context.RequestAborted);
+
+    public static IValidator<T> GetValidator<T>(this HttpContext context) => context.GetService<IValidator<T>>();
 
     public static T GetService<T>(this HttpContext context)
         where T : notnull =>
         context.RequestServices.GetRequiredService<T>();
 
-    private static IResult Problem(this HttpContext context, IReadOnlyCollection<IError> errors, int? statusCode = null)
+    public static void TryAddTraceId(this ProblemDetails problemDetails, HttpContext context)
     {
+        var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
+        if (traceId != null)
+        {
+            problemDetails.Extensions["traceId"] = traceId;
+        }
+    }
+
+    private static IResult Problem(this HttpContext context, IReadOnlyCollection<IError> errors)
+    {
+        return context.Problem(errors, GetStatusCode(errors.First()));
+    }
+
+    private static IResult Problem(this HttpContext context, IReadOnlyCollection<IError> errors, HttpStatusCode statusCode)
+    {
+        var problem = ConvertToProblem(errors, statusCode);
+        problem.TryAddTraceId(context);
+
         context.SetItem(HttpContextItems.Errors, errors);
-
-        var problem = errors.Count > 1
-            ? ConvertToProblem(errors)
-            : ConvertToProblem(errors.First());
-
-        problem.Status = statusCode ?? GetStatusCode(errors);
 
         return Results.Problem(problem);
     }
 
-    private static ProblemDetails ConvertToProblem(IReadOnlyCollection<IError> errors) =>
-        new()
+    private static ProblemDetails ConvertToProblem(IReadOnlyCollection<IError> errors, HttpStatusCode statusCode)
+    {
+        if (errors.Count == 0)
+        {
+            throw new InvalidOperationException();
+        }
+        if (errors.Count == 1)
+        {
+            return ConvertToProblem(errors.First(), statusCode);
+        }
+        return new()
         {
             Title = "Multiple Problems",
             Detail = "There were multiple problems that have occurred.",
+            Status = (int)statusCode,
             Extensions = {
-                ["problems"] = errors.Select(ConvertToProblem).ToArray()
+                ["problems"] = errors.Select(error => error.ConvertToProblem(statusCode)).ToArray()
             },
         };
+    }
 
-    private static ProblemDetails ConvertToProblem(IError error) =>
-        new()
+    public static ProblemDetails ConvertToProblem(this IError error, HttpStatusCode statusCode)
+    {
+        if (error.Reasons.Any())
+        {
+            return ConvertToProblem(error.Reasons, statusCode);
+        }
+
+        var result = new ProblemDetails()
         {
             Title = error.GetType().Name,
             Detail = error.Message,
+            Status = (int)statusCode,
         };
 
-    private static int GetStatusCode(IReadOnlyCollection<IError> errors) =>
-        errors.First() switch
+        foreach (var pair in error.Metadata)
         {
-            ConflictError => StatusCodes.Status409Conflict,
-            ValidationError => StatusCodes.Status400BadRequest,
-            NotFoundError => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status500InternalServerError,
+            result.Extensions[pair.Key] = pair.Value;
+        }
+        return result;
+    }
+
+    private static HttpStatusCode GetStatusCode(IError error) =>
+        error switch
+        {
+            ConflictError => HttpStatusCode.Conflict,
+            ValidationError => HttpStatusCode.BadRequest,
+            NotFoundError => HttpStatusCode.NotFound,
+            _ => HttpStatusCode.InternalServerError,
         };
 }

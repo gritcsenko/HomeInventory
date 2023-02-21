@@ -8,7 +8,7 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegistrationResult>
+internal class RegisterCommandHandler : CommandHandler<RegisterCommand, RegistrationResult>
 {
     private readonly IUserRepository _userRepository;
     private readonly IIdFactory<UserId> _userIdFactory;
@@ -21,14 +21,14 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    protected override async Task<Result<RegistrationResult>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
-        if (await IsUserHasEmailAsync(request, cancellationToken))
+        if (await IsUserHasEmailAsync(command, cancellationToken))
         {
             return new DuplicateEmailError();
         }
 
-        var user = await CreateUserAsync(request, cancellationToken);
+        var user = await CreateUserAsync(command, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new RegistrationResult(user.Id);
     }

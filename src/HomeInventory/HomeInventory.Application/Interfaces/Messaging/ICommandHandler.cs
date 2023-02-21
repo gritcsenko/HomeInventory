@@ -3,12 +3,12 @@ using MediatR;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 
-public interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, Result<TResponse>>
+internal interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, IResult<TResponse>>
     where TCommand : ICommand<TResponse>
 {
 }
 
-public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Result<Success>>
+internal interface ICommandHandler<TCommand> : ICommandHandler<TCommand, Success>
     where TCommand : ICommand
 {
 }

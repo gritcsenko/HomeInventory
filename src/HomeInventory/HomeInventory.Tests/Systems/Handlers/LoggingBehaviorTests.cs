@@ -15,7 +15,7 @@ public class LoggingBehaviorTests : BaseTest
 {
     private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>> _logger;
     private readonly AuthenticateQuery _request;
-    private readonly Result<AuthenticateResult> _response;
+    private readonly IResult<AuthenticateResult> _response;
 
     public LoggingBehaviorTests()
     {
@@ -23,7 +23,7 @@ public class LoggingBehaviorTests : BaseTest
         Fixture.CustomizeEmail();
         _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>>>();
         _request = Fixture.Create<AuthenticateQuery>();
-        _response = Fixture.Create<AuthenticateResult>();
+        _response = Result.Ok(Fixture.Create<AuthenticateResult>());
     }
 
     [Fact]

@@ -67,7 +67,7 @@ public class AuthenticationModuleTests : BaseTest
         // Given
         var registrationResult = Fixture.Create<RegistrationResult>();
         var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
+        _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Ok(registrationResult));
         _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
         // When
         var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
@@ -82,7 +82,7 @@ public class AuthenticationModuleTests : BaseTest
         // Given
         var authenticationResult = Fixture.Create<AuthenticateResult>();
         var expectedResultValue = Fixture.Create<LoginResponse>();
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Ok(authenticationResult));
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
         // When
         var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
@@ -97,7 +97,7 @@ public class AuthenticationModuleTests : BaseTest
         // Given
         var registrationResult = Fixture.Create<RegistrationResult>();
         var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(registrationResult);
+        _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Ok(registrationResult));
         _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
         // When
         var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
@@ -113,7 +113,7 @@ public class AuthenticationModuleTests : BaseTest
         var authenticationResult = Fixture.Create<AuthenticateResult>();
         var expectedResultValue = Fixture.Create<LoginResponse>();
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Ok(authenticationResult));
         // When
         var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
         // Then

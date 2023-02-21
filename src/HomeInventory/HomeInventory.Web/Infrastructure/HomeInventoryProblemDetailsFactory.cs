@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Net;
+using HomeInventory.Web.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -71,7 +72,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         return problemDetails;
     }
 
-    private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails)
+    private void ApplyProblemDetailsDefaults(HttpContext context, ProblemDetails problemDetails)
     {
         if (_options.ClientErrorMapping.TryGetValue(problemDetails.Status.GetValueOrDefault(), out var clientErrorData))
         {
@@ -79,16 +80,13 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Type ??= clientErrorData.Link;
         }
 
-        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
-        if (traceId != null)
-        {
-            problemDetails.Extensions["traceId"] = traceId;
-        }
+        problemDetails.TryAddTraceId(context);
 
-        var errorCodes = httpContext.GetItem(HttpContextItems.Errors)?.Select(e => e.GetType().Name);
-        if (errorCodes != null)
+        var errors = context.GetItem(HttpContextItems.Errors);
+        if (errors != null)
         {
-            problemDetails.Extensions["errorCodes"] = errorCodes;
+            var statusCode = (HttpStatusCode)problemDetails.Status!.Value;
+            problemDetails.Extensions["problems"] = errors.Select(error => error.ConvertToProblem(statusCode)).ToArray();
         }
     }
 }

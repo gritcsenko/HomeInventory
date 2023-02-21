@@ -8,26 +8,26 @@ using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 
-internal class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, AuthenticateResult>
+internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, AuthenticateResult>
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _repository;
 
     public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository)
     {
         _tokenGenerator = tokenGenerator;
-        _userRepository = userRepository;
+        _repository = userRepository;
     }
 
-    public async Task<Result<AuthenticateResult>> Handle(AuthenticateQuery request, CancellationToken cancellationToken)
+    protected override async Task<Result<AuthenticateResult>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
     {
-        var result = await TryFindUserAsync(request, cancellationToken);
+        var result = await TryFindUserAsync(query, cancellationToken);
         if (result.TryPickT1(out _, out var user))
         {
             return new InvalidCredentialsError();
         }
 
-        if (user.Password != request.Password)
+        if (user.Password != query.Password)
         {
             return new InvalidCredentialsError();
         }
@@ -37,5 +37,5 @@ internal class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, Authe
     }
 
     private async Task<OneOf<User, OneOf.Types.NotFound>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
-        await _userRepository.FindFirstByEmailOrNotFoundUserAsync(request.Email, cancellationToken);
+        await _repository.FindFirstByEmailOrNotFoundUserAsync(request.Email, cancellationToken);
 }
