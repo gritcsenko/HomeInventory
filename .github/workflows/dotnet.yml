@@ -36,7 +36,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Unit Tests & Collect Coverage
         run: |
-          dotnet test HomeInventory.Tests --filter Category=Unit --no-build --no-restore --configuration Release --verbosity normal --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory ./coverage /p:CollectCoverage=true /p:ExcludeByFile="*.g.cs" /p:SkipAutoProps=true
+          dotnet test HomeInventory.Tests --filter Category=Unit --no-build --no-restore --configuration Release --verbosity normal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
           cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
         working-directory: ./src/HomeInventory
       - name: Code Coverage Summary Report
