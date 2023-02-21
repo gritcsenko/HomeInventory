@@ -34,14 +34,10 @@ jobs:
       - name: Build
         run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
         working-directory: ./src/HomeInventory
-      - name: Unit Tests
-        run: dotnet test HomeInventory.Tests --no-build --no-restore --configuration Release --verbosity normal
-        working-directory: ./src/HomeInventory
-      - name: Collect Coverage
-        run: dotnet test HomeInventory.Tests --filter Category=Unit --no-build --no-restore --configuration Release --settings Coverlet.runsettings
-        working-directory: ./src/HomeInventory
-      - name: Copy Coverage To Predictable Location
-        run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
+      - name: Unit Tests & Collect Coverage
+        run: |
+          dotnet test HomeInventory.Tests --filter Category=Unit --no-build --no-restore --configuration Release --verbosity normal --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory ./coverage /p:CollectCoverage=true /p:ExcludeByFile="*.g.cs" /p:SkipAutoProps=true
+          cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
         working-directory: ./src/HomeInventory
       - name: Code Coverage Summary Report
         id: report
