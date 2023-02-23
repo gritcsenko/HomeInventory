@@ -1,4 +1,4 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Errors;
 using OneOf;
 
 namespace HomeInventory.Domain.Primitives;

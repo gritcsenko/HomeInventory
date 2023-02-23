@@ -44,9 +44,8 @@ public class RegisterCommandHandlerTests : BaseTest
         var result = await sut.Handle(_command, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsFailed.Should().BeFalse();
+        result.Index.Should().Be(0);
         result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(_userId);
     }
 
     [Fact]
@@ -60,8 +59,9 @@ public class RegisterCommandHandlerTests : BaseTest
         var result = await sut.Handle(_command, CancellationToken);
         // Then
         result.Should().NotBeNull();
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().HaveCount(1).And.OnlyContain(e => e is DuplicateEmailError);
+        result.Index.Should().Be(1);
+        result.Value.Should().BeAssignableTo<IError>()
+            .Which.Should().BeOfType<DuplicateEmailError>();
         _ = _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), CancellationToken);
     }
 }

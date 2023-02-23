@@ -1,5 +1,4 @@
-﻿using FluentResults;
-using HomeInventory.Application.Interfaces.Authentication;
+﻿using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
@@ -19,7 +18,7 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
         _repository = userRepository;
     }
 
-    protected override async Task<Result<AuthenticateResult>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
+    protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
     {
         var result = await TryFindUserAsync(query, cancellationToken);
         if (result.TryPickT1(out _, out var user))

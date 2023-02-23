@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Extensions;
@@ -34,7 +35,14 @@ internal class AuthenticationModule : ApiModule
 
         var command = mapper.Map<RegisterCommand>(body);
         var result = await context.GetSender().Send(command, cancellationToken);
-        return context.MatchToOk(result, mapper.Map<RegisterResponse>);
+        return await result.Match(
+            async _ =>
+            {
+                var query = mapper.Map<UserIdQuery>(body);
+                var queryResult = await context.GetSender().Send(query, cancellationToken);
+                return context.MatchToOk(queryResult, mapper.Map<RegisterResponse>);
+            },
+            error => Task.FromResult(context.Problem(error)));
     }
 
     public static async Task<IResult> LoginAsync(HttpContext context, [FromBody] LoginRequest body, CancellationToken cancellationToken = default)

@@ -1,11 +1,11 @@
 using AutoFixture;
 using AutoMapper;
 using FluentAssertions;
-using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 
@@ -29,6 +30,7 @@ public class AuthenticationModuleTests : BaseTest
 
     private readonly RegisterRequest _registerRequest;
     private readonly RegisterCommand _registerCommand;
+    private readonly UserIdQuery _userIdQuery;
     private readonly LoginRequest _loginRequest;
     private readonly AuthenticateQuery _authenticateQuery;
     private readonly HttpContext _context;
@@ -40,10 +42,12 @@ public class AuthenticationModuleTests : BaseTest
 
         _registerRequest = Fixture.Create<RegisterRequest>();
         _registerCommand = Fixture.Create<RegisterCommand>();
+        _userIdQuery = Fixture.Create<UserIdQuery>();
         _loginRequest = Fixture.Create<LoginRequest>();
         _authenticateQuery = Fixture.Create<AuthenticateQuery>();
 
         _mapper.Map<RegisterCommand>(_registerRequest).Returns(_registerCommand);
+        _mapper.Map<UserIdQuery>(_registerRequest).Returns(_userIdQuery);
         _mapper.Map<AuthenticateQuery>(_loginRequest).Returns(_authenticateQuery);
 
         _registerValidator.ValidateAsync(_registerRequest, CancellationToken).Returns(new ValidationResult());
@@ -65,10 +69,11 @@ public class AuthenticationModuleTests : BaseTest
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         // Given
-        var registrationResult = Fixture.Create<RegistrationResult>();
+        var userIdResult = Fixture.Create<UserIdResult>();
         var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Ok(registrationResult));
-        _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
+        _mediator.Send(_registerCommand, CancellationToken).Returns(new Success());
+        _mediator.Send(_userIdQuery, CancellationToken).Returns(userIdResult);
+        _mapper.Map<RegisterResponse>(userIdResult).Returns(expectedResultValue);
         // When
         var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
         // Then
@@ -82,7 +87,7 @@ public class AuthenticationModuleTests : BaseTest
         // Given
         var authenticationResult = Fixture.Create<AuthenticateResult>();
         var expectedResultValue = Fixture.Create<LoginResponse>();
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Ok(authenticationResult));
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
         // When
         var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
@@ -95,10 +100,11 @@ public class AuthenticationModuleTests : BaseTest
     public async Task RegisterAsync_OnSuccess_ReturnsRegistrationId()
     {
         // Given
-        var registrationResult = Fixture.Create<RegistrationResult>();
+        var userIdResult = Fixture.Create<UserIdResult>();
         var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Ok(registrationResult));
-        _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
+        _mediator.Send(_registerCommand, CancellationToken).Returns(new Success());
+        _mediator.Send(_userIdQuery, CancellationToken).Returns(userIdResult);
+        _mapper.Map<RegisterResponse>(userIdResult).Returns(expectedResultValue);
         // When
         var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
         // Then
@@ -113,7 +119,7 @@ public class AuthenticationModuleTests : BaseTest
         var authenticationResult = Fixture.Create<AuthenticateResult>();
         var expectedResultValue = Fixture.Create<LoginResponse>();
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Ok(authenticationResult));
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
         // When
         var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
         // Then
@@ -125,8 +131,8 @@ public class AuthenticationModuleTests : BaseTest
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         // Given
-        var error = new DuplicateEmailError();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(Result.Fail<RegistrationResult>(error));
+        var error = Fixture.Create<DuplicateEmailError>();
+        _mediator.Send(_registerCommand, CancellationToken).Returns(error);
         // When
         var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
         // Then
@@ -139,8 +145,8 @@ public class AuthenticationModuleTests : BaseTest
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
         // Given
-        var error = new InvalidCredentialsError();
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(Result.Fail<AuthenticateResult>(error));
+        var error = Fixture.Create<DuplicateEmailError>();
+        _mediator.Send(_authenticateQuery, CancellationToken).Returns(error);
         // When
         var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
         // Then

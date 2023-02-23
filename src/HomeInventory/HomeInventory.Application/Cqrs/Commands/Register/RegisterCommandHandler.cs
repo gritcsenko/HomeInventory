@@ -1,14 +1,15 @@
-﻿using FluentResults;
-using HomeInventory.Application.Interfaces.Messaging;
+﻿using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
+using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal class RegisterCommandHandler : CommandHandler<RegisterCommand, RegistrationResult>
+internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
 {
     private readonly IUserRepository _userRepository;
     private readonly IIdFactory<UserId> _userIdFactory;
@@ -21,22 +22,22 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand, Registra
         _unitOfWork = unitOfWork;
     }
 
-    protected override async Task<Result<RegistrationResult>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
+    protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand query, CancellationToken cancellationToken)
     {
-        if (await IsUserHasEmailAsync(command, cancellationToken))
+        if (await IsUserHasEmailAsync(query, cancellationToken))
         {
             return new DuplicateEmailError();
         }
 
-        var user = await CreateUserAsync(command, cancellationToken);
+        await CreateUserAsync(query, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return new RegistrationResult(user.Id);
+        return new Success();
     }
 
     private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken) =>
         await _userRepository.IsUserHasEmailAsync(request.Email, cancellationToken);
 
-    private async Task<User> CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
+    private async Task CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
         var userId = _userIdFactory.CreateNew();
         var user = new User(userId)
@@ -47,6 +48,5 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand, Registra
             Password = request.Password,
         };
         await _userRepository.AddAsync(user, cancellationToken);
-        return user;
     }
 }

@@ -1,29 +1,30 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using FluentResults;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using OneOf;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
 [Trait("Category", "Unit")]
 public class LoggingBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>> _logger;
+    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>> _logger;
     private readonly AuthenticateQuery _request;
-    private readonly IResult<AuthenticateResult> _response;
+    private readonly OneOf<AuthenticateResult, IError> _response;
 
     public LoggingBehaviorTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
-        _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>>>();
+        _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>>>();
         _request = Fixture.Create<AuthenticateQuery>();
-        _response = Result.Ok(Fixture.Create<AuthenticateResult>());
+        _response = Fixture.Create<OneOf<AuthenticateResult, IError>>();
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        var response = await sut.Handle(_request, () => Task.FromResult(_response), CancellationToken);
+        var response = await sut.Handle(_request, () => Task.FromResult<IOneOf>(_response), CancellationToken);
 
         response.Value.Should().Be(_response.Value);
     }
@@ -46,7 +47,7 @@ public class LoggingBehaviorTests : BaseTest
             _logger
                 .Received(1)
                 .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
-            return Task.FromResult(_response);
+            return Task.FromResult<IOneOf>(_response);
         }, CancellationToken);
     }
 
@@ -58,7 +59,7 @@ public class LoggingBehaviorTests : BaseTest
         _ = await sut.Handle(_request, () =>
         {
             _logger.ClearReceivedCalls();
-            return Task.FromResult(_response);
+            return Task.FromResult<IOneOf>(_response);
         }, CancellationToken);
 
         _logger
@@ -66,5 +67,5 @@ public class LoggingBehaviorTests : BaseTest
             .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
     }
 
-    private LoggingBehavior<AuthenticateQuery, AuthenticateResult> CreateSut() => new(_logger);
+    private LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>> CreateSut() => new(_logger);
 }

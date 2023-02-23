@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using FluentResults;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
@@ -53,7 +53,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
             },
             error =>
             {
-                context.Fail(new AuthorizationFailureReason(this, $"User has invalid id: {string.Join(';', error.Reasons.Select(r => r.Message))}"));
+                context.Fail(new AuthorizationFailureReason(this, $"User has invalid id: {error.Message}"));
                 return Task.CompletedTask;
             });
     }

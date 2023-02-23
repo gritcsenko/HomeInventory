@@ -1,9 +1,10 @@
-﻿using FluentResults;
-using HomeInventory.Domain.Entities;
+﻿using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
+using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Domain.Aggregates;
 
@@ -20,7 +21,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
 
     public StorageAreaName Name { get; init; } = null!;
 
-    public Result Add(Product item)
+    public OneOf<Success, DuplicateProductError> Add(Product item)
     {
         if (_products.Contains(item))
         {
@@ -29,18 +30,18 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
 
         _products.AddLast(item);
         AddEvent(new ProductAddedEvent(this, item));
-        return Result.Ok();
+        return new Success();
     }
 
-    public Result Remove(Product item)
+    public Success Remove(Product item)
     {
         if (!_products.Contains(item))
         {
-            return Result.Ok();
+            return new Success();
         }
 
         _products.Remove(item);
         AddEvent(new ProductRemovedEvent(this, item));
-        return Result.Ok();
+        return new Success();
     }
 }

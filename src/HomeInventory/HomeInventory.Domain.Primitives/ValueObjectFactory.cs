@@ -1,6 +1,6 @@
-﻿using FluentResults;
-using HomeInventory.Domain.Errors;
+﻿using HomeInventory.Domain.Errors;
 using OneOf;
+
 namespace HomeInventory.Domain.Primitives;
 
 public abstract class ValueObjectFactory<TObject>

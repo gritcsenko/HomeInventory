@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using AutoMapper;
-using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Domain.Errors;
@@ -10,6 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using OneOf;
 
 namespace HomeInventory.Web.Extensions;
 
@@ -21,13 +21,13 @@ internal static class HttpContextExtensions
         return context.Problem(errors, HttpStatusCode.BadRequest);
     }
 
-    public static IResult MatchToOk<T, TResponse>(this HttpContext context, IResult<T> errorOrResult, Func<T, TResponse> onValue) =>
+    public static IResult MatchToOk<T, TResponse>(this HttpContext context, OneOf<T, IError> errorOrResult, Func<T, TResponse> onValue) =>
         context.Match(errorOrResult, x => Results.Ok(onValue(x)));
 
-    public static IResult Match<T>(this HttpContext context, IResult<T> errorOrResult, Func<T, IResult> onValue) =>
-        errorOrResult.IsSuccess
-            ? onValue(errorOrResult.Value)
-            : context.Problem(errorOrResult.Errors);
+    public static IResult Match<T>(this HttpContext context, OneOf<T, IError> errorOrResult, Func<T, IResult> onValue) =>
+        errorOrResult.Match(
+            value => onValue(value),
+            error => context.Problem(error));
 
     public static ISender GetSender(this HttpContext context) => context.GetService<ISender>();
 
@@ -49,6 +49,11 @@ internal static class HttpContextExtensions
         {
             problemDetails.Extensions["traceId"] = traceId;
         }
+    }
+
+    public static IResult Problem(this HttpContext context, IError error)
+    {
+        return context.Problem(new[] { error });
     }
 
     private static IResult Problem(this HttpContext context, IReadOnlyCollection<IError> errors)
@@ -89,11 +94,6 @@ internal static class HttpContextExtensions
 
     public static ProblemDetails ConvertToProblem(this IError error, HttpStatusCode statusCode)
     {
-        if (error.Reasons.Any())
-        {
-            return ConvertToProblem(error.Reasons, statusCode);
-        }
-
         var result = new ProblemDetails()
         {
             Title = error.GetType().Name,

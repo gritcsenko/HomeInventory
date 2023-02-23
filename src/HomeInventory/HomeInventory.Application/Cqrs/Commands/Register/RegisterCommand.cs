@@ -7,4 +7,4 @@ public record RegisterCommand(
     string FirstName,
     string LastName,
     Email Email,
-    string Password) : ICommand<RegistrationResult>;
+    string Password) : ICommand;

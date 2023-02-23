@@ -1,9 +1,11 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Errors;
 using MediatR;
+using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 
-internal interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, IResult<TResponse>>
+internal interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, OneOf<TResponse, IError>>
     where TCommand : ICommand<TResponse>
 {
 }

@@ -1,4 +1,4 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Errors;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Infrastructure;
@@ -19,7 +19,7 @@ internal static class HttpContextItems
         return context.Items[item.Name] as T;
     }
 
-    public struct HttpContextItem<T>
+    public readonly struct HttpContextItem<T>
         where T : class
     {
         public string Name { get; init; }

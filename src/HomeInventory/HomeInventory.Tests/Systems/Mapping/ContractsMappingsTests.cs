@@ -3,6 +3,7 @@ using FluentAssertions;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Primitives;
@@ -42,7 +43,8 @@ public class ContractsMappingsTests : BaseMappingsTests
             { fixture.Create<UserId>(), typeof(Guid) },
             { fixture.Create<Email>(), typeof(string) },
             { fixture.Create<RegisterRequest>(), typeof(RegisterCommand) },
-            { fixture.Create<RegistrationResult>(), typeof(RegisterResponse) },
+            { fixture.Create<RegisterRequest>(), typeof(UserIdQuery) },
+            { fixture.Create<UserIdResult>(), typeof(RegisterResponse) },
             { fixture.Create<LoginRequest>(), typeof(AuthenticateQuery) },
             { fixture.Create<AuthenticateResult>(), typeof(LoginResponse) },
             { fixture.Create<AreasResult>(), typeof(AreaResponse[]) },

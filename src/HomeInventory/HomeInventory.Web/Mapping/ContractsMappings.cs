@@ -1,6 +1,7 @@
 ﻿using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
@@ -16,7 +17,9 @@ internal class ContractsMappings : MappingProfile
         CreateMapForValue<Email, string>(x => x.Value);
 
         CreateMap<RegisterRequest, RegisterCommand>();
-        CreateMap<RegistrationResult, RegisterResponse>();
+
+        CreateMap<RegisterRequest, UserIdQuery>();
+        CreateMap<UserIdResult, RegisterResponse>();
 
         CreateMap<LoginRequest, AuthenticateQuery>();
         CreateMap<AuthenticateResult, LoginResponse>();

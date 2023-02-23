@@ -1,4 +1,5 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Errors;
+using OneOf;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 
@@ -9,10 +10,10 @@ internal abstract class QueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, 
     {
     }
 
-    public async Task<IResult<TResponse>> Handle(TQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<TResponse, IError>> Handle(TQuery request, CancellationToken cancellationToken)
     {
         return await InternalHandle(request, cancellationToken);
     }
 
-    protected abstract Task<Result<TResponse>> InternalHandle(TQuery query, CancellationToken cancellationToken);
+    protected abstract Task<OneOf<TResponse, IError>> InternalHandle(TQuery query, CancellationToken cancellationToken);
 }

@@ -1,5 +1,5 @@
-﻿using FluentResults;
-using HomeInventory.Application.Mapping;
+﻿using HomeInventory.Application.Mapping;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using OneOf;

@@ -1,12 +1,12 @@
-﻿using FluentResults;
-using HomeInventory.Domain;
+﻿using HomeInventory.Domain;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, IResult<TResponse>>
-    where TRequest : IRequest<IResult<TResponse>>
+internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, IOneOf>
+    where TRequest : IBaseRequest
 {
     private static readonly string RequestName = typeof(TRequest).GetFormattedName();
     private static readonly string ResponseName = typeof(TResponse).GetFormattedName();
@@ -15,19 +15,12 @@ internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
 
     public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger) => _logger = logger;
 
-    public async Task<IResult<TResponse>> Handle(TRequest request, RequestHandlerDelegate<IResult<TResponse>> next, CancellationToken cancellationToken)
+    public async Task<IOneOf> Handle(TRequest request, RequestHandlerDelegate<IOneOf> next, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Sending {Request} and expecting {Response}", RequestName, ResponseName);
+        _logger.LogInformation("Sending {Request}", RequestName);
 
         var response = await next();
-        if (response.IsFailed)
-        {
-            _logger.LogError("{@Request} was failed with error(s): {@Error}", RequestName, string.Join("; ", response.Errors.Select(e => e.Message)));
-        }
-        else
-        {
-            _logger.LogInformation("{Request} was handled and {Response} was returned", RequestName, ResponseName);
-        }
+        _logger.LogInformation("{Request} was handled and {Response}[{Index}] = {Value} was returned", RequestName, ResponseName, response.Index, response.Value);
         return response;
     }
 }
