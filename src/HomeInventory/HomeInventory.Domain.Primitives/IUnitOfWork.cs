@@ -1,6 +1,10 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using Microsoft.EntityFrameworkCore;
 
-public interface IUnitOfWork
+namespace HomeInventory.Domain.Primitives;
+
+public interface IUnitOfWork : IAsyncDisposable
 {
+    DbContext DbContext { get; }
+
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

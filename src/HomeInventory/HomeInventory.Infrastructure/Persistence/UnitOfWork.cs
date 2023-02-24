@@ -5,16 +5,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal sealed class UnitOfWork : IUnitOfWork
+internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
 {
-    private readonly DatabaseContext _context;
+    private readonly DbContext _context;
     private readonly IDateTimeService _dateTimeService;
+    private readonly bool _ownContext;
 
-    public UnitOfWork(DatabaseContext context, IDateTimeService dateTimeService)
+    public UnitOfWork(DbContext context, IDateTimeService dateTimeService, bool ownContext = true)
     {
         _context = context;
         _dateTimeService = dateTimeService;
+        _ownContext = ownContext;
     }
+
+    public DbContext DbContext => _context;
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -24,6 +28,14 @@ internal sealed class UnitOfWork : IUnitOfWork
         UpdateAuditableEntities(now);
 
         await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    protected override async ValueTask InternalDisposeAsync()
+    {
+        if (_ownContext)
+        {
+            await _context.DisposeAsync();
+        }
     }
 
     private async Task ConvertDomainEventsToOutboxMessages(DateTimeOffset now, CancellationToken cancellationToken)
