@@ -16,7 +16,7 @@ internal class AllAreasQueryHandler : QueryHandler<AllAreasQuery, AreasResult>
 
     protected override async Task<OneOf<AreasResult, IError>> InternalHandle(AllAreasQuery query, CancellationToken cancellationToken)
     {
-        var areas = await _repository.GetAllAsync().ToArrayAsync(cancellationToken);
+        var areas = await _repository.GetAllAsync(cancellationToken).ToArrayAsync(cancellationToken);
         return new AreasResult(areas);
     }
 }

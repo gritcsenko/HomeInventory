@@ -11,31 +11,31 @@ namespace HomeInventory.Application.Cqrs.Commands.Register;
 
 internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _repository;
     private readonly IIdFactory<UserId> _userIdFactory;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IIdFactory<UserId> userIdFactory, IUnitOfWork unitOfWork)
+    public RegisterCommandHandler(IUserRepository userRepository, IIdFactory<UserId> userIdFactory)
     {
-        _userRepository = userRepository;
+        _repository = userRepository;
         _userIdFactory = userIdFactory;
-        _unitOfWork = unitOfWork;
     }
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand query, CancellationToken cancellationToken)
     {
+        await using var unit = await _repository.WithUnitOfWorkAsync(cancellationToken);
         if (await IsUserHasEmailAsync(query, cancellationToken))
         {
             return new DuplicateEmailError();
         }
 
         await CreateUserAsync(query, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await unit.SaveChangesAsync(cancellationToken);
+
         return new Success();
     }
 
     private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken) =>
-        await _userRepository.IsUserHasEmailAsync(request.Email, cancellationToken);
+        await _repository.IsUserHasEmailAsync(request.Email, cancellationToken);
 
     private async Task CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
@@ -47,6 +47,6 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
             Email = request.Email,
             Password = request.Password,
         };
-        await _userRepository.AddAsync(user, cancellationToken);
+        await _repository.AddAsync(user, cancellationToken);
     }
 }
