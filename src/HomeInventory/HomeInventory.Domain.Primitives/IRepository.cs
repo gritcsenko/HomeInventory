@@ -1,8 +1,13 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using OneOf;
+using OneOf.Types;
+
+namespace HomeInventory.Domain.Primitives;
 
 public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
     where TEntity : class, IEntity<TEntity>
 {
+    OneOf<IUnitOfWork, None> UnitOfWork { get; }
+
     /// <summary>
     /// Adds an entity in the database.
     /// </summary>
@@ -52,4 +57,6 @@ public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
     /// <param name="entities">The entities to remove.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+
+    Task<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default);
 }

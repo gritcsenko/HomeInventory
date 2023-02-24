@@ -3,6 +3,7 @@ using AutoFixture;
 using AutoMapper;
 using FluentAssertions;
 using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -16,8 +17,9 @@ namespace HomeInventory.Tests.Systems.Persistence;
 public class UserRepositoryTests : BaseTest
 {
     private readonly DatabaseContext _context = HomeInventory.Domain.TypeExtensions.CreateInstance<DatabaseContext>(GetDatabaseOptions())!;
-
     private readonly IMapper _mapper = Substitute.For<IMapper>();
+    private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
+    private readonly IDbContextFactory<DatabaseContext> _factory = Substitute.For<IDbContextFactory<DatabaseContext>>();
     private readonly User _user;
     private readonly UserModel _userModel;
 
@@ -25,6 +27,8 @@ public class UserRepositoryTests : BaseTest
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
+
+        _factory.CreateDbContextAsync(CancellationToken).Returns(_context);
 
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()
@@ -45,11 +49,15 @@ public class UserRepositoryTests : BaseTest
     [Fact]
     public async Task AddAsync_Should_CreateUser_AccordingToSpec()
     {
+        var entitiesSaved = 0;
         var sut = CreateSut();
+        await using var unit = await sut.WithUnitOfWorkAsync(CancellationToken);
+        _context.SavedChanges += (_, e) => entitiesSaved += e.EntitiesSavedCount;
 
         await sut.AddAsync(_user, CancellationToken);
+        await unit.SaveChangesAsync(CancellationToken);
 
-        _context.Set<UserModel>().Local.Should().HaveCount(1);
+        entitiesSaved.Should().Be(1);
     }
 
     [Fact]
@@ -84,5 +92,5 @@ public class UserRepositoryTests : BaseTest
         actual.Should().BeEquivalentTo(_user);
     }
 
-    private UserRepository CreateSut() => new(_context, _mapper, SpecificationEvaluator.Default);
+    private UserRepository CreateSut() => new(_factory, _mapper, SpecificationEvaluator.Default, _dateTimeService);
 }

@@ -1,4 +1,5 @@
-﻿using Ardalis.Specification;
+﻿using System.Runtime.CompilerServices;
+using Ardalis.Specification;
 using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -13,72 +14,133 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     where TModel : class, IPersistentModel
     where TEntity : class, Domain.Primitives.IEntity<TEntity>
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IDbContextFactory<DatabaseContext> _factory;
     private readonly IMapper _mapper;
     private readonly ISpecificationEvaluator _evaluator;
+    private readonly IDateTimeService _dateTimeService;
+    private IUnitOfWork? _unitOfWork;
 
-    protected Repository(DatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
+    protected Repository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
     {
-        _dbContext = context;
+        _factory = contextFactory;
         _mapper = mapper;
         _evaluator = evaluator;
+        _dateTimeService = dateTimeService;
+    }
+
+    public OneOf<IUnitOfWork, None> UnitOfWork
+    {
+        get
+        {
+            if (_unitOfWork is null)
+            {
+                return new None();
+            }
+
+            return OneOf<IUnitOfWork, None>.FromT0(_unitOfWork);
+        }
     }
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
-        _ = await GetDbSet().AddAsync(model, cancellationToken);
+
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        await set.AddAsync(model, cancellationToken);
         return entity;
     }
 
     public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
-        await GetDbSet().AddRangeAsync(models, cancellationToken);
+
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        await set.AddRangeAsync(models, cancellationToken);
         return entities;
     }
 
-    public Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
-        _ = GetDbSet().Update(model);
-        return Task.CompletedTask;
+
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        set.Update(model);
     }
 
-    public Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
-        GetDbSet().UpdateRange(models);
-        return Task.CompletedTask;
+
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        set.UpdateRange(models);
     }
 
-    public Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
-        _ = GetDbSet().Remove(model);
-        return Task.CompletedTask;
+
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        set.Remove(model);
     }
 
-    public Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
-        GetDbSet().RemoveRange(models);
-        return Task.CompletedTask;
+
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        set.RemoveRange(models);
     }
 
     public async Task<int> CountAsync(CancellationToken cancellationToken = default)
     {
-        return await GetDbSet().CountAsync(cancellationToken);
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        return await set.CountAsync(cancellationToken);
     }
 
     public async Task<bool> AnyAsync(CancellationToken cancellationToken = default)
     {
-        return await GetDbSet().AnyAsync(cancellationToken);
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        return await set.AnyAsync(cancellationToken);
     }
 
-    public IAsyncEnumerable<TEntity> GetAllAsync()
+    public async IAsyncEnumerable<TEntity> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        return GetDbSet().AsAsyncEnumerable().Select(ToEntity);
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        await foreach (var entity in set)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                yield break;
+            }
+
+            yield return ToEntity(entity);
+        }
+    }
+
+    public async Task<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default)
+    {
+        var (unit, _) = await GetUnitOfWorkAsync(cancellationToken);
+
+        _unitOfWork = unit;
+        return _unitOfWork;
     }
 
     protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
@@ -91,20 +153,16 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     {
         if (specification is ICompiledSingleResultSpecification<TModel> compiled)
         {
-            var model = await compiled.ExecuteAsync(_dbContext, cancellationToken);
-            if (model is not null)
-            {
-                return ToEntity(model);
-            }
+            return await FindFirstOrNotFoundAsync(compiled, cancellationToken);
         }
-        else
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+
+        var query = ApplySpecification(set, specification);
+        var projected = ToEntity(query, cancellationToken);
+        if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
         {
-            var query = ApplySpecification(specification);
-            var projected = ToEntity(query, cancellationToken);
-            if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
-            {
-                return entity;
-            }
+            return entity;
         }
 
         return new NotFound();
@@ -112,7 +170,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     protected async ValueTask<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
-        var query = ApplySpecification(specification, evaluateCriteriaOnly: true);
+        var (set, resource) = await GetDbSetAsync(cancellationToken);
+        await using var _ = resource;
+        var query = ApplySpecification(set, specification, evaluateCriteriaOnly: true);
         return await query.AnyAsync(cancellationToken);
     }
 
@@ -122,9 +182,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// </summary>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TModel> ApplySpecification(ISpecification<TModel> specification, bool evaluateCriteriaOnly = false)
+    protected virtual IQueryable<TModel> ApplySpecification(DbSet<TModel> set, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false)
     {
-        return _evaluator.GetQuery(GetDbSet().AsQueryable(), specification, evaluateCriteriaOnly);
+        return _evaluator.GetQuery(set.AsQueryable(), specification, evaluateCriteriaOnly);
     }
 
     /// <summary>
@@ -137,10 +197,42 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// <typeparam name="TResult">The type of the value returned by the projection.</typeparam>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered projected entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TResult> ApplySpecification<TResult>(ISpecification<TModel, TResult> specification)
+    protected virtual IQueryable<TResult> ApplySpecification<TResult>(DbSet<TModel> set, ISpecification<TModel, TResult> specification)
     {
-        return _evaluator.GetQuery(GetDbSet().AsQueryable(), specification);
+        return _evaluator.GetQuery(set.AsQueryable(), specification);
     }
 
-    protected DbSet<TModel> GetDbSet() => _dbContext.Set<TModel>();
+    protected async Task<(DbSet<TModel> set, IAsyncDisposable resource)> GetDbSetAsync(CancellationToken cancellationToken = default)
+    {
+        var (unit, resource) = await GetUnitOfWorkAsync(cancellationToken);
+
+        return (unit.DbContext.Set<TModel>(), resource);
+    }
+
+    private async ValueTask<OneOf<TEntity, NotFound>> FindFirstOrNotFoundAsync(ICompiledSingleResultSpecification<TModel> compiled, CancellationToken cancellationToken = default)
+    {
+        var (unit, resource) = await GetUnitOfWorkAsync(cancellationToken);
+        await using var _ = resource;
+
+        if (await compiled.ExecuteAsync(unit, cancellationToken) is TModel model)
+        {
+            return ToEntity(model);
+        }
+        return new NotFound();
+    }
+
+    private async Task<(IUnitOfWork unit, IAsyncDisposable resource)> GetUnitOfWorkAsync(CancellationToken cancellationToken = default)
+    {
+        if (_unitOfWork is not null)
+        {
+            return (_unitOfWork, AsyncDisposable.None);
+        }
+
+        var context = await CreateNewDbContextAsync(cancellationToken);
+        var unit = new UnitOfWork(context, _dateTimeService);
+        return (unit, unit);
+    }
+
+    private async Task<DbContext> CreateNewDbContextAsync(CancellationToken cancellationToken = default) =>
+        await _factory.CreateDbContextAsync(cancellationToken);
 }

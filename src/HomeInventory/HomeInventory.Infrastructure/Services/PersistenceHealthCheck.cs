@@ -1,20 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HomeInventory.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HomeInventory.Infrastructure.Services;
 
 internal class PersistenceHealthCheck : IHealthCheck
 {
-    private readonly DbContext _dbContext;
+    private readonly IDbContextFactory<DatabaseContext> _factory;
 
-    public PersistenceHealthCheck(DbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+    public PersistenceHealthCheck(IDbContextFactory<DatabaseContext> contextFactory) => _factory = contextFactory;
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        var canConnect = await _dbContext.Database.CanConnectAsync(cancellationToken);
+        await using var dbContext = await _factory.CreateDbContextAsync(cancellationToken);
+        var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
         if (canConnect)
         {
             return HealthCheckResult.Healthy();

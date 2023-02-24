@@ -1,5 +1,5 @@
 ﻿using Ardalis.Specification;
-using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +8,8 @@ namespace HomeInventory.Infrastructure.Specifications;
 internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
     where TModel : class, IPersistentModel
 {
-    private static readonly Func<DatabaseContext, Guid, CancellationToken, Task<TModel?>> _cachedQuery =
-        EF.CompileAsyncQuery((DatabaseContext ctx, Guid id, CancellationToken _) => ctx.Set<TModel>().FirstOrDefault(x => x.Id == id));
+    private static readonly Func<DbContext, Guid, CancellationToken, Task<TModel?>> _cachedQuery =
+        EF.CompileAsyncQuery((DbContext ctx, Guid id, CancellationToken t) => ctx.Set<TModel>().FirstOrDefaultAsync(x => x.Id == id, t).GetAwaiter().GetResult());
     private readonly Guid _id;
 
     public ByIdFilterSpecification(Guid id)
@@ -18,5 +18,5 @@ internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleR
         _id = id;
     }
 
-    public Task<TModel?> ExecuteAsync(DatabaseContext context, CancellationToken cancellationToken) => _cachedQuery(context, _id, cancellationToken);
+    public Task<TModel?> ExecuteAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken) => _cachedQuery(unitOfWork.DbContext, _id, cancellationToken);
 }

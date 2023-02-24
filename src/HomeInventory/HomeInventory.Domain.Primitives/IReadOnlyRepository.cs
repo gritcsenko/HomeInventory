@@ -21,5 +21,5 @@ public interface IReadOnlyRepository<TEntity>
     /// </returns>
     Task<bool> AnyAsync(CancellationToken cancellationToken = default);
 
-    IAsyncEnumerable<TEntity> GetAllAsync();
+    IAsyncEnumerable<TEntity> GetAllAsync(CancellationToken cancellationToken = default);
 }

@@ -1,8 +1,8 @@
-﻿using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Infrastructure.Specifications;
 
 internal interface ICompiledSingleResultSpecification<T>
 {
-    Task<T?> ExecuteAsync(DatabaseContext context, CancellationToken cancellationToken);
+    Task<T?> ExecuteAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken);
 }

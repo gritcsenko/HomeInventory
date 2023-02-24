@@ -16,7 +16,6 @@ public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IIdFactory<UserId> _idFactory = Substitute.For<IIdFactory<UserId>>();
-    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly RegisterCommand _command;
     private readonly UserId _userId;
 
@@ -30,7 +29,7 @@ public class RegisterCommandHandlerTests : BaseTest
         _idFactory.CreateNew().Returns(_userId);
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository, _idFactory, _unitOfWork);
+    private RegisterCommandHandler CreateSut() => new(_userRepository, _idFactory);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

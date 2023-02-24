@@ -26,7 +26,6 @@ public static class DependencyInjection
         services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
         services.AddRepository<User, IUserRepository, UserRepository>();
         services.AddRepository<StorageArea, IStorageAreaRepository, StorageAreaRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
         services.AddSingleton<ValueObjectConverter<Email, string>>();
@@ -51,13 +50,12 @@ public static class DependencyInjection
 
     private static IServiceCollection AddDatabase(this IServiceCollection services)
     {
-        return services.AddDbContext<DatabaseContext>((sp, builder) =>
+        return services.AddDbContextFactory<DatabaseContext>((sp, builder) =>
         {
             var env = sp.GetRequiredService<IHostEnvironment>();
             builder.UseInMemoryDatabase("HomeInventory").UseApplicationServiceProvider(sp);
             builder.EnableDetailedErrors(!env.IsProduction());
             builder.EnableSensitiveDataLogging(!env.IsProduction());
-        })
-            .AddScoped<DbContext>(sp => sp.GetRequiredService<DatabaseContext>());
+        });
     }
 }
