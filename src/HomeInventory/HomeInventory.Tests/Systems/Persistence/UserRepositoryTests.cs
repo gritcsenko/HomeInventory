@@ -1,7 +1,5 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
-using AutoMapper;
 using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -10,12 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [Trait("Category", "Unit")]
-public class UserRepositoryTests : BaseTest
+public class UserRepositoryTests : BaseRepositoryTest
 {
-    private readonly DatabaseContext _context = HomeInventory.Domain.TypeExtensions.CreateInstance<DatabaseContext>(GetDatabaseOptions())!;
-    private readonly IMapper _mapper = Substitute.For<IMapper>();
-    private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
-    private readonly IDbContextFactory<DatabaseContext> _factory = Substitute.For<IDbContextFactory<DatabaseContext>>();
     private readonly User _user;
     private readonly UserModel _userModel;
 
@@ -23,8 +17,6 @@ public class UserRepositoryTests : BaseTest
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
-
-        _factory.CreateDbContextAsync(CancellationToken).Returns(_context);
 
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()
@@ -35,8 +27,8 @@ public class UserRepositoryTests : BaseTest
             .With(x => x.LastName, _user.LastName)
             .Create();
 
-        _mapper.Map<User, UserModel>(_user).Returns(_userModel);
-        _mapper.Map<UserModel, User>(_userModel).Returns(_user);
+        Mapper.Map<User, UserModel>(_user).Returns(_userModel);
+        Mapper.Map<UserModel, User>(_userModel).Returns(_user);
     }
 
     private static DbContextOptions<DatabaseContext> GetDatabaseOptions()
@@ -48,7 +40,7 @@ public class UserRepositoryTests : BaseTest
         var entitiesSaved = 0;
         var sut = CreateSut();
         await using var unit = await sut.WithUnitOfWorkAsync(CancellationToken);
-        _context.SavedChanges += (_, e) => entitiesSaved += e.EntitiesSavedCount;
+        Context.SavedChanges += (_, e) => entitiesSaved += e.EntitiesSavedCount;
 
         await sut.AddAsync(_user, CancellationToken);
         await unit.SaveChangesAsync(CancellationToken);
@@ -59,8 +51,8 @@ public class UserRepositoryTests : BaseTest
     [Fact]
     public async Task HasAsync_Should_ReturnTrue_WhenUserAdded()
     {
-        _context.Set<UserModel>().Add(_userModel);
-        await _context.SaveChangesAsync();
+        Context.Set<UserModel>().Add(_userModel);
+        await Context.SaveChangesAsync();
         var sut = CreateSut();
 
         var result = await sut.IsUserHasEmailAsync(_user.Email, CancellationToken);
@@ -71,14 +63,14 @@ public class UserRepositoryTests : BaseTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        _mapper.ProjectTo<User>(Arg.Any<IQueryable>(), CancellationToken).Returns(ci =>
+        Mapper.ProjectTo<User>(Arg.Any<IQueryable>(), CancellationToken).Returns(ci =>
         {
             var query = ci.Arg<IQueryable>();
             var userModels = query.Cast<UserModel>();
             return userModels.Select(x => _user);
         });
-        _context.Set<UserModel>().Add(_userModel);
-        await _context.SaveChangesAsync();
+        Context.Set<UserModel>().Add(_userModel);
+        await Context.SaveChangesAsync();
         var sut = CreateSut();
 
         var result = await sut.FindFirstByEmailOrNotFoundUserAsync(_user.Email, CancellationToken);
@@ -88,5 +80,5 @@ public class UserRepositoryTests : BaseTest
         actual.Should().BeEquivalentTo(_user);
     }
 
-    private UserRepository CreateSut() => new(_factory, _mapper, SpecificationEvaluator.Default, _dateTimeService);
+    private UserRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTimeService);
 }
