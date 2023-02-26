@@ -30,6 +30,7 @@ jobs:
             ${{ runner.os }}-nuget
       - name: Info
         run: dotnet --info
+        working-directory: ./src/HomeInventory
       - name: Restore dependencies
         run: dotnet restore --verbosity normal
         working-directory: ./src/HomeInventory

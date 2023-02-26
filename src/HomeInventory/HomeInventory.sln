@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		Dockerfile = Dockerfile
+		global.json = global.json
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
@@ -40,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Contracts.Val
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Tests.Acceptance", "HomeInventory.Tests.Acceptance\HomeInventory.Tests.Acceptance.csproj", "{1AF7B57D-C08D-4FCC-B66E-0218AC32C1BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.Domain.Primitives", "HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj", "{DA949C90-7FA7-4F99-8588-6EE99156A142}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Domain.Primitives", "HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj", "{DA949C90-7FA7-4F99-8588-6EE99156A142}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
