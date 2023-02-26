@@ -28,10 +28,15 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget
+      - name: Info
+        run: dotnet --info
       - name: Restore dependencies
         run: dotnet restore --verbosity normal
         working-directory: ./src/HomeInventory
-      - name: Build
+      - name: Build Debug
+        run: dotnet build -m:1 --no-incremental --no-restore --configuration Debug --self-contained false --verbosity normal
+        working-directory: ./src/HomeInventory
+      - name: Build Release
         run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity normal
         working-directory: ./src/HomeInventory
       - name: Unit Tests & Collect Coverage
