@@ -18,6 +18,20 @@ public class DisposableTests : BaseTest
     }
 
     [Fact]
+    public void Dispose_Should_NotInvokeAction_WhenCalledSecondTime()
+    {
+        var called = false;
+        void Action() => called = true;
+        var sut = Disposable.Create(Action);
+        sut.Dispose();
+        called = false;
+
+        sut.Dispose();
+
+        called.Should().BeFalse();
+    }
+
+    [Fact]
     public void Dispose_Should_SetIsDisposed()
     {
         void Action()
@@ -50,6 +64,20 @@ public class DisposableTests : BaseTest
         sut.Dispose();
 
         called.Should().BeTrue();
+    }
+
+    [Fact]
+    public void DisposeOfT_Should_NotInvokeAction_WhenCalledSecondTime()
+    {
+        var called = false;
+        void Action(object state) => called = true;
+        var sut = Disposable.Create(Action, new object());
+        sut.Dispose();
+        called = false;
+
+        sut.Dispose();
+
+        called.Should().BeFalse();
     }
 
     [Fact]
