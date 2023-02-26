@@ -1,5 +1,6 @@
 ﻿namespace HomeInventory.Tests.Domain;
 
+[Trait("Category", "Unit")]
 public class EnumerableExtensionsTests : BaseTest
 {
     [Fact]

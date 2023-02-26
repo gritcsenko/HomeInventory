@@ -2,6 +2,7 @@
 
 namespace HomeInventory.Tests.Domain.Primitives;
 
+[Trait("Category", "Unit")]
 public class DictionaryExtensionsTests : BaseTest
 {
     private readonly string _key;

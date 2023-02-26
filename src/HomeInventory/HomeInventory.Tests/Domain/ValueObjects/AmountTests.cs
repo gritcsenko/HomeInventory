@@ -1,6 +1,8 @@
 ﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
+
+[Trait("Category", "Unit")]
 public class AmountTests : BaseTest
 {
     [Fact]
