@@ -12,9 +12,9 @@ public interface IEnumeration<TEnum> : IEnumeration, IValueObject<TEnum>
     string Name { get; }
 }
 
-public interface IEnumeration<TEnum, out TKey> : IEnumeration<TEnum>
-    where TEnum : IEnumeration<TEnum, TKey>
-    where TKey : IEquatable<TKey>
+public interface IEnumeration<TEnum, out TValue> : IEnumeration<TEnum>
+    where TEnum : IEnumeration<TEnum, TValue>
+    where TValue : IEquatable<TValue>
 {
-    TKey Value { get; }
+    TValue Value { get; }
 }

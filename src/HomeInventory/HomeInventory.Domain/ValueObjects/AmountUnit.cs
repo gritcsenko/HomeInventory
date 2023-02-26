@@ -49,7 +49,14 @@ public sealed class AmountUnit : Enumeration<AmountUnit, Guid>
 
     public decimal MetricUnitFactor { get; } = 1m;
 
-    public bool IsMetric => MetricUnitFactor == 1m;
+    public bool IsMetric
+    {
+        get
+        {
+            var power = Math.Log10(decimal.ToDouble(MetricUnitFactor));
+            return double.IsFinite(power) && Math.Round(power) == power;
+        }
+    }
 
     public decimal ToMetric(decimal value) => value * MetricUnitFactor;
 

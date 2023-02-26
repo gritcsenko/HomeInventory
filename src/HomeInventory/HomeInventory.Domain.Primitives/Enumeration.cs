@@ -1,36 +1,40 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public static class Enumeration
+public abstract class Enumeration<TEnum> : ValueObject<TEnum>, IEnumeration<TEnum>
+    where TEnum : Enumeration<TEnum>
 {
-    internal static IEnumerable<TEnum> CollectItems<TEnum>()
-        where TEnum : IEnumeration
-    {
-        var enumType = typeof(TEnum);
-        var assembly = enumType.Assembly;
-        var allTypes = assembly.GetTypes();
-        var derivedTypes = allTypes.Where(enumType.IsAssignableFrom);
-        var allFields = derivedTypes.SelectMany(t => t.GetFieldsOfType<TEnum>());
-        return allFields;
-    }
-}
+    private static readonly Lazy<TEnum[]> LazyItems = new(() => CollectItems().ToArray(), LazyThreadSafetyMode.ExecutionAndPublication);
 
-public abstract class Enumeration<TEnum, TKey> : ValueObject<TEnum>, IEnumeration<TEnum, TKey>
-    where TEnum : Enumeration<TEnum, TKey>
-    where TKey : IEquatable<TKey>
-{
-    private static readonly Lazy<List<TEnum>> LazyItems = new(() => Enumeration.CollectItems<TEnum>().ToList(), LazyThreadSafetyMode.ExecutionAndPublication);
-
-    protected Enumeration(string name, TKey value)
-        : base(name, value)
+    protected Enumeration(string name, object key)
+        : base(name, key)
     {
         Name = name;
-        Value = value;
     }
 
     public static IReadOnlyCollection<TEnum> Items => LazyItems.Value;
 
     public string Name { get; }
 
-    public TKey Value { get; }
+    internal static IEnumerable<TEnum> CollectItems()
+    {
+        var enumType = typeof(TEnum);
+        return enumType
+            .Assembly
+            .GetTypes()
+            .Where(enumType.IsAssignableFrom)
+            .SelectMany(t => t.GetFieldsOfType<TEnum>());
+    }
 }
 
+public abstract class Enumeration<TEnum, TValue> : Enumeration<TEnum>, IEnumeration<TEnum, TValue>
+    where TEnum : Enumeration<TEnum, TValue>
+    where TValue : IEquatable<TValue>
+{
+    protected Enumeration(string name, TValue value)
+        : base(name, value)
+    {
+        Value = value;
+    }
+
+    public TValue Value { get; }
+}

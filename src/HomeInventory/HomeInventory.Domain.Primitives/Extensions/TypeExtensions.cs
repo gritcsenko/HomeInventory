@@ -9,9 +9,10 @@ public static class TypeExtensions
     internal static IEnumerable<TFieldType> GetFieldsOfType<TFieldType>(this Type type)
     {
         var fields = type.GetFields(BindingAttr);
+        var fieldType = typeof(TFieldType);
         foreach (var field in fields)
         {
-            if (type.IsAssignableFrom(field.FieldType))
+            if (fieldType.IsAssignableFrom(field.FieldType))
             {
                 yield return (TFieldType)field.GetValue(null)!;
             }

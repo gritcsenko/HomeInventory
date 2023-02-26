@@ -73,6 +73,4 @@ public class AmountFactoryTests : BaseTest
             AmountUnit.Gallon,
             AmountUnit.CubicMeter,
         };
-
 }
-
