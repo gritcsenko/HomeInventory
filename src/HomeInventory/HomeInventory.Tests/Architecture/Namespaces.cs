@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using HomeInventory.Tests.Helpers;
-using NetArchTest.Rules;
+﻿using NetArchTest.Rules;
 
 namespace HomeInventory.Tests.Architecture;
 

@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using FluentAssertions.Primitives;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace HomeInventory.Tests.Helpers;
 

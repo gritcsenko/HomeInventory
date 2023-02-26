@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using FluentAssertions;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Tests.Helpers;
 using HomeInventory.Tests.Support;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
@@ -22,7 +20,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using NSubstitute;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using IConfigurationProvider = Microsoft.Extensions.Configuration.IConfigurationProvider;

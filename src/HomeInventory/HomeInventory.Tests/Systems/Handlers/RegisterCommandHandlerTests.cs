@@ -1,13 +1,9 @@
-using AutoFixture;
-using FluentAssertions;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
-using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 

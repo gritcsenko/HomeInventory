@@ -1,6 +1,4 @@
-using AutoFixture;
 using AutoMapper;
-using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Application.Cqrs.Commands.Register;
@@ -9,13 +7,11 @@ using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Modules;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Controllers;

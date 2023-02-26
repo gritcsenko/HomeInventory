@@ -1,7 +1,6 @@
 ﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;

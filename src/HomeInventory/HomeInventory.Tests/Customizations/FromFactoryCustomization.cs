@@ -1,6 +1,4 @@
-﻿using AutoFixture;
-
-namespace HomeInventory.Tests.Customizations;
+﻿namespace HomeInventory.Tests.Customizations;
 
 internal class FromFactoryCustomization<TValue, TObject> : ICustomization
 {

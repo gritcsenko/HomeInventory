@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using FluentAssertions.Primitives;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HomeInventory.Tests.Helpers;
 

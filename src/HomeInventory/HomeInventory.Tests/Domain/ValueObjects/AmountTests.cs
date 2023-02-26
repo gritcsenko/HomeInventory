@@ -1,7 +1,4 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
+﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
 public class AmountTests : BaseTest

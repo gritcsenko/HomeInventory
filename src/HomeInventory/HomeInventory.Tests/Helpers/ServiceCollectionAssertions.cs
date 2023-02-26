@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using FluentAssertions.Collections;
-using FluentAssertions.Primitives;
+﻿using FluentAssertions.Collections;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Helpers;

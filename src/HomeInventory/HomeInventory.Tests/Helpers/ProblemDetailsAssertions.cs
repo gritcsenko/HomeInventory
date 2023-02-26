@@ -1,5 +1,4 @@
-﻿using FluentAssertions.Primitives;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace HomeInventory.Tests.Helpers;
 

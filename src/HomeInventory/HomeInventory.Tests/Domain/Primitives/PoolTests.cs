@@ -1,8 +1,4 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Domain.Primitives;
-using HomeInventory.Tests.Helpers;
-using NSubstitute;
+﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests.Domain.Primitives;
 

@@ -1,6 +1,4 @@
-﻿using AutoFixture;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Customizations;
+﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Helpers;
 

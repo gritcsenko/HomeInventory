@@ -1,6 +1,4 @@
 ﻿using System.Text.Json;
-using FluentAssertions;
-using FluentAssertions.Primitives;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;

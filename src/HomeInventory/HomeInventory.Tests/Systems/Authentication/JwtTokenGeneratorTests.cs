@@ -1,15 +1,11 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using AutoFixture;
-using FluentAssertions;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Authentication;
 

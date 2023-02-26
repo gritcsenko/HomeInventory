@@ -1,10 +1,7 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
-using AutoFixture;
-using FluentAssertions;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
-using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 

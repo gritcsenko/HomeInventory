@@ -1,13 +1,9 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
+﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
-using NSubstitute;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;

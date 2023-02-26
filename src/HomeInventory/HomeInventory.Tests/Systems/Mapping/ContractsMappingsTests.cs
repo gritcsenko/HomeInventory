@@ -1,6 +1,4 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Application.Cqrs.Commands.Register;
+﻿using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Cqrs.Queries.UserId;
@@ -8,7 +6,6 @@ using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 
