@@ -22,5 +22,4 @@ public class AsyncDisposable : IAsyncDisposable
     {
         return ValueTask.CompletedTask;
     }
-
 }
