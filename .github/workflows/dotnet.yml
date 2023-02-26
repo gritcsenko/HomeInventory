@@ -20,6 +20,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
@@ -28,9 +31,6 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget
-      - name: Info
-        run: dotnet --info
-        working-directory: ./src/HomeInventory
       - name: Restore dependencies
         run: dotnet restore --verbosity normal
         working-directory: ./src/HomeInventory
