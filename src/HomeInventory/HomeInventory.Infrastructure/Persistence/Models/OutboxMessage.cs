@@ -1,3 +1,5 @@
-﻿namespace HomeInventory.Infrastructure.Persistence.Models;
+﻿using HomeInventory.Domain.Primitives;
 
-public record OutboxMessage(Guid Id, DateTimeOffset OccurredOn, string Type, string Content) : IPersistentModel;
+namespace HomeInventory.Infrastructure.Persistence.Models;
+
+public record OutboxMessage(Guid Id, DateTimeOffset OccurredOn, IDomainEvent Content) : IPersistentModel;

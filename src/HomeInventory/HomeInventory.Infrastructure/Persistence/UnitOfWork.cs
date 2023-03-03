@@ -51,11 +51,16 @@ internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
                 Guid.NewGuid(),
                 now,
                 domainEvent.GetType().Name,
-                JsonSerializer.Serialize(domainEvent, new JsonSerializerOptions(JsonSerializerDefaults.Web))
+                ConvertToModel(domainEvent)
             ))
             .ToArray();
 
         await _context.Set<OutboxMessage>().AddRangeAsync(messages, cancellationToken);
+    }
+
+    private static DomainEventContent ConvertToModel(IDomainEvent domainEvent)
+    {
+        return JsonSerializer.Serialize(domainEvent, new JsonSerializerOptions(JsonSerializerDefaults.Web));
     }
 
     private void UpdateAuditableEntities(DateTimeOffset now)
