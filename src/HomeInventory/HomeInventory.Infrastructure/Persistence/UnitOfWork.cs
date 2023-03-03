@@ -2,6 +2,7 @@
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
@@ -10,12 +11,14 @@ internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
     private readonly DbContext _context;
     private readonly IDateTimeService _dateTimeService;
     private readonly bool _ownContext;
+    private readonly ChangeTracker _changeTracker;
 
     public UnitOfWork(DbContext context, IDateTimeService dateTimeService, bool ownContext = true)
     {
         _context = context;
         _dateTimeService = dateTimeService;
         _ownContext = ownContext;
+        _changeTracker = _context.ChangeTracker;
     }
 
     public DbContext DbContext => _context;
@@ -40,15 +43,10 @@ internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
 
     private async Task ConvertDomainEventsToOutboxMessages(DateTimeOffset now, CancellationToken cancellationToken)
     {
-        var messages = _context.ChangeTracker
+        var messages = _changeTracker
             .Entries<IAggregateRoot>()
             .Select(x => x.Entity)
-            .SelectMany(root =>
-            {
-                var domainEvents = root.GetEvents();
-                root.ClearEvents();
-                return domainEvents;
-            })
+            .SelectMany(root => root.GetAndClearEvents())
             .Select(domainEvent => new OutboxMessage(
                 Guid.NewGuid(),
                 now,
@@ -62,7 +60,7 @@ internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
 
     private void UpdateAuditableEntities(DateTimeOffset now)
     {
-        foreach (var entry in _context.ChangeTracker.Entries<IAuditableEntity>())
+        foreach (var entry in _changeTracker.Entries<IAuditableEntity>())
         {
             switch (entry.State)
             {

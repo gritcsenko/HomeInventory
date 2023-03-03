@@ -11,9 +11,12 @@ public abstract class AggregateRoot<TAggregate, TIdentity> : Entity<TAggregate, 
     {
     }
 
-    public IReadOnlyCollection<IDomainEvent> GetEvents() => _events.ToArray();
+    public IReadOnlyCollection<IDomainEvent> GetAndClearEvents()
+    {
+        var events = _events.ToArray();
+        _events.Clear();
+        return events;
+    }
 
     protected void AddEvent(IDomainEvent @event) => _events.Add(@event);
-
-    public void ClearEvents() => _events.Clear();
 }

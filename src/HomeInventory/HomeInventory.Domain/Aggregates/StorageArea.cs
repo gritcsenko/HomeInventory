@@ -29,7 +29,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
         }
 
         _products.AddLast(item);
-        AddEvent(new ProductAddedEvent(this, item));
+        AddEvent(new ProductAddedEvent(this, item.Id));
         return new Success();
     }
 
@@ -41,7 +41,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
         }
 
         _products.Remove(item);
-        AddEvent(new ProductRemovedEvent(this, item));
+        AddEvent(new ProductRemovedEvent(this, item.Id));
         return new Success();
     }
 }
