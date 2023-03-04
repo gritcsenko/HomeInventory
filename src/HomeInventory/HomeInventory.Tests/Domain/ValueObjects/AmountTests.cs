@@ -57,6 +57,7 @@ public class AmountTests : BaseTest
             unit.Should().NotBe(actual.Unit);
         }
     }
+    
     public static TheoryData<AmountUnit> UnitsData() =>
         new(){
             AmountUnit.Piece,

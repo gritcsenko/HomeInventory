@@ -38,7 +38,7 @@ public class ArchitectureTests
             .NotHaveDependencyOnAll(otherProjects)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class ArchitectureTests
             .HaveDependencyOn(Namespaces.Domain)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 
     [Fact]
@@ -68,11 +68,11 @@ public class ArchitectureTests
             .HaveDependencyOn(Namespaces.Domain)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 
     [Fact]
-    public void Controllers_Should_HaveDependencyOn_MediatRAndAutoMapper()
+    public void Controllers_Should_HaveDependencyOn_MediatR()
     {
         var assembly = Web.AssemblyReference.Assembly;
 
@@ -82,9 +82,26 @@ public class ArchitectureTests
             .And()
             .AreNotAbstract()
             .Should()
-            .HaveDependencyOnAll(Namespaces.MediatR, Namespaces.AutoMapper)
+            .HaveDependencyOn(Namespaces.MediatR)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public void Controllers_Should_HaveDependencyOn_Automapper()
+    {
+        var assembly = Web.AssemblyReference.Assembly;
+
+        var result = Types.InAssembly(assembly)
+            .That()
+            .HaveNameEndingWith("Controller")
+            .And()
+            .AreNotAbstract()
+            .Should()
+            .HaveDependencyOn(Namespaces.AutoMapper)
+            .GetResult();
+
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 }
