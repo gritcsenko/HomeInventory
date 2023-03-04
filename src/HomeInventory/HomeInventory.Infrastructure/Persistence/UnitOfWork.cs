@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -50,17 +49,11 @@ internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
             .Select(domainEvent => new OutboxMessage(
                 Guid.NewGuid(),
                 now,
-                domainEvent.GetType().Name,
-                ConvertToModel(domainEvent)
+                domainEvent
             ))
             .ToArray();
 
         await _context.Set<OutboxMessage>().AddRangeAsync(messages, cancellationToken);
-    }
-
-    private static DomainEventContent ConvertToModel(IDomainEvent domainEvent)
-    {
-        return JsonSerializer.Serialize(domainEvent, new JsonSerializerOptions(JsonSerializerDefaults.Web));
     }
 
     private void UpdateAuditableEntities(DateTimeOffset now)
