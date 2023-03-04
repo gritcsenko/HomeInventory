@@ -1,11 +1,11 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
-using MapsterMapper;
 using OneOf;
 
 namespace HomeInventory.Application.Authentication.Queries.Authenticate;

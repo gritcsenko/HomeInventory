@@ -1,11 +1,11 @@
 ﻿using AutoFixture;
+using AutoMapper;
 using FluentAssertions;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
-using MapsterMapper;
 using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Persistence;

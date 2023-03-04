@@ -1,9 +1,8 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
+﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
+
+[Trait("Category", "Unit")]
 public class AmountTests : BaseTest
 {
     [Fact]
@@ -38,4 +37,11 @@ public class AmountTests : BaseTest
 
         result.Should().BeFalse();
     }
+
+    public static TheoryData<AmountUnit> UnitsData() =>
+        new(){
+            AmountUnit.Piece,
+            AmountUnit.Gallon,
+            AmountUnit.CubicMeter,
+        };
 }

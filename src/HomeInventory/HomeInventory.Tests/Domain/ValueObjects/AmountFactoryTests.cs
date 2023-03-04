@@ -1,8 +1,5 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Domain.Errors;
+﻿using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Helpers;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
 
@@ -13,12 +10,14 @@ public class AmountFactoryTests : BaseTest
     public void Create_Should_Return_ValidatorNotFound_When_UnknownUnit()
     {
         var sut = CreateSut();
+        var value = 0m;
         var unknownUnit = new AmountUnit(Fixture.Create<string>(), MeasurementType.Area);
 
-        var result = sut.Create(0m, unknownUnit);
+        var result = sut.Create(value, unknownUnit);
 
-        result.IsFailed.Should().BeTrue();
-        result.Errors[0].Should().BeAssignableTo<ValidatorNotFoundError>();
+        result.IsT1.Should().BeTrue();
+        var error = result.AsT1;
+        error.Should().BeAssignableTo<ValidatorNotFoundError>();
     }
 
     [Fact]
@@ -29,7 +28,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, AmountUnit.Piece);
 
-        result.IsFailed.Should().BeTrue();
+        result.IsT1.Should().BeTrue();
     }
 
     [Theory]
@@ -41,7 +40,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, unit);
 
-        result.IsFailed.Should().BeTrue();
+        result.IsT1.Should().BeTrue();
     }
 
     [Theory]
@@ -53,8 +52,8 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, unit);
 
-        result.IsFailed.Should().BeFalse();
-        var amount = result.Value;
+        result.IsT0.Should().BeTrue();
+        var amount = result.AsT0;
         amount.Value.Should().Be(value);
         amount.Unit.Should().Be(unit);
     }
@@ -74,6 +73,4 @@ public class AmountFactoryTests : BaseTest
             AmountUnit.Gallon,
             AmountUnit.CubicMeter,
         };
-
 }
-

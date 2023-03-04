@@ -1,6 +1,5 @@
-﻿using HomeInventory.Tests.Helpers;
-using Mapster;
-using MapsterMapper;
+﻿using AutoMapper;
+using HomeInventory.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Mapping;
@@ -17,10 +16,13 @@ public abstract class BaseMappingsTests : BaseTest
     public IServiceCollection Services => _services;
 
     protected IMapper CreateSut<TMapper>()
-        where TMapper : IRegister, new()
+        where TMapper : Profile, new()
     {
-        var config = new TypeAdapterConfig();
-        config.Apply(new TMapper());
-        return new ServiceMapper(_factory.CreateServiceProvider(_services), config);
+        var config = new MapperConfiguration(x =>
+        {
+            x.AddProfile<TMapper>();
+        });
+        var serviceProvider = _factory.CreateServiceProvider(_services);
+        return new Mapper(config, serviceProvider.GetService);
     }
 }

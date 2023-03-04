@@ -1,9 +1,9 @@
-﻿using HomeInventory.Application.Interfaces.Persistence;
+﻿using AutoMapper;
+using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
-using MapsterMapper;
 using OneOf;
 using OneOf.Types;
 

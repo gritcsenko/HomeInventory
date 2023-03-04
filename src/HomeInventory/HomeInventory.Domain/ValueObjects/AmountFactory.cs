@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives;
+using OneOf;
 
 namespace HomeInventory.Domain.ValueObjects;
 
@@ -13,13 +14,25 @@ internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
         new(AmountUnit.CubicMeter, x => x >= 0m),
     }.ToDictionary(x => x.Unit);
 
-    public Result<Amount> Create(decimal value, AmountUnit unit) => Create(value, GetValidator(unit));
+    public OneOf<Amount, IError> Create(decimal value, AmountUnit unit) => Create(value, GetValidator(unit));
 
-    private static Result<Validator> GetValidator(AmountUnit unit) =>
-        _validators.TryGetValue(unit, out var validator) ? validator : Result.Fail<Validator>(new ValidatorNotFoundError(unit));
+    private static OneOf<Validator, IError> GetValidator(AmountUnit unit) =>
+        _validators.TryGetValue(unit, out var validator) ? validator : new ValidatorNotFoundError(unit);
 
-    private Result<Amount> Create(decimal value, Result<Validator> validationResult) =>
-        validationResult.Bind(v => v.IsValid(value) ? new Amount(value, v.Unit) : GetValidationError((value, v.Unit)));
+    private OneOf<Amount, IError> Create(decimal value, OneOf<Validator, IError> validationResult)
+    {
+        return validationResult.Match<OneOf<Amount, IError>>(v =>
+        {
+            if (v.IsValid(value))
+            {
+                return new Amount(value, v.Unit);
+            }
+            else
+            {
+                return OneOf<Amount, IError>.FromT1(GetValidationError((value, v.Unit)).Errors.First());
+            }
+        }, e => OneOf<Amount, IError>.FromT1(e));
+    }
 
     private class Validator
     {

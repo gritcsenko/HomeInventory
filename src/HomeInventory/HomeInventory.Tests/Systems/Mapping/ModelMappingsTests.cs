@@ -1,23 +1,25 @@
-﻿using AutoFixture;
-using FluentAssertions;
+﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Tests.Customizations;
-using HomeInventory.Tests.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [Trait("Category", "Unit")]
 public class ModelMappingsTests : BaseMappingsTests
 {
+    public ModelMappingsTests()
+    {
+        Services.AddDomain();
+        Services.AddInfrastructure();
+    }
+
     [Theory]
     [MemberData(nameof(Data))]
     public void ShouldMap(object instance, Type destination)
     {
-        Services.AddSingleton<IUserIdFactory>(new UserIdFactory());
         var sut = CreateSut<ModelMappings>();
         var source = instance.GetType();
 
@@ -29,13 +31,26 @@ public class ModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> Data()
     {
         var fixture = new Fixture();
-        fixture.Customize(new UserIdCustomization());
+        fixture.CustomizeGuidId(guid => new UserId(guid));
+        fixture.CustomizeGuidId(guid => new ProductId(guid));
+        fixture.Customize(new FromFactoryCustomization<int, AmountUnit>(i => AmountUnit.Items.ElementAt(i % AmountUnit.Items.Count)));
+        fixture.Customize(new FromFactoryCustomization<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit)));
+
+        fixture.Customize<ProductAmountModel>(builder =>
+            builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));
+
         return new()
         {
             { fixture.Create<UserId>(), typeof(Guid) },
             { fixture.Create<Guid>(), typeof(UserId) },
+
+            { fixture.Create<ProductId>(), typeof(Guid) },
+            { fixture.Create<Guid>(), typeof(ProductId) },
+
             { fixture.Create<User>(), typeof(UserModel) },
             { fixture.Create<UserModel>(), typeof(User) },
+
+            { fixture.Create<Amount>(), typeof(ProductAmountModel) },
         };
     }
 }

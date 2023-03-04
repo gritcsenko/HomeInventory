@@ -1,7 +1,5 @@
 ﻿using HomeInventory.Application;
-using HomeInventory.Tests.Helpers;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;
@@ -19,7 +17,6 @@ public class ApplicationDependencyInjectionTests : BaseTest
         var provider = _factory.CreateServiceProvider(_services);
 
         _services.Should().ContainSingleton(typeof(IPipelineBehavior<,>));
-        _services.Should().ContainSingleSingleton<IStartupFilter>(provider);
         _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
     }
 }
