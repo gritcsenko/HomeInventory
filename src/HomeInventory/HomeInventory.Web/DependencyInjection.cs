@@ -39,7 +39,7 @@ public static class DependencyInjection
             .AddInMemoryStorage();
 
         services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
-        services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+        services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
 
         services.AddAutoMapper((sp, configExpression) =>

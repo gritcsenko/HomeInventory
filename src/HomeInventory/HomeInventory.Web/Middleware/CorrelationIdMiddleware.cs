@@ -4,49 +4,44 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
 namespace HomeInventory.Web.Middleware;
+
 internal class CorrelationIdMiddleware : IMiddleware
 {
-    private readonly ICorrelationIdGenerator _generator;
+    private readonly ICorrelationIdContainer _container;
     private readonly ILogger _logger;
 
-    public CorrelationIdMiddleware(ICorrelationIdGenerator generator, ILogger<CorrelationIdMiddleware> logger)
+    public CorrelationIdMiddleware(ICorrelationIdContainer container, ILogger<CorrelationIdMiddleware> logger)
     {
-        _generator = generator;
+        _container = container;
         _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var correlationId = GetCorrelationId(context);
-        AddCorrelationId(context, correlationId);
+        SetCorrelationIdFrom(context.Request);
+        AddCorrelationIdTo(context.Response);
         await next(context);
     }
 
-    private string GetCorrelationId(HttpContext context)
+    private void SetCorrelationIdFrom(HttpRequest request)
     {
-        if (context.Request.Headers.TryGetValue(HeaderNames.CorrelationId, out var correlationId))
+        if (request.Headers.TryGetValue(HeaderNames.CorrelationId, out var correlationId) && (string?)correlationId is { } id)
         {
-            var idText = correlationId.ToString();
-            if (idText is not null)
-            {
-                _generator.SetCorrelationId(idText);
-                return idText;
-            }
+            _container.CorrelationId = id;
         }
-
-        var newId = _generator.GetCorrelationId();
-
-        _logger.LogInformation("New {CorrelationId} was generated", newId);
-
-        return newId;
+        else
+        {
+            _container.GenerateNew();
+            _logger.LogInformation("New {CorrelationId} was generated", _container.CorrelationId);
+        }
     }
 
-    private void AddCorrelationId(HttpContext context, string correlationId)
+    private void AddCorrelationIdTo(HttpResponse response)
     {
-        context.Response.OnStarting(() =>
+        response.OnStarting(() =>
         {
-            _logger.LogInformation("{CorrelationId} was returned to the caller", correlationId);
-            context.Response.Headers[HeaderNames.CorrelationId] = new StringValues(correlationId);
+            _logger.LogInformation("{CorrelationId} was returned to the caller", _container.CorrelationId);
+            response.Headers[HeaderNames.CorrelationId] = new StringValues(_container.CorrelationId);
             return Task.CompletedTask;
         });
     }
