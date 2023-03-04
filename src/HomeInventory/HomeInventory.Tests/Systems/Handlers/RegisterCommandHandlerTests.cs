@@ -1,4 +1,5 @@
 using AutoFixture;
+using AutoMapper;
 using FluentAssertions;
 using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Interfaces.Persistence;
@@ -7,7 +8,6 @@ using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
-using MapsterMapper;
 using NSubstitute;
 using OneOf.Types;
 

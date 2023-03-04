@@ -1,9 +1,10 @@
 ﻿namespace HomeInventory.Infrastructure.Persistence.Models;
-internal class UserModel
+
+internal class UserModel : IPersistentModel
 {
-    public Guid Id { get; set; }
-    public string FirstName { get; set; } = null!;
-    public string LastName { get; set; } = null!;
-    public string Email { get; set; } = null!;
-    public string Password { get; set; } = null!;
+    public required Guid Id { get; init; }
+    public required string FirstName { get; init; }
+    public required string LastName { get; init; }
+    public required string Email { get; init; }
+    public required string Password { get; init; }
 }

@@ -1,21 +1,22 @@
 ﻿using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
+using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
-using Mapster;
 
 namespace HomeInventory.Web.Mapping;
 
-internal class ContractsMappings : IRegister
+internal class ContractsMappings : MappingProfile
 {
-    public void Register(TypeAdapterConfig config)
+    public ContractsMappings()
     {
-        config.NewConfig<UserId, Guid>().MapWith(x => x.Id);
+        CreateMapForId<UserId>();
 
-        config.NewConfig<RegisterRequest, RegisterCommand>();
-        config.NewConfig<RegistrationResult, RegisterResponse>();
+        CreateMap<RegisterRequest, RegisterCommand>();
 
-        config.NewConfig<LoginRequest, AuthenticateQuery>();
-        config.NewConfig<AuthenticateResult, LoginResponse>();
+        CreateMap<RegistrationResult, RegisterResponse>();
+
+        CreateMap<LoginRequest, AuthenticateQuery>();
+        CreateMap<AuthenticateResult, LoginResponse>();
     }
 }

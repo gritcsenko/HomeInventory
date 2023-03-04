@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using HomeInventory.Tests.Helpers;
-using NetArchTest.Rules;
+﻿using NetArchTest.Rules;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -15,7 +13,7 @@ internal static class Namespaces
     public const string Contracts = Prefix + nameof(Contracts);
     public const string ContractsValidation = Contracts + ".Validation";
     public const string MediatR = nameof(MediatR);
-    public const string MapsterMapper = nameof(MapsterMapper);
+    public const string AutoMapper = nameof(AutoMapper);
     public static IEnumerable<string> HomeInventory = new[] { Domain, Application, Infrastructure, Api, Web, Contracts, ContractsValidation };
 }
 
@@ -40,7 +38,7 @@ public class ArchitectureTests
             .NotHaveDependencyOnAll(otherProjects)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 
     [Fact]
@@ -55,7 +53,7 @@ public class ArchitectureTests
             .HaveDependencyOn(Namespaces.Domain)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 
     [Fact]
@@ -70,11 +68,11 @@ public class ArchitectureTests
             .HaveDependencyOn(Namespaces.Domain)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 
     [Fact]
-    public void Controllers_Should_HaveDependencyOn_MediatRAndMapster()
+    public void Controllers_Should_HaveDependencyOn_MediatR()
     {
         var assembly = Web.AssemblyReference.Assembly;
 
@@ -84,9 +82,26 @@ public class ArchitectureTests
             .And()
             .AreNotAbstract()
             .Should()
-            .HaveDependencyOnAll(Namespaces.MediatR, Namespaces.MapsterMapper)
+            .HaveDependencyOn(Namespaces.MediatR)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public void Controllers_Should_HaveDependencyOn_Automapper()
+    {
+        var assembly = Web.AssemblyReference.Assembly;
+
+        var result = Types.InAssembly(assembly)
+            .That()
+            .HaveNameEndingWith("Controller")
+            .And()
+            .AreNotAbstract()
+            .Should()
+            .HaveDependencyOn(Namespaces.AutoMapper)
+            .GetResult();
+
+        result.FailingTypeNames.Should().BeNullOrEmpty();
     }
 }

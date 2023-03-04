@@ -1,4 +1,5 @@
 using AutoFixture;
+using AutoMapper;
 using FluentAssertions;
 using FluentResults;
 using HomeInventory.Application.Authentication.Commands.Register;
@@ -8,7 +9,6 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Tests.Customizations;
 using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Controllers;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -1,7 +1,7 @@
-﻿using HomeInventory.Application.Authentication.Commands.Register;
+﻿using AutoMapper;
+using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

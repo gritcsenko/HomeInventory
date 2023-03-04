@@ -8,8 +8,6 @@ using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
-using Mapster;
-using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -35,8 +33,11 @@ public static class DependencyInjection
         services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
         services.AddScoped<CorrelationIdMiddleware>();
 
-        services.AddSingleton(sp => new TypeAdapterConfig());
-        services.AddScoped<IMapper, ServiceMapper>();
+        services.AddAutoMapper((sp, configExpression) =>
+        {
+            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().Select(s => s.GetAssembly()));
+            configExpression.ConstructServicesUsing(sp.GetService);
+        }, Type.EmptyTypes);
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
         services.AddControllers(o => o.SuppressAsyncSuffixInActionNames = true)
