@@ -65,7 +65,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          global-json-file: ./src/global.json
+          global-json-file: ./src/HomeInventory/global.json
       - run: |
           echo "Run, Build Application using script"
           dotnet build ./src/HomeInventory --configuration Release --self-contained false --verbosity normal
