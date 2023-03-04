@@ -3,25 +3,45 @@ using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Web;
 using MediatR;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Services.AddMediatR(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly);
+try
+{
+    var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+    {
+        Args = args,
+    });
 
-builder.Services.AddDomain();
-builder.Services.AddInfrastructure();
-builder.Services.AddApplication();
-builder.Services.AddWeb();
+    builder.Host.UseSerilog(ConfigureSerilog, preserveStaticLogger: false, writeToProviders: false);
 
-var app = builder.Build();
-app.UseWeb();
+    builder.Services
+        .AddMediatR(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly)
+        .AddDomain()
+        .AddInfrastructure()
+        .AddApplication()
+        .AddWeb();
 
-app.UseHttpsRedirection();
+    await builder
+        .Build()
+        .UseWeb()
+        .RunAsync();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "An unhandled exception occurred during bootstrapping");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-app.Run();
+static void ConfigureSerilog(HostBuilderContext context, IServiceProvider services, LoggerConfiguration configuration) =>
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services);
 
 public partial class Program { }
