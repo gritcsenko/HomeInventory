@@ -19,7 +19,7 @@ internal static class HttpContextItems
         return context.Items[item.Name] as T;
     }
 
-    public struct HttpContextItem<T>
+    public readonly struct HttpContextItem<T>
         where T : class
     {
         public string Name { get; init; }
