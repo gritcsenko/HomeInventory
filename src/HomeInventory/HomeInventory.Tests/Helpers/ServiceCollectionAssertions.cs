@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using FluentAssertions.Collections;
-using FluentAssertions.Primitives;
+﻿using FluentAssertions.Collections;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Helpers;
@@ -16,6 +14,10 @@ internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServic
         where T : class =>
         ContainSingle<T>(ServiceLifetime.Transient, provider);
 
+    public AndConstraint<ServiceCollectionAssertions> ContainTransient<T>(IServiceProvider provider)
+        where T : class =>
+        Contain<T>(ServiceLifetime.Transient, provider);
+
     public AndWhichConstraint<ObjectAssertions, T> ContainSingleSingleton<T>(IServiceProvider provider)
         where T : class =>
         ContainSingle<T>(ServiceLifetime.Singleton, provider);
@@ -29,15 +31,31 @@ internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServic
         ContainSingle<T>(lifetime)
             .Which.GetInstance(provider).Should().BeAssignableTo<T>();
 
+    public AndConstraint<ServiceCollectionAssertions> Contain<T>(ServiceLifetime lifetime, IServiceProvider provider)
+        where T : class =>
+        Contain<T>(lifetime)
+            .And.AllSatisfy(d =>
+            {
+                if (d.ServiceType == typeof(T) && d.Lifetime == lifetime)
+                    d.GetInstance(provider).Should().BeAssignableTo<T>();
+            });
+
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle<T>(ServiceLifetime lifetime)
         where T : class =>
         ContainSingle(typeof(T), lifetime);
+
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain<T>(ServiceLifetime lifetime)
+        where T : class =>
+        Contain(typeof(T), lifetime);
 
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleSingleton(Type serviceType) =>
         ContainSingle(serviceType, ServiceLifetime.Singleton);
 
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleton(Type serviceType) =>
         Contain(serviceType, ServiceLifetime.Singleton);
+
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainTransient(Type serviceType) =>
+        Contain(serviceType, ServiceLifetime.Transient);
 
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime) =>
         ContainSingle(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
