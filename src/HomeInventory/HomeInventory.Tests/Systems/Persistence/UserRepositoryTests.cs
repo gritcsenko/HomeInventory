@@ -23,8 +23,6 @@ public class UserRepositoryTests : BaseRepositoryTest
             .With(x => x.Id, _user.Id.Id)
             .With(x => x.Email, _user.Email.Value)
             .With(x => x.Password, _user.Password)
-            .With(x => x.FirstName, _user.FirstName)
-            .With(x => x.LastName, _user.LastName)
             .Create();
 
         Mapper.Map<User, UserModel>(_user).Returns(_userModel);

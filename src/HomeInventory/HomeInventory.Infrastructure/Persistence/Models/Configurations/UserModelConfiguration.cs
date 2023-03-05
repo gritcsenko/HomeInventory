@@ -9,12 +9,6 @@ internal class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.FirstName)
-            .IsRequired();
-
-        builder.Property(x => x.LastName)
-            .IsRequired();
-
         builder.Property(x => x.Email)
             .IsRequired();
 

@@ -42,8 +42,6 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
         var userId = _userIdFactory.CreateNew();
         var user = new User(userId)
         {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
             Email = request.Email,
             Password = request.Password,
         };

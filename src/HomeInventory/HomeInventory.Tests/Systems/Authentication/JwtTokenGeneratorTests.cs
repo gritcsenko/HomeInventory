@@ -56,12 +56,6 @@ public class JwtTokenGeneratorTests : BaseTest
         actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Jti)
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(jti);
-        actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.GivenName)
-            .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.FirstName);
-        actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.FamilyName)
-            .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.LastName);
         actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Email)
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(_user.Email.Value);
