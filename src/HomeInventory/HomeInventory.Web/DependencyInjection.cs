@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Carter;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using HomeInventory.Application;
@@ -8,6 +9,7 @@ using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
+using HomeInventory.Web.Modules;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -30,7 +32,7 @@ public static class DependencyInjection
             .AddInMemoryStorage();
 
         services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
-        services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+        services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
 
         services.AddAutoMapper((sp, configExpression) =>
@@ -65,6 +67,9 @@ public static class DependencyInjection
             c.DisableDataAnnotationsValidation = true;
         });
         services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
+        services.AddCarter(configurator: config => config
+            .WithModule<AuthenticationModule>()
+            );
 
         return services;
     }
@@ -100,6 +105,8 @@ public static class DependencyInjection
         });
 
         app.UseMiddleware<CorrelationIdMiddleware>();
+
+        app.MapCarter();
 
         return app;
     }
