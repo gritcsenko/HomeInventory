@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HomeInventory.Web.Configuration;
 
-internal class JwtBearerOptionsSetup : IPostConfigureOptions<JwtBearerOptions>
+internal class JwtBearerOptionsSetup : IConfigureOptions<JwtBearerOptions>
 {
     private readonly JwtOptions _jwtOptions;
 
@@ -13,12 +13,9 @@ internal class JwtBearerOptionsSetup : IPostConfigureOptions<JwtBearerOptions>
         _jwtOptions = optionsAccessor.Value;
     }
 
-    public void PostConfigure(string? name, JwtBearerOptions options)
+    public void Configure(JwtBearerOptions options)
     {
-        if (name == JwtBearerDefaults.AuthenticationScheme)
-        {
-            options.TokenValidationParameters = CreateTokenValidationParameters();
-        }
+        options.TokenValidationParameters = CreateTokenValidationParameters();
     }
 
     private TokenValidationParameters CreateTokenValidationParameters() => new()
@@ -32,7 +29,7 @@ internal class JwtBearerOptionsSetup : IPostConfigureOptions<JwtBearerOptions>
         ValidAudiences = new[] { _jwtOptions.Audience },
 
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(_jwtOptions.Key),
+        IssuerSigningKey = _jwtOptions.SecurityKey,
 
         ValidAlgorithms = new[] { _jwtOptions.Algorithm },
     };

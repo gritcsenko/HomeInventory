@@ -5,6 +5,7 @@ using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Support;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
+using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -58,7 +59,7 @@ public class WebDependencyInjectionTests : BaseTest
         var provider = _factory.CreateServiceProvider(_services);
 
         _services.Should().ContainSingleTransient<IConfigureOptions<JwtOptions>>(provider);
-        _services.Should().ContainSingleTransient<IPostConfigureOptions<JwtBearerOptions>>(provider);
+        _services.Should().ContainSingleTransient<IConfigureOptions<JwtBearerOptions>>(provider);
         _services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
         _services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
         _services.Should().ContainSingleSingleton<HealthCheckService>(provider);
@@ -68,6 +69,8 @@ public class WebDependencyInjectionTests : BaseTest
         _services.Should().ContainSingleSingleton<IControllerFactory>(provider);
         _services.Should().ContainSingleTransient<ISwaggerProvider>(provider);
 
+        _services.Should().ContainSingleSingleton<PermissionList>(provider);
+        _services.Should().ContainTransient<IAuthorizationHandler>(provider);
         _services.Should().ContainSingleTransient<IAuthorizationService>(provider);
         _services.Should().ContainSingleTransient<IAuthorizationPolicyProvider>(provider);
         _services.Should().ContainSingleTransient<IAuthorizationHandlerProvider>(provider);
@@ -77,10 +80,10 @@ public class WebDependencyInjectionTests : BaseTest
         _services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>(provider);
 
         var swaggerOptions = new SwaggerGenOptions();
-        _services.Should().ContainSingleTransient<IPostConfigureOptions<SwaggerGenOptions>>(provider)
-                    .Which.PostConfigure(string.Empty, swaggerOptions);
+        _services.Should().ContainSingleTransient<IConfigureOptions<SwaggerGenOptions>>(provider)
+            .Which.Configure(swaggerOptions);
         swaggerOptions.SwaggerGeneratorOptions.SwaggerDocs.Should().ContainKey("v1")
-            .WhoseValue.Version.Should().Be("1.0");
+            .WhoseValue.Version.Should().Be("1");
     }
 
     [Fact]

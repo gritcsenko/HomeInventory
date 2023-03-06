@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Carter;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Extensions;
@@ -10,12 +10,14 @@ namespace HomeInventory.Web.Modules;
 internal abstract class ApiModule : CarterModule
 {
     private readonly string _groupPrefix;
+    private readonly Permission[] _permissions;
     private ApiVersion _version = new(1);
 
     protected ApiModule(string groupPrefix, params Permission[] permissions)
     {
         IncludeInOpenApi();
         _groupPrefix = groupPrefix;
+        _permissions = permissions;
     }
 
     protected void MapToApiVersion(ApiVersion version) => _version = version;
@@ -28,6 +30,11 @@ internal abstract class ApiModule : CarterModule
         var group = app.MapGroup(_groupPrefix)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(_version);
+
+        if (_permissions.Any())
+        {
+            group.RequireDynamicAuthorization(_permissions);
+        }
 
         AddRoutes(group);
     }

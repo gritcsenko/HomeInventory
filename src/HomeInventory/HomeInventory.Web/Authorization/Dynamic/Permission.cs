@@ -1,4 +1,4 @@
-namespace HomeInventory.Web.Authorization.Dynamic;
+﻿namespace HomeInventory.Web.Authorization.Dynamic;
 
 public enum Permission
 {
