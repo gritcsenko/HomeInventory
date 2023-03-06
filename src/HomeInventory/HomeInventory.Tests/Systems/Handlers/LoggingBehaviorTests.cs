@@ -1,12 +1,7 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using FluentResults;
+﻿using FluentResults;
 using HomeInventory.Application.Authentication.Behaviors;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
-using HomeInventory.Tests.Customizations;
-using HomeInventory.Tests.Helpers;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 

@@ -9,9 +9,10 @@ public static class TypeExtensions
     internal static IEnumerable<TFieldType> GetFieldsOfType<TFieldType>(this Type type)
     {
         var fields = type.GetFields(BindingAttr);
+        var fieldType = typeof(TFieldType);
         foreach (var field in fields)
         {
-            if (type.IsAssignableFrom(field.FieldType))
+            if (fieldType.IsAssignableFrom(field.FieldType))
             {
                 yield return (TFieldType)field.GetValue(null)!;
             }
@@ -24,6 +25,10 @@ public static class TypeExtensions
             { IsGenericType: true } => FormatGenericType(type),
             _ => type.Name,
         };
+
+    public static T? CreateInstance<T>(params object?[]? args)
+        where T : class
+        => (T?)Activator.CreateInstance(typeof(T), args);
 
     private static string FormatGenericType(Type type)
     {

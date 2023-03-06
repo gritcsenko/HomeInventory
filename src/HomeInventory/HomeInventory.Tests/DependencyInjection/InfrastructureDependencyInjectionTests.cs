@@ -4,10 +4,8 @@ using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
-using HomeInventory.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NSubstitute;
 
 namespace HomeInventory.Tests.DependencyInjection;
 

@@ -1,4 +1,4 @@
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Mapping;
 

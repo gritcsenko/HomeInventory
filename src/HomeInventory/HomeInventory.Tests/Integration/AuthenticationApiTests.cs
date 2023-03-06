@@ -1,9 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using AutoFixture;
-using FluentAssertions;
 using HomeInventory.Contracts;
-using HomeInventory.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;

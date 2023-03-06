@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Customizations;
 internal class UserIdCustomization : ICustomization
