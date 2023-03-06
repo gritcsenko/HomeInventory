@@ -1,14 +1,10 @@
 ﻿using System.Diagnostics;
-using AutoFixture;
-using FluentAssertions;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 

@@ -1,8 +1,5 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Domain.Extensions;
+﻿using HomeInventory.Domain.Extensions;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Tests.Helpers;
 using HomeInventory.Tests.Support;
 
 namespace HomeInventory.Tests.Domain;

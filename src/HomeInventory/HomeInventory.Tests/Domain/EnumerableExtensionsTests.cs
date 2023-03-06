@@ -1,9 +1,4 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Domain.Extensions;
-using HomeInventory.Tests.Helpers;
-
-namespace HomeInventory.Tests.Domain;
+﻿namespace HomeInventory.Tests.Domain;
 
 public class EnumerableExtensionsTests : BaseTest
 {

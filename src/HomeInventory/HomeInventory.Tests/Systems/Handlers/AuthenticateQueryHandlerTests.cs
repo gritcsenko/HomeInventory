@@ -1,15 +1,10 @@
-﻿using AutoFixture;
-using AutoMapper;
-using FluentAssertions;
+﻿using AutoMapper;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Tests.Customizations;
-using HomeInventory.Tests.Helpers;
-using NSubstitute;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;

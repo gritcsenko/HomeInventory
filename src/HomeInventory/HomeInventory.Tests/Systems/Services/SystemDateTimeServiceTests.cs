@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-using HomeInventory.Infrastructure.Services;
-using HomeInventory.Tests.Helpers;
+﻿using HomeInventory.Infrastructure.Services;
 
 namespace HomeInventory.Tests.Systems.Services;
 

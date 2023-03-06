@@ -1,11 +1,7 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Application.Authentication.Commands.Register;
+﻿using HomeInventory.Application.Authentication.Commands.Register;
 using HomeInventory.Application.Authentication.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Tests.Customizations;
-using HomeInventory.Tests.Helpers;
 using HomeInventory.Web.Mapping;
 
 namespace HomeInventory.Tests.Systems.Mapping;

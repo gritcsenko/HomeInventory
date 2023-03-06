@@ -1,7 +1,4 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Tests.Helpers;
+﻿using HomeInventory.Application.Interfaces.Persistence.Specifications;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 

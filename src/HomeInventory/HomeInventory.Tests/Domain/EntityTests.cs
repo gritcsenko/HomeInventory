@@ -1,9 +1,8 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using HomeInventory.Domain.Primitives;
-using HomeInventory.Tests.Helpers;
+﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests.Domain;
+
+[Trait("Category", "Unit")]
 public class EntityTests : BaseTest
 {
     [Fact]
@@ -115,7 +114,7 @@ public class EntityTests : BaseTest
 
         var result = sut.GetHashCode();
 
-        result.Should().Be(id.GetHashCode());
+        result.Should().Be(HashCode.Combine(0, id));
     }
 
     [Fact]
