@@ -1,4 +1,4 @@
-using HomeInventory.Web.Extensions;
+﻿using HomeInventory.Web.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web;
