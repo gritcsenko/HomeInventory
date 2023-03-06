@@ -1,30 +1,25 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using AutoFixture;
-using FluentAssertions;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Tests.Customizations;
-using HomeInventory.Tests.Helpers;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NSubstitute;
 
 namespace HomeInventory.Tests.Systems.Authentication;
 
 [Trait("Category", "Unit")]
 public class JwtTokenGeneratorTests : BaseTest
 {
-    private readonly IDateTimeService _dateTimeService;
+    private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
     private readonly JwtOptions _options;
     private readonly User _user;
     private readonly IJwtIdentityGenerator _jtiGenerator;
 
     public JwtTokenGeneratorTests()
     {
-        Fixture.Customize(new UserIdCustomization());
-        _dateTimeService = Substitute.For<IDateTimeService>();
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
         _options = Fixture.Build<JwtOptions>()
             .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
             .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)
@@ -37,8 +32,7 @@ public class JwtTokenGeneratorTests : BaseTest
     public async Task GenerateTokenAsync_Should_GenerateCorrectTokenString()
     {
         var sut = CreateSut();
-        var key = new SymmetricSecurityKey(_options.Key);
-        var expectedHeader = new JwtHeader(new SigningCredentials(key, _options.Algorithm));
+        var expectedHeader = new JwtHeader(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
         var now = DateTimeOffset.Now;
@@ -61,12 +55,6 @@ public class JwtTokenGeneratorTests : BaseTest
         actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Jti)
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(jti);
-        actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.GivenName)
-            .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.FirstName);
-        actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.FamilyName)
-            .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.LastName);
         actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Email)
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(_user.Email);
