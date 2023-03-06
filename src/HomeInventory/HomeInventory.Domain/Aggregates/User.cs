@@ -14,3 +14,4 @@ public class User : AggregateRoot<User, UserId>
 
     public string Password { get; init; } = null!;
 }
+
