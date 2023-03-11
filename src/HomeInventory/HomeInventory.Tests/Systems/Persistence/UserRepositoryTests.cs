@@ -3,7 +3,6 @@ using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -20,7 +19,7 @@ public class UserRepositoryTests : BaseRepositoryTest
 
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()
-            .With(x => x.Id, _user.Id.Id)
+            .With(x => x.Id, _user.Id)
             .With(x => x.Email, _user.Email.Value)
             .With(x => x.Password, _user.Password)
             .Create();
@@ -28,9 +27,6 @@ public class UserRepositoryTests : BaseRepositoryTest
         Mapper.Map<User, UserModel>(_user).Returns(_userModel);
         Mapper.Map<UserModel, User>(_userModel).Returns(_user);
     }
-
-    private static DbContextOptions<DatabaseContext> GetDatabaseOptions()
-        => new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "db").Options;
 
     [Fact]
     public async Task AddAsync_Should_CreateUser_AccordingToSpec()

@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
@@ -11,12 +12,13 @@ namespace HomeInventory.Tests.Systems.Persistence;
 public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
 {
     private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
-    private readonly Guid _id;
+    private readonly UserId _id;
     private readonly IUnitOfWork _unitOfWork;
 
     public ByIdFilterSpecificationTests()
     {
-        _id = Fixture.Create<Guid>();
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        _id = Fixture.Create<UserId>();
         _unitOfWork = new UnitOfWork(Context, DateTimeService);
     }
 
@@ -72,5 +74,5 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
         actual.Should().NotBeSameAs(user);
     }
 
-    private ByIdFilterSpecification<UserModel> CreateSut() => new(_id);
+    private ByIdFilterSpecification<UserModel, UserId> CreateSut() => new(_id);
 }

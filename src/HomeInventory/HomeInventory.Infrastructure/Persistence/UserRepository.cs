@@ -12,7 +12,7 @@ using OneOf.Types;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class UserRepository : Repository<UserModel, User>, IUserRepository
+internal class UserRepository : Repository<UserModel, User, UserId>, IUserRepository
 {
     public UserRepository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
         : base(contextFactory, mapper, evaluator, dateTimeService)

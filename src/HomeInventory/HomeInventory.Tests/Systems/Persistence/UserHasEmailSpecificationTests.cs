@@ -11,6 +11,11 @@ public class UserHasEmailSpecificationTests : BaseTest
 {
     private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
 
+    public UserHasEmailSpecificationTests()
+    {
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+    }
+
     [Fact]
     public void Should_SatisfyWithCorrectEmail()
     {
@@ -29,10 +34,10 @@ public class UserHasEmailSpecificationTests : BaseTest
     [Fact]
     public void Should_NotSatisfyWithWrongEmail()
     {
-        var user = Fixture.Build<UserModel>()
+        var query = Fixture.Build<UserModel>()
             .With(x => x.Email, Fixture.Create<string>())
-            .Create();
-        var query = new[] { user }.AsQueryable();
+            .CreateMany()
+            .AsQueryable();
         var sut = new UserHasEmailSpecification(new Email(Fixture.Create<string>()));
 
         var actual = _evaluator.GetQuery(query, sut).Any();

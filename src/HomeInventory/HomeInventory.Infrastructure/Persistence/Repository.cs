@@ -11,7 +11,7 @@ using OneOf.Types;
 namespace HomeInventory.Infrastructure.Persistence;
 
 internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
-    where TModel : class, IPersistentModel
+    where TModel : class
     where TEntity : class, Domain.Primitives.IEntity<TEntity>
 {
     private readonly IDbContextFactory<DatabaseContext> _factory;
@@ -235,4 +235,15 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     private async Task<DbContext> CreateNewDbContextAsync(CancellationToken cancellationToken = default) =>
         await _factory.CreateDbContextAsync(cancellationToken);
+}
+
+internal abstract class Repository<TModel, TEntity, TId> : Repository<TModel, TEntity>
+    where TModel : class, IPersistentModel<TId>
+    where TEntity : class, Domain.Primitives.IEntity<TEntity>
+    where TId : GuidIdentifierObject<TId>
+{
+    protected Repository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
+        : base(contextFactory, mapper, evaluator, dateTimeService)
+    {
+    }
 }
