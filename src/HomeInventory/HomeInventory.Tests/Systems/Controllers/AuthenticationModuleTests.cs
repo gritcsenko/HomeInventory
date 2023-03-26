@@ -1,8 +1,8 @@
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
-using HomeInventory.Application.Authentication.Commands.Register;
-using HomeInventory.Application.Authentication.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.ValueObjects;
