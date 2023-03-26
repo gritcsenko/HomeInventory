@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Entities;
+﻿using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Interfaces.Persistence;

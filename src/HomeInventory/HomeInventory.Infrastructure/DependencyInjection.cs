@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
+        services.AddSingleton<ValueObjectConverter<Email, string>>();
         services.AddSingleton<GuidIdConverter<UserId>>();
         services.AddSingleton<GuidIdConverter<ProductId>>();
         services.AddSingleton<AmountValueObjectConverter>();

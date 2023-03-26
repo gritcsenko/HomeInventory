@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 
 namespace HomeInventory.Application.Interfaces.Authentication;
 public interface IAuthenticationTokenGenerator

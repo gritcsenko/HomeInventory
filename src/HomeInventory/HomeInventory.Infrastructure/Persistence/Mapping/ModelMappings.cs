@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Application.Mapping;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 
@@ -11,6 +11,8 @@ internal class ModelMappings : MappingProfile
     {
         CreateMapForId<UserId>();
         CreateMapForId<ProductId>();
+
+        CreateMapForValue<Email, string>(x => x.Value);
 
         CreateMap<User, UserModel>().ReverseMap();
 

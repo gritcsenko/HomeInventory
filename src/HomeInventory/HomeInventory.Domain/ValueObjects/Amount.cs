@@ -5,6 +5,7 @@ namespace HomeInventory.Domain.ValueObjects;
 public sealed class Amount : ValueObject<Amount>
 {
     internal Amount(decimal value, AmountUnit unit)
+        : base(value, unit)
     {
         Value = value;
         Unit = unit;
@@ -13,10 +14,4 @@ public sealed class Amount : ValueObject<Amount>
     public decimal Value { get; }
 
     public AmountUnit Unit { get; }
-
-    protected override IEnumerable<object> GetAtomicComponentsCore()
-    {
-        yield return Value;
-        yield return Unit;
-    }
 }

@@ -23,6 +23,7 @@ public abstract class Enumeration<TEnum, TKey> : ValueObject<TEnum>, IEnumeratio
     private static readonly Lazy<List<TEnum>> _items = new(() => Enumeration.CollectItems<TEnum>().ToList(), LazyThreadSafetyMode.ExecutionAndPublication);
 
     protected Enumeration(string name, TKey value)
+        : base(name, value)
     {
         Name = name;
         Value = value;
@@ -33,11 +34,4 @@ public abstract class Enumeration<TEnum, TKey> : ValueObject<TEnum>, IEnumeratio
     public string Name { get; }
 
     public TKey Value { get; }
-
-    protected override IEnumerable<object> GetAtomicComponentsCore()
-    {
-        yield return Value;
-        yield return Name;
-    }
 }
-

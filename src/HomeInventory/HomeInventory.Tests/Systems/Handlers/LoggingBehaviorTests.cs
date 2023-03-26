@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -14,7 +15,8 @@ public class LoggingBehaviorTests : BaseTest
 
     public LoggingBehaviorTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeEmail();
         _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, Result<AuthenticateResult>>>>();
         _request = Fixture.Create<AuthenticateQuery>();
         _response = Fixture.Create<AuthenticateResult>();

@@ -5,7 +5,7 @@ using OneOf;
 namespace HomeInventory.Domain.Primitives;
 
 public abstract class ValueObjectFactory<TObject>
-    where TObject : notnull, ValueObject<TObject>
+    where TObject : IValueObject<TObject>
 {
     protected static OneOf<TObject, IError> TryCreate<TValue>(TValue value, Func<TValue, bool> isValidFunc, Func<TValue, TObject> createFunc)
         => TryCreate(() => isValidFunc(value), () => CreateValidationError(value), () => createFunc(value));

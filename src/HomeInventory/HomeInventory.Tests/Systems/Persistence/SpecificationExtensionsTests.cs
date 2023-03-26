@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -9,13 +9,14 @@ public class SpecificationExtensionsTests : BaseTest
 {
     public SpecificationExtensionsTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeEmail();
     }
 
     [Fact]
     public void And_Should_Satisfy_WhenBothAreSatisfied()
     {
-        var email = Fixture.Create<string>();
+        var email = new Email(Fixture.Create<string>());
         var user = Fixture.Build<User>()
             .With(x => x.Email, email)
             .Create();
@@ -32,7 +33,7 @@ public class SpecificationExtensionsTests : BaseTest
     [Fact]
     public void Or_Should_Satisfy_WhenOneIsSatisfied()
     {
-        var email = Fixture.Create<string>();
+        var email = new Email(Fixture.Create<string>());
         var user = Fixture.Build<User>()
             .With(x => x.Email, email)
             .Create();

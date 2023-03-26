@@ -1,5 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Authentication;
@@ -20,10 +20,11 @@ public class JwtTokenGeneratorTests : BaseTest
     public JwtTokenGeneratorTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeEmail();
         _options = Fixture.Build<JwtOptions>()
-            .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
-            .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)
-            .Create();
+                .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
+                .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)
+                .Create();
         _user = Fixture.Create<User>();
         _jtiGenerator = Substitute.For<IJwtIdentityGenerator>();
     }
@@ -57,7 +58,7 @@ public class JwtTokenGeneratorTests : BaseTest
             .Which.Should().Be(jti);
         actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Email)
             .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.Email);
+            .Which.Should().Be(_user.Email.Value);
     }
 
     private JwtTokenGenerator CreateSut() => new(_dateTimeService, _jtiGenerator, Options.Create(_options));

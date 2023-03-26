@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Domain;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
@@ -33,6 +33,7 @@ public class ModelMappingsTests : BaseMappingsTests
         var fixture = new Fixture();
         fixture.CustomizeGuidId(guid => new UserId(guid));
         fixture.CustomizeGuidId(guid => new ProductId(guid));
+        fixture.CustomizeEmail();
         fixture.Customize(new FromFactoryCustomization<int, AmountUnit>(i => AmountUnit.Items.ElementAt(i % AmountUnit.Items.Count)));
         fixture.Customize(new FromFactoryCustomization<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit)));
 
@@ -46,6 +47,9 @@ public class ModelMappingsTests : BaseMappingsTests
 
             { fixture.Create<ProductId>(), typeof(Guid) },
             { fixture.Create<Guid>(), typeof(ProductId) },
+
+            { fixture.Create<Email>(), typeof(string) },
+            { fixture.Create<string>(), typeof(Email) },
 
             { fixture.Create<User>(), typeof(UserModel) },
             { fixture.Create<UserModel>(), typeof(User) },
