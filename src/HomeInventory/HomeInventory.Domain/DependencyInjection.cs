@@ -13,12 +13,13 @@ public static class DependencyInjection
             .AddGuidIdFactory(id => new MaterialId(id))
             .AddGuidIdFactory(id => new ProductId(id));
 
+        services.AddValueObjectFactory<Email, string, EmailFactory>();
         services.AddSingleton<IAmountFactory, AmountFactory>();
         return services;
     }
 
     private static IServiceCollection AddGuidIdFactory<TId>(this IServiceCollection services, Func<Guid, TId> createIdFunc)
-        where TId : notnull, ValueObject<TId>, IIdentifierObject<TId>
+        where TId : IIdentifierObject<TId>
     {
         services.AddSingleton(createIdFunc);
         services.AddSingleton(sp => GuidIdFactory.CreateFromString(sp.GetRequiredService<Func<Guid, TId>>()));

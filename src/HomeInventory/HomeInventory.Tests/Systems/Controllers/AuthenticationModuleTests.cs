@@ -31,6 +31,7 @@ public class AuthenticationModuleTests : BaseTest
     public AuthenticationModuleTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeEmail();
 
         _registerRequest = Fixture.Create<RegisterRequest>();
         _registerCommand = Fixture.Create<RegisterCommand>();

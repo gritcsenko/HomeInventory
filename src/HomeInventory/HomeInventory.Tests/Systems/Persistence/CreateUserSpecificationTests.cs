@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Application.Interfaces.Persistence.Specifications;
+using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -10,7 +11,7 @@ public class CreateUserSpecificationTests : BaseTest
     {
         var firstName = Fixture.Create<string>();
         var lastName = Fixture.Create<string>();
-        var email = Fixture.Create<string>();
+        var email = new Email(Fixture.Create<string>());
         var password = Fixture.Create<string>();
 
         var sut = new CreateUserSpecification(firstName, lastName, email, password);

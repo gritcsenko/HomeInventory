@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -9,7 +9,8 @@ public class HasIdSpecificationTests : BaseTest
 {
     public HasIdSpecificationTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeEmail();
     }
 
     [Fact]

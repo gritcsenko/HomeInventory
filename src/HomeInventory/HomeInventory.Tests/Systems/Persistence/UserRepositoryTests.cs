@@ -1,23 +1,39 @@
 ﻿using AutoMapper;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [Trait("Category", "Unit")]
-public class UserRepositoryTests : BaseTest
+public class UserRepositoryTests : BaseRepositoryTest
 {
     private readonly IUserIdFactory _userIdFactory;
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
+    private readonly User _user;
+    private readonly UserModel _userModel;
 
     public UserRepositoryTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeEmail();
         _userIdFactory = Substitute.For<IUserIdFactory>();
         _context = Substitute.For<IDatabaseContext>();
         _mapper = Substitute.For<IMapper>();
+
+        Fixture.CustomizeEmail();
+        _user = Fixture.Create<User>();
+        _userModel = Fixture.Build<UserModel>()
+            .With(x => x.Id, _user.Id.Id)
+            .With(x => x.Email, _user.Email.Value)
+            .With(x => x.Password, _user.Password)
+        .Create();
+
+        Mapper.Map<User, UserModel>(_user).Returns(_userModel);
+        Mapper.Map<UserModel, User>(_userModel).Returns(_user);
     }
 
     [Fact]

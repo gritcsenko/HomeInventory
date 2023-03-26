@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Web.Configuration;
 using Microsoft.Extensions.Options;
@@ -41,7 +41,7 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, _jtiGenerator.GenerateNew()),
-            new(JwtRegisteredClaimNames.Email, user.Email, ClaimValueTypes.Email)));
+            new(JwtRegisteredClaimNames.Email, user.Email.Value, ClaimValueTypes.Email)));
 
     private JwtPayload CreatePayload(params Claim[] claims)
     {

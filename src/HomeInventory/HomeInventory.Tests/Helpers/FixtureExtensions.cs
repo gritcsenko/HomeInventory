@@ -1,8 +1,12 @@
+using HomeInventory.Domain.ValueObjects;
+
 namespace HomeInventory.Tests.Helpers;
 
 internal static class FixtureExtensions
 {
     public static IFixture CustomizeGuidId<TId>(this IFixture fixture, Func<Guid, TId> createFunc) => fixture.CustomizeFromFactory(createFunc);
+
+    public static IFixture CustomizeEmail(this IFixture fixture) => fixture.CustomizeString(value => new Email(value));
 
     public static IFixture CustomizeString<TValue>(this IFixture fixture, Func<string, TValue> createFunc) => fixture.CustomizeFromFactory((string value) => createFunc(value));
 

@@ -3,8 +3,9 @@ using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.ValueObjects;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -19,7 +20,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
     public AuthenticateQueryHandlerTests()
     {
-        Fixture.Customize(new UserIdCustomization());
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeEmail();
         _user = Fixture.Create<User>();
     }
 
