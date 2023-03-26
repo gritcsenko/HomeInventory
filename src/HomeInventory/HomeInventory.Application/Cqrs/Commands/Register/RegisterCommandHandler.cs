@@ -8,7 +8,8 @@ using HomeInventory.Domain.Errors;
 using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
-internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegistrationResult>
+
+internal class RegisterCommandHandler : CommandHandler<RegisterCommand, RegistrationResult>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
@@ -19,14 +20,14 @@ internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, Registr
         _mapper = mapper;
     }
 
-    public async Task<Result<RegistrationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    protected override async Task<Result<RegistrationResult>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
-        if (await IsUserHasEmailAsync(request, cancellationToken))
+        if (await IsUserHasEmailAsync(command, cancellationToken))
         {
             return Result.Fail<RegistrationResult>(new DuplicateEmailError());
         }
 
-        var result = await CreateUserAsync(request, cancellationToken);
+        var result = await CreateUserAsync(command, cancellationToken);
 
         return result.Match(
             user => new RegistrationResult(user.Id),
