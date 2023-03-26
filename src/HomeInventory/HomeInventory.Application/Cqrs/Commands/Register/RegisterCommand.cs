@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Application.Interfaces.Messaging;
 
-namespace HomeInventory.Application.Authentication.Commands.Register;
+namespace HomeInventory.Application.Cqrs.Commands.Register;
 public record class RegisterCommand(
     string FirstName,
     string LastName,

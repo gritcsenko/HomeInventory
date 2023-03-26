@@ -1,5 +1,5 @@
 using AutoMapper;
-using HomeInventory.Application.Authentication.Commands.Register;
+using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Entities;

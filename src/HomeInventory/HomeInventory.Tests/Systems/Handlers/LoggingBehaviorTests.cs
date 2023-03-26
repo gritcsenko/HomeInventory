@@ -1,6 +1,6 @@
 ﻿using FluentResults;
-using HomeInventory.Application.Authentication.Behaviors;
-using HomeInventory.Application.Authentication.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Behaviors;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Tests.Systems.Handlers;

@@ -7,7 +7,7 @@ using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
 using OneOf;
 
-namespace HomeInventory.Application.Authentication.Commands.Register;
+namespace HomeInventory.Application.Cqrs.Commands.Register;
 internal class RegisterCommandHandler : ICommandHandler<RegisterCommand, RegistrationResult>
 {
     private readonly IUserRepository _userRepository;
