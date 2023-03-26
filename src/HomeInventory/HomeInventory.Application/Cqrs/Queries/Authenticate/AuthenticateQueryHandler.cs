@@ -9,7 +9,8 @@ using HomeInventory.Domain.Errors;
 using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
-internal class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, AuthenticateResult>
+
+internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, AuthenticateResult>
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
     private readonly IUserRepository _userRepository;
@@ -22,7 +23,7 @@ internal class AuthenticateQueryHandler : IQueryHandler<AuthenticateQuery, Authe
         _mapper = mapper;
     }
 
-    public async Task<Result<AuthenticateResult>> Handle(AuthenticateQuery request, CancellationToken cancellationToken)
+    protected override async Task<Result<AuthenticateResult>> InternalHandle(AuthenticateQuery request, CancellationToken cancellationToken)
     {
         var result = await TryFindUserAsync(request, cancellationToken);
         if (result.TryPickT1(out _, out var user))
