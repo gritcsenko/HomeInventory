@@ -2,6 +2,7 @@ using HomeInventory.Application;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Web;
+using MediatR.NotificationPublishers;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -45,6 +46,7 @@ static void ConfigureSerilog(HostBuilderContext context, IServiceProvider servic
 
 static void ConfigureMediatR(MediatRServiceConfiguration configuration) =>
     configuration
-        .RegisterServicesFromAssemblies(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly);
+        .RegisterServicesFromAssemblies(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly)
+        .SetNotificationPublisher<TaskWhenAllPublisher>();
 
 public partial class Program { }
