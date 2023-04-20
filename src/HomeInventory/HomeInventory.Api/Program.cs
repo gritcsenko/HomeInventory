@@ -47,6 +47,7 @@ static void ConfigureSerilog(HostBuilderContext context, IServiceProvider servic
 static void ConfigureMediatR(MediatRServiceConfiguration configuration) =>
     configuration
         .RegisterServicesFromAssemblies(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly)
-        .SetNotificationPublisher<TaskWhenAllPublisher>();
+        .SetNotificationPublisher<TaskWhenAllPublisher>()
+        .AddLoggingBehavior();
 
 public partial class Program { }
