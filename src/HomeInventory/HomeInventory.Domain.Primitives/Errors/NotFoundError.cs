@@ -1,6 +1,6 @@
 ﻿using FluentResults;
 
-namespace HomeInventory.Domain.Errors;
+namespace HomeInventory.Domain.Primitives.Errors;
 
 public class NotFoundError : Error
 {

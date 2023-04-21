@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Errors;
 public class ValidatorNotFoundError : NotFoundError

@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
