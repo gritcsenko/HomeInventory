@@ -6,7 +6,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 
 public abstract class BaseDatabaseContextTest : BaseTest
 {
-    private readonly DatabaseContext _context = HomeInventory.Domain.Extensions.TypeExtensions.CreateInstance<DatabaseContext>(
+    private readonly DatabaseContext _context = HomeInventory.Domain.Primitives.TypeExtensions.CreateInstance<DatabaseContext>(
         GetDatabaseOptions())!;
     private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
 
