@@ -5,6 +5,7 @@ using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;

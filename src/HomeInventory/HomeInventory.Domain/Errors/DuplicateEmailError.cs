@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.Errors;
+﻿using HomeInventory.Domain.Primitives.Errors;
+
+namespace HomeInventory.Domain.Errors;
 
 public class DuplicateEmailError : ConflictError
 {

@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

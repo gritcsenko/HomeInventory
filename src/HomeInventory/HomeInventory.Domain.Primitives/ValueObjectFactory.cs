@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
 namespace HomeInventory.Domain.Primitives;

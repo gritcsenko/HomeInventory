@@ -4,7 +4,7 @@ using AutoMapper;
 using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OneOf;
 
-namespace HomeInventory.Web.Extensions;
+namespace HomeInventory.Web;
 
 internal static class HttpContextExtensions
 {
@@ -83,7 +83,7 @@ internal static class HttpContextExtensions
         }
         if (errors.Count == 1)
         {
-            return ConvertToProblem(errors.First(), statusCode);
+            return errors.First().ConvertToProblem(statusCode);
         }
         return new()
         {

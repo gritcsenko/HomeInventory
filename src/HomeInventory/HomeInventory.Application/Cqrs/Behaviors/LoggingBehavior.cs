@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Extensions;
+﻿using HomeInventory.Domain.Primitives;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
