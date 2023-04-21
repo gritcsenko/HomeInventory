@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using HomeInventory.Application.Cqrs.Behaviors;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Application;
@@ -9,7 +7,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
         return services;
     }
