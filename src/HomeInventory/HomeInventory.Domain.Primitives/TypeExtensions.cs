@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace HomeInventory.Domain;
+namespace HomeInventory.Domain.Primitives;
 
 public static class TypeExtensions
 {

@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using HomeInventory.Web.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;

@@ -3,7 +3,6 @@ using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Web.Authorization.Dynamic;
-using HomeInventory.Web.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
