@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Errors;
+﻿namespace HomeInventory.Domain.Primitives.Errors;
 
 public record Error(string Message, IReadOnlyDictionary<string, object?> Metadata) : IError
 {

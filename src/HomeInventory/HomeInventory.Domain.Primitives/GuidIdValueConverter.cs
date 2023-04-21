@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Errors;
+﻿using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HomeInventory.Domain.Primitives;

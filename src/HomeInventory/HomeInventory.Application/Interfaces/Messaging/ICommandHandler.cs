@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Errors;
+﻿using HomeInventory.Domain.Primitives.Errors;
 using MediatR;
 using OneOf;
 using OneOf.Types;

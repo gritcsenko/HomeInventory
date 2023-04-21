@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Domain.Errors;
 
