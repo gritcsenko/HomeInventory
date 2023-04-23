@@ -7,7 +7,7 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class UserRepositoryTests : BaseRepositoryTest
 {
     private readonly IUserIdFactory _userIdFactory;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 internal class JsonElementAssertions : ObjectAssertions<JsonElement, JsonElementAssertions>
 {

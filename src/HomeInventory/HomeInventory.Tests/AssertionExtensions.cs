@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 internal static class AssertionExtensions
 {
     public static ProblemDetailsAssertions Should(this ProblemDetails actualValue) => new(actualValue);

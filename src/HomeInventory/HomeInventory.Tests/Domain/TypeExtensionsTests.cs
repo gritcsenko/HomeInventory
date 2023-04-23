@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Domain;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class TypeExtensionsTests : BaseTest
 {
     [Fact]

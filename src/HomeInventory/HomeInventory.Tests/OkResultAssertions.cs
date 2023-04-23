@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 internal class OkResultAssertions<TValue> : ObjectAssertions<Ok<TValue>, OkResultAssertions<TValue>>
 {

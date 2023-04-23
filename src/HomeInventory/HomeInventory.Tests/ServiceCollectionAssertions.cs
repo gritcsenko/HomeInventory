@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>
 {

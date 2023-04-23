@@ -10,6 +10,14 @@ public static class Option
         where T : notnull =>
         Option<T>.Some(value);
 
+    public static bool IsNone<T>(this Option<T> option)
+        where T : notnull =>
+        option.When(false, true);
+
+    public static bool IsSome<T>(this Option<T> option)
+        where T : notnull =>
+        option.When(true, false);
+
     public static Option<T> Unwrap<T>(this Option<Option<T>> option)
         where T : notnull =>
         option.Reduce(None<T>);
@@ -79,17 +87,21 @@ public class Option<T> : Equatable<Option<T>>
 
     private Option()
     {
+        _content = default;
     }
 
     private Option(T content)
-        : base(content)
-    {
+        : base(content) =>
         _content = content;
+
+    public static Option<T> None() =>
+        _none;
+
+    public static Option<T> Some(T content)
+    {
+        ArgumentNullException.ThrowIfNull(content);
+        return new(content);
     }
-
-    public static Option<T> None() => _none;
-
-    public static Option<T> Some(T content) => new(content);
 
     public TResult When<TResult>(Func<T, TResult> content, Func<TResult> noContent) =>
         _content is null
@@ -106,5 +118,6 @@ public class Option<T> : Equatable<Option<T>>
         ? noContent
         : content;
 
-    public override string? ToString() => this.Select(c => c.ToString().ToOption()).When(c => c, default(string?));
+    public override string? ToString() =>
+        this.Select(c => c.ToString().ToOption()).When(c => c, default(string?));
 }

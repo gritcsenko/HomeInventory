@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace HomeInventory.Tests.Integration;
 
-[Trait("Category", "Integration")]
+[IntegrationTest]
 public class AuthenticationApiTests : BaseTest, IDisposable
 {
     private readonly WebApplicationFactory<Program> _appFactory;
@@ -25,6 +25,7 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         GC.SuppressFinalize(this);
     }
 
+    [BrokenTest]
     [Fact(Skip = "No reason")]
     public async Task Register_ReturnsSuccess()
     {
@@ -40,6 +41,7 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         body!.Id.Should().NotBeEmpty();
     }
 
+    [BrokenTest]
     [Fact(Skip = "No reason")]
     public async Task RegisterSameTwice_ReturnsFailure()
     {

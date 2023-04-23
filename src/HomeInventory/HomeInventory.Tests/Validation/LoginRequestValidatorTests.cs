@@ -4,7 +4,7 @@ using HomeInventory.Contracts.Validations;
 
 namespace HomeInventory.Tests.Validation;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class LoginRequestValidatorTests : BaseTest
 {
     [Theory]

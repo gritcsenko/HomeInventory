@@ -4,7 +4,7 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class SpecificationExtensionsTests : BaseTest
 {
     public SpecificationExtensionsTests()

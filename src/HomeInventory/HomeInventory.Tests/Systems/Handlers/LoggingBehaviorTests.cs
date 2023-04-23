@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class LoggingBehaviorTests : BaseTest
 {
     private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, Result<AuthenticateResult>>> _logger;

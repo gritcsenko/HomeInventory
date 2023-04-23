@@ -1,6 +1,6 @@
 using HomeInventory.Domain.ValueObjects;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 internal static class FixtureExtensions
 {
