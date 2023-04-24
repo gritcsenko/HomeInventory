@@ -22,10 +22,6 @@ public static class Option
         where T : notnull =>
         option.Reduce(None<T>);
 
-    public static ValueOption<T> Unwrap<T>(this Option<ValueOption<T>> option)
-        where T : struct =>
-        option.Reduce(ValueOption.None<T>);
-
     public static Option<T> ToOption<T>(this T? content)
         where T : notnull =>
         content is null ? None<T>() : content.Some();
@@ -52,27 +48,9 @@ public static class Option
         where TResult : notnull =>
         option.Select(c => selector(c).ToOption());
 
-    public static ValueOption<TResult> Select<T, TResult>(this Option<T> option, Func<T, ValueOption<TResult>> selector)
-        where T : notnull
-        where TResult : struct =>
-        option.When(c => selector(c), ValueOption<TResult>.None);
-
-    public static ValueOption<TResult> Select<T, TResult>(this Option<T> option, Func<T, TResult?> selector)
-        where T : notnull
-        where TResult : struct =>
-        option.Select(c => selector(c).ToOption());
-
-    public static Option<T> Where<T>(this T? content, Func<T, bool> predicate)
-        where T : notnull =>
-        content.ToOption().Where(predicate);
-
     public static Option<T> Where<T>(this Option<T> option, Func<T, bool> predicate)
         where T : notnull =>
         option.Select(c => predicate(c) ? c.Some() : None<T>());
-
-    public static Option<T> WhereNot<T>(this T? content, Func<T, bool> predicate)
-        where T : notnull =>
-        content.ToOption().WhereNot(predicate);
 
     public static Option<T> WhereNot<T>(this Option<T> option, Func<T, bool> predicate)
         where T : notnull =>

@@ -54,7 +54,7 @@ public class OptionOfTTests : BaseTest
 
         var actual = Option<string>.Some(expected);
 
-        actual.When(c => c, Fixture.Create<string>()).Should().Be(expected);
+        actual.When(c => c, Fixture.Create<string>).Should().Be(expected);
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class OptionOfTTests : BaseTest
         var expected = Fixture.Create<string>();
         var option = Option<string>.Some(Fixture.Create<string>());
 
-        var actual = option.When(_ => expected, () => Fixture.Create<string>());
+        var actual = option.When(_ => expected, Fixture.Create<string>);
 
         actual.Should().Be(expected);
     }
@@ -129,7 +129,7 @@ public class OptionOfTTests : BaseTest
         var expected = Fixture.Create<string>();
         var option = Option<string>.Some(expected);
 
-        var actual = option.When(c => c, () => Fixture.Create<string>());
+        var actual = option.When(c => c, Fixture.Create<string>);
 
         actual.Should().Be(expected);
     }
