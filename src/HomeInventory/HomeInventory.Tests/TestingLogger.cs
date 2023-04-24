@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 public abstract class TestingLogger<T> : ILogger<T>
 {

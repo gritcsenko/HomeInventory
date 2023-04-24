@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 {
     private readonly ApiBehaviorOptions _options;

@@ -8,7 +8,7 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class ModelMappingsTests : BaseMappingsTests
 {
     public ModelMappingsTests()

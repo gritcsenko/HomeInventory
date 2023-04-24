@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class ApplicationDependencyInjectionTests : BaseTest
 {
     private readonly IServiceCollection _services = new ServiceCollection();

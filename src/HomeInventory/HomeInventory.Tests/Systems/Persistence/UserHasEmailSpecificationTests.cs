@@ -6,7 +6,7 @@ using HomeInventory.Infrastructure.Specifications;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class UserHasEmailSpecificationTests : BaseTest
 {
     private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;

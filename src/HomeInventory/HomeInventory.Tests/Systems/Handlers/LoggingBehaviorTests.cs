@@ -7,7 +7,7 @@ using OneOf;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class LoggingBehaviorTests : BaseTest
 {
     private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>> _logger;

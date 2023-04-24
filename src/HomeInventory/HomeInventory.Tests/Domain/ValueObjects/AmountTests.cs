@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class AmountTests : BaseTest
 {
     [Fact]
