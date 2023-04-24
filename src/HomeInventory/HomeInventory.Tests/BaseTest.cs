@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 public abstract class BaseTest : IDisposable
 {

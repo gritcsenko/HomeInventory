@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Helpers;
+﻿namespace HomeInventory.Tests;
 internal static class EnumerableExtensions
 {
     public static T FirstRandom<T>(this IReadOnlyCollection<T> source, int? seed = null)

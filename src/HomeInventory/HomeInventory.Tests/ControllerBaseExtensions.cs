@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 internal static class ControllerBaseExtensions
 {

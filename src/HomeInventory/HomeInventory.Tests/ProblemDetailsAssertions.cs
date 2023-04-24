@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace HomeInventory.Tests.Helpers;
+namespace HomeInventory.Tests;
 
 internal class ProblemDetailsAssertions : ObjectAssertions<ProblemDetails, ProblemDetailsAssertions>
 {

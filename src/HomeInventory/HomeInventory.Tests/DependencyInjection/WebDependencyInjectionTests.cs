@@ -2,7 +2,6 @@
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Tests.Support;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
@@ -26,7 +25,7 @@ using IConfigurationProvider = Microsoft.Extensions.Configuration.IConfiguration
 
 namespace HomeInventory.Tests.DependencyInjection;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class WebDependencyInjectionTests : BaseTest
 {
     private readonly IServiceCollection _services = new ServiceCollection();

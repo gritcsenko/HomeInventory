@@ -10,7 +10,7 @@ using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();

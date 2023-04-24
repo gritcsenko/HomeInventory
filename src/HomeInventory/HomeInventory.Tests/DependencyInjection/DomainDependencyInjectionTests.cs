@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class DomainDependencyInjectionTests : BaseTest
 {
     private readonly IServiceCollection _services = new ServiceCollection();

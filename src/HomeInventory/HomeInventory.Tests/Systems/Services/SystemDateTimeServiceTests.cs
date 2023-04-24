@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Systems.Services;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class SystemDateTimeServiceTests : BaseTest
 {
     [Fact]

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace HomeInventory.Tests.Middlewares;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class CorrelationIdMiddlewareTests : BaseTest
 {
     private readonly TestingLogger<CorrelationIdMiddleware> _logger = Substitute.For<TestingLogger<CorrelationIdMiddleware>>();

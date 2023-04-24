@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class ContractsMappingsTests : BaseMappingsTests
 {
     [Theory]

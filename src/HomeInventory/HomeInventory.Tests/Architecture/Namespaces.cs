@@ -17,7 +17,7 @@ internal static class Namespaces
     public static IEnumerable<string> HomeInventory = new[] { Domain, Application, Infrastructure, Api, Web, Contracts, ContractsValidation };
 }
 
-[Trait("Category", "Architecture")]
+[ArchitectureTest]
 public class ArchitectureTests
 {
     [Theory]

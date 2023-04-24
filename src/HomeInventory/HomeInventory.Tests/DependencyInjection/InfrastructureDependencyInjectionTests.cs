@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class InfrastructureDependencyInjectionTests : BaseTest
 {
     private readonly IServiceCollection _services = new ServiceCollection();

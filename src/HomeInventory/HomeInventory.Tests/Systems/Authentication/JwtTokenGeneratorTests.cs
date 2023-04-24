@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HomeInventory.Tests.Systems.Authentication;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class JwtTokenGeneratorTests : BaseTest
 {
     private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
