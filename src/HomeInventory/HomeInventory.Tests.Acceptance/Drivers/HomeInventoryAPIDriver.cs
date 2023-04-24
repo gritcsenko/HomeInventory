@@ -1,7 +1,5 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Tests.Helpers;
-using HomeInventory.Tests.Support;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

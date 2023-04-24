@@ -110,11 +110,13 @@ public class EntityTests : BaseTest
     public void GetHashCode_Should_ReturnGetHashCodeFromId()
     {
         var id = Fixture.Create<EntityId>();
+        var expected = new HashCode();
+        expected.Add(id);
         var sut = new TestEntity(id);
 
         var result = sut.GetHashCode();
 
-        result.Should().Be(HashCode.Combine(0, id));
+        result.Should().Be(expected.ToHashCode());
     }
 
     [Fact]
