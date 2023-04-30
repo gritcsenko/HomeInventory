@@ -8,6 +8,14 @@ namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 [Binding]
 public class GetAreaStepDefinitions
 {
+    private static class Keys
+    {
+        public const string Products = nameof(Products);
+        public const string RegisteredUsers = nameof(RegisteredUsers);
+        public const string Areas = nameof(Areas);
+        public const string Login = nameof(Login);
+    }
+
     private readonly ScenarioContext _context;
     private readonly IHomeInventoryAPIDriver _apiDriver;
 
@@ -31,72 +39,78 @@ public class GetAreaStepDefinitions
     [Given(@"Following environment")]
     public void GivenFollowingEnvironment(Table table)
     {
-        var products = new List<AvailableProductData>(table.Rows.Count);
-        foreach (var row in table.Rows)
-        {
-            var product = new AvailableProductData(
-                storeName: row["Store"],
-                productName: row["Product"],
-                price: row["Price"].ParseDecimal(),
-                date: row["Expiration"].ParseDate(),
-                volume: row["UnitVolume"].ParseDecimal());
-            products.Add(product);
-        }
-        _context.Set(products, "Products");
+        var products = table.Rows
+            .Select(CreateAvailableProduct);
+        _context.SetAll(products, Keys.Products);
     }
 
     [Given(@"Following areas")]
     public void GivenFollowingAreas(Table table)
     {
-        var name = table.Header.First();
-        var names = table.Rows.Select(row => row[name]).ToArray();
-        _context.Set(names, name.Pluralize());
+        var names = table.Rows
+            .Select(row => row[0]);
+        var key = table.Header
+            .First()
+            .Pluralize();
+        _context.SetAll(names, key);
     }
 
     [Given(@"Registered users")]
     public async Task GivenRegisteredUsers(Table table)
     {
-        var users = new List<RegisterRequest>(table.Rows.Count);
-        foreach (var row in table.Rows)
-        {
-            var request = new RegisterRequest(
-                FirstName: row["FirstName"],
-                LastName: row["LastName"],
-                Email: row["Email"],
-                Password: row["Password"]);
-            _ = await _apiDriver.Authentication.RegisterAsync(request);
-            users.Add(request);
-        }
-        _context.Set(users, "RegisteredUsers");
+        var requests = table.Rows
+            .Select(CreateGegisterRequest)
+            .DoAsync(RegisterAsync);
+        await _context.SetAllAsync(requests, Keys.RegisteredUsers);
     }
 
     [Given(@$"User {Patterns.QuotedName}")]
     public async Task GivenUser(string email)
     {
         var response = await LoginUserAsync(email);
-        _context.Set(response, "Login");
+        _context.Set(response, Keys.Login);
     }
 
     [When(@"User gets all available areas")]
     public async Task WhenUserGetsAllAvailableAreas()
     {
-        var areas = await _apiDriver.Area.GetAllAsync();
-        _context.Set(areas, "Areas");
+        var areas = _apiDriver.Area
+            .GetAllAsync();
+        await _context.SetAllAsync(areas, Keys.Areas);
     }
 
     [Then(@"List of areas should contain")]
     public void ThenListOfAreasShouldContain(Table table)
     {
-        var areas = _context.Get<AreaResponse[]>("Areas");
-        var name = table.Header.First();
-        var names = table.Rows.Select(row => row[name]).ToArray();
-        areas.Select(a => a.Name).Should().BeEquivalentTo(names);
+        var names = table.Rows.Select(row => row[0]);
+        _context.GetAll<AreaResponse>(Keys.Areas)
+            .Select(a => a.Name)
+            .Should().BeEquivalentTo(names);
     }
 
-    private async Task<LoginResponse> LoginUserAsync(string email)
+    private static AvailableProductData CreateAvailableProduct(TableRow row) =>
+        new(
+            storeName: row["Store"],
+            productName: row["Product"],
+            price: row["Price"].ParseDecimal(),
+            date: row["Expiration"].ParseDate(),
+            volume: row["UnitVolume"].ParseDecimal());
+
+    private static RegisterRequest CreateGegisterRequest(TableRow row) =>
+        new(
+            FirstName: row["FirstName"],
+            LastName: row["LastName"],
+            Email: row["Email"],
+            Password: row["Password"]);
+
+    private async ValueTask RegisterAsync(RegisterRequest request) =>
+        _ = await _apiDriver.Authentication.RegisterAsync(request);
+
+    private async ValueTask<LoginResponse> LoginUserAsync(string email)
     {
-        var registeredUsers = _context.Get<IReadOnlyCollection<RegisterRequest>>("RegisteredUsers");
-        var password = registeredUsers.First(u => u.Email == email).Password;
+        var registeredUsers = _context.GetAll<RegisterRequest>(Keys.RegisteredUsers);
+        var matchedUser = registeredUsers.First(u => u.Email == email);
+        var password = matchedUser.Password;
         var request = new LoginRequest(email, password);
         var response = await _apiDriver.Authentication.LoginAsync(request);
         return response;

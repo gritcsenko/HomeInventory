@@ -10,8 +10,8 @@ internal class AreaAPIDriver : ApiDriver, IAreaAPIDriver
     {
     }
 
-    public async Task<AreaResponse[]> GetAllAsync()
-    {
-        return await GetAsync<AreaResponse[]>("");
-    }
+    public IAsyncEnumerable<AreaResponse> GetAllAsync() =>
+        GetAsync<AreaResponse[]>("")
+            .ToAsyncEnumerable()
+            .SelectMany(x => x.ToAsyncEnumerable());
 }
