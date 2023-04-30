@@ -4,7 +4,7 @@
     So that I know where I can add inventory
 
     Link to a feature: [GetArea](HomeInventory.Tests.Acceptance/Features/GetArea.feature)
- 
+
 Background:
     Given That today is 12/02/2022
     And Following environment

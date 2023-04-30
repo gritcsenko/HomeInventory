@@ -15,6 +15,10 @@ internal abstract class ApiDriver
         _basePath = basePath;
     }
 
+    protected async Task<TResponse> GetAsync<TResponse>()
+        where TResponse : class =>
+        await GetAsync<TResponse>(string.Empty);
+
     protected async Task<TResponse> GetAsync<TResponse>(string path)
         where TResponse : class
     {
