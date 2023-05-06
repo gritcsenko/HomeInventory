@@ -46,8 +46,8 @@ public class AuthenticationModuleTests : BaseTest
         _mapper.Map<UserIdQuery>(_registerRequest).Returns(_userIdQuery);
         _mapper.Map<AuthenticateQuery>(_loginRequest).Returns(_authenticateQuery);
 
-        _registerValidator.ValidateAsync(_registerRequest, CancellationToken).Returns(new ValidationResult());
-        _loginValidator.ValidateAsync(_loginRequest, CancellationToken).Returns(new ValidationResult());
+        _registerValidator.ValidateAsync(_registerRequest, Cancellation.Token).Returns(new ValidationResult());
+        _loginValidator.ValidateAsync(_loginRequest, Cancellation.Token).Returns(new ValidationResult());
 
         var collection = new ServiceCollection();
         collection.AddSingleton(_mediator);
@@ -67,11 +67,11 @@ public class AuthenticationModuleTests : BaseTest
         // Given
         var userIdResult = Fixture.Create<UserIdResult>();
         var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(new Success());
-        _mediator.Send(_userIdQuery, CancellationToken).Returns(userIdResult);
+        _mediator.Send(_registerCommand, Cancellation.Token).Returns(new Success());
+        _mediator.Send(_userIdQuery, Cancellation.Token).Returns(userIdResult);
         _mapper.Map<RegisterResponse>(userIdResult).Returns(expectedResultValue);
         // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, Cancellation.Token);
         // Then
         result.Should().BeOfType<Ok<RegisterResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -83,10 +83,10 @@ public class AuthenticationModuleTests : BaseTest
         // Given
         var authenticationResult = Fixture.Create<AuthenticateResult>();
         var expectedResultValue = Fixture.Create<LoginResponse>();
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
+        _mediator.Send(_authenticateQuery, Cancellation.Token).Returns(authenticationResult);
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
         // When
-        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, Cancellation.Token);
         // Then
         result.Should().BeOfType<Ok<LoginResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -98,11 +98,11 @@ public class AuthenticationModuleTests : BaseTest
         // Given
         var userIdResult = Fixture.Create<UserIdResult>();
         var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(new Success());
-        _mediator.Send(_userIdQuery, CancellationToken).Returns(userIdResult);
+        _mediator.Send(_registerCommand, Cancellation.Token).Returns(new Success());
+        _mediator.Send(_userIdQuery, Cancellation.Token).Returns(userIdResult);
         _mapper.Map<RegisterResponse>(userIdResult).Returns(expectedResultValue);
         // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, Cancellation.Token);
         // Then
         result.Should().BeOfType<Ok<RegisterResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -115,9 +115,9 @@ public class AuthenticationModuleTests : BaseTest
         var authenticationResult = Fixture.Create<AuthenticateResult>();
         var expectedResultValue = Fixture.Create<LoginResponse>();
         _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(authenticationResult);
+        _mediator.Send(_authenticateQuery, Cancellation.Token).Returns(authenticationResult);
         // When
-        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, Cancellation.Token);
         // Then
         result.Should().BeOfType<Ok<LoginResponse>>()
             .Which.Should().HaveValue(expectedResultValue);
@@ -128,9 +128,9 @@ public class AuthenticationModuleTests : BaseTest
     {
         // Given
         var error = Fixture.Create<DuplicateEmailError>();
-        _mediator.Send(_registerCommand, CancellationToken).Returns(error);
+        _mediator.Send(_registerCommand, Cancellation.Token).Returns(error);
         // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, CancellationToken);
+        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, Cancellation.Token);
         // Then
         result.Should().BeOfType<ProblemHttpResult>()
             .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
@@ -142,9 +142,9 @@ public class AuthenticationModuleTests : BaseTest
     {
         // Given
         var error = Fixture.Create<DuplicateEmailError>();
-        _mediator.Send(_authenticateQuery, CancellationToken).Returns(error);
+        _mediator.Send(_authenticateQuery, Cancellation.Token).Returns(error);
         // When
-        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, CancellationToken);
+        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, Cancellation.Token);
         // Then
         result.Should().BeOfType<ProblemHttpResult>()
             .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)

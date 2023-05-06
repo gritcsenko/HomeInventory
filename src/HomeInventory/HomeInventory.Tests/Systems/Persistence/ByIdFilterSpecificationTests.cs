@@ -57,7 +57,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
         var query = new[] { user }.AsQueryable();
         var sut = CreateSut();
 
-        var actual = await sut.ExecuteAsync(_unitOfWork, CancellationToken);
+        var actual = await sut.ExecuteAsync(_unitOfWork, Cancellation.Token);
 
         actual.Should().BeSameAs(user);
     }
@@ -69,7 +69,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
         var query = new[] { user }.AsQueryable();
         var sut = CreateSut();
 
-        var actual = await sut.ExecuteAsync(_unitOfWork, CancellationToken);
+        var actual = await sut.ExecuteAsync(_unitOfWork, Cancellation.Token);
 
         actual.Should().NotBeSameAs(user);
     }

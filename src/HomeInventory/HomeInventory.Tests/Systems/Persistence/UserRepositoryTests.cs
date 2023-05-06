@@ -33,11 +33,11 @@ public class UserRepositoryTests : BaseRepositoryTest
     {
         var entitiesSaved = 0;
         var sut = CreateSut();
-        await using var unit = await sut.WithUnitOfWorkAsync(CancellationToken);
+        await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
         Context.SavedChanges += (_, e) => entitiesSaved += e.EntitiesSavedCount;
 
-        await sut.AddAsync(_user, CancellationToken);
-        await unit.SaveChangesAsync(CancellationToken);
+        await sut.AddAsync(_user, Cancellation.Token);
+        await unit.SaveChangesAsync(Cancellation.Token);
 
         entitiesSaved.Should().Be(1);
     }
@@ -49,7 +49,7 @@ public class UserRepositoryTests : BaseRepositoryTest
         await Context.SaveChangesAsync();
         var sut = CreateSut();
 
-        var result = await sut.IsUserHasEmailAsync(_user.Email, CancellationToken);
+        var result = await sut.IsUserHasEmailAsync(_user.Email, Cancellation.Token);
 
         result.Should().BeTrue();
     }
@@ -57,7 +57,7 @@ public class UserRepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        Mapper.ProjectTo<User>(Arg.Any<IQueryable>(), CancellationToken).Returns(ci =>
+        Mapper.ProjectTo<User>(Arg.Any<IQueryable>(), Cancellation.Token).Returns(ci =>
         {
             var query = ci.Arg<IQueryable>();
             var userModels = query.Cast<UserModel>();
@@ -67,7 +67,7 @@ public class UserRepositoryTests : BaseRepositoryTest
         await Context.SaveChangesAsync();
         var sut = CreateSut();
 
-        var result = await sut.FindFirstByEmailOrNotFoundUserAsync(_user.Email, CancellationToken);
+        var result = await sut.FindFirstByEmailOrNotFoundUserAsync(_user.Email, Cancellation.Token);
 
         var actual = result.AsT0;
         actual.Should().NotBeNull();

@@ -30,7 +30,7 @@ public class RepositoryTests : BaseRepositoryTest
     public async ValueTask UnitOfWork_ShouldBeSame_WhenWithUnitOfWorkAsyncCalled()
     {
         var sut = CreateSut();
-        var expected = await sut.WithUnitOfWorkAsync(CancellationToken);
+        var expected = await sut.WithUnitOfWorkAsync(Cancellation.Token);
 
         var actual = sut.UnitOfWork;
 
@@ -41,9 +41,9 @@ public class RepositoryTests : BaseRepositoryTest
     public async ValueTask WithUnitOfWorkAsync_ShouldReturnBeSame_WhenCalledSecondTime()
     {
         var sut = CreateSut();
-        var expected = await sut.WithUnitOfWorkAsync(CancellationToken);
+        var expected = await sut.WithUnitOfWorkAsync(Cancellation.Token);
 
-        var actual = await sut.WithUnitOfWorkAsync(CancellationToken);
+        var actual = await sut.WithUnitOfWorkAsync(Cancellation.Token);
 
         actual.Should().BeSameAs(expected);
     }

@@ -32,12 +32,12 @@ public class RegisterCommandHandlerTests : BaseTest
     public async Task Handle_OnSuccess_ReturnsResult()
     {
         // Given
-        _userRepository.IsUserHasEmailAsync(_command.Email, CancellationToken).Returns(false);
-        _userRepository.AddAsync(Arg.Any<User>(), CancellationToken).Returns(ci => Task.FromResult(ci.Arg<User>()));
+        _userRepository.IsUserHasEmailAsync(_command.Email, Cancellation.Token).Returns(false);
+        _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(ci => Task.FromResult(ci.Arg<User>()));
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(_command, CancellationToken);
+        var result = await sut.Handle(_command, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.Index.Should().Be(0);
@@ -48,16 +48,16 @@ public class RegisterCommandHandlerTests : BaseTest
     public async Task Handle_OnFailure_ReturnsError()
     {
         // Given
-        _userRepository.IsUserHasEmailAsync(_command.Email, CancellationToken).Returns(true);
+        _userRepository.IsUserHasEmailAsync(_command.Email, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(_command, CancellationToken);
+        var result = await sut.Handle(_command, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
             .Which.Should().BeOfType<DuplicateEmailError>();
-        _ = _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), CancellationToken);
+        _ = _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), Cancellation.Token);
     }
 }
