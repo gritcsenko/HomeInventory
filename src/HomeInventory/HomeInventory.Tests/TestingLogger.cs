@@ -7,9 +7,7 @@ public abstract class TestingLogger<T> : ILogger<T>
     private readonly AsyncLocal<ITestingScope?> _currentScope = new();
 
     public IDisposable BeginScope<TState>(TState state)
-#if NET7_0_OR_GREATER
         where TState : notnull
-#endif
         =>
         new TestingScope<TState>(this, _currentScope.Value);
 
@@ -25,10 +23,9 @@ public abstract class TestingLogger<T> : ILogger<T>
         ITestingScope? Parent { get; }
     }
 
-    internal class TestingScope<TState> : ITestingScope
+    internal class TestingScope<TState> : Disposable, ITestingScope
     {
         private readonly TestingLogger<T> _logger;
-        private bool _isDisposed;
 
         public TestingScope(TestingLogger<T> logger, ITestingScope? parent)
         {
@@ -40,17 +37,6 @@ public abstract class TestingLogger<T> : ILogger<T>
 
         public ITestingScope? Parent { get; }
 
-        public void Dispose()
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            _logger._currentScope.Value = Parent;
-
-            GC.SuppressFinalize(this);
-            _isDisposed = true;
-        }
+        protected override void InternalDispose() => _logger._currentScope.Value = Parent;
     }
 }

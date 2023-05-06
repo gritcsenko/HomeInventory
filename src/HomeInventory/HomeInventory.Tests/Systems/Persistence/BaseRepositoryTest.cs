@@ -11,7 +11,7 @@ public abstract class BaseRepositoryTest : BaseDatabaseContextTest
 
     protected BaseRepositoryTest()
     {
-        _factory.CreateDbContextAsync(CancellationToken).Returns(Context);
+        _factory.CreateDbContextAsync(Cancellation.Token).Returns(Context);
     }
 
     protected private IDbContextFactory<DatabaseContext> Factory => _factory;

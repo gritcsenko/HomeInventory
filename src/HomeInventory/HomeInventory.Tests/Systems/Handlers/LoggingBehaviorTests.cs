@@ -27,7 +27,7 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        var response = await sut.Handle(_request, () => Task.FromResult(_response), CancellationToken);
+        var response = await sut.Handle(_request, () => Task.FromResult(_response), Cancellation.Token);
 
         response.Value.Should().Be(_response.Value);
     }
@@ -43,7 +43,7 @@ public class LoggingBehaviorTests : BaseTest
                 .Received(1)
                 .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
             return Task.FromResult(_response);
-        }, CancellationToken);
+        }, Cancellation.Token);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class LoggingBehaviorTests : BaseTest
         {
             _logger.ClearReceivedCalls();
             return Task.FromResult(_response);
-        }, CancellationToken);
+        }, Cancellation.Token);
 
         _logger
             .Received(1)

@@ -19,10 +19,10 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         _client = _appFactory.CreateClient();
     }
 
-    public void Dispose()
+    protected override void InternalDispose()
     {
         _appFactory.Dispose();
-        GC.SuppressFinalize(this);
+        base.InternalDispose();
     }
 
     [BrokenTest]
@@ -32,11 +32,11 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         var request = Fixture.Create<RegisterRequest>();
         var content = JsonContent.Create(request);
 
-        var response = await _client.PostAsync("/api/Authentication/register", content, CancellationToken);
+        var response = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.OK);
-        var body = await response.Content.ReadFromJsonAsync<RegisterResponse>(options: null, CancellationToken);
+        var body = await response.Content.ReadFromJsonAsync<RegisterResponse>(options: null, Cancellation.Token);
         body.Should().NotBeNull();
         body!.Id.Should().NotBeEmpty();
     }
@@ -48,12 +48,12 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         var request = Fixture.Create<RegisterRequest>();
         var content = JsonContent.Create(request);
 
-        _ = await _client.PostAsync("/api/Authentication/register", content, CancellationToken);
-        var response = await _client.PostAsync("/api/Authentication/register", content, CancellationToken);
+        _ = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
+        var response = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.Conflict);
-        var body = await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, CancellationToken)!;
+        var body = await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, Cancellation.Token)!;
         body!.Should().NotBeNull();
         body!.Type.Should().Be("https://tools.ietf.org/html/rfc7231#section-6.5.8");
         body!.Status.Should().Be(StatusCodes.Status409Conflict);
