@@ -44,7 +44,7 @@ public class UserRepositoryTests : BaseRepositoryTest
         var spec = Fixture.Create<CreateUserSpecification>();
         var sut = CreateSut();
 
-        var result = await sut.CreateAsync(spec, CancellationToken);
+        var result = await sut.CreateAsync(spec, Cancellation.Token);
 
         var user = result.AsT0;
         user.Should().NotBeNull();
@@ -62,9 +62,9 @@ public class UserRepositoryTests : BaseRepositoryTest
         _userIdFactory.CreateNew().Returns(id);
         var spec = Fixture.Create<CreateUserSpecification>();
         var sut = CreateSut();
-        await sut.CreateAsync(spec, CancellationToken);
+        await sut.CreateAsync(spec, Cancellation.Token);
 
-        var result = await sut.HasAsync(UserSpecifications.HasId(id), CancellationToken);
+        var result = await sut.HasAsync(UserSpecifications.HasId(id), Cancellation.Token);
 
         result.Should().BeTrue();
     }
@@ -76,9 +76,9 @@ public class UserRepositoryTests : BaseRepositoryTest
         _userIdFactory.CreateNew().Returns(id);
         var spec = Fixture.Create<CreateUserSpecification>();
         var sut = CreateSut();
-        var expected = await sut.CreateAsync(spec, CancellationToken);
+        var expected = await sut.CreateAsync(spec, Cancellation.Token);
 
-        var result = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(id), CancellationToken);
+        var result = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(id), Cancellation.Token);
 
         var actual = result.AsT0;
         actual.Should().NotBeNull();

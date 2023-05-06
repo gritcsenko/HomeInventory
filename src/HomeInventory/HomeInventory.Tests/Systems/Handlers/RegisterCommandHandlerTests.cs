@@ -39,12 +39,12 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         // Given
         var user = Fixture.Create<User>();
-        _userRepository.HasAsync(_userHasEmailSpecification, CancellationToken).Returns(false);
-        _userRepository.CreateAsync(_createUserSpecification, CancellationToken).Returns(user);
+        _userRepository.HasAsync(_userHasEmailSpecification, Cancellation.Token).Returns(false);
+        _userRepository.CreateAsync(_createUserSpecification, Cancellation.Token).Returns(user);
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(_command, CancellationToken);
+        var result = await sut.Handle(_command, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.IsFailed.Should().BeFalse();
@@ -56,12 +56,12 @@ public class RegisterCommandHandlerTests : BaseTest
     public async Task Handle_OnUserCreation_ReturnsError()
     {
         // Given
-        _userRepository.HasAsync(_userHasEmailSpecification, CancellationToken).Returns(false);
-        _userRepository.CreateAsync(_createUserSpecification, CancellationToken).Returns(new None());
+        _userRepository.HasAsync(_userHasEmailSpecification, Cancellation.Token).Returns(false);
+        _userRepository.CreateAsync(_createUserSpecification, Cancellation.Token).Returns(new None());
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(_command, CancellationToken);
+        var result = await sut.Handle(_command, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.IsFailed.Should().BeTrue();
@@ -73,11 +73,11 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         // Given
 
-        _userRepository.HasAsync(_userHasEmailSpecification, CancellationToken).Returns(true);
+        _userRepository.HasAsync(_userHasEmailSpecification, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(_command, CancellationToken);
+        var result = await sut.Handle(_command, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.IsFailed.Should().BeTrue();

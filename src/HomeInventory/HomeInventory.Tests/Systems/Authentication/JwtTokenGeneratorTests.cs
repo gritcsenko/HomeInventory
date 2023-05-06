@@ -40,7 +40,7 @@ public class JwtTokenGeneratorTests : BaseTest
         _dateTimeService.Now.Returns(now);
         var validFrom = new DateTimeOffset(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Offset).UtcDateTime;
 
-        var actualTokenString = await sut.GenerateTokenAsync(_user, CancellationToken);
+        var actualTokenString = await sut.GenerateTokenAsync(_user, Cancellation.Token);
 
         actualTokenString.Should().NotBeNullOrEmpty();
         var actualToken = new JwtSecurityTokenHandler().ReadJwtToken(actualTokenString);

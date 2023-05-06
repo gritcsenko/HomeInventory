@@ -35,12 +35,12 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var specification = MapToSpecification(query);
         var token = Fixture.Create<string>();
 
-        _userRepository.FindFirstOrNotFoundAsync(specification, CancellationToken).Returns(_user);
-        _tokenGenerator.GenerateTokenAsync(_user, CancellationToken).Returns(token);
+        _userRepository.FindFirstOrNotFoundAsync(specification, Cancellation.Token).Returns(_user);
+        _tokenGenerator.GenerateTokenAsync(_user, Cancellation.Token).Returns(token);
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, CancellationToken);
+        var result = await sut.Handle(query, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.IsFailed.Should().BeFalse();
@@ -55,11 +55,11 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // Given
         var query = Fixture.Create<AuthenticateQuery>();
         var specification = MapToSpecification(query);
-        _userRepository.FindFirstOrNotFoundAsync(specification, CancellationToken).Returns(new NotFound());
+        _userRepository.FindFirstOrNotFoundAsync(specification, Cancellation.Token).Returns(new NotFound());
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, CancellationToken);
+        var result = await sut.Handle(query, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.IsFailed.Should().BeTrue();
@@ -73,11 +73,11 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // Given
         var query = new AuthenticateQuery(_user.Email, Fixture.Create<string>());
         var specification = MapToSpecification(query);
-        _userRepository.FindFirstOrNotFoundAsync(specification, CancellationToken).Returns(_user);
+        _userRepository.FindFirstOrNotFoundAsync(specification, Cancellation.Token).Returns(_user);
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, CancellationToken);
+        var result = await sut.Handle(query, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
         result.IsFailed.Should().BeTrue();
