@@ -29,7 +29,7 @@ public class ContractsMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> Data()
     {
         var fixture = new Fixture();
-        fixture.Customize(new UserIdCustomization());
+        fixture.CustomizeGuidId(guid => new UserId(guid));
         return new()
         {
             { fixture.Create<UserId>(), typeof(Guid) },
