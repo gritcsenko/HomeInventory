@@ -3,16 +3,12 @@
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, ThenContext>
+public class EntityTests : BaseTest<EntityTests.GivenTestContext>
 {
     private static readonly Variable<EntityId> _id = new(nameof(_id));
     private static readonly Variable<TestEntity> _other = new(nameof(_other));
     private static readonly Variable<TestEntity> _sut = new(nameof(_sut));
     private static readonly Variable<HashCode> _hash = new(nameof(_hash));
-
-    public EntityTests()
-    {
-    }
 
     [Fact]
     public void EqualsTEntity_Should_ReturnTrueWhenSameReference()
@@ -196,20 +192,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .Result(actual => actual.Should().BeTrue());
     }
 
-    protected override GivenTestContext CreateGiven(VariablesCollection variables)
-    {
-        return new GivenTestContext(variables, Fixture);
-    }
-
-    protected override WhenContext CreateWhen(VariablesCollection variables)
-    {
-        return new WhenContext(variables, Result);
-    }
-
-    protected override ThenContext CreateThen(VariablesCollection variables)
-    {
-        return new ThenContext(variables, Result);
-    }
+    protected override GivenTestContext CreateGiven(VariablesCollection variables) =>
+        new(variables, Fixture);
 
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
     {

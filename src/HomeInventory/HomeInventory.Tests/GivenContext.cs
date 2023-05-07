@@ -14,10 +14,8 @@ public class GivenContext<TContext> : Context
     public IFixture Fixture { get; }
 
     public TContext New<T>(IVariable<T> variable)
-        where T : notnull
-    {
-        return Add(variable, Fixture.Create<T>);
-    }
+        where T : notnull =>
+        Add(variable, Fixture.Create<T>);
 
     public TContext New<T>(IVariable<T> variable, int count)
         where T : notnull

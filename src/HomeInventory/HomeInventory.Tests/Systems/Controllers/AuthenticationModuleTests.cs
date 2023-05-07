@@ -1,6 +1,5 @@
 using AutoMapper;
-using FluentValidation;
-using FluentValidation.Results;
+using FluentResults;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
@@ -15,132 +14,174 @@ using Microsoft.Extensions.DependencyInjection;
 namespace HomeInventory.Tests.Systems.Controllers;
 
 [UnitTest]
-public class AuthenticationModuleTests : BaseTest
+public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.GivenTestContext>
 {
-    private readonly ISender _mediator = Substitute.For<ISender>();
-    private readonly IMapper _mapper = Substitute.For<IMapper>();
-    private readonly IValidator<RegisterRequest> _registerValidator = Substitute.For<IValidator<RegisterRequest>>();
-    private readonly IValidator<LoginRequest> _loginValidator = Substitute.For<IValidator<LoginRequest>>();
+    private static readonly Variable<RegistrationResult> _registrationResult = new(nameof(_registrationResult));
+    private static readonly Variable<RegisterResponse> _registerResponse = new(nameof(_registerResponse));
+    private static readonly Variable<RegisterRequest> _registerRequest = new(nameof(_registerRequest));
+    private static readonly Variable<RegisterCommand> _registerCommand = new(nameof(_registerCommand));
 
-    private readonly RegisterRequest _registerRequest;
-    private readonly RegisterCommand _registerCommand;
-    private readonly LoginRequest _loginRequest;
-    private readonly AuthenticateQuery _authenticateQuery;
-    private readonly HttpContext _context;
+    private static readonly Variable<AuthenticateResult> _authenticateResult = new(nameof(_authenticateResult));
+    private static readonly Variable<LoginResponse> _loginResponse = new(nameof(_loginResponse));
+    private static readonly Variable<LoginRequest> _loginRequest = new(nameof(_loginRequest));
+    private static readonly Variable<AuthenticateQuery> _authenticateQuery = new(nameof(_authenticateQuery));
+
+    private static readonly Variable<DuplicateEmailError> _error = new(nameof(_error));
 
     public AuthenticationModuleTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
-
-        _registerRequest = Fixture.Create<RegisterRequest>();
-        _registerCommand = Fixture.Create<RegisterCommand>();
-        _loginRequest = Fixture.Create<LoginRequest>();
-        _authenticateQuery = Fixture.Create<AuthenticateQuery>();
-
-        _mapper.Map<RegisterCommand>(_registerRequest).Returns(_registerCommand);
-        _mapper.Map<AuthenticateQuery>(_loginRequest).Returns(_authenticateQuery);
-
-        _registerValidator.ValidateAsync(_registerRequest, Cancellation.Token).Returns(new ValidationResult());
-        _loginValidator.ValidateAsync(_loginRequest, Cancellation.Token).Returns(new ValidationResult());
-
-        var collection = new ServiceCollection();
-        collection.AddSingleton(_mediator);
-        collection.AddSingleton(_mapper);
-        collection.AddSingleton(_registerValidator);
-        collection.AddSingleton(_loginValidator);
-
-        _context = new DefaultHttpContext
-        {
-            RequestServices = collection.BuildServiceProvider()
-        };
     }
 
     [Fact]
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
-        // Given
-        var registrationResult = Fixture.Create<RegistrationResult>();
-        var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, Cancellation.Token).Returns(registrationResult);
-        _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
-        // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, Cancellation.Token);
-        // Then
-        result.Should().BeOfType<Ok<RegisterResponse>>()
-            .Which.Should().HaveValue(expectedResultValue);
+        Given
+            .New(_registerRequest)
+            .New(_registerCommand)
+            .Map(_registerRequest, _registerCommand)
+            .New(_registrationResult)
+            .New(_registerResponse)
+            .Map(_registrationResult, _registerResponse)
+            .OnSendReturn(_registerCommand, _registrationResult);
+
+        var then = await When
+            .InvokedAsync(Given.Context, _registerRequest, AuthenticationModule.RegisterAsync);
+
+        then
+            .Result(_registerResponse, (actual, expected) =>
+                actual.Should().BeOfType<Ok<RegisterResponse>>()
+                    .Which.Should().HaveValue(expected));
     }
 
     [Fact]
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
-        // Given
-        var authenticationResult = Fixture.Create<AuthenticateResult>();
-        var expectedResultValue = Fixture.Create<LoginResponse>();
-        _mediator.Send(_authenticateQuery, Cancellation.Token).Returns(authenticationResult);
-        _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
-        // When
-        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, Cancellation.Token);
-        // Then
-        result.Should().BeOfType<Ok<LoginResponse>>()
-            .Which.Should().HaveValue(expectedResultValue);
-    }
+        Given
+            .New(_loginRequest)
+            .New(_authenticateQuery)
+            .Map(_loginRequest, _authenticateQuery)
+            .New(_authenticateResult)
+            .New(_loginResponse)
+            .Map(_authenticateResult, _loginResponse)
+            .OnSendReturn(_authenticateQuery, _authenticateResult);
 
-    [Fact]
-    public async Task RegisterAsync_OnSuccess_ReturnsRegistrationId()
-    {
-        // Given
-        var registrationResult = Fixture.Create<RegistrationResult>();
-        var expectedResultValue = Fixture.Create<RegisterResponse>();
-        _mediator.Send(_registerCommand, Cancellation.Token).Returns(registrationResult);
-        _mapper.Map<RegisterResponse>(registrationResult).Returns(expectedResultValue);
-        // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, Cancellation.Token);
-        // Then
-        result.Should().BeOfType<Ok<RegisterResponse>>()
-            .Which.Should().HaveValue(expectedResultValue);
-    }
+        var then = await When
+            .InvokedAsync(Given.Context, _loginRequest, AuthenticationModule.LoginAsync);
 
-    [Fact]
-    public async Task LoginAsync_OnSuccess_ReturnsRegistrationIdAndToken()
-    {
-        // Given
-        var authenticationResult = Fixture.Create<AuthenticateResult>();
-        var expectedResultValue = Fixture.Create<LoginResponse>();
-        _mapper.Map<LoginResponse>(authenticationResult).Returns(expectedResultValue);
-        _mediator.Send(_authenticateQuery, Cancellation.Token).Returns(authenticationResult);
-        // When
-        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, Cancellation.Token);
-        // Then
-        result.Should().BeOfType<Ok<LoginResponse>>()
-            .Which.Should().HaveValue(expectedResultValue);
+        then
+            .Result(_loginResponse, (actual, expected) =>
+                actual.Should().BeOfType<Ok<LoginResponse>>()
+                    .Which.Should().HaveValue(expected));
     }
 
     [Fact]
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
-        // Given
-        var error = Fixture.Create<DuplicateEmailError>();
-        _mediator.Send(_registerCommand, Cancellation.Token).Returns(error);
-        // When
-        var result = await AuthenticationModule.RegisterAsync(_context, _registerRequest, Cancellation.Token);
-        // Then
-        result.Should().BeOfType<ProblemHttpResult>()
-            .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
-            .And.Match(x => x.Detail == error.Message);
+        Given
+            .New(_registerRequest)
+            .New(_registerCommand)
+            .Map(_registerRequest, _registerCommand)
+            .New(_registrationResult)
+            .New(_registerResponse)
+            .Map(_registrationResult, _registerResponse)
+            .New(_error)
+            .OnSendReturn(_registerCommand, _error);
+
+        var then = await When
+            .InvokedAsync(Given.Context, _registerRequest, AuthenticationModule.RegisterAsync);
+
+        then
+            .Result(_error, (actual, error) =>
+                actual.Should().BeOfType<ProblemHttpResult>()
+                    .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
+                    .And.Match(x => x.Detail == error.Message));
     }
 
     [Fact]
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
-        // Given
-        var error = Fixture.Create<DuplicateEmailError>();
-        _mediator.Send(_authenticateQuery, Cancellation.Token).Returns(error);
-        // When
-        var result = await AuthenticationModule.LoginAsync(_context, _loginRequest, Cancellation.Token);
-        // Then
-        result.Should().BeOfType<ProblemHttpResult>()
-            .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
-            .And.Match(x => x.Detail == error.Message);
+        Given
+            .New(_loginRequest)
+            .New(_authenticateQuery)
+            .Map(_loginRequest, _authenticateQuery)
+            .New(_authenticateResult)
+            .New(_loginResponse)
+            .Map(_authenticateResult, _loginResponse)
+            .New(_error)
+            .OnSendReturn(_authenticateQuery, _error);
+
+        var then = await When
+            .InvokedAsync(Given.Context, _loginRequest, AuthenticationModule.LoginAsync);
+
+        then
+            .Result(_error, (actual, error) =>
+                actual.Should().BeOfType<ProblemHttpResult>()
+                    .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
+                    .And.Match(x => x.Detail == error.Message));
+    }
+
+    protected override GivenTestContext CreateGiven(VariablesCollection variables) =>
+        new(variables, Fixture, Cancellation);
+
+    public sealed class GivenTestContext : GivenContext<GivenTestContext>
+    {
+        private static readonly Variable<HttpContext> _context = new(nameof(_context));
+        private readonly ISender _mediator = Substitute.For<ISender>();
+        private readonly IMapper _mapper = Substitute.For<IMapper>();
+        private readonly ICancellation _cancellation;
+
+        public GivenTestContext(VariablesCollection variables, IFixture fixture, ICancellation cancellation)
+            : base(variables, fixture)
+        {
+            _cancellation = cancellation;
+
+            var collection = new ServiceCollection();
+            collection.AddSingleton(_mediator);
+            collection.AddSingleton(_mapper);
+
+            Add(_context, () => new DefaultHttpContext
+            {
+                RequestServices = collection.BuildServiceProvider()
+            });
+        }
+
+        public IndexedVariable<HttpContext> Context => _context.WithIndex(0);
+
+        public GivenTestContext OnSendReturn<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
+            where TRequest : notnull, IRequest<Result<TResult>>
+            where TResult : notnull
+        {
+            var requestValue = Variables.Get(request.WithIndex(0));
+            var resultValue = Variables.Get(result.WithIndex(0));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(FluentResults.Result.Ok(resultValue));
+            return this;
+        }
+
+        public GivenTestContext OnSendReturn(Variable<RegisterCommand> request, Variable<DuplicateEmailError> result)
+        {
+            var requestValue = Variables.Get(request.WithIndex(0));
+            var resultValue = Variables.Get(result.WithIndex(0));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(FluentResults.Result.Fail(resultValue));
+            return this;
+        }
+
+        public GivenTestContext OnSendReturn(Variable<AuthenticateQuery> request, Variable<DuplicateEmailError> result)
+        {
+            var requestValue = Variables.Get(request.WithIndex(0));
+            var resultValue = Variables.Get(result.WithIndex(0));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(FluentResults.Result.Fail(resultValue));
+            return this;
+        }
+
+        public GivenTestContext Map<TSource, TDestination>(Variable<TSource> source, Variable<TDestination> destination)
+            where TSource : notnull
+            where TDestination : notnull
+        {
+            _mapper.Map<TDestination>(Variables.Get(source.WithIndex(0)))
+                .Returns(Variables.Get(destination.WithIndex(0)));
+            return this;
+        }
     }
 }

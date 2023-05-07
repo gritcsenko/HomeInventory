@@ -3,7 +3,7 @@
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTestContext, WhenContext, ThenContext>
+public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTestContext>
 {
     private static readonly Variable<EquatableComponent<string>> _sut = new(nameof(_sut));
     private static readonly Variable<HashCode> _hash = new(nameof(_hash));
@@ -97,20 +97,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Result(actual => actual.Should().BeFalse());
     }
 
-    protected override GivenTestContext CreateGiven(VariablesCollection variables)
-    {
-        return new GivenTestContext(variables, Fixture);
-    }
-
-    protected override WhenContext CreateWhen(VariablesCollection variables)
-    {
-        return new WhenContext(variables, Result);
-    }
-
-    protected override ThenContext CreateThen(VariablesCollection variables)
-    {
-        return new ThenContext(variables, Result);
-    }
+    protected override GivenTestContext CreateGiven(VariablesCollection variables) =>
+        new(variables, Fixture);
 
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
     {

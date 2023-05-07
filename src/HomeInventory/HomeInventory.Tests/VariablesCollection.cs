@@ -13,6 +13,13 @@ public sealed class VariablesCollection
         return collection.TryAdd(createValueFunc);
     }
 
+    public async Task<bool> TryAddAsync<T>(IVariable<T> variable, Func<Task<T>> createValueFunc)
+        where T : notnull
+    {
+        var collection = GetAllValues(variable);
+        return await collection.TryAddAsync(createValueFunc);
+    }
+
     public Option<T> TryGet<T>(IIndexedVariable<T> variable)
         where T : notnull
     {
