@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Configuration.Interfaces;
+﻿using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -9,8 +9,8 @@ namespace HomeInventory.Tests.Middlewares;
 public class CorrelationIdMiddlewareTests : BaseTest
 {
     private readonly TestingLogger<CorrelationIdMiddleware> _logger = Substitute.For<TestingLogger<CorrelationIdMiddleware>>();
-    private readonly ICorrelationIdContainer _container = Substitute.For<ICorrelationIdContainer>();
-    private readonly DefaultHttpContext _httpContext = new DefaultHttpContext();
+    private readonly CorrelationIdContainer _container = new();
+    private readonly DefaultHttpContext _httpContext = new();
     private readonly IHttpResponseFeature _httpResponseFeature = Substitute.For<IHttpResponseFeature>();
 
     public CorrelationIdMiddlewareTests()
@@ -66,22 +66,35 @@ public class CorrelationIdMiddlewareTests : BaseTest
         _container.CorrelationId.Should().Be(expectedId);
     }
 
-    [Fact]
-    public async Task InvokeAsync_Should_CreateCorrelationId_When_HeaderIsNotSet()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public async Task InvokeAsync_Should_NotSetCorrelationIdFromHeaders_When_ValueIsWrong(string? unexpectedId)
     {
+        _httpContext.Features.Get<IHttpRequestFeature>()!.Headers[HeaderNames.CorrelationId] = unexpectedId;
         static Task next(HttpContext ctx) => Task.CompletedTask;
         var sut = CreateSut();
 
         await sut.InvokeAsync(_httpContext, next);
 
-        _container.Received(1).GenerateNew();
+        _container.CorrelationId.Should().NotBe(unexpectedId);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_Should_CreateCorrelationId_When_HeaderIsNotSet()
+    {
+        static Task next(HttpContext ctx) => Task.CompletedTask;
+        var sut = CreateSut();
+        var original = _container.CorrelationId;
+
+        await sut.InvokeAsync(_httpContext, next);
+
+        _container.CorrelationId.Should().NotBe(original);
     }
 
     [Fact]
     public async Task InvokeAsync_Should_AddCorrelationIdToResponse()
     {
-        var expectedId = Fixture.Create<string>();
-        _container.CorrelationId.Returns(expectedId);
         _httpResponseFeature
             .When(f => f.OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>()))
             .Do(async ci =>
@@ -97,7 +110,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
         await sut.InvokeAsync(_httpContext, next);
 
         _httpResponseFeature.Received(1).OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>());
-        _httpResponseFeature.Headers[HeaderNames.CorrelationId].Should().BeEquivalentTo(new[] { expectedId });
+        _httpResponseFeature.Headers[HeaderNames.CorrelationId].Should().BeEquivalentTo(new[] { _container.CorrelationId });
     }
 
     private CorrelationIdMiddleware CreateSut()
