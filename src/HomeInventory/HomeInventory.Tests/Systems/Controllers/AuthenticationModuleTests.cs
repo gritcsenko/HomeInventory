@@ -38,11 +38,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         Given
-            .New(_registerRequest)
-            .New(_registerCommand)
             .Map(_registerRequest, _registerCommand)
-            .New(_registrationResult)
-            .New(_registerResponse)
             .Map(_registrationResult, _registerResponse)
             .OnSendReturn(_registerCommand, _registrationResult);
 
@@ -59,11 +55,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
         Given
-            .New(_loginRequest)
-            .New(_authenticateQuery)
             .Map(_loginRequest, _authenticateQuery)
-            .New(_authenticateResult)
-            .New(_loginResponse)
             .Map(_authenticateResult, _loginResponse)
             .OnSendReturn(_authenticateQuery, _authenticateResult);
 
@@ -80,12 +72,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         Given
-            .New(_registerRequest)
-            .New(_registerCommand)
             .Map(_registerRequest, _registerCommand)
-            .New(_registrationResult)
-            .New(_registerResponse)
-            .Map(_registrationResult, _registerResponse)
             .New(_error)
             .OnSendReturn(_registerCommand, _error);
 
@@ -103,12 +90,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
         Given
-            .New(_loginRequest)
-            .New(_authenticateQuery)
             .Map(_loginRequest, _authenticateQuery)
-            .New(_authenticateResult)
-            .New(_loginResponse)
-            .Map(_authenticateResult, _loginResponse)
             .New(_error)
             .OnSendReturn(_authenticateQuery, _error);
 
@@ -179,6 +161,8 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
             where TSource : notnull
             where TDestination : notnull
         {
+            New(source);
+            New(destination);
             _mapper.Map<TDestination>(Variables.Get(source.WithIndex(0)))
                 .Returns(Variables.Get(destination.WithIndex(0)));
             return this;
