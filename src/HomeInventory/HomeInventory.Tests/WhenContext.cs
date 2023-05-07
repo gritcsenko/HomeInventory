@@ -33,7 +33,7 @@ public class WhenContext : Context
         where TResult : notnull
     {
         var sutValue = Variables.Get(sut);
-        Variables.Add(_resultVariable.OfType<TResult>(), () => invoke(sutValue));
+        Variables.TryAdd(_resultVariable.OfType<TResult>(), () => invoke(sutValue));
         return this;
     }
 }

@@ -8,6 +8,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     private static readonly Variable<EntityId> _id = new(nameof(_id));
     private static readonly Variable<TestEntity> _other = new(nameof(_other));
     private static readonly Variable<TestEntity> _sut = new(nameof(_sut));
+    private static readonly Variable<HashCode> _hash = new(nameof(_hash));
 
     public EntityTests()
     {
@@ -17,7 +18,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsTEntity_Should_ReturnTrueWhenSameReference()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_sut, _id);
 
         When
@@ -31,7 +32,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsTEntity_Should_ReturnTrueWhenOtherHasSameId()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id);
 
@@ -46,7 +47,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsTEntity_Should_ReturnFalseWhenOtherIsNull()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_sut, _id);
 
         When
@@ -60,8 +61,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsTEntity_Should_ReturnFalseWhenOtherHasDifferentId()
     {
         Given
-            .Create(_id)
-            .Create(_id)
+            .New(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id.WithIndex(1));
 
@@ -76,8 +77,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsObject_Should_ReturnFalseWhenOtherHasDifferentType()
     {
         Given
-            .Create(_id)
-            .Create(_other.OfType<object>())
+            .New(_id)
+            .New(_other.OfType<object>())
             .TestEntity(_sut, _id);
 
         When
@@ -91,7 +92,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsObject_Should_ReturnTrueWhenSameReference()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_sut, _id);
 
         When
@@ -105,7 +106,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsObject_Should_ReturnTrueWhenOtherHasSameId()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id);
 
@@ -120,7 +121,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsObject_Should_ReturnFalseWhenOtherIsNull()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_sut, _id);
 
         When
@@ -134,8 +135,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void EqualsObject_Should_ReturnFalseWhenOtherHasDifferentId()
     {
         Given
-            .Create(_id)
-            .Create(_id)
+            .New(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id.WithIndex(1));
 
@@ -150,7 +151,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void GetHashCode_Should_ReturnGetHashCodeFromId()
     {
         Given
-            .Create(_id)
+            .New(_id)
+            .AddToHashCode(_hash, _id.WithIndex(0))
             .TestEntity(_sut, _id);
 
         When
@@ -164,7 +166,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void OpEquals_Should_ReturnTrueWhenOtherHasSameId()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id);
 
@@ -179,8 +181,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void OpEquals_Should_ReturnFalseWhenOtherHasDifferentId()
     {
         Given
-            .Create(_id)
-            .Create(_id)
+            .New(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id.WithIndex(1));
 
@@ -195,7 +197,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void OpNotEquals_Should_ReturnFalseWhenOtherHasSameId()
     {
         Given
-            .Create(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id);
 
@@ -210,8 +212,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     public void OpNotEquals_Should_ReturnTrueWhenOtherHasDifferentId()
     {
         Given
-            .Create(_id)
-            .Create(_id)
+            .New(_id)
+            .New(_id)
             .TestEntity(_other, _id)
             .TestEntity(_sut, _id.WithIndex(1));
 

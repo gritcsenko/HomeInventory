@@ -39,6 +39,20 @@ public sealed class ValuesCollection
         return true;
     }
 
+    public bool TrySet<T>(int index, Func<T> createValueFunc)
+        where T : notnull
+    {
+        if (!IsAsignable<T>() || index < 0 || index >= _values.Count)
+        {
+            return false;
+        }
+
+        var container = _values[index];
+        var value = createValueFunc();
+        container.Update(Option.Some<object>(value));
+        return true;
+    }
+
     public Option<T> TryGet<T>(int index)
         where T : notnull
     {

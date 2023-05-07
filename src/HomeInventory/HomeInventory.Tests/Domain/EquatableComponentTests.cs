@@ -3,16 +3,24 @@
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EquatableComponentTests : BaseTest
+public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTestContext, WhenContext, ThenContext>
 {
+    private static readonly Variable<EquatableComponent<string>> _sut = new(nameof(_sut));
+    private static readonly Variable<HashCode> _hash = new(nameof(_hash));
+    private static readonly Variable<Guid> _component = new(nameof(_component));
+
     [Fact]
     public void GetHashCode_ShoudReturnZero_WhenNoComponents()
     {
-        var sut = new EquatableComponent<string>();
+        Given
+            .Component(_sut)
+            .EmptyHashCode(_hash);
 
-        var actual = sut.GetHashCode();
+        When
+            .Invoked(_sut, sut => sut.GetHashCode());
 
-        actual.Should().Be(new HashCode().ToHashCode());
+        Then
+            .Result<int, HashCode>(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Theory]
@@ -21,27 +29,30 @@ public class EquatableComponentTests : BaseTest
     [InlineData(3)]
     public void GetHashCode_ShoudReturnCombinedComponentsHash_WhenManyComponents(int count)
     {
-        var components = Fixture.CreateMany<Guid>(count).Cast<object>().ToArray();
-        var expected = new HashCode();
-        foreach (var component in components)
-        {
-            expected.Add(component);
-        }
-        var sut = new EquatableComponent<string>(components);
+        Given
+            .New(_component, count)
+            .AddToHashCode(_hash, _component, count)
+            .Component(_sut, _component, count);
 
-        var actual = sut.GetHashCode();
+        When
+            .Invoked(_sut, sut => sut.GetHashCode());
 
-        actual.Should().Be(expected.ToHashCode());
+        Then
+            .Result<int, HashCode>(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
     public void Equals_ShoudBeEqualToEmpty_WhenNoComponents()
     {
-        var sut = new EquatableComponent<string>();
+        Given
+            .Component(_sut)
+            .Component(_sut);
 
-        var actual = sut.Equals(new EquatableComponent<string>());
+        When
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
 
-        actual.Should().BeTrue();
+        Then
+            .Result<bool>(actual => actual.Should().BeTrue());
     }
 
     [Theory]
@@ -50,12 +61,16 @@ public class EquatableComponentTests : BaseTest
     [InlineData(3)]
     public void Equals_ShoudNotBeEqualToEmpty_WhenManyComponents(int count)
     {
-        var components = Fixture.CreateMany<Guid>(count).Cast<object>().ToArray();
-        var sut = new EquatableComponent<string>(components);
+        Given
+            .New(_component, count)
+            .Component(_sut, _component, count)
+            .Component(_sut);
 
-        var actual = sut.Equals(new EquatableComponent<string>());
+        When
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
 
-        actual.Should().BeFalse();
+        Then
+            .Result<bool>(actual => actual.Should().BeFalse());
     }
 
     [Theory]
@@ -64,12 +79,16 @@ public class EquatableComponentTests : BaseTest
     [InlineData(3)]
     public void Equals_ShoudBeEqualToComponentWithSameItems_WhenManyComponents(int count)
     {
-        var components = Fixture.CreateMany<Guid>(count).Cast<object>().ToArray();
-        var sut = new EquatableComponent<string>(components);
+        Given
+            .New(_component, count)
+            .Component(_sut, _component, count)
+            .Component(_sut, _component, count);
 
-        var actual = sut.Equals(new EquatableComponent<string>(components));
+        When
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
 
-        actual.Should().BeTrue();
+        Then
+            .Result<bool>(actual => actual.Should().BeTrue());
     }
 
     [Theory]
@@ -78,11 +97,49 @@ public class EquatableComponentTests : BaseTest
     [InlineData(3)]
     public void Equals_ShoudNotBeEqualToComponentWithDifferentItems_WhenManyComponents(int count)
     {
-        var components = Fixture.CreateMany<Guid>(count).Cast<object>().ToArray();
-        var sut = new EquatableComponent<string>(components);
+        Given
+            .New(_component, count * 2)
+            .Component(_sut, _component, count)
+            .Component(_sut, _component, skip: count, count);
 
-        var actual = sut.Equals(new EquatableComponent<string>(Fixture.CreateMany<Guid>(count).Cast<object>().ToArray()));
+        When
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
 
-        actual.Should().BeFalse();
+        Then
+            .Result<bool>(actual => actual.Should().BeFalse());
+    }
+
+    protected override GivenTestContext CreateGiven(VariablesCollection variables)
+    {
+        return new GivenTestContext(variables, Fixture);
+    }
+
+    protected override WhenContext CreateWhen(VariablesCollection variables)
+    {
+        return new WhenContext(variables, Result);
+    }
+
+    protected override ThenContext CreateThen(VariablesCollection variables)
+    {
+        return new ThenContext(variables, Result);
+    }
+
+    public sealed class GivenTestContext : GivenContext<GivenTestContext>
+    {
+        public GivenTestContext(VariablesCollection variables, IFixture fixture)
+            : base(variables, fixture)
+        {
+        }
+
+        public GivenTestContext Component(IVariable<EquatableComponent<string>> sut) =>
+            Add(sut, () => new EquatableComponent<string>());
+
+        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, int count)
+            where T : notnull =>
+            Add(sut, () => new EquatableComponent<string>(Variables.Get(variable, count).Cast<object>().ToArray()));
+
+        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, int skip, int count)
+            where T : notnull =>
+            Add(sut, () => new EquatableComponent<string>(Variables.Get(variable, skip + count).Skip(skip).Cast<object>().ToArray()));
     }
 }

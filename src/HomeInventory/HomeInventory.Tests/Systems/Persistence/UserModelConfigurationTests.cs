@@ -2,7 +2,7 @@
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Tests.Domain.ValueObjects;
+namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
 public class UserModelConfigurationTests : BaseTest
@@ -25,4 +25,3 @@ public class UserModelConfigurationTests : BaseTest
 
     private static UserModelConfiguration CreateSut() => new();
 }
-
