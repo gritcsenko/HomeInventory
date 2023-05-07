@@ -44,20 +44,9 @@ public class GivenContext<TContext> : Context
         return (TContext)this;
     }
 
-    public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IndexedVariable<T> variable)
-        where T : notnull
-    {
-        var hashValue = Variables.TryGet(hash)
-            .Reduce(() => AddNewHashCode(hash));
-
-        hashValue.Add(Variables.Get(variable));
-
-        if (!Variables.TryUpdate(hash, () => hashValue))
-        {
-            throw new InvalidOperationException($"Failed to update variable '{hash.Name}'");
-        }
-        return (TContext)this;
-    }
+    public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable)
+        where T : notnull =>
+        AddToHashCode(hash, variable, 1);
 
     public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable, int count)
         where T : notnull

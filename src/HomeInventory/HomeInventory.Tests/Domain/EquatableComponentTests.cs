@@ -17,10 +17,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .EmptyHashCode(_hash);
 
         When
-            .Invoked(_sut, sut => sut.GetHashCode());
-
-        Then
-            .Result<int, HashCode>(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(_sut, sut => sut.GetHashCode())
+            .Result(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Theory]
@@ -35,10 +33,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut, _component, count);
 
         When
-            .Invoked(_sut, sut => sut.GetHashCode());
-
-        Then
-            .Result<int, HashCode>(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(_sut, sut => sut.GetHashCode())
+            .Result(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
@@ -49,10 +45,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
-
-        Then
-            .Result<bool>(actual => actual.Should().BeTrue());
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Result(actual => actual.Should().BeTrue());
     }
 
     [Theory]
@@ -67,10 +61,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
-
-        Then
-            .Result<bool>(actual => actual.Should().BeFalse());
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Theory]
@@ -85,10 +77,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut, _component, count);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
-
-        Then
-            .Result<bool>(actual => actual.Should().BeTrue());
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Result(actual => actual.Should().BeTrue());
     }
 
     [Theory]
@@ -103,10 +93,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut, _component, skip: count, count);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other));
-
-        Then
-            .Result<bool>(actual => actual.Should().BeFalse());
+            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Result(actual => actual.Should().BeFalse());
     }
 
     protected override GivenTestContext CreateGiven(VariablesCollection variables)

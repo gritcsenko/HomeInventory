@@ -22,10 +22,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, sut => sut.Equals(sut));
-
-        Then
-            .Result<bool>(x => x.Should().BeTrue());
+            .Invoked(_sut, sut => sut.Equals(sut))
+            .Result(actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -37,10 +35,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals(other));
-
-        Then
-            .Result<bool>(x => x.Should().BeTrue());
+            .Invoked(_sut, _other, (sut, other) => sut.Equals(other))
+            .Result(actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -51,10 +47,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, sut => sut.Equals(default(TestEntity?)));
-
-        Then
-            .Result<bool>(x => x.Should().BeFalse());
+            .Invoked(_sut, sut => sut.Equals(default(TestEntity?)))
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -67,10 +61,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id.WithIndex(1));
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals(other));
-
-        Then
-            .Result<bool>(x => x.Should().BeFalse());
+            .Invoked(_sut, _other, (sut, other) => sut.Equals(other))
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -82,10 +74,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, _other.OfType<object>(), (sut, other) => sut.Equals(other));
-
-        Then
-            .Result<bool>(x => x.Should().BeFalse());
+            .Invoked(_sut, _other.OfType<object>(), (sut, other) => sut.Equals(other))
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -96,10 +86,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, sut => sut.Equals((object)sut));
-
-        Then
-            .Result<bool>(x => x.Should().BeTrue());
+            .Invoked(_sut, sut => sut.Equals((object)sut))
+            .Result(actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -111,10 +99,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals((object)other));
-
-        Then
-            .Result<bool>(x => x.Should().BeTrue());
+            .Invoked(_sut, _other, (sut, other) => sut.Equals((object)other))
+            .Result(actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -125,10 +111,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, sut => sut.Equals(default(object?)));
-
-        Then
-            .Result<bool>(x => x.Should().BeFalse());
+            .Invoked(_sut, sut => sut.Equals(default(object?)))
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -141,10 +125,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id.WithIndex(1));
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals((object)other));
-
-        Then
-            .Result<bool>(x => x.Should().BeFalse());
+            .Invoked(_sut, _other, (sut, other) => sut.Equals((object)other))
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -152,14 +134,12 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
     {
         Given
             .New(_id)
-            .AddToHashCode(_hash, _id.WithIndex(0))
+            .AddToHashCode(_hash, _id)
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, sut => sut.GetHashCode());
-
-        Then
-            .Result<int, EntityId>(_id, (x, id) => x.Should().Be(id.GetHashCode()));
+            .Invoked(_sut, sut => sut.GetHashCode())
+            .Result(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
@@ -171,10 +151,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut == other);
-
-        Then
-            .Result<bool>(x => x.Should().BeTrue());
+            .Invoked(_sut, _other, (sut, other) => sut == other)
+            .Result(actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -187,10 +165,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id.WithIndex(1));
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut == other);
-
-        Then
-            .Result<bool>(x => x.Should().BeFalse());
+            .Invoked(_sut, _other, (sut, other) => sut == other)
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -202,10 +178,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut != other);
-
-        Then
-            .Result<bool>(x => x.Should().BeFalse());
+            .Invoked(_sut, _other, (sut, other) => sut != other)
+            .Result(actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -218,10 +192,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext, WhenContext, T
             .TestEntity(_sut, _id.WithIndex(1));
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut != other);
-
-        Then
-            .Result<bool>(x => x.Should().BeTrue());
+            .Invoked(_sut, _other, (sut, other) => sut != other)
+            .Result(actual => actual.Should().BeTrue());
     }
 
     protected override GivenTestContext CreateGiven(VariablesCollection variables)

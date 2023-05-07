@@ -8,32 +8,29 @@ public class WhenContext : Context
         : base(variables) =>
         _resultVariable = resultVariable;
 
-    public WhenContext Invoked<TSut, TResult>(IVariable<TSut> sut, Func<TSut, TResult> invoke)
+    public ThenContext<TResult> Invoked<TSut, TResult>(IVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
         where TResult : notnull =>
         Invoked(sut.WithIndex(0), invoke);
 
-    public WhenContext Invoked<TSut, TArg, TResult>(IVariable<TSut> sut, IVariable<TArg> arg, Func<TSut, TArg, TResult> invoke)
+    public ThenContext<TResult> Invoked<TSut, TArg, TResult>(IVariable<TSut> sut, IVariable<TArg> arg, Func<TSut, TArg, TResult> invoke)
         where TSut : notnull
         where TArg : notnull
         where TResult : notnull =>
         Invoked(sut.WithIndex(0), arg.WithIndex(0), invoke);
 
-    public WhenContext Invoked<TSut, TArg, TResult>(IIndexedVariable<TSut> sut, IIndexedVariable<TArg> arg, Func<TSut, TArg, TResult> invoke)
+    public ThenContext<TResult> Invoked<TSut, TArg, TResult>(IIndexedVariable<TSut> sut, IIndexedVariable<TArg> arg, Func<TSut, TArg, TResult> invoke)
         where TSut : notnull
         where TArg : notnull
-        where TResult : notnull
-    {
-        var argValue = Variables.Get(arg);
-        return Invoked(sut, sutValue => invoke(sutValue, argValue));
-    }
+        where TResult : notnull =>
+        Invoked(sut, sutValue => invoke(sutValue, Variables.Get(arg)));
 
-    public WhenContext Invoked<TSut, TResult>(IIndexedVariable<TSut> sut, Func<TSut, TResult> invoke)
+    public ThenContext<TResult> Invoked<TSut, TResult>(IIndexedVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
         where TResult : notnull
     {
-        var sutValue = Variables.Get(sut);
-        Variables.TryAdd(_resultVariable.OfType<TResult>(), () => invoke(sutValue));
-        return this;
+        var variable = _resultVariable.OfType<TResult>();
+        Variables.TryAdd(variable, () => invoke(Variables.Get(sut)));
+        return new(Variables, variable);
     }
 }
