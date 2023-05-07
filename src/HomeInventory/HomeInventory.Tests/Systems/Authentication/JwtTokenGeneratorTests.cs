@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
@@ -12,7 +11,7 @@ namespace HomeInventory.Tests.Systems.Authentication;
 [UnitTest]
 public class JwtTokenGeneratorTests : BaseTest
 {
-    private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
+    private readonly FixedTestingDateTimeService _dateTimeService = new();
     private readonly JwtOptions _options;
     private readonly User _user;
     private readonly IJwtIdentityGenerator _jtiGenerator;
@@ -37,7 +36,7 @@ public class JwtTokenGeneratorTests : BaseTest
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
         var now = DateTimeOffset.Now;
-        _dateTimeService.Now.Returns(now);
+        _dateTimeService.Now = now;
         var validFrom = new DateTimeOffset(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Offset).UtcDateTime;
 
         var actualTokenString = await sut.GenerateTokenAsync(_user, Cancellation.Token);
