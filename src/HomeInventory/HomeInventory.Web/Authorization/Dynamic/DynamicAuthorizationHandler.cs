@@ -34,11 +34,11 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
         }
 
         using var scope = httpContext.RequestServices.CreateScope();
-
-        await CreateId<UserId>(scope, idText).Match(
-            async userId =>
+        var sp = scope.ServiceProvider;
+        await CreateId<UserId>(sp, idText)
+            .Match(async userId =>
             {
-                var repository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+                var repository = sp.GetRequiredService<IUserRepository>();
 
                 var permissions = requirement.GetPermissions(endpoint);
                 foreach (var permission in permissions)
@@ -59,7 +59,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
             });
     }
 
-    private static OneOf<TId, IError> CreateId<TId>(IServiceScope scope, string idText)
+    private static OneOf<TId, IError> CreateId<TId>(IServiceProvider sp, string idText)
         where TId : IIdentifierObject<TId> =>
-        scope.ServiceProvider.GetRequiredService<IIdFactory<TId, string>>().CreateFrom(idText);
+        sp.GetRequiredService<IIdFactory<TId, string>>().CreateFrom(idText);
 }
