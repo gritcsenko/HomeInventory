@@ -10,7 +10,8 @@ public abstract class BaseDatabaseContextTest : BaseTest
     private readonly DatabaseContext _context = HomeInventory.Domain.Primitives.TypeExtensions.CreateInstance<DatabaseContext>(
         GetDatabaseOptions(),
         GuidIdFactory.Create(guid => new UserId(guid)))!;
-    private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
+
+    private readonly FixedTestingDateTimeService _dateTimeService = new() { UtcNow = DateTimeOffset.UtcNow };
 
     protected private DatabaseContext Context => _context;
 

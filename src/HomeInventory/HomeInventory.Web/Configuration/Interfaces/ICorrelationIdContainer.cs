@@ -2,7 +2,9 @@
 
 public interface ICorrelationIdContainer
 {
-    string CorrelationId { get; set; }
+    string CorrelationId { get; }
 
     void GenerateNew();
+
+    void SetExisting(string id);
 }

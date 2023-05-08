@@ -25,9 +25,9 @@ internal class CorrelationIdMiddleware : IMiddleware
 
     private void SetCorrelationIdFrom(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(HeaderNames.CorrelationId, out var correlationId) && (string?)correlationId is { } id)
+        if (request.Headers.TryGetValue(HeaderNames.CorrelationId, out var correlationId) && correlationId.ToString() is { Length: > 0 } id)
         {
-            _container.CorrelationId = id;
+            _container.SetExisting(id);
         }
         else
         {

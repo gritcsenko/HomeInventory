@@ -11,7 +11,7 @@ public class SystemDateTimeServiceTests : BaseTest
         var sut = new SystemDateTimeService();
         var expected = DateTimeOffset.Now;
 
-        var actual = sut.Now;
+        var actual = sut.UtcNow;
 
         actual.Should().BeCloseTo(expected, TimeSpan.FromSeconds(1));
     }

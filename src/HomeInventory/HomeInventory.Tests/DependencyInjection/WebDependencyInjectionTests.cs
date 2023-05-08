@@ -48,7 +48,7 @@ public class WebDependencyInjectionTests : BaseTest
         env.WebRootFileProvider.Returns(new NullFileProvider());
         _services.AddSingleton(env);
         _services.AddSingleton<IHostEnvironment>(env);
-        _services.AddSingleton<IDateTimeService>(new FixedTestingDateTimeService { Now = DateTimeOffset.Now });
+        _services.AddSingleton<IDateTimeService>(new FixedTestingDateTimeService { UtcNow = DateTimeOffset.Now });
     }
 
     [Fact]

@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
@@ -12,10 +11,11 @@ namespace HomeInventory.Tests.Systems.Authentication;
 [UnitTest]
 public class JwtTokenGeneratorTests : BaseTest
 {
-    private readonly IDateTimeService _dateTimeService = Substitute.For<IDateTimeService>();
+    private readonly FixedTestingDateTimeService _dateTimeService = new() { UtcNow = DateTimeOffset.Now };
     private readonly JwtOptions _options;
+    private readonly JwtHeader _expectedHeader;
     private readonly User _user;
-    private readonly IJwtIdentityGenerator _jtiGenerator;
+    private readonly IJwtIdentityGenerator _jtiGenerator = Substitute.For<IJwtIdentityGenerator>();
 
     public JwtTokenGeneratorTests()
     {
@@ -25,40 +25,31 @@ public class JwtTokenGeneratorTests : BaseTest
                 .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
                 .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)
                 .Create();
+        _expectedHeader = new JwtHeader(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
         _user = Fixture.Create<User>();
-        _jtiGenerator = Substitute.For<IJwtIdentityGenerator>();
     }
 
     [Fact]
     public async Task GenerateTokenAsync_Should_GenerateCorrectTokenString()
     {
-        var sut = CreateSut();
-        var expectedHeader = new JwtHeader(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
-        var now = DateTimeOffset.Now;
-        _dateTimeService.Now.Returns(now);
-        var validFrom = new DateTimeOffset(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Offset).UtcDateTime;
+        var sut = CreateSut();
+        var validFrom = _dateTimeService.UtcNow.DropSubSeconds().UtcDateTime;
 
         var actualTokenString = await sut.GenerateTokenAsync(_user, Cancellation.Token);
 
         actualTokenString.Should().NotBeNullOrEmpty();
         var actualToken = new JwtSecurityTokenHandler().ReadJwtToken(actualTokenString);
-        actualToken.Header.Should().BeEquivalentTo(expectedHeader);
+        actualToken.Header.Should().BeEquivalentTo(_expectedHeader);
         actualToken.Issuer.Should().Be(_options.Issuer);
-        actualToken.Audiences.Should().Contain(_options.Audience)
-            .And.HaveCount(1);
+        actualToken.Audiences.Should().OnlyContain(a => a == _options.Audience)
+            .And.ContainSingle();
         actualToken.ValidFrom.Should().Be(validFrom);
         actualToken.ValidTo.Should().Be(validFrom.Add(_options.Expiry));
-        actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Sub)
-            .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.Id.ToString());
-        actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Jti)
-            .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(jti);
-        actualToken.Payload.Should().ContainKey(JwtRegisteredClaimNames.Email)
-            .WhoseValue.Should().BeOfType<string>()
-            .Which.Should().Be(_user.Email.Value);
+        actualToken.Payload.Should().Contain(JwtRegisteredClaimNames.Sub, _user.Id.ToString());
+        actualToken.Payload.Should().Contain(JwtRegisteredClaimNames.Jti, jti);
+        actualToken.Payload.Should().Contain(JwtRegisteredClaimNames.Email, _user.Email.Value);
     }
 
     private JwtTokenGenerator CreateSut() => new(_dateTimeService, _jtiGenerator, Options.Create(_options));

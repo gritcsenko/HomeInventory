@@ -24,7 +24,7 @@ internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var now = _dateTimeService.Now.ToUniversalTime();
+        var now = _dateTimeService.UtcNow.ToUniversalTime();
 
         await ConvertDomainEventsToOutboxMessages(now, cancellationToken);
         UpdateAuditableEntities(now);

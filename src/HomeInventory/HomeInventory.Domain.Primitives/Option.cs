@@ -62,15 +62,17 @@ public class Option<T> : Equatable<Option<T>>
 {
     private static readonly Option<T> _none = new();
     private readonly T? _content;
+    private readonly bool _hasValue;
 
     private Option()
     {
         _content = default;
+        _hasValue = false;
     }
 
     private Option(T content)
-        : base(content) =>
-        _content = content;
+        : base(content, true) =>
+        (_content, _hasValue) = (content, true);
 
     public static Option<T> None() =>
         _none;
@@ -82,19 +84,19 @@ public class Option<T> : Equatable<Option<T>>
     }
 
     public TResult When<TResult>(Func<T, TResult> content, Func<TResult> noContent) =>
-        _content is null
-        ? noContent()
-        : content(_content);
+        _hasValue && _content is not null
+        ? content(_content)
+        : noContent();
 
     public TResult When<TResult>(Func<T, TResult> content, TResult noContent) =>
-        _content is null
-        ? noContent
-        : content(_content);
+        _hasValue && _content is not null
+        ? content(_content)
+        : noContent;
 
     public TResult When<TResult>(TResult content, TResult noContent) =>
-        _content is null
-        ? noContent
-        : content;
+        _hasValue && _content is not null
+        ? content
+        : noContent;
 
     public override string? ToString() =>
         this.Select(c => c.ToString().ToOption()).When(c => c, default(string?));

@@ -24,7 +24,7 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
     public IAreaAPIDriver Area => _lazyArea.Value;
 
     public void SetToday(DateOnly today) =>
-        Services.GetRequiredService<FixedTestingDateTimeService>().Now = today.ToDateTime(new TimeOnly(12, 0, 0));
+        Services.GetRequiredService<FixedTestingDateTimeService>().UtcNow = today.ToDateTime(new TimeOnly(12, 0, 0));
 
     protected override IHost CreateHost(IHostBuilder builder)
     {

@@ -12,19 +12,6 @@ public sealed class ValuesCollection
         _valueType = valueType;
     }
 
-    public bool TryAdd<T>(T value)
-        where T : notnull
-    {
-        if (!IsAsignable<T>())
-        {
-            return false;
-        }
-
-        var container = new ValueContainer(Option.Some<object>(value), _valueType);
-        _values.Add(container);
-        return true;
-    }
-
     public bool TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
     {
@@ -36,6 +23,34 @@ public sealed class ValuesCollection
         var value = createValueFunc();
         var container = new ValueContainer(Option.Some<object>(value), _valueType);
         _values.Add(container);
+        return true;
+    }
+
+    public async Task<bool> TryAddAsync<T>(Func<Task<T>> createValueFunc)
+        where T : notnull
+    {
+        if (!IsAsignable<T>())
+        {
+            return false;
+        }
+
+        var value = await createValueFunc();
+        var container = new ValueContainer(Option.Some<object>(value), _valueType);
+        _values.Add(container);
+        return true;
+    }
+
+    public bool TrySet<T>(int index, Func<T> createValueFunc)
+        where T : notnull
+    {
+        if (!IsAsignable<T>() || index < 0 || index >= _values.Count)
+        {
+            return false;
+        }
+
+        var container = _values[index];
+        var value = createValueFunc();
+        container.Update(Option.Some<object>(value));
         return true;
     }
 

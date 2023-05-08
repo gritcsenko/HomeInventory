@@ -33,7 +33,7 @@ public abstract class BaseTest : Disposable
         }
     }
 
-    protected interface ICancellation
+    public interface ICancellation
     {
         CancellationToken Token { get; }
 
@@ -81,4 +81,14 @@ public abstract class BaseTest<TGiven, TWhen, TThen> : BaseTest
     protected abstract TWhen CreateWhen(VariablesCollection variables);
 
     protected abstract TThen CreateThen(VariablesCollection variables);
+}
+
+public abstract class BaseTest<TGiven> : BaseTest<TGiven, WhenContext, ThenContext>
+    where TGiven : GivenContext<TGiven>
+{
+    protected override WhenContext CreateWhen(VariablesCollection variables) =>
+        new(variables, Result, Cancellation);
+
+    protected override ThenContext CreateThen(VariablesCollection variables) =>
+        new(variables, Result);
 }

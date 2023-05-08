@@ -4,7 +4,7 @@ using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Tests.Domain.ValueObjects;
+namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
 public class UserModelConfigurationTests : BaseTest
