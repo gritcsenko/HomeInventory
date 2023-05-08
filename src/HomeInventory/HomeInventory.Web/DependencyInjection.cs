@@ -56,6 +56,10 @@ public static class DependencyInjection
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.ConfigureOptions<ConfigureSwaggerOptions>();
+        services.AddSingleton<IOpenApiValueConverter, JsonOpenApiValueConverter>();
+        services.AddSingleton<ISwaggerOperationFilter, DeprecatedSwaggerOperationFilter>();
+        services.AddSingleton<ISwaggerOperationFilter, ResponsesSwaggerOperationFilter>();
+        services.AddSingleton<ISwaggerOperationFilter, ParametersSwaggerOperationFilter>();
         services.AddSwaggerGen(options =>
             options.OperationFilter<SwaggerDefaultValues>());
         services.AddApiVersioning(options =>
