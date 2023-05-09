@@ -23,17 +23,17 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
         _mapper = mapper;
     }
 
-    protected override async Task<Result<AuthenticateResult>> InternalHandle(AuthenticateQuery request, CancellationToken cancellationToken)
+    protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery request, CancellationToken cancellationToken)
     {
         var result = await TryFindUserAsync(request, cancellationToken);
         if (result.TryPickT1(out _, out var user))
         {
-            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
+            return new InvalidCredentialsError();
         }
 
         if (user.Password != request.Password)
         {
-            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
+            return new InvalidCredentialsError();
         }
 
         var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);

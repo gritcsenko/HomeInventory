@@ -2,6 +2,7 @@
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
+
 public record class RegisterCommand(
     string FirstName,
     string LastName,

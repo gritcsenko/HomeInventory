@@ -3,6 +3,7 @@ using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Primitives.Errors;
+using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Queries.UserId;
 
@@ -15,7 +16,7 @@ internal class UserIdQueryHandler : QueryHandler<UserIdQuery, UserIdResult>
         _repository = userRepository;
     }
 
-    protected override async Task<Result<UserIdResult>> InternalHandle(UserIdQuery query, CancellationToken cancellationToken)
+    protected override async Task<OneOf<UserIdResult, IError>> InternalHandle(UserIdQuery query, CancellationToken cancellationToken)
     {
         var result = await _repository.FindFirstOrNotFoundAsync(UserSpecifications.HasEmail(query.Email), cancellationToken);
         if (result.TryPickT1(out _, out var user))

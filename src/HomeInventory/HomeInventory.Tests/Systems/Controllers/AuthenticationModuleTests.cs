@@ -10,6 +10,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
+using OneOf;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 
@@ -132,12 +133,12 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
         public IndexedVariable<HttpContext> Context => _context.WithIndex(0);
 
         public GivenTestContext OnSendReturn<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
-            where TRequest : notnull, IRequest<Result<TResult>>
+            where TRequest : notnull, IRequest<OneOf<TResult, IError>>
             where TResult : notnull
         {
             var requestValue = Variables.Get(request.WithIndex(0));
             var resultValue = Variables.Get(result.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(FluentResults.Result.Ok(resultValue));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
             return this;
         }
 
@@ -145,7 +146,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
         {
             var requestValue = Variables.Get(request.WithIndex(0));
             var resultValue = Variables.Get(result.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(FluentResults.Result.Fail(resultValue));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
             return this;
         }
 
@@ -153,7 +154,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
         {
             var requestValue = Variables.Get(request.WithIndex(0));
             var resultValue = Variables.Get(result.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(FluentResults.Result.Fail(resultValue));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
             return this;
         }
 

@@ -22,7 +22,7 @@ public abstract class ValueObjectFactory<TObject>
 
     protected static Error CreateValidationError<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
 
-    protected Result<TObject> GetValidationError<TValue>(TValue value) => Result.Fail<TObject>(GetValidationErrorCore(value));
+    protected OneOf<TObject, IError> GetValidationError<TValue>(TValue value) => GetValidationErrorCore(value);
 
     protected virtual Error GetValidationErrorCore<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
 }
