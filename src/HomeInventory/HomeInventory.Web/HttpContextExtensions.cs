@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using AutoMapper;
-using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Domain.Primitives.Errors;
@@ -24,9 +23,6 @@ internal static class HttpContextExtensions
 
     public static IResult MatchToOk<T, TResponse>(this HttpContext context, OneOf<T, IError> errorOrResult, Func<T, TResponse> onValue) =>
         context.Match(errorOrResult, x => Results.Ok(onValue(x)));
-
-    public static IResult MatchToOk<T, TResponse>(this HttpContext context, Result<T> errorOrResult, Func<T, TResponse> onValue) =>
-         context.Match(errorOrResult.IsSuccess ? OneOf<T, IError>.FromT0(errorOrResult.Value) : OneOf<T, IError>.FromT1(errorOrResult.Errors.First()), x => Results.Ok(onValue(x)));
 
     public static IResult Match<T>(this HttpContext context, OneOf<T, IError> errorOrResult, Func<T, IResult> onValue) =>
         errorOrResult.Match(

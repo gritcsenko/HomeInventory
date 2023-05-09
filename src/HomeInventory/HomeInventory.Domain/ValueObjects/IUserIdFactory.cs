@@ -1,9 +1,11 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Primitives.Errors;
+using OneOf;
 
 namespace HomeInventory.Domain.ValueObjects;
 
 public interface IUserIdFactory
 {
     UserId CreateNew();
-    Result<UserId> Create(Guid id);
+
+    OneOf<UserId, IError> Create(Guid id);
 }

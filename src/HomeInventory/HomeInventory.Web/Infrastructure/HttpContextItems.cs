@@ -1,4 +1,4 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Infrastructure;

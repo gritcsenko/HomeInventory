@@ -1,11 +1,12 @@
-﻿using FluentResults;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
+using OneOf;
 
 namespace HomeInventory.Domain.ValueObjects;
 
 internal sealed class UserIdFactory : ValueObjectFactory<UserId>, IUserIdFactory
 {
-    public Result<UserId> Create(Guid id) => id == Guid.Empty ? GetValidationError(id) : CreateCore(id);
+    public OneOf<UserId, IError> Create(Guid id) => id == Guid.Empty ? GetValidationError(id) : CreateCore(id);
 
     public UserId CreateNew() => CreateCore(Guid.NewGuid());
 

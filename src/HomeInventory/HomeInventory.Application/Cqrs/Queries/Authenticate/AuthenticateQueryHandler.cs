@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using FluentResults;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
@@ -23,17 +23,17 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
         _mapper = mapper;
     }
 
-    protected override async Task<Result<AuthenticateResult>> InternalHandle(AuthenticateQuery request, CancellationToken cancellationToken)
+    protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery request, CancellationToken cancellationToken)
     {
         var result = await TryFindUserAsync(request, cancellationToken);
         if (result.TryPickT1(out _, out var user))
         {
-            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
+            return new InvalidCredentialsError();
         }
 
         if (user.Password != request.Password)
         {
-            return Result.Fail<AuthenticateResult>(new InvalidCredentialsError());
+            return new InvalidCredentialsError();
         }
 
         var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);

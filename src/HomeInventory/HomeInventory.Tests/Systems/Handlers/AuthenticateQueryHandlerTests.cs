@@ -43,10 +43,10 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
-        result.IsFailed.Should().BeFalse();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(_user.Id);
-        result.Value.Token.Should().Be(token);
+        result.IsT1.Should().BeFalse();
+        result.AsT0.Should().NotBeNull();
+        result.AsT0.Id.Should().Be(_user.Id);
+        result.AsT0.Token.Should().Be(token);
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e is InvalidCredentialsError);
+        result.IsT1.Should().BeTrue();
+        result.AsT1.Should().BeAssignableTo<InvalidCredentialsError>();
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
     }
 
@@ -80,8 +80,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
         result.Should().NotBeNull();
-        result.IsFailed.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e is InvalidCredentialsError);
+        result.IsT1.Should().BeTrue();
+        result.AsT1.Should().BeAssignableTo<InvalidCredentialsError>();
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
     }
 

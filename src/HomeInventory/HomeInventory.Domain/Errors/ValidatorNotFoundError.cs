@@ -2,11 +2,14 @@
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Errors;
-public class ValidatorNotFoundError : NotFoundError
+
+public record ValidatorNotFoundError : NotFoundError
 {
     public ValidatorNotFoundError(AmountUnit unit)
         : base("Validator not found")
     {
-        WithMetadata(nameof(unit), unit);
+        Unit = unit;
     }
+
+    public AmountUnit Unit { get; }
 }

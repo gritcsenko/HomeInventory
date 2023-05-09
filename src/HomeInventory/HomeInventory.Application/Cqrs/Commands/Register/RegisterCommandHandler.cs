@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentResults;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
@@ -21,18 +20,18 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand, Registra
         _mapper = mapper;
     }
 
-    protected override async Task<Result<RegistrationResult>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
+    protected override async Task<OneOf<RegistrationResult, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
         if (await IsUserHasEmailAsync(command, cancellationToken))
         {
-            return Result.Fail<RegistrationResult>(new DuplicateEmailError());
+            return new DuplicateEmailError();
         }
 
         var result = await CreateUserAsync(command, cancellationToken);
 
-        return result.Match(
+        return result.Match<OneOf<RegistrationResult, IError>>(
             user => new RegistrationResult(user.Id),
-            _ => Result.Fail<RegistrationResult>(new UserCreationError()));
+            _ => new UserCreationError());
     }
 
     private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken)

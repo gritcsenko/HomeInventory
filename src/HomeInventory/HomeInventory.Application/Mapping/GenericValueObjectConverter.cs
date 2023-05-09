@@ -1,5 +1,5 @@
 using AutoMapper;
-using FluentResults;
+using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
 namespace HomeInventory.Application.Mapping;
