@@ -1,9 +1,9 @@
 using AutoMapper;
-using FluentResults;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Modules;
 using MediatR;

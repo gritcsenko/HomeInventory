@@ -1,10 +1,3 @@
 ﻿namespace HomeInventory.Domain.Primitives.Errors;
 
-public class ObjectValidationError<TValue> : ValidationError
-{
-    public ObjectValidationError(TValue value)
-        : base("Validation failed")
-    {
-        WithMetadata(nameof(value), value);
-    }
-}
+public record ObjectValidationError<TValue>(TValue Value) : ValidationError("Validation failed", new Dictionary<string, object?> { [nameof(Value)] = Value });

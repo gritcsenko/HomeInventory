@@ -1,8 +1,6 @@
-﻿using FluentResults;
+﻿namespace HomeInventory.Domain.Primitives.Errors;
 
-namespace HomeInventory.Domain.Primitives.Errors;
-
-public class UserCreationError : Error
+public record UserCreationError : Error
 {
     public UserCreationError()
         : base("Failed to create new user")

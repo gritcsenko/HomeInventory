@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
-using FluentResults;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

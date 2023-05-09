@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
 using AutoMapper;
-using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Domain.Primitives.Errors;

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentResults;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;

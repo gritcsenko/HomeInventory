@@ -1,11 +1,3 @@
-﻿using FluentResults;
+﻿namespace HomeInventory.Domain.Primitives.Errors;
 
-namespace HomeInventory.Domain.Primitives.Errors;
-
-public class ConflictError : Error
-{
-    public ConflictError(string message)
-        : base(message)
-    {
-    }
-}
+public record ConflictError(string Message) : Error(Message);

@@ -1,11 +1,5 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Domain.Errors;
 
-public class InvalidCredentialsError : Error
-{
-    public InvalidCredentialsError()
-        : base("Invalid credentials")
-    {
-    }
-}
+public record InvalidCredentialsError() : Error("Invalid credentials");

@@ -1,5 +1,6 @@
-﻿using FluentResults;
+﻿using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 

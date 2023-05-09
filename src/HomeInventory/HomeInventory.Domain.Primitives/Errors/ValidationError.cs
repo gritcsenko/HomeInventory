@@ -1,11 +1,9 @@
-﻿using FluentResults;
+﻿namespace HomeInventory.Domain.Primitives.Errors;
 
-namespace HomeInventory.Domain.Primitives.Errors;
-
-public class ValidationError : Error
+public record ValidationError(string Message, IReadOnlyDictionary<string, object?> Metadata) : Error(Message, Metadata)
 {
-    public ValidationError(string message)
-        : base(message)
+    public ValidationError(string Message)
+        : this(Message, new Dictionary<string, object?>())
     {
     }
 }

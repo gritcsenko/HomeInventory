@@ -1,6 +1,6 @@
-﻿using FluentResults;
-using HomeInventory.Domain.Errors;
+﻿using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
 namespace HomeInventory.Domain.ValueObjects;
@@ -29,7 +29,7 @@ internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
             }
             else
             {
-                return OneOf<Amount, IError>.FromT1(GetValidationError((value, v.Unit)).Errors.First());
+                return GetValidationError((value, v.Unit));
             }
         }, e => OneOf<Amount, IError>.FromT1(e));
     }
