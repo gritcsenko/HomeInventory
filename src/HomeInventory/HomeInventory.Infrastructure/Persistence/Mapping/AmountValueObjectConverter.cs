@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Mapping;
+using HomeInventory.Application.Mapping;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;

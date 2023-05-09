@@ -6,7 +6,7 @@ using OneOf;
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
 internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, IOneOf>
-    where TRequest : IBaseRequest
+     where TRequest : IBaseRequest
 {
     private static readonly string RequestName = typeof(TRequest).GetFormattedName();
     private static readonly string ResponseName = typeof(TResponse).GetFormattedName();

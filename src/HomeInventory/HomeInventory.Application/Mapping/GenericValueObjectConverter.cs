@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
