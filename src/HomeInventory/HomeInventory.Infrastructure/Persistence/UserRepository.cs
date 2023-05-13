@@ -2,6 +2,7 @@
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using OneOf;
@@ -12,11 +13,11 @@ namespace HomeInventory.Infrastructure.Persistence;
 internal class UserRepository : IUserRepository
 {
     private static readonly ICollection<User> _users = new List<User>();
-    private readonly IUserIdFactory _userIdFactory;
+    private readonly IIdFactory<UserId, Guid> _userIdFactory;
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
 
-    public UserRepository(IUserIdFactory userIdFactory, IDatabaseContext context, IMapper mapper)
+    public UserRepository(IIdFactory<UserId, Guid> userIdFactory, IDatabaseContext context, IMapper mapper)
     {
         _userIdFactory = userIdFactory;
         _context = context;

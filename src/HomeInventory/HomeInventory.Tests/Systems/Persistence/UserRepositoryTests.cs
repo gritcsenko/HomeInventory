@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -10,9 +11,9 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class UserRepositoryTests : BaseRepositoryTest
 {
-    private readonly IUserIdFactory _userIdFactory;
-    private readonly IDatabaseContext _context;
-    private readonly IMapper _mapper;
+    private readonly IIdFactory<UserId, Guid> _userIdFactory = Substitute.For<IIdFactory<UserId, Guid>>();
+    private readonly IDatabaseContext _context = Substitute.For<IDatabaseContext>();
+    private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly User _user;
     private readonly UserModel _userModel;
 
@@ -20,9 +21,6 @@ public class UserRepositoryTests : BaseRepositoryTest
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
-        _userIdFactory = Substitute.For<IUserIdFactory>();
-        _context = Substitute.For<IDatabaseContext>();
-        _mapper = Substitute.For<IMapper>();
 
         Fixture.CustomizeEmail();
         _user = Fixture.Create<User>();

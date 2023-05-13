@@ -10,12 +10,11 @@ namespace HomeInventory.Tests.Integration;
 [IntegrationTest]
 public class AuthenticationApiTests : BaseTest, IDisposable
 {
-    private readonly WebApplicationFactory<Program> _appFactory;
+    private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
 
     public AuthenticationApiTests()
     {
-        _appFactory = new WebApplicationFactory<Program>();
         _client = _appFactory.CreateClient();
     }
 
@@ -26,7 +25,7 @@ public class AuthenticationApiTests : BaseTest, IDisposable
     }
 
     [BrokenTest]
-    [Fact(Skip = "No reason")]
+    [Skipped("System.InvalidOperationException : The entry point exited without ever building an IHost.")]
     public async Task Register_ReturnsSuccess()
     {
         var request = Fixture.Create<RegisterRequest>();
@@ -42,7 +41,7 @@ public class AuthenticationApiTests : BaseTest, IDisposable
     }
 
     [BrokenTest]
-    [Fact(Skip = "No reason")]
+    [Skipped("System.InvalidOperationException : The entry point exited without ever building an IHost.")]
     public async Task RegisterSameTwice_ReturnsFailure()
     {
         var request = Fixture.Create<RegisterRequest>();
