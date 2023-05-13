@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -10,6 +12,7 @@ namespace HomeInventory.Web.Infrastructure;
 public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 {
     private readonly ApiBehaviorOptions _options;
+    private readonly ErrorMapping _errorMapping = new();
 
     public HomeInventoryProblemDetailsFactory(IOptions<ApiBehaviorOptions> options)
     {
@@ -26,7 +29,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
     {
         var problemDetails = new ProblemDetails
         {
-            Status = statusCode ?? StatusCodes.Status500InternalServerError,
+            Status = statusCode ?? _errorMapping.GetDefaultError(),
             Title = title,
             Type = type,
             Detail = detail,
@@ -54,7 +57,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 
         var problemDetails = new ValidationProblemDetails(modelStateDictionary)
         {
-            Status = statusCode ?? StatusCodes.Status400BadRequest,
+            Status = statusCode ?? _errorMapping.GetError<ValidationError>(),
             Type = type,
             Detail = detail,
             Instance = instance,
@@ -71,6 +74,49 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         return problemDetails;
     }
 
+    public ProblemDetails ConvertToProblem(HttpContext context, IReadOnlyCollection<IError> errors)
+    {
+        if (errors.Count == 0)
+        {
+            throw new InvalidOperationException("Has to be at least one error provided");
+        }
+
+        context.SetItem(HttpContextItems.Errors, errors);
+        if (errors.Count == 1)
+        {
+            return ConvertToProblem(context, errors.First());
+        }
+
+        var statuses = errors.Select(_errorMapping.GetError).ToHashSet();
+        var result = CreateProblemDetails(
+            context,
+            statuses.Count == 1 ? statuses.First() : _errorMapping.GetDefaultError(),
+            "Multiple Problems",
+            type: null,
+            "There were multiple problems that have occurred.",
+            instance: null);
+        result.Extensions["problems"] = errors.Select(error => ConvertToProblem(context, error)).ToArray();
+
+        return result;
+    }
+
+    private ProblemDetails ConvertToProblem(HttpContext context, IError error)
+    {
+        var result = CreateProblemDetails(
+            context,
+            _errorMapping.GetError(error),
+            error.GetType().Name,
+            type: null,
+            error.Message,
+            instance: null);
+
+        foreach (var pair in error.Metadata)
+        {
+            result.Extensions[pair.Key] = pair.Value;
+        }
+        return result;
+    }
+
     private void ApplyProblemDetailsDefaults(HttpContext context, ProblemDetails problemDetails)
     {
         if (_options.ClientErrorMapping.TryGetValue(problemDetails.Status.GetValueOrDefault(), out var clientErrorData))
@@ -79,13 +125,16 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Type ??= clientErrorData.Link;
         }
 
-        problemDetails.TryAddTraceId(context);
+        var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
+        if (traceId != null)
+        {
+            problemDetails.Extensions["traceId"] = traceId;
+        }
 
         var errors = context.GetItem(HttpContextItems.Errors);
         if (errors != null)
         {
-            var statusCode = (HttpStatusCode)problemDetails.Status!.Value;
-            problemDetails.Extensions["problems"] = errors.Select(error => error.ConvertToProblem(statusCode)).ToArray();
+            problemDetails.Extensions["problems"] = errors.Select(error => ConvertToProblem(context, error)).ToArray();
         }
     }
 }

@@ -4,11 +4,11 @@ namespace HomeInventory.Domain.Primitives;
 
 public static class TypeExtensions
 {
-    private const BindingFlags BindingAttr = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+    private const BindingFlags _bindingAttr = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 
     internal static IEnumerable<TFieldType> GetFieldsOfType<TFieldType>(this Type type)
     {
-        var fields = type.GetFields(BindingAttr);
+        var fields = type.GetFields(_bindingAttr);
         var fieldType = typeof(TFieldType);
         foreach (var field in fields)
         {

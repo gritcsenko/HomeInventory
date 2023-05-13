@@ -38,7 +38,8 @@ public static class DependencyInjection
         services.AddHealthChecksUI()
             .AddInMemoryStorage();
 
-        services.AddSingleton<ProblemDetailsFactory, HomeInventoryProblemDetailsFactory>();
+        services.AddSingleton<HomeInventoryProblemDetailsFactory>();
+        services.AddSingleton<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
 

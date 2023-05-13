@@ -43,7 +43,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
             .TestEntity(_sut, _id);
 
         When
-            .Invoked(_sut, sut => sut.Equals(default(TestEntity?)))
+            .Invoked(_sut, sut => sut.Equals(default))
             .Result(actual => actual.Should().BeFalse());
     }
 

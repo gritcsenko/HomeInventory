@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,7 @@ namespace HomeInventory.Tests.Systems.Controllers;
 public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 {
     private readonly ApiBehaviorOptions _options;
-    private readonly IOptions<ApiBehaviorOptions> _optionsAccessor;
-    private readonly HttpContext _context;
+    private readonly HttpContext _context = new DefaultHttpContext();
     private readonly string _title;
     private readonly string _type;
     private readonly string _detail;
@@ -22,11 +22,8 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
     public HomeInventoryProblemDetailsFactoryTests()
     {
-        _options = Fixture.Build<ApiBehaviorOptions>()
-            .Without(x => x.InvalidModelStateResponseFactory)
-            .Create();
-        _optionsAccessor = Options.Create(_options);
-        _context = Substitute.For<HttpContext>();
+        Fixture.Customize(new ApiBehaviorOptionsCustomization());
+        _options = Fixture.Create<ApiBehaviorOptions>();
         _title = Fixture.Create<string>();
         _type = Fixture.Create<string>();
         _detail = Fixture.Create<string>();
@@ -99,7 +96,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var id = Fixture.Create<string>();
-        _context.TraceIdentifier.Returns(id);
+        _context.TraceIdentifier = id;
 
         var details = sut.CreateProblemDetails(_context);
 
@@ -115,7 +112,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var errors = new[] { new DuplicateEmailError() };
-        _context.Items.Returns(new Dictionary<object, object?> { ["Errors"] = errors });
+        _context.Items["Errors"] = errors;
 
         var details = sut.CreateProblemDetails(_context);
 
@@ -124,6 +121,82 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
             .WhoseValue.Should().BeAssignableTo<IEnumerable<ProblemDetails>>()
             .Which.Select(p => p.Title)
             .Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
+    }
+
+    [Fact]
+    public void ConvertToProblem_Should_ThrowInvalidOperationException_When_NoErrors()
+    {
+        var sut = CreateSut();
+        var errors = Array.Empty<IError>();
+
+        Action action = () => sut.ConvertToProblem(_context, errors);
+
+        action.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void ConvertToProblem_Should_Convert_When_SingleError()
+    {
+        var sut = CreateSut();
+        var expectedDetail = Fixture.Create<string>();
+        var metadata = Fixture.Create<Dictionary<string, object?>>();
+        var errors = new[] { new ValidationError(expectedDetail, metadata) };
+        var expectedStatus = new ErrorMapping().GetError(errors.First());
+        var expectedTitle = errors.First().GetType().Name;
+
+        var details = sut.ConvertToProblem(_context, errors);
+
+        _context.Items.Should().ContainKey(HttpContextItems.Errors.Name)
+            .WhoseValue.Should().BeSameAs(errors);
+        details.Should().NotBeNull();
+        details.Status.Should().Be(expectedStatus);
+        details.Title.Should().Be(expectedTitle);
+        details.Type.Should().BeNull();
+        details.Detail.Should().Be(expectedDetail);
+        details.Instance.Should().BeNull();
+        foreach (var (key, value) in metadata)
+        {
+            details.Extensions.Should().ContainKey(key)
+                .WhoseValue.Should().BeSameAs(value);
+        }
+    }
+
+    [Fact]
+    public void ConvertToProblem_Should_Convert_When_MultipleDifferentErrors()
+    {
+        var sut = CreateSut();
+        var messages = Fixture.CreateMany<string>(2).ToArray();
+        var metadata = Fixture.Create<Dictionary<string, object?>>();
+        var errors = new IError[] { new ValidationError(messages[0], metadata), new ConflictError(messages[1]) };
+        var expectedStatus = new ErrorMapping().GetDefaultError();
+
+        var details = sut.ConvertToProblem(_context, errors);
+
+        _context.Items.Should().ContainKey(HttpContextItems.Errors.Name)
+            .WhoseValue.Should().BeSameAs(errors);
+        details.Should().NotBeNull();
+        details.Status.Should().Be(expectedStatus);
+        details.Title.Should().Be("Multiple Problems");
+        details.Type.Should().BeNull();
+        details.Detail.Should().Be("There were multiple problems that have occurred.");
+        details.Instance.Should().BeNull();
+        details.Extensions.Should().ContainKey("problems")
+            .WhoseValue.Should().BeAssignableTo<ProblemDetails[]>()
+            .Which.Should().HaveCount(errors.Count());
+    }
+
+    [Fact]
+    public void ConvertToProblem_Should_ConvertWithCorrectStatus_When_MultipleSimilarErrors()
+    {
+        var sut = CreateSut();
+        var messages = Fixture.CreateMany<string>(2).ToArray();
+        var metadata = Fixture.Create<Dictionary<string, object?>>();
+        var errors = new IError[] { new ValidationError(messages[0], metadata), new ObjectValidationError<string>(messages[1]) };
+        var expectedStatus = new ErrorMapping().GetError(errors.First());
+
+        var details = sut.ConvertToProblem(_context, errors);
+
+        details.Status.Should().Be(expectedStatus);
     }
 
     [Fact]
@@ -197,7 +270,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var id = Fixture.Create<string>();
-        _context.TraceIdentifier.Returns(id);
+        _context.TraceIdentifier = id;
 
         var details = sut.CreateValidationProblemDetails(_context, _state);
 
@@ -213,7 +286,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var errors = new[] { new DuplicateEmailError() };
-        _context.Items.Returns(new Dictionary<object, object?> { ["Errors"] = errors });
+        _context.Items["Errors"] = errors;
 
         var details = sut.CreateValidationProblemDetails(_context, _state);
 
@@ -224,5 +297,5 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
             .Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
-    private HomeInventoryProblemDetailsFactory CreateSut() => new(_optionsAccessor);
+    private HomeInventoryProblemDetailsFactory CreateSut() => new(Options.Create(_options));
 }
