@@ -5,7 +5,7 @@ namespace HomeInventory.Tests;
 /// <summary>
 /// Applies a category trait to a test.
 /// </summary>
-[TraitDiscoverer(CategoryTraitDiscoverer.FullyQualifiedName, CategoryTraitDiscoverer.Namespace)]
+[TraitDiscoverer(CategoryTraitDiscoverer._fullyQualifiedName, CategoryTraitDiscoverer._namespace)]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public abstract class CategoryTraitAttribute : Attribute, ITraitAttribute
 {

@@ -14,12 +14,12 @@ public class CategoryTraitDiscoverer : ITraitDiscoverer
     /// <summary>
     /// The namespace of this class
     /// </summary>
-    internal const string Namespace = nameof(HomeInventory) + "." + nameof(Tests);
+    internal const string _namespace = nameof(HomeInventory) + "." + nameof(Tests);
 
     /// <summary>
     /// The fully qualified name of this class
     /// </summary>
-    internal const string FullyQualifiedName = Namespace + "." + nameof(CategoryTraitDiscoverer);
+    internal const string _fullyQualifiedName = _namespace + "." + nameof(CategoryTraitDiscoverer);
 
     /// <summary>
     /// Gets the trait values from the Category attribute.

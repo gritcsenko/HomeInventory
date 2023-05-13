@@ -5,11 +5,14 @@ using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OneOf;
 
 namespace HomeInventory.Tests.Systems.Controllers;
@@ -123,6 +126,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
             var collection = new ServiceCollection();
             collection.AddSingleton(_mediator);
             collection.AddSingleton(_mapper);
+            collection.AddSingleton(new HomeInventoryProblemDetailsFactory(Options.Create(new ApiBehaviorOptions())));
 
             Add(_context, () => new DefaultHttpContext
             {

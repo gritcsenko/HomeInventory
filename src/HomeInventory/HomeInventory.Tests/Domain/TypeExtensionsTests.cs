@@ -40,7 +40,7 @@ public class TypeExtensionsTests : BaseTest
     {
         E.f1 = Fixture.Create<E>();
         E.f2 = Fixture.Create<E>();
-        E.f3 = Fixture.Create<E>();
+        E._f3 = Fixture.Create<E>();
         var type = typeof(E);
 
         var actual = type.GetFieldsOfType<E>().ToArray();
@@ -48,7 +48,7 @@ public class TypeExtensionsTests : BaseTest
         actual.Should().HaveCount(2);
         actual.Should().Contain(E.f1);
         actual.Should().Contain(E.f2);
-        actual.Should().NotContain(E.f3);
+        actual.Should().NotContain(E._f3);
     }
 
     private class NonGenericClass
@@ -68,6 +68,6 @@ public class TypeExtensionsTests : BaseTest
     {
         public static E f1 = null!;
         public static E f2 = null!;
-        internal static E f3 = null!;
+        internal static E _f3 = null!;
     }
 }

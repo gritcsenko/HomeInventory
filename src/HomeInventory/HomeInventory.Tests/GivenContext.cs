@@ -11,7 +11,7 @@ public class GivenContext<TContext> : Context
         Fixture = fixture;
     }
 
-    public IFixture Fixture { get; }
+    protected IFixture Fixture { get; }
 
     public TContext New<T>(IVariable<T> variable)
         where T : notnull =>

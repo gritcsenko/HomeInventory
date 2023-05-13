@@ -1,8 +1,8 @@
+using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Web;
-using MediatR.NotificationPublishers;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -16,10 +16,10 @@ try
         Args = args,
     });
 
-    builder.Host.UseSerilog(ConfigureSerilog, preserveStaticLogger: false, writeToProviders: false);
+    builder.Host.UseSerilog(SerilogConfigurator.Configure, preserveStaticLogger: false, writeToProviders: false);
 
     builder.Services
-        .AddMediatR(ConfigureMediatR)
+        .AddMediatR(MediatRConfigurator.Configure)
         .AddDomain()
         .AddInfrastructure()
         .AddApplication()
@@ -38,16 +38,5 @@ finally
 {
     Log.CloseAndFlush();
 }
-
-static void ConfigureSerilog(HostBuilderContext context, IServiceProvider services, LoggerConfiguration configuration) =>
-    configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services);
-
-static void ConfigureMediatR(MediatRServiceConfiguration configuration) =>
-    configuration
-        .RegisterServicesFromAssemblies(HomeInventory.Application.AssemblyReference.Assembly, HomeInventory.Infrastructure.AssemblyReference.Assembly)
-        .SetNotificationPublisher<TaskWhenAllPublisher>()
-        .AddLoggingBehavior();
 
 public partial class Program { }

@@ -10,7 +10,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class LoggingBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>> _logger;
+    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>> _logger;
     private readonly AuthenticateQuery _request;
     private readonly OneOf<AuthenticateResult, IError> _response;
 
@@ -18,7 +18,7 @@ public class LoggingBehaviorTests : BaseTest
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
-        _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>>>();
+        _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>>>();
         _request = Fixture.Create<AuthenticateQuery>();
         _response = Fixture.Create<AuthenticateResult>();
     }
@@ -28,7 +28,7 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        var response = await sut.Handle(_request, () => Task.FromResult<IOneOf>(_response), Cancellation.Token);
+        var response = await sut.Handle(_request, () => Task.FromResult(_response), Cancellation.Token);
 
         response.Value.Should().Be(_response.Value);
     }
@@ -43,7 +43,7 @@ public class LoggingBehaviorTests : BaseTest
             _logger
                 .Received(1)
                 .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
-            return Task.FromResult<IOneOf>(_response);
+            return Task.FromResult(_response);
         }, Cancellation.Token);
     }
 
@@ -55,7 +55,7 @@ public class LoggingBehaviorTests : BaseTest
         _ = await sut.Handle(_request, () =>
         {
             _logger.ClearReceivedCalls();
-            return Task.FromResult<IOneOf>(_response);
+            return Task.FromResult(_response);
         }, Cancellation.Token);
 
         _logger
@@ -63,5 +63,5 @@ public class LoggingBehaviorTests : BaseTest
             .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
     }
 
-    private LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>> CreateSut() => new(_logger);
+    private LoggingBehavior<AuthenticateQuery, AuthenticateResult> CreateSut() => new(_logger);
 }
