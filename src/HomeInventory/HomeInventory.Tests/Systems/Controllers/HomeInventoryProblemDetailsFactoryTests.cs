@@ -117,10 +117,9 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var details = sut.CreateProblemDetails(_context);
 
         details.Should().NotBeNull();
-        details.Extensions.Should().ContainKey("problems")
-            .WhoseValue.Should().BeAssignableTo<IEnumerable<ProblemDetails>>()
-            .Which.Select(p => p.Title)
-            .Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
+        details.Extensions.Should().ContainKey("errorCodes")
+            .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
+            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
     [Fact]
@@ -291,10 +290,9 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var details = sut.CreateValidationProblemDetails(_context, _state);
 
         details.Should().NotBeNull();
-        details.Extensions.Should().ContainKey("problems")
-            .WhoseValue.Should().BeAssignableTo<IEnumerable<ProblemDetails>>()
-            .Which.Select(p => p.Title)
-            .Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
+        details.Extensions.Should().ContainKey("errorCodes")
+            .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
+            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
     private HomeInventoryProblemDetailsFactory CreateSut() => new(Options.Create(_options));

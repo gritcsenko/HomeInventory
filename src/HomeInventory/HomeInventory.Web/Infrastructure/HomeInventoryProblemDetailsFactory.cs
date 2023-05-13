@@ -117,7 +117,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         return result;
     }
 
-    private void ApplyProblemDetailsDefaults(HttpContext context, ProblemDetails problemDetails)
+    private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails)
     {
         if (_options.ClientErrorMapping.TryGetValue(problemDetails.Status.GetValueOrDefault(), out var clientErrorData))
         {
@@ -125,16 +125,16 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Type ??= clientErrorData.Link;
         }
 
-        var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
+        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
         if (traceId != null)
         {
             problemDetails.Extensions["traceId"] = traceId;
         }
 
-        var errors = context.GetItem(HttpContextItems.Errors);
-        if (errors != null)
+        var errorCodes = httpContext.GetItem(HttpContextItems.Errors)?.Select(e => e.GetType().Name);
+        if (errorCodes != null)
         {
-            problemDetails.Extensions["problems"] = errors.Select(error => ConvertToProblem(context, error)).ToArray();
+            problemDetails.Extensions["errorCodes"] = errorCodes;
         }
     }
 }
