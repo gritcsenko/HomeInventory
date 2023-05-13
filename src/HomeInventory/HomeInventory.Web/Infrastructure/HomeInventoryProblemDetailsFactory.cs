@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Net;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +12,7 @@ namespace HomeInventory.Web.Infrastructure;
 public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 {
     private readonly ApiBehaviorOptions _options;
+    private readonly ErrorMapping _errorMapping = new();
 
     public HomeInventoryProblemDetailsFactory(IOptions<ApiBehaviorOptions> options)
     {
@@ -28,7 +29,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
     {
         var problemDetails = new ProblemDetails
         {
-            Status = statusCode ?? StatusCodes.Status500InternalServerError,
+            Status = statusCode ?? _errorMapping.GetDefaultError(),
             Title = title,
             Type = type,
             Detail = detail,
@@ -56,7 +57,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 
         var problemDetails = new ValidationProblemDetails(modelStateDictionary)
         {
-            Status = statusCode ?? StatusCodes.Status400BadRequest,
+            Status = statusCode ?? _errorMapping.GetError<ValidationError>(),
             Type = type,
             Detail = detail,
             Instance = instance,
@@ -73,7 +74,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         return problemDetails;
     }
 
-    public ProblemDetails ConvertToProblem(HttpContext context, IReadOnlyCollection<IError> errors, HttpStatusCode? statusCode = null)
+    public ProblemDetails ConvertToProblem(HttpContext context, IReadOnlyCollection<IError> errors)
     {
         if (errors.Count == 0)
         {
@@ -81,32 +82,32 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         }
 
         context.SetItem(HttpContextItems.Errors, errors);
-        var firstError = errors.First();
-        var status = (int)(statusCode ?? GetStatusCode(firstError));
         if (errors.Count == 1)
         {
-            return ConvertToProblem(context, firstError, status);
+            return ConvertToProblem(context, errors.First());
         }
 
-        return new()
-        {
-            Title = "Multiple Problems",
-            Detail = "There were multiple problems that have occurred.",
-            Status = status,
-            Extensions = {
-                ["problems"] = errors.Select(error => ConvertToProblem(context, error, status)).ToArray()
-            },
-        };
+        var statuses = errors.Select(_errorMapping.GetError).ToHashSet();
+        var result = CreateProblemDetails(
+            context,
+            statuses.Count == 1 ? statuses.First() : _errorMapping.GetDefaultError(),
+            "Multiple Problems",
+            type: null,
+            "There were multiple problems that have occurred.",
+            instance: null);
+        result.Extensions["problems"] = errors.Select(error => ConvertToProblem(context, error)).ToArray();
+
+        return result;
     }
 
-    private ProblemDetails ConvertToProblem(HttpContext context, IError error, int status)
+    private ProblemDetails ConvertToProblem(HttpContext context, IError error)
     {
         var result = CreateProblemDetails(
             context,
-            status,
+            _errorMapping.GetError(error),
             error.GetType().Name,
             type: null,
-             error.Message,
+            error.Message,
             instance: null);
 
         foreach (var pair in error.Metadata)
@@ -115,15 +116,6 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         }
         return result;
     }
-
-    private static HttpStatusCode GetStatusCode(IError error) =>
-        error switch
-        {
-            ConflictError => HttpStatusCode.Conflict,
-            ValidationError => HttpStatusCode.BadRequest,
-            NotFoundError => HttpStatusCode.NotFound,
-            _ => HttpStatusCode.InternalServerError,
-        };
 
     private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails)
     {

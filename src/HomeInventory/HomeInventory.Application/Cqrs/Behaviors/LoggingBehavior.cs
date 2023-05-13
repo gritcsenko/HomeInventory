@@ -9,8 +9,8 @@ namespace HomeInventory.Application.Cqrs.Behaviors;
 internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, OneOf<TResponse, IError>>
      where TRequest : IRequest<OneOf<TResponse, IError>>
 {
-    private static readonly string RequestName = typeof(TRequest).GetFormattedName();
-    private static readonly string ResponseName = typeof(TResponse).GetFormattedName();
+    private static readonly string _requestName = typeof(TRequest).GetFormattedName();
+    private static readonly string _responseName = typeof(TResponse).GetFormattedName();
 
     private readonly ILogger _logger;
 
@@ -18,11 +18,11 @@ internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
 
     public async Task<OneOf<TResponse, IError>> Handle(TRequest request, RequestHandlerDelegate<OneOf<TResponse, IError>> next, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{Request} was sent and expecting {Response}", RequestName, ResponseName);
+        _logger.LogInformation("{Request} was sent and expecting {Response}", _requestName, _responseName);
         var response = await next();
         response.Switch(
-            r => _logger.LogInformation("{Request} was handled and {Response} = {Value} was returned", RequestName, ResponseName, r),
-            error => _logger.LogWarning("{Request} was not handled and {Error} was returned", RequestName, error));
+            r => _logger.LogInformation("{Request} was handled and {Response} = {Value} was returned", _requestName, _responseName, r),
+            error => _logger.LogWarning("{Request} was not handled and {Error} was returned", _requestName, error));
 
         return response;
     }

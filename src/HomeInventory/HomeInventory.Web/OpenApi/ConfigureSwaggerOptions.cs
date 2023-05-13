@@ -43,7 +43,7 @@ internal class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         });
     }
 
-    private OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
+    private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {
         var text = new StringBuilder("An application to account home inventory.");
         var info = new OpenApiInfo
@@ -64,7 +64,7 @@ internal class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             {
                 text.Append(" The API will be sunset on ")
                     .Append(when.Date.ToShortDateString())
-                    .Append(".");
+                    .Append('.');
             }
 
             if (policy.HasLinks)

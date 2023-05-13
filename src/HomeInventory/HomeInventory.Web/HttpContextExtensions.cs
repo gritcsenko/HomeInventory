@@ -1,5 +1,4 @@
-﻿using System.Net;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Domain.Primitives.Errors;
@@ -48,23 +47,14 @@ internal static class HttpContextExtensions
     private static IResult Problem(this HttpContext context, IReadOnlyCollection<IError> errors)
     {
         var factory = context.GetService<HomeInventoryProblemDetailsFactory>();
-        var problem = factory.ConvertToProblem(context, errors, GetStatusCode(errors.First()));
+        var problem = factory.ConvertToProblem(context, errors);
         return Results.Problem(problem);
     }
 
     private static IResult Problem(this HttpContext context, IReadOnlyCollection<ValidationError> errors)
     {
         var factory = context.GetService<HomeInventoryProblemDetailsFactory>();
-        var problem = factory.ConvertToProblem(context, errors, HttpStatusCode.BadRequest);
+        var problem = factory.ConvertToProblem(context, errors);
         return Results.Problem(problem);
     }
-
-    private static HttpStatusCode GetStatusCode(IError error) =>
-        error switch
-        {
-            ConflictError => HttpStatusCode.Conflict,
-            ValidationError => HttpStatusCode.BadRequest,
-            NotFoundError => HttpStatusCode.NotFound,
-            _ => HttpStatusCode.InternalServerError,
-        };
 }

@@ -17,10 +17,11 @@ public class DomainDependencyInjectionTests : BaseTest
         _services.AddDomain();
         var provider = _factory.CreateServiceProvider(_services);
 
-
         VerifyIdFactory<UserId>(provider);
         VerifyIdFactory<MaterialId>(provider);
         VerifyIdFactory<ProductId>(provider);
+
+        VerifyValueFactory<Email, string, EmailFactory>(provider);
     }
 
     private void VerifyValueFactory<TObject, TValue, TFactory>(IServiceProvider provider)
