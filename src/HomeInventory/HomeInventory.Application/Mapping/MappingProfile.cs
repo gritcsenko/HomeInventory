@@ -8,7 +8,7 @@ using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Mapping;
 
-public class MappingProfile : Profile
+public abstract class MappingProfile : Profile
 {
     protected MappingProfile()
     {

@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Net;
+using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -70,6 +72,58 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 
         return problemDetails;
     }
+
+    public ProblemDetails ConvertToProblem(HttpContext context, IReadOnlyCollection<IError> errors, HttpStatusCode? statusCode = null)
+    {
+        if (errors.Count == 0)
+        {
+            throw new InvalidOperationException("Has to be at least one error provided");
+        }
+
+        context.SetItem(HttpContextItems.Errors, errors);
+        var firstError = errors.First();
+        var status = (int)(statusCode ?? GetStatusCode(firstError));
+        if (errors.Count == 1)
+        {
+            return ConvertToProblem(context, firstError, status);
+        }
+
+        return new()
+        {
+            Title = "Multiple Problems",
+            Detail = "There were multiple problems that have occurred.",
+            Status = status,
+            Extensions = {
+                ["problems"] = errors.Select(error => ConvertToProblem(context, error, status)).ToArray()
+            },
+        };
+    }
+
+    private ProblemDetails ConvertToProblem(HttpContext context, IError error, int status)
+    {
+        var result = CreateProblemDetails(
+            context,
+            status,
+            error.GetType().Name,
+            type: null,
+             error.Message,
+            instance: null);
+
+        foreach (var pair in error.Metadata)
+        {
+            result.Extensions[pair.Key] = pair.Value;
+        }
+        return result;
+    }
+
+    private static HttpStatusCode GetStatusCode(IError error) =>
+        error switch
+        {
+            ConflictError => HttpStatusCode.Conflict,
+            ValidationError => HttpStatusCode.BadRequest,
+            NotFoundError => HttpStatusCode.NotFound,
+            _ => HttpStatusCode.InternalServerError,
+        };
 
     private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails)
     {
