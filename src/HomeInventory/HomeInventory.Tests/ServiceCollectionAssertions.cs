@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Tests;
 
@@ -8,6 +9,10 @@ internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServic
         : base(value)
     {
     }
+
+    public AndWhichConstraint<ObjectAssertions, IConfigureOptions<TOptions>> ContainConfigureOptions<TOptions>(IServiceProvider provider)
+        where TOptions : class =>
+        ContainSingleTransient<IConfigureOptions<TOptions>>(provider);
 
     public AndWhichConstraint<ObjectAssertions, T> ContainSingleTransient<T>(IServiceProvider provider)
         where T : class =>

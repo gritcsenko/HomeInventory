@@ -20,6 +20,7 @@ public class InfrastructureDependencyInjectionTests : BaseTest
         _services.AddSingleton(Substitute.For<IIdFactory<UserId>>());
         _services.AddSingleton(Substitute.For<IHostEnvironment>());
         _services.AddSingleton(Substitute.For<IMapper>());
+        _services.AddSingleton(Substitute.For<IDateTimeService>());
     }
 
     [Fact]
@@ -28,7 +29,6 @@ public class InfrastructureDependencyInjectionTests : BaseTest
         _services.AddInfrastructure();
         var provider = _factory.CreateServiceProvider(_services);
 
-        _services.Should().ContainSingleSingleton<IDateTimeService>(provider);
         _services.Should().ContainSingleScoped<IUserRepository>(provider);
         _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
     }

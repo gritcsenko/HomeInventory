@@ -48,7 +48,7 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().BeSameAs(expected);
     }
 
-    private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTimeService);
+    private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTime);
 
     private class FakeRepository : Repository<FakeModel, FakeEntity>
     {

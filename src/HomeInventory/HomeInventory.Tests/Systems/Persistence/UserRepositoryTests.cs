@@ -75,5 +75,5 @@ public class UserRepositoryTests : BaseRepositoryTest
         actual.Should().BeEquivalentTo(_user);
     }
 
-    private UserRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTimeService);
+    private UserRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTime);
 }

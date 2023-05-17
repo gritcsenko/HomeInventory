@@ -181,7 +181,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Instance.Should().BeNull();
         details.Extensions.Should().ContainKey("problems")
             .WhoseValue.Should().BeAssignableTo<ProblemDetails[]>()
-            .Which.Should().HaveCount(errors.Count());
+            .Which.Should().HaveSameCount(errors);
     }
 
     [Fact]

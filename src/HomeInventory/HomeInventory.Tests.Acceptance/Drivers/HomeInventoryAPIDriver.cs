@@ -24,7 +24,7 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
     public IAreaAPIDriver Area => _lazyArea.Value;
 
     public void SetToday(DateOnly today) =>
-        Services.GetRequiredService<FixedTestingDateTimeService>().UtcNow = today.ToDateTime(new TimeOnly(12, 0, 0));
+        Services.GetRequiredService<MutableDateTimeService>().UtcNow = today.ToDateTime(new TimeOnly(12, 0, 0));
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -39,8 +39,8 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
                 .UseApplicationServiceProvider(sp)
                 .UseInMemoryDatabase($"HomeInventory{id:D}")
                 .Options);
-            services.AddSingleton<FixedTestingDateTimeService>();
-            services.ReplaceWithSingleton<IDateTimeService>(sp => sp.GetRequiredService<FixedTestingDateTimeService>());
+            services.AddSingleton<MutableDateTimeService>();
+            services.ReplaceWithScoped<IDateTimeService>(sp => sp.GetRequiredService<MutableDateTimeService>());
         });
 
         return base.CreateHost(builder);
@@ -49,4 +49,9 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
     private AuthenticationAPIDriver CreateAuthentication() => new(Server);
 
     private AreaAPIDriver CreateArea() => new(Server);
+
+    private sealed class MutableDateTimeService : IDateTimeService
+    {
+        public DateTimeOffset UtcNow { get; set; } = DateTimeOffset.UtcNow;
+    }
 }

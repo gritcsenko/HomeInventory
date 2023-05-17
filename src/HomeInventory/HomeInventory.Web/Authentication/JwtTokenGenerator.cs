@@ -11,15 +11,13 @@ namespace HomeInventory.Web.Authentication;
 
 internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 {
-    private readonly IDateTimeService _dateTimeService;
     private readonly IJwtIdentityGenerator _jtiGenerator;
     private readonly JwtOptions _jwtOptions;
     private readonly JwtHeader _header;
     private readonly JwtSecurityTokenHandler _handler = new();
 
-    public JwtTokenGenerator(IDateTimeService dateTimeService, IJwtIdentityGenerator jtiGenerator, IOptions<JwtOptions> jwtOptionsAccessor)
+    public JwtTokenGenerator(IJwtIdentityGenerator jtiGenerator, IOptions<JwtOptions> jwtOptionsAccessor)
     {
-        _dateTimeService = dateTimeService;
         _jtiGenerator = jtiGenerator;
         _jwtOptions = jwtOptionsAccessor.Value;
 
@@ -27,25 +25,26 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
         _header = new(signingCredentials);
     }
 
-    public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateTokenAsync(User user, IDateTimeService dateTimeService, CancellationToken cancellationToken = default)
     {
         await ValueTask.CompletedTask;
 
-        var securityToken = CreateToken(user);
+        var securityToken = CreateToken(dateTimeService, user);
 
         return _handler.WriteToken(securityToken);
     }
 
-    private JwtSecurityToken CreateToken(User user)
+    private JwtSecurityToken CreateToken(IDateTimeService dateTimeService, User user)
         => new(_header, CreatePayload(
+            dateTimeService,
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, _jtiGenerator.GenerateNew()),
             new(JwtRegisteredClaimNames.Email, user.Email.Value, ClaimValueTypes.Email)));
 
-    private JwtPayload CreatePayload(params Claim[] claims)
+    private JwtPayload CreatePayload(IDateTimeService dateTimeService, params Claim[] claims)
     {
-        var utcNow = _dateTimeService.UtcNow.UtcDateTime;
+        var utcNow = dateTimeService.UtcNow.UtcDateTime;
         return new(_jwtOptions.Issuer, _jwtOptions.Audience, claims, notBefore: utcNow, expires: utcNow.Add(_jwtOptions.Expiry), issuedAt: utcNow);
     }
 }

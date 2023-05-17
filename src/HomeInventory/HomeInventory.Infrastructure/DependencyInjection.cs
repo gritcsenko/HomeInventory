@@ -22,7 +22,6 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddDatabase();
-        services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
         services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
         services.AddRepository<User, IUserRepository, UserRepository>();
         services.AddRepository<StorageArea, IStorageAreaRepository, StorageAreaRepository>();

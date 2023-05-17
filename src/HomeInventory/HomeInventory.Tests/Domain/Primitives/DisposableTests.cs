@@ -34,7 +34,7 @@ public class DisposableTests : BaseTest
     [Fact]
     public void Dispose_Should_SetIsDisposed()
     {
-        void Action()
+        static void Action()
         { };
         var sut = Disposable.Create(Action);
 
@@ -46,7 +46,7 @@ public class DisposableTests : BaseTest
     [Fact]
     public void Dispose_Should_HaveIsDisposedEqualToFalse_WhenCreated()
     {
-        void Action()
+        static void Action()
         { };
 
         var sut = Disposable.Create(Action);
@@ -96,7 +96,7 @@ public class DisposableTests : BaseTest
     [Fact]
     public void DisposeOfT_Should_SetIsDisposed()
     {
-        void Action(object _)
+        static void Action(object _)
         { };
         var sut = Disposable.Create(Action, new object());
 
@@ -108,7 +108,7 @@ public class DisposableTests : BaseTest
     [Fact]
     public void DisposeOfT_Should_HaveIsDisposedEqualToFalse_WhenCreated()
     {
-        void Action(object _)
+        static void Action(object _)
         { };
 
         var sut = Disposable.Create(Action, new object());

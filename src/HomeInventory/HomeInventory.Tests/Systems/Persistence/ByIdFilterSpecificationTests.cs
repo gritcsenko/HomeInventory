@@ -19,7 +19,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         _id = Fixture.Create<UserId>();
-        _unitOfWork = new UnitOfWork(Context, DateTimeService);
+        _unitOfWork = new UnitOfWork(Context, DateTime);
     }
 
     [Fact]

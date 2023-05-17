@@ -3,6 +3,7 @@ using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
@@ -11,12 +12,13 @@ namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, AuthenticateResult>
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
-    private readonly IUserRepository _repository;
-
-    public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository)
+    private readonly IUserRepository _userRepository;
+    private readonly IDateTimeService _dateTimeService;
+    public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IDateTimeService dateTimeService)
     {
         _tokenGenerator = tokenGenerator;
-        _repository = userRepository;
+        _userRepository = userRepository;
+        _dateTimeService = dateTimeService;
     }
 
     protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
@@ -32,10 +34,10 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
             return new InvalidCredentialsError();
         }
 
-        var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);
+        var token = await _tokenGenerator.GenerateTokenAsync(user, _dateTimeService, cancellationToken);
         return new AuthenticateResult(user.Id, token);
     }
 
     private async Task<OneOf<User, OneOf.Types.NotFound>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
-        await _repository.FindFirstByEmailOrNotFoundUserAsync(request.Email, cancellationToken);
+        await _userRepository.FindFirstByEmailOrNotFoundUserAsync(request.Email, cancellationToken);
 }

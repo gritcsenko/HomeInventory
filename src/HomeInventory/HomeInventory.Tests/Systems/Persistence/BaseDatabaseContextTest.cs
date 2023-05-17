@@ -11,11 +11,7 @@ public abstract class BaseDatabaseContextTest : BaseTest
         GetDatabaseOptions(),
         GuidIdFactory.Create(guid => new UserId(guid)))!;
 
-    private readonly FixedTestingDateTimeService _dateTimeService = new() { UtcNow = DateTimeOffset.UtcNow };
-
     protected private DatabaseContext Context => _context;
-
-    protected IDateTimeService DateTimeService => _dateTimeService;
 
     private static DbContextOptions<DatabaseContext> GetDatabaseOptions()
         => new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "db").Options;

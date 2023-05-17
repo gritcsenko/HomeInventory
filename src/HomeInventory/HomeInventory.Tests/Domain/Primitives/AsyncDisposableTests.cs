@@ -43,7 +43,7 @@ public class AsyncDisposableTests : BaseTest
     [Fact]
     public async ValueTask Dispose_Should_SetIsDisposed()
     {
-        ValueTask Action() => ValueTask.CompletedTask;
+        static ValueTask Action() => ValueTask.CompletedTask;
         var sut = AsyncDisposable.Create(Action);
 
         await sut.DisposeAsync();
@@ -54,7 +54,7 @@ public class AsyncDisposableTests : BaseTest
     [Fact]
     public void Dispose_Should_HaveIsDisposedEqualToFalse_WhenCreated()
     {
-        ValueTask Action() => ValueTask.CompletedTask;
+        static ValueTask Action() => ValueTask.CompletedTask;
 
         var sut = AsyncDisposable.Create(Action);
 
@@ -115,7 +115,7 @@ public class AsyncDisposableTests : BaseTest
     [Fact]
     public async ValueTask DisposeOfT_Should_SetIsDisposed()
     {
-        ValueTask Action(object _) => ValueTask.CompletedTask;
+        static ValueTask Action(object _) => ValueTask.CompletedTask;
         var sut = AsyncDisposable.Create(Action, new object());
 
         await sut.DisposeAsync();
@@ -126,7 +126,7 @@ public class AsyncDisposableTests : BaseTest
     [Fact]
     public void DisposeOfT_Should_HaveIsDisposedEqualToFalse_WhenCreated()
     {
-        ValueTask Action(object _) => ValueTask.CompletedTask;
+        static ValueTask Action(object _) => ValueTask.CompletedTask;
 
         var sut = AsyncDisposable.Create(Action, new object());
 
