@@ -1,4 +1,6 @@
 ﻿using System.Runtime.Serialization;
+using HomeInventory.Domain;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests;
 
@@ -6,6 +8,7 @@ public abstract class BaseTest : Disposable
 {
     private readonly Lazy<CancellationImplementation> _lazyCancellation = new(() => new CancellationImplementation());
     private readonly Lazy<IFixture> _lazyFixture = new(() => new Fixture());
+    private readonly Lazy<IDateTimeService> _lazyDateTime = new(() => new FixedDateTimeService(DateTimeOffset.UtcNow));
 
     protected BaseTest()
     {
@@ -14,6 +17,8 @@ public abstract class BaseTest : Disposable
     protected IFixture Fixture => _lazyFixture.Value;
 
     protected ICancellation Cancellation => _lazyCancellation.Value;
+
+    protected IDateTimeService DateTime => _lazyDateTime.Value;
 
     protected static object GetInstanceOf(Type type)
     {
@@ -26,10 +31,7 @@ public abstract class BaseTest : Disposable
 
     protected override void InternalDispose()
     {
-        if (_lazyCancellation.IsValueCreated)
-        {
-            _lazyCancellation.Value.Dispose();
-        }
+        _lazyCancellation.TryDispose();
     }
 
     public interface ICancellation

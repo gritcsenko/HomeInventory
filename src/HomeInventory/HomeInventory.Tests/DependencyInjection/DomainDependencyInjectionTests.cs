@@ -22,6 +22,14 @@ public class DomainDependencyInjectionTests : BaseTest
         VerifyIdFactory<ProductId>(provider);
 
         VerifyValueFactory<Email, string, EmailFactory>(provider);
+
+        VerifyTimeServices(provider);
+    }
+
+    private void VerifyTimeServices(IServiceProvider provider)
+    {
+        _services.Should().ContainSingleSingleton<SystemDateTimeService>(provider);
+        _services.Should().ContainSingleScoped<IDateTimeService>(provider);
     }
 
     private void VerifyValueFactory<TObject, TValue, TFactory>(IServiceProvider provider)
