@@ -25,7 +25,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         _user = Fixture.Create<User>();
     }
 
-    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository, _mapper);
+    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository, _mapper, DateTime);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -36,7 +36,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var token = Fixture.Create<string>();
 
         _userRepository.FindFirstOrNotFoundAsync(specification, Cancellation.Token).Returns(_user);
-        _tokenGenerator.GenerateTokenAsync(_user, Cancellation.Token).Returns(token);
+        _tokenGenerator.GenerateTokenAsync(_user, DateTime, Cancellation.Token).Returns(token);
 
         var sut = CreateSut();
         // When
@@ -64,7 +64,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         result.Should().NotBeNull();
         result.IsT1.Should().BeTrue();
         result.AsT1.Should().BeAssignableTo<InvalidCredentialsError>();
-        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
+        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), DateTime, Cancellation.Token);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         result.Should().NotBeNull();
         result.IsT1.Should().BeTrue();
         result.AsT1.Should().BeAssignableTo<InvalidCredentialsError>();
-        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>());
+        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), DateTime, Cancellation.Token);
     }
 
     private UserHasEmailSpecification MapToSpecification(AuthenticateQuery query)

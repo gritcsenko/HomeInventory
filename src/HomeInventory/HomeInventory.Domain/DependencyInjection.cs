@@ -15,6 +15,8 @@ public static class DependencyInjection
 
         services.AddValueObjectFactory<Email, string, EmailFactory>();
         services.AddSingleton<IAmountFactory, AmountFactory>();
+        services.AddSingleton<SystemDateTimeService>();
+        services.AddScoped<IDateTimeService>(sp => new FixedDateTimeService(sp.GetRequiredService<SystemDateTimeService>()));
         return services;
     }
 

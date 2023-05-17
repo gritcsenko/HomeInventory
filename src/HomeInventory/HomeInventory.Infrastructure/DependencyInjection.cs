@@ -1,14 +1,11 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Mapping;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
-using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Infrastructure;
@@ -18,7 +15,6 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddDatabase();
-        services.TryAddSingleton<IDateTimeService, SystemDateTimeService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 

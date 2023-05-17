@@ -5,6 +5,7 @@ using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
@@ -15,12 +16,14 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly IDateTimeService _dateTimeService;
 
-    public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IMapper mapper)
+    public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IMapper mapper, IDateTimeService dateTimeService)
     {
         _tokenGenerator = tokenGenerator;
         _userRepository = userRepository;
         _mapper = mapper;
+        _dateTimeService = dateTimeService;
     }
 
     protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery request, CancellationToken cancellationToken)
@@ -36,7 +39,7 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
             return new InvalidCredentialsError();
         }
 
-        var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);
+        var token = await _tokenGenerator.GenerateTokenAsync(user, _dateTimeService, cancellationToken);
         return new AuthenticateResult(user.Id, token);
     }
 

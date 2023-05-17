@@ -28,7 +28,6 @@ public class InfrastructureDependencyInjectionTests : BaseTest
         _services.AddInfrastructure();
         var provider = _factory.CreateServiceProvider(_services);
 
-        _services.Should().ContainSingleSingleton<IDateTimeService>(provider);
         _services.Should().ContainSingleScoped<IUserRepository>(provider);
         _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
     }

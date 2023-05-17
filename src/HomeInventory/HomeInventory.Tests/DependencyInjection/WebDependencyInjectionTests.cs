@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
@@ -48,7 +47,7 @@ public class WebDependencyInjectionTests : BaseTest
         env.WebRootFileProvider.Returns(new NullFileProvider());
         _services.AddSingleton(env);
         _services.AddSingleton<IHostEnvironment>(env);
-        _services.AddSingleton<IDateTimeService>(new FixedTestingDateTimeService { Now = DateTimeOffset.Now });
+        _services.AddScoped(sp => DateTime);
     }
 
     [Fact]

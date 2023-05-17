@@ -1,7 +1,8 @@
 ﻿using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Infrastructure.Services;
+namespace HomeInventory.Domain;
+
 internal class SystemDateTimeService : IDateTimeService
 {
-    public DateTimeOffset Now => DateTimeOffset.Now;
+    public DateTimeOffset UtcNow => DateTimeOffset.Now;
 }
