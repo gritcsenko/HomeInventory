@@ -1,12 +1,12 @@
 ﻿using HomeInventory.Domain;
 
-namespace HomeInventory.Tests.Systems.Services;
+namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
 public class SystemDateTimeServiceTests : BaseTest
 {
     [Fact]
-    public void Now_ShouldReturnCurrentTime()
+    public void UtcNow_ShouldReturnCurrentTime()
     {
         var sut = new SystemDateTimeService();
         var expected = DateTimeOffset.UtcNow;
@@ -14,5 +14,6 @@ public class SystemDateTimeServiceTests : BaseTest
         var actual = sut.UtcNow;
 
         actual.Should().BeCloseTo(expected, TimeSpan.FromSeconds(1));
+        actual.Offset.Should().Be(TimeSpan.Zero);
     }
 }
