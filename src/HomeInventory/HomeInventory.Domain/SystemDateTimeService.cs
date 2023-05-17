@@ -4,5 +4,5 @@ namespace HomeInventory.Domain;
 
 internal class SystemDateTimeService : IDateTimeService
 {
-    public DateTimeOffset UtcNow => DateTimeOffset.Now;
+    public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
 }
