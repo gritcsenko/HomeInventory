@@ -47,7 +47,7 @@ public class WebDependencyInjectionTests : BaseTest
         env.WebRootFileProvider.Returns(new NullFileProvider());
         _services.AddSingleton(env);
         _services.AddSingleton<IHostEnvironment>(env);
-        _services.AddScoped(sp => DateTime);
+        _services.AddScoped(_ => DateTime);
     }
 
     [Fact]
