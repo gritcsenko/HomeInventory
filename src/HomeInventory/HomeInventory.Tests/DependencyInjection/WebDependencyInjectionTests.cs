@@ -17,7 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using IConfigurationProvider = Microsoft.Extensions.Configuration.IConfigurationProvider;
@@ -59,8 +58,8 @@ public class WebDependencyInjectionTests : BaseTest
         _services.AddWeb();
         var provider = _factory.CreateServiceProvider(_services);
 
-        _services.Should().ContainSingleTransient<IConfigureOptions<JwtOptions>>(provider);
-        _services.Should().ContainSingleTransient<IConfigureOptions<JwtBearerOptions>>(provider);
+        _services.Should().ContainConfigureOptions<JwtOptions>(provider);
+        _services.Should().ContainConfigureOptions<JwtBearerOptions>(provider);
         _services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
         _services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
         _services.Should().ContainSingleSingleton<HealthCheckService>(provider);
@@ -81,7 +80,7 @@ public class WebDependencyInjectionTests : BaseTest
         _services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>(provider);
 
         var swaggerOptions = new SwaggerGenOptions();
-        _services.Should().ContainSingleTransient<IConfigureOptions<SwaggerGenOptions>>(provider)
+        _services.Should().ContainConfigureOptions<SwaggerGenOptions>(provider)
             .Which.Configure(swaggerOptions);
         swaggerOptions.SwaggerGeneratorOptions.SwaggerDocs.Should().ContainKey("v1")
             .WhoseValue.Version.Should().Be("1");
