@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public class AsyncDisposeAction : AsyncDisposable
+internal sealed class AsyncDisposeAction : AsyncDisposable
 {
     private readonly Func<ValueTask> _action;
 
@@ -9,7 +9,7 @@ public class AsyncDisposeAction : AsyncDisposable
     protected override async ValueTask InternalDisposeAsync() => await _action();
 }
 
-public class AsyncDisposeAction<T> : AsyncDisposable
+internal sealed class AsyncDisposeAction<T> : AsyncDisposable
 {
     private readonly Func<T, ValueTask> _action;
     private readonly T _state;

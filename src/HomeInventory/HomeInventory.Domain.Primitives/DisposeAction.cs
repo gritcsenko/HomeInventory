@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public class DisposeAction : Disposable
+internal sealed class DisposeAction : Disposable
 {
     private readonly Action _action;
 
@@ -12,7 +12,7 @@ public class DisposeAction : Disposable
     protected override void InternalDispose() => _action();
 }
 
-public class DisposeAction<T> : Disposable
+internal sealed class DisposeAction<T> : Disposable
 {
     private readonly Action<T> _action;
     private readonly T _state;

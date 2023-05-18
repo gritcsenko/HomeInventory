@@ -5,42 +5,40 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
+internal sealed class UnitOfWork : CompositeAsyncDisposable, IUnitOfWork
 {
     private readonly DbContext _context;
     private readonly IDateTimeService _dateTimeService;
-    private readonly bool _ownContext;
     private readonly ChangeTracker _changeTracker;
+    private readonly DbSet<OutboxMessage> _messages;
 
     public UnitOfWork(DbContext context, IDateTimeService dateTimeService, bool ownContext = true)
+        : base(context)
     {
         _context = context;
         _dateTimeService = dateTimeService;
-        _ownContext = ownContext;
         _changeTracker = _context.ChangeTracker;
+        _messages = _context.Set<OutboxMessage>();
+        if (!ownContext)
+        {
+            Remove(context);
+        }
     }
 
     public DbContext DbContext => _context;
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var now = _dateTimeService.UtcNow.ToUniversalTime();
+        var now = _dateTimeService.UtcNow;
 
-        await ConvertDomainEventsToOutboxMessages(now, cancellationToken);
+        await ConvertDomainEventsToOutboxMessagesAsync(now, cancellationToken);
+
         UpdateAuditableEntities(now);
 
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    protected override async ValueTask InternalDisposeAsync()
-    {
-        if (_ownContext)
-        {
-            await _context.DisposeAsync();
-        }
-    }
-
-    private async Task ConvertDomainEventsToOutboxMessages(DateTimeOffset now, CancellationToken cancellationToken)
+    private async Task ConvertDomainEventsToOutboxMessagesAsync(DateTimeOffset now, CancellationToken cancellationToken)
     {
         var messages = _changeTracker
             .Entries<IAggregateRoot>()
@@ -50,10 +48,9 @@ internal sealed class UnitOfWork : AsyncDisposable, IUnitOfWork
                 Guid.NewGuid(),
                 now,
                 domainEvent
-            ))
-            .ToArray();
+            ));
 
-        await _context.Set<OutboxMessage>().AddRangeAsync(messages, cancellationToken);
+        await _messages.AddRangeAsync(messages, cancellationToken);
     }
 
     private void UpdateAuditableEntities(DateTimeOffset now)

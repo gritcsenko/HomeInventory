@@ -14,7 +14,7 @@ internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleR
 
     public ByIdFilterSpecification(Guid id)
     {
-        Query.Where(x => x.Id == id);
+        Query.Where(x => x.Id.Equals(id));
         _id = id;
     }
 

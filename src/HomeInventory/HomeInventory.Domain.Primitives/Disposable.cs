@@ -1,8 +1,8 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public class Disposable : IDisposable
+public abstract class Disposable : IDisposable
 {
-    public static IDisposable None { get; } = new Disposable();
+    public static Disposable None { get; } = Create(() => { });
 
     public bool IsDisposed { get; private set; }
 
@@ -22,7 +22,5 @@ public class Disposable : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void InternalDispose()
-    {
-    }
+    protected abstract void InternalDispose();
 }

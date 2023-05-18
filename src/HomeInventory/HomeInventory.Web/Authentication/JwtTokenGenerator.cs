@@ -44,7 +44,7 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 
     private JwtPayload CreatePayload(IDateTimeService dateTimeService, params Claim[] claims)
     {
-        var utcNow = dateTimeService.UtcNow.UtcDateTime;
+        var utcNow = dateTimeService.UtcNow.DateTime;
         return new(_jwtOptions.Issuer, _jwtOptions.Audience, claims, notBefore: utcNow, expires: utcNow.Add(_jwtOptions.Expiry), issuedAt: utcNow);
     }
 }

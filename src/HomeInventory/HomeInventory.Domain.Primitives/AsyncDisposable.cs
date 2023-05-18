@@ -1,8 +1,8 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public class AsyncDisposable : IAsyncDisposable
+public abstract class AsyncDisposable : IAsyncDisposable
 {
-    public static IAsyncDisposable None { get; } = new AsyncDisposable();
+    public static AsyncDisposable None { get; } = Create(() => ValueTask.CompletedTask);
 
     public bool IsDisposed { get; private set; }
 
@@ -22,8 +22,5 @@ public class AsyncDisposable : IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
-    protected virtual ValueTask InternalDisposeAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
+    protected abstract ValueTask InternalDisposeAsync();
 }
