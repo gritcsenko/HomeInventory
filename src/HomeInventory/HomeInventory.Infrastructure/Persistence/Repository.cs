@@ -18,7 +18,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     private readonly IMapper _mapper;
     private readonly ISpecificationEvaluator _evaluator;
     private readonly IDateTimeService _dateTimeService;
-    private IUnitOfWork? _unitOfWork;
+    private Option<IUnitOfWork> _unitOfWork = Option.None<IUnitOfWork>();
 
     protected Repository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
     {
@@ -28,18 +28,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         _dateTimeService = dateTimeService;
     }
 
-    public OneOf<IUnitOfWork, None> UnitOfWork
-    {
-        get
-        {
-            if (_unitOfWork is null)
-            {
-                return new None();
-            }
-
-            return OneOf<IUnitOfWork, None>.FromT0(_unitOfWork);
-        }
-    }
+    public Option<IUnitOfWork> UnitOfWork => _unitOfWork;
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -139,8 +128,8 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     {
         var (unit, _) = await GetUnitOfWorkAsync(cancellationToken);
 
-        _unitOfWork = unit;
-        return _unitOfWork;
+        _unitOfWork = Option.Some(unit);
+        return unit;
     }
 
     protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
@@ -202,7 +191,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return _evaluator.GetQuery(set.AsQueryable(), specification);
     }
 
-    protected async Task<(DbSet<TModel> set, IAsyncDisposable resource)> GetDbSetAsync(CancellationToken cancellationToken = default)
+    protected async ValueTask<(DbSet<TModel> set, IAsyncDisposable resource)> GetDbSetAsync(CancellationToken cancellationToken = default)
     {
         var (unit, resource) = await GetUnitOfWorkAsync(cancellationToken);
 
@@ -221,19 +210,17 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return new NotFound();
     }
 
-    private async Task<(IUnitOfWork unit, IAsyncDisposable resource)> GetUnitOfWorkAsync(CancellationToken cancellationToken = default)
-    {
-        if (_unitOfWork is not null)
-        {
-            return (_unitOfWork, AsyncDisposable.None);
-        }
+    private async ValueTask<(IUnitOfWork unit, IAsyncDisposable resource)> GetUnitOfWorkAsync(CancellationToken cancellationToken = default) =>
+        await _unitOfWork.When<Task<(IUnitOfWork unit, IAsyncDisposable resource)>>(
+            u => Task.FromResult<(IUnitOfWork unit, IAsyncDisposable resource)>((u, AsyncDisposable.None)),
+            async () =>
+            {
+                var context = await CreateNewDbContextAsync(cancellationToken);
+                var unit = new UnitOfWork(context, _dateTimeService);
+                return (unit, unit);
+            });
 
-        var context = await CreateNewDbContextAsync(cancellationToken);
-        var unit = new UnitOfWork(context, _dateTimeService);
-        return (unit, unit);
-    }
-
-    private async Task<DbContext> CreateNewDbContextAsync(CancellationToken cancellationToken = default) =>
+    private async ValueTask<DbContext> CreateNewDbContextAsync(CancellationToken cancellationToken = default) =>
         await _factory.CreateDbContextAsync(cancellationToken);
 }
 

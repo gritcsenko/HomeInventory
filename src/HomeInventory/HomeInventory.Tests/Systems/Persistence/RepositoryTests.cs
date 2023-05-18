@@ -5,7 +5,6 @@ using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
-using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -23,7 +22,7 @@ public class RepositoryTests : BaseRepositoryTest
 
         var actual = sut.UnitOfWork;
 
-        actual.Value.Should().BeOfType<None>();
+        actual.Should().HaveNoValue();
     }
 
     [Fact]
@@ -34,7 +33,7 @@ public class RepositoryTests : BaseRepositoryTest
 
         var actual = sut.UnitOfWork;
 
-        actual.Value.Should().Be(expected);
+        actual.Should().HaveSameValueAs(expected);
     }
 
     [Fact]

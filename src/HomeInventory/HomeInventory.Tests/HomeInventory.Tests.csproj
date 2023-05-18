@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Systems\Services\**" />
+    <EmbeddedResource Remove="Systems\Services\**" />
+    <None Remove="Systems\Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoBogus.Conventions" Version="2.13.1" />
     <PackageReference Include="AutoBogus.NSubstitute" Version="2.13.1" />
     <PackageReference Include="AutoFixture" Version="4.18.0" />
@@ -42,10 +48,6 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Systems\Services\" />
   </ItemGroup>
 
 </Project>
