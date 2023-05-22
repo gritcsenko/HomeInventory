@@ -2,7 +2,6 @@
 using HomeInventory.Application.Interfaces.Persistence;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using OneOf;
@@ -13,13 +12,11 @@ namespace HomeInventory.Infrastructure.Persistence;
 internal class UserRepository : IUserRepository
 {
     private static readonly ICollection<User> _users = new List<User>();
-    private readonly IIdFactory<UserId, Guid> _userIdFactory;
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
 
-    public UserRepository(IIdFactory<UserId, Guid> userIdFactory, IDatabaseContext context, IMapper mapper)
+    public UserRepository(IDatabaseContext context, IMapper mapper)
     {
-        _userIdFactory = userIdFactory;
         _context = context;
         _mapper = mapper;
     }
@@ -48,11 +45,12 @@ internal class UserRepository : IUserRepository
 
     private async Task<User> CreateAsync(CreateUserSpecification specification, CancellationToken cancellationToken)
     {
-        var userId = _userIdFactory.CreateNew();
+#pragma warning disable CA2252 // This API requires opting into preview features
+        var builder = UserId.CreateBuilder();
+#pragma warning restore CA2252 // This API requires opting into preview features
+        var userId = builder.WithValue(specification.UserIdSupplier).Invoke();
         var user = new User(userId)
         {
-            FirstName = specification.FirstName,
-            LastName = specification.LastName,
             Email = specification.Email,
             Password = specification.Password,
         };

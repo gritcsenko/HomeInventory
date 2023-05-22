@@ -27,7 +27,7 @@ public class RegisterCommandHandlerTests : BaseTest
         _command = Fixture.Create<RegisterCommand>();
 
         _userHasEmailSpecification = new UserHasEmailSpecification(_command.Email);
-        _createUserSpecification = new CreateUserSpecification(_command.FirstName, _command.LastName, _command.Email, _command.Password);
+        _createUserSpecification = new CreateUserSpecification(_command.Email, _command.Password, new ValueSupplier<Guid>(Guid.NewGuid()));
         _mapper.Map<FilterSpecification<User>>(_command).Returns(_userHasEmailSpecification);
         _mapper.Map<CreateUserSpecification>(_command).Returns(_createUserSpecification);
     }

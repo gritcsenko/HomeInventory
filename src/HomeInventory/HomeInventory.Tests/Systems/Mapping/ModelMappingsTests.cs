@@ -34,8 +34,8 @@ public class ModelMappingsTests : BaseMappingsTests
         fixture.CustomizeGuidId(guid => new UserId(guid));
         fixture.CustomizeGuidId(guid => new ProductId(guid));
         fixture.CustomizeEmail();
-        fixture.Customize(new FromFactoryCustomization<int, AmountUnit>(i => AmountUnit.Items.ElementAt(i % AmountUnit.Items.Count)));
-        fixture.Customize(new FromFactoryCustomization<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit)));
+        fixture.CustomizeFromFactory<int, AmountUnit>(i => AmountUnit.Items.ElementAt(i % AmountUnit.Items.Count));
+        fixture.CustomizeFromFactory<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit));
 
         fixture.Customize<ProductAmountModel>(builder =>
             builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));

@@ -10,13 +10,21 @@ public abstract class GenericValueObjectConverter<TObject, TValue> : IValueConve
 
     public TObject Convert(TValue source, TObject destination, ResolutionContext context) => Convert(source);
 
-    private TObject Convert(TValue source)
-    {
-        var result = InternalConvert(source);
-        return result.Match(
+    private TObject Convert(TValue source) =>
+        InternalConvert(source)
+        .Match(
             obj => obj,
-            error => throw new InvalidOperationException($"Cannot convert '{typeof(TValue).FullName}' to '{typeof(TObject).FullName}'. Reason: '{error.Message}'"));
-    }
+            error => throw CreateException(error));
 
     protected abstract OneOf<TObject, IError> InternalConvert(TValue source);
+
+    private static Exception CreateException(IError error)
+    {
+        var exception = new InvalidOperationException($"Cannot convert '{typeof(TValue).FullName}' to '{typeof(TObject).FullName}'. Reason: '{error.Message}'");
+        foreach (var (key, value) in error.Metadata)
+        {
+            exception.Data.Add(key, value);
+        }
+        return exception;
+    }
 }
