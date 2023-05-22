@@ -29,9 +29,13 @@ public abstract class BaseTest : Disposable
         return FormatterServices.GetUninitializedObject(type);
     }
 
-    protected override void InternalDispose()
+    protected override void Dispose(bool disposing)
     {
-        _lazyCancellation.TryDispose();
+        if (disposing)
+        {
+            _lazyCancellation.TryDispose();
+        }
+        base.Dispose(disposing);
     }
 
     public interface ICancellation
@@ -51,7 +55,14 @@ public abstract class BaseTest : Disposable
 
         public void Cancel() => _source.Cancel();
 
-        protected override void InternalDispose() => _source.Dispose();
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _source.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
 
