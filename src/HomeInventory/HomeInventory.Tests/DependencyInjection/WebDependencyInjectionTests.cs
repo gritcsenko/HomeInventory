@@ -11,76 +11,62 @@ using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using IConfigurationProvider = Microsoft.Extensions.Configuration.IConfigurationProvider;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
 [UnitTest]
-public class WebDependencyInjectionTests : BaseTest
+public class WebDependencyInjectionTests : BaseDependencyInjectionTest
 {
-    private readonly IServiceCollection _services = new ServiceCollection();
-    private readonly IServiceProviderFactory<IServiceCollection> _factory = new DefaultServiceProviderFactory();
-
     public WebDependencyInjectionTests()
     {
-        var providers = new IConfigurationProvider[]
+        AddConfiguration(new Dictionary<string, string?>
         {
-            new MemoryConfigurationProvider(new MemoryConfigurationSource
-            {
-                InitialData = new Dictionary<string, string?>
-                {
-                    [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Secret)}"] = "Some Secret",
-                    [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Issuer)}"] = "HomeInventory",
-                    [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Audience)}"] = "HomeInventory",
-                },
-            })
-        };
-        _services.AddSingleton<IConfiguration>(new ConfigurationRoot(providers));
+            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Secret)}"] = "Some Secret",
+            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Issuer)}"] = "HomeInventory",
+            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Audience)}"] = "HomeInventory",
+        });
+        AddDateTime();
 
         var env = Substitute.For<IWebHostEnvironment>();
         env.WebRootFileProvider.Returns(new NullFileProvider());
-        _services.AddSingleton(env);
-        _services.AddSingleton<IHostEnvironment>(env);
-        _services.AddScoped(_ => DateTime);
+        Services.AddSingleton(env);
+        Services.AddSingleton<IHostEnvironment>(env);
     }
 
     [Fact]
     public void ShouldRegister()
     {
-        _services.AddWeb();
-        var provider = _factory.CreateServiceProvider(_services);
+        Services.AddWeb();
+        var provider = CreateProvider();
 
-        _services.Should().ContainConfigureOptions<JwtOptions>(provider);
-        _services.Should().ContainConfigureOptions<JwtBearerOptions>(provider);
-        _services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
-        _services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
-        _services.Should().ContainSingleSingleton<HealthCheckService>(provider);
-        _services.Should().ContainSingleSingleton<ProblemDetailsFactory>(provider);
-        _services.Should().ContainSingleTransient<IMapper>(provider);
-        _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
-        _services.Should().ContainSingleSingleton<IControllerFactory>(provider);
-        _services.Should().ContainSingleTransient<ISwaggerProvider>(provider);
-
-        _services.Should().ContainSingleSingleton<PermissionList>(provider);
-        _services.Should().ContainTransient<IAuthorizationHandler>(provider);
-        _services.Should().ContainSingleTransient<IAuthorizationService>(provider);
-        _services.Should().ContainSingleTransient<IAuthorizationPolicyProvider>(provider);
-        _services.Should().ContainSingleTransient<IAuthorizationHandlerProvider>(provider);
-        _services.Should().ContainSingleTransient<IAuthorizationEvaluator>(provider);
-        _services.Should().ContainSingleTransient<IAuthorizationHandlerContextFactory>(provider);
-        _services.Should().ContainSingleTransient<IPolicyEvaluator>(provider);
-        _services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>(provider);
+        Services.Should().ContainConfigureOptions<JwtOptions>(provider);
+        Services.Should().ContainConfigureOptions<JwtBearerOptions>(provider);
+        Services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
+        Services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
+        Services.Should().ContainSingleSingleton<HealthCheckService>(provider);
+        Services.Should().ContainSingleSingleton<ProblemDetailsFactory>(provider);
+        Services.Should().ContainSingleTransient<IMapper>(provider);
+        Services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
+        Services.Should().ContainSingleSingleton<IControllerFactory>(provider);
+        Services.Should().ContainSingleTransient<ISwaggerProvider>(provider);
+        Services.Should().ContainSingleSingleton<PermissionList>(provider);
+        Services.Should().ContainTransient<IAuthorizationHandler>(provider);
+        Services.Should().ContainSingleTransient<IAuthorizationService>(provider);
+        Services.Should().ContainSingleTransient<IAuthorizationPolicyProvider>(provider);
+        Services.Should().ContainSingleTransient<IAuthorizationHandlerProvider>(provider);
+        Services.Should().ContainSingleTransient<IAuthorizationEvaluator>(provider);
+        Services.Should().ContainSingleTransient<IAuthorizationHandlerContextFactory>(provider);
+        Services.Should().ContainSingleTransient<IPolicyEvaluator>(provider);
+        Services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>(provider);
 
         var swaggerOptions = new SwaggerGenOptions();
-        _services.Should().ContainConfigureOptions<SwaggerGenOptions>(provider)
+        Services.Should().ContainConfigureOptions<SwaggerGenOptions>(provider)
             .Which.Configure(swaggerOptions);
         swaggerOptions.SwaggerGeneratorOptions.SwaggerDocs.Should().ContainKey("v1")
             .WhoseValue.Version.Should().Be("1");
@@ -89,8 +75,8 @@ public class WebDependencyInjectionTests : BaseTest
     [Fact]
     public void ShouldUse()
     {
-        _services.AddWeb();
-        var appBuilder = new TestAppBuilder(_services, _factory);
+        Services.AddWeb();
+        var appBuilder = new TestAppBuilder(Services);
 
         appBuilder.UseWeb();
     }
