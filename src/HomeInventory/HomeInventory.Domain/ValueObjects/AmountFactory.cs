@@ -21,7 +21,7 @@ internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
 
     private OneOf<Amount, IError> Create(decimal value, OneOf<Validator, IError> validationResult)
     {
-        return validationResult.Match<OneOf<Amount, IError>>(v =>
+        return validationResult.Match(v =>
         {
             if (v.IsValid(value))
             {

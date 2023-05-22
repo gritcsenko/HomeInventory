@@ -37,6 +37,13 @@ public abstract class TestingLogger<T> : ILogger<T>
 
         public ITestingScope? Parent { get; }
 
-        protected override void InternalDispose() => _logger._currentScope.Value = Parent;
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _logger._currentScope.Value = Parent;
+            }
+            base.Dispose(disposing);
+        }
     }
 }

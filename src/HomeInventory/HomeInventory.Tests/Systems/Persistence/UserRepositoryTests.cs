@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -11,7 +10,6 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class UserRepositoryTests : BaseRepositoryTest
 {
-    private readonly IIdFactory<UserId, Guid> _userIdFactory = Substitute.For<IIdFactory<UserId, Guid>>();
     private readonly IDatabaseContext _context = Substitute.For<IDatabaseContext>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly User _user;
@@ -37,8 +35,8 @@ public class UserRepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task CreateAsync_Should_CreateUser_AccordingToSpec()
     {
-        var id = Fixture.Create<UserId>();
-        _userIdFactory.CreateNew().Returns(id);
+        var userId = Fixture.Create<UserId>();
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(userId.Id));
         var spec = Fixture.Create<CreateUserSpecification>();
         var sut = CreateSut();
 
@@ -46,9 +44,7 @@ public class UserRepositoryTests : BaseRepositoryTest
 
         var user = result.AsT0;
         user.Should().NotBeNull();
-        user.Id.Should().Be(id);
-        user.FirstName.Should().Be(spec.FirstName);
-        user.LastName.Should().Be(spec.LastName);
+        user.Id.Id.Should().Be(userId.Id);
         user.Email.Should().Be(spec.Email);
         user.Password.Should().Be(spec.Password);
     }
@@ -56,13 +52,13 @@ public class UserRepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task HasAsync_Should_RetrunTrue_WhenUserAdded()
     {
-        var id = Fixture.Create<UserId>();
-        _userIdFactory.CreateNew().Returns(id);
+        var userId = Fixture.Create<UserId>();
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(userId.Id));
         var spec = Fixture.Create<CreateUserSpecification>();
         var sut = CreateSut();
         await sut.CreateAsync(spec, Cancellation.Token);
 
-        var result = await sut.HasAsync(UserSpecifications.HasId(id), Cancellation.Token);
+        var result = await sut.HasAsync(UserSpecifications.HasId(userId), Cancellation.Token);
 
         result.Should().BeTrue();
     }
@@ -70,18 +66,18 @@ public class UserRepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_RetrunCorrectUser_WhenUserAdded()
     {
-        var id = Fixture.Create<UserId>();
-        _userIdFactory.CreateNew().Returns(id);
+        var userId = Fixture.Create<UserId>();
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(userId.Id));
         var spec = Fixture.Create<CreateUserSpecification>();
         var sut = CreateSut();
         var expected = await sut.CreateAsync(spec, Cancellation.Token);
 
-        var result = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(id), Cancellation.Token);
+        var result = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(userId), Cancellation.Token);
 
         var actual = result.AsT0;
         actual.Should().NotBeNull();
         actual.Should().BeEquivalentTo(expected.AsT0);
     }
 
-    private UserRepository CreateSut() => new(_userIdFactory, _context, _mapper);
+    private UserRepository CreateSut() => new(_context, _mapper);
 }

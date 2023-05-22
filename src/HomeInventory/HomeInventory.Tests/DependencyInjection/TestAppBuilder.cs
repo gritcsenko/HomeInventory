@@ -10,9 +10,9 @@ public class TestAppBuilder : IApplicationBuilder, IEndpointRouteBuilder
 {
     private readonly ICollection<Func<RequestDelegate, RequestDelegate>> _middlewares = new List<Func<RequestDelegate, RequestDelegate>>();
 
-    public TestAppBuilder(IServiceCollection collection, IServiceProviderFactory<IServiceCollection> factory)
+    public TestAppBuilder(IServiceCollection collection)
     {
-        var services = factory.CreateServiceProvider(collection);
+        var services = collection.BuildServiceProvider(new ServiceProviderOptions());
         ApplicationServices = services;
         ServiceProvider = services;
     }

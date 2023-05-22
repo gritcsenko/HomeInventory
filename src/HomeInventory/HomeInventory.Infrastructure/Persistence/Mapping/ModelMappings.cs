@@ -12,7 +12,7 @@ internal class ModelMappings : MappingProfile
         CreateMapForId<UserId>();
         CreateMapForId<ProductId>();
 
-        CreateMapForValue<Email, string>(x => x.Value);
+        CreateMapForString<Email>(x => x.Value);
 
         CreateMap<User, UserModel>().ReverseMap();
 

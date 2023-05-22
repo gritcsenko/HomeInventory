@@ -8,6 +8,7 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <WarningLevel>9999</WarningLevel>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="HomeInventory.Tests"/>
