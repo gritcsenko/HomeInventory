@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using DotNext;
+
+namespace HomeInventory.Domain.Primitives;
 
 public static class DictionaryExtensions
 {
@@ -24,15 +26,15 @@ public static class DictionaryExtensions
         return dictionary.TryGetValue(key, out var value) ? value : defaultValue(key);
     }
 
-    public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<Option<TKey>, TValue> dictionary, TKey key)
+    public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<Optional<TKey>, TValue> dictionary, TKey key)
         where TKey : notnull
     {
-        return dictionary.GetValueOrDefault(Option.Some(key), _ => dictionary[Option.None<TKey>()]);
+        return dictionary.GetValueOrDefault(Optional.Some(key), _ => dictionary[Optional.None<TKey>()]);
     }
 
-    public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<Option<TKey>, TValue> dictionary, TKey key, Func<TKey, TValue> defaultValue)
+    public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<Optional<TKey>, TValue> dictionary, TKey key, Func<TKey, TValue> defaultValue)
         where TKey : notnull
     {
-        return dictionary.GetValueOrDefault(Option.Some(key), k => defaultValue(k.Reduce(key)));
+        return dictionary.GetValueOrDefault(Optional.Some(key), k => defaultValue(k.Or(key)));
     }
 }

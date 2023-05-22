@@ -20,7 +20,7 @@ public sealed class VariablesCollection
         return await collection.TryAddAsync(createValueFunc);
     }
 
-    public Option<T> TryGet<T>(IIndexedVariable<T> variable)
+    public Optional<T> TryGet<T>(IIndexedVariable<T> variable)
         where T : notnull
     {
         var collection = GetAllValues(variable);
