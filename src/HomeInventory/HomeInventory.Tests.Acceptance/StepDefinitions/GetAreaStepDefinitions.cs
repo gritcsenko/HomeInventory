@@ -98,8 +98,6 @@ public class GetAreaStepDefinitions
 
     private static RegisterRequest CreateGegisterRequest(TableRow row) =>
         new(
-            FirstName: row["FirstName"],
-            LastName: row["LastName"],
             Email: row["Email"],
             Password: row["Password"]);
 

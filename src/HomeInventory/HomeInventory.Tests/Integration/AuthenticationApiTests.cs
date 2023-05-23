@@ -20,10 +20,13 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         Fixture.Customize(new RegisterRequestCustomization());
     }
 
-    protected override void InternalDispose()
+    protected override void Dispose(bool disposing)
     {
-        _appFactory.Dispose();
-        base.InternalDispose();
+        if (disposing)
+        {
+            _appFactory.Dispose();
+        }
+        base.Dispose(disposing);
     }
 
     [BrokenTest]

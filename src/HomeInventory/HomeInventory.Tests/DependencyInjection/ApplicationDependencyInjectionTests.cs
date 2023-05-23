@@ -1,20 +1,16 @@
 ﻿using HomeInventory.Application;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
 [UnitTest]
-public class ApplicationDependencyInjectionTests : BaseTest
+public class ApplicationDependencyInjectionTests : BaseDependencyInjectionTest
 {
-    private readonly IServiceCollection _services = new ServiceCollection();
-    private readonly IServiceProviderFactory<IServiceCollection> _factory = new DefaultServiceProviderFactory();
-
     [Fact]
     public void ShouldRegister()
     {
-        _services.AddApplication();
-        var provider = _factory.CreateServiceProvider(_services);
+        Services.AddApplication();
+        var provider = CreateProvider();
 
-        _services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
+        Services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
     }
 }

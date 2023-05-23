@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-
-namespace HomeInventory.Tests;
+﻿namespace HomeInventory.Tests;
 
 public class GivenContext<TContext> : Context
     where TContext : GivenContext<TContext>
@@ -50,7 +48,7 @@ public class GivenContext<TContext> : Context
         where T : notnull
     {
         var hashValue = Variables.TryGet(hash)
-            .Reduce(() => AddNewHashCode(hash));
+            .OrInvoke(() => AddNewHashCode(hash));
 
         foreach (var value in Variables.Get(variable, count))
         {

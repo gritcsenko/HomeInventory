@@ -1,56 +1,23 @@
 ﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.ValueObjects;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
 [UnitTest]
-public class DomainDependencyInjectionTests : BaseTest
+public class DomainDependencyInjectionTests : BaseDependencyInjectionTest
 {
-    private readonly IServiceCollection _services = new ServiceCollection();
-    private readonly IServiceProviderFactory<IServiceCollection> _factory = new DefaultServiceProviderFactory();
-
     [Fact]
     public void ShouldRegister()
     {
-        _services.AddDomain();
-        var provider = _factory.CreateServiceProvider(_services);
-
-        VerifyIdFactory<UserId>(provider);
-        VerifyIdFactory<MaterialId>(provider);
-        VerifyIdFactory<ProductId>(provider);
-        VerifyIdFactory<StorageAreaId>(provider);
-        
-        VerifyValueFactory<Email, string, EmailFactory>(provider);
+        Services.AddDomain();
+        var provider = CreateProvider();
 
         VerifyTimeServices(provider);
     }
 
     private void VerifyTimeServices(IServiceProvider provider)
     {
-        _services.Should().ContainSingleSingleton<SystemDateTimeService>(provider);
-        _services.Should().ContainSingleScoped<IDateTimeService>(provider);
-    }
-
-    private void VerifyValueFactory<TObject, TValue, TFactory>(IServiceProvider provider)
-        where TObject : class, IValueObject<TObject>
-        where TFactory : class, IValueObjectFactory<TObject, TValue>
-    {
-        _services.Should().ContainSingleSingleton<TFactory>(provider);
-        _services.Should().ContainSingleSingleton<IValueObjectFactory<TObject, TValue>>(provider);
-    }
-
-    private void VerifyIdFactory<TId>(IServiceProvider provider)
-       where TId : IIdentifierObject<TId>
-    {
-        _services.Should().ContainSingleSingleton<Func<Guid, TId>>(provider);
-        _services.Should().ContainSingleSingleton<IIdFactory<TId>>(provider);
-
-        _services.Should().ContainSingleSingleton<IIdFactory<TId, Guid>>(provider);
-        _services.Should().ContainSingleSingleton<IValueObjectFactory<TId, Guid>>(provider);
-
-        _services.Should().ContainSingleSingleton<IIdFactory<TId, string>>(provider);
-        _services.Should().ContainSingleSingleton<IValueObjectFactory<TId, string>>(provider);
+        Services.Should().ContainSingleSingleton<SystemDateTimeService>(provider);
+        Services.Should().ContainSingleScoped<IDateTimeService>(provider);
     }
 }

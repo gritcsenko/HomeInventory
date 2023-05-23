@@ -1,8 +1,10 @@
-﻿using HomeInventory.Application.Interfaces.Messaging;
+﻿using DotNext;
+using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
 public record class RegisterCommand(
     Email Email,
-    string Password) : ICommand;
+    string Password,
+    ISupplier<Guid> UserIdSupplier) : ICommand;

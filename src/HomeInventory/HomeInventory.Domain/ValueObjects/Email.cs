@@ -1,8 +1,10 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using System.Runtime.Versioning;
+using DotNext;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class Email : ValueObject<Email>
+public sealed class Email : ValueObject<Email>, IBuildable<Email, ValueObject<Email>.Builder<string>>
 {
     internal Email(string value)
         : base(value)
@@ -11,4 +13,7 @@ public sealed class Email : ValueObject<Email>
     }
 
     public string Value { get; }
+
+    [RequiresPreviewFeatures]
+    public static Builder<string> CreateBuilder() => new(value => new Email(value));
 }

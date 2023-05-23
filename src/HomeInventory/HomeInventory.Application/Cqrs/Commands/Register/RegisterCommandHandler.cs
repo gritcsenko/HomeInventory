@@ -2,7 +2,6 @@
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using OneOf;
@@ -13,12 +12,10 @@ namespace HomeInventory.Application.Cqrs.Commands.Register;
 internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
 {
     private readonly IUserRepository _repository;
-    private readonly IIdFactory<UserId> _userIdFactory;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IIdFactory<UserId> userIdFactory)
+    public RegisterCommandHandler(IUserRepository userRepository)
     {
         _repository = userRepository;
-        _userIdFactory = userIdFactory;
     }
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand query, CancellationToken cancellationToken)
@@ -40,7 +37,10 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
 
     private async Task CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var userId = _userIdFactory.CreateNew();
+#pragma warning disable CA2252 // This API requires opting into preview features
+        var builder = UserId.CreateBuilder();
+#pragma warning restore CA2252 // This API requires opting into preview features
+        var userId = builder.WithValue(request.UserIdSupplier).Invoke();
         var user = new User(userId)
         {
             Email = request.Email,

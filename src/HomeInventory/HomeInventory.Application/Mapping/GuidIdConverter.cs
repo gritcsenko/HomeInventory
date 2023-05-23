@@ -1,12 +1,13 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using DotNext;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Mapping;
 
-public class GuidIdConverter<TId> : ValueObjectConverter<TId, Guid>
-    where TId : IIdentifierObject<TId>
+public class GuidIdConverter<TId> : ObjectConverter<GuidIdentifierObject<TId>.Builder, TId, Guid>
+    where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder>
 {
-    public GuidIdConverter(IIdFactory<TId, Guid> factory)
-        : base(factory)
+    public GuidIdConverter()
+        : base(id => id != Guid.Empty)
     {
     }
 }

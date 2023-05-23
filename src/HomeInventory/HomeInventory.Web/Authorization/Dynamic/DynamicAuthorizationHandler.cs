@@ -1,12 +1,10 @@
 ﻿using System.Security.Claims;
+using HomeInventory.Application.Mapping;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OneOf;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
@@ -32,9 +30,16 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
             return;
         }
 
+        if (!Guid.TryParse(idText, out var id))
+        {
+            context.Fail(new AuthorizationFailureReason(this, $"User has no valid id '{idText}'"));
+            return;
+        }
+
         using var scope = httpContext.RequestServices.CreateScope();
         var sp = scope.ServiceProvider;
-        await CreateId<UserId>(sp, idText)
+        var converter = new GuidIdConverter<UserId>();
+        await converter.Convert(id)
             .Match(async userId =>
             {
                 var repository = sp.GetRequiredService<IUserRepository>();
@@ -57,8 +62,4 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
                 return Task.CompletedTask;
             });
     }
-
-    private static OneOf<TId, IError> CreateId<TId>(IServiceProvider sp, string idText)
-        where TId : IIdentifierObject<TId> =>
-        sp.GetRequiredService<IIdFactory<TId, string>>().CreateFrom(idText);
 }

@@ -16,8 +16,8 @@ Background:
         | Fridge |
         | Pantry |
     And Registered users
-        | FirstName | LastName | Email                     | Password |
-        | Casual    | User     | Causal.User@someorg.email | Pa$$w0rd |
+        | Email                     | Password |
+        | Causal.User@someorg.email | Pa$$w0rd |
 
 @WI32
 Scenario: Get areas

@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Cqrs.Commands.Register;
+﻿using DotNext;
+using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Cqrs.Queries.UserId;
@@ -14,9 +15,10 @@ internal class ContractsMappings : MappingProfile
     {
         CreateMapForId<UserId>();
 
-        CreateMapForValue<Email, string>(x => x.Value);
+        CreateMapForString<Email>(x => x.Value);
 
-        CreateMap<RegisterRequest, RegisterCommand>();
+        CreateMap<RegisterRequest, RegisterCommand>()
+            .ConstructUsing((c, ctx) => new RegisterCommand(ctx.Mapper.Map<Email>(c.Email), c.Password, new DelegatingSupplier<Guid>(Guid.NewGuid)));
 
         CreateMap<RegisterRequest, UserIdQuery>();
         CreateMap<UserIdResult, RegisterResponse>();

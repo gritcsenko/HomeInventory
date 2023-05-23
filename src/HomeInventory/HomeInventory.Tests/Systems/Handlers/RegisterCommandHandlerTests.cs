@@ -2,7 +2,6 @@ using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 
@@ -12,7 +11,6 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly IIdFactory<UserId> _idFactory = Substitute.For<IIdFactory<UserId>>();
     private readonly RegisterCommand _command;
     private readonly UserId _userId;
 
@@ -21,12 +19,13 @@ public class RegisterCommandHandlerTests : BaseTest
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
 
-        _command = Fixture.Create<RegisterCommand>();
         _userId = Fixture.Create<UserId>();
-        _idFactory.CreateNew().Returns(_userId);
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(_userId.Id));
+
+        _command = Fixture.Create<RegisterCommand>();
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository, _idFactory);
+    private RegisterCommandHandler CreateSut() => new(_userRepository);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

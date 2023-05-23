@@ -38,6 +38,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(Guid.NewGuid()));
     }
 
     [Fact]

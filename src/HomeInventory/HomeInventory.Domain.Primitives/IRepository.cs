@@ -1,9 +1,11 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using DotNext;
+
+namespace HomeInventory.Domain.Primitives;
 
 public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
     where TEntity : class, IEntity<TEntity>
 {
-    Option<IUnitOfWork> UnitOfWork { get; }
+    Optional<IUnitOfWork> UnitOfWork { get; }
 
     /// <summary>
     /// Adds an entity in the database.

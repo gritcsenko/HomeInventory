@@ -1,27 +1,26 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+﻿using DotNext;
+using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using OneOf;
 
 namespace HomeInventory.Domain.Primitives;
 
 public sealed class GuidIdValueConverter<TId> : ValueConverter<TId, Guid>
-    where TId : GuidIdentifierObject<TId>
+    where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder>
 {
-    public GuidIdValueConverter(Func<Guid, TId> createIdFunc)
-        : this(GuidIdFactory.Create(createIdFunc))
-    {
-    }
-    public GuidIdValueConverter(IIdFactory<TId, Guid> idFactory)
-        : base(id => Convert(id), value => Convert(value, idFactory))
+    public GuidIdValueConverter()
+        : base(id => Convert(id), value => Convert(value))
     {
     }
 
     private static Guid Convert(TId id) => id.Id;
 
-    private static TId Convert(Guid value, IIdFactory<TId, Guid> idFactory)
+    private static TId Convert(Guid value)
     {
-        return idFactory.CreateFrom(value).Match(
-            id => id,
-            error => throw CreateException(error));
+        return InternalConvert(value)
+            .Match(
+                id => id,
+                error => throw CreateException(error));
     }
 
     private static Exception CreateException(IError error)
@@ -32,5 +31,19 @@ public sealed class GuidIdValueConverter<TId> : ValueConverter<TId, Guid>
             exception.Data[key] = value;
         }
         return exception;
+    }
+
+    private static OneOf<TId, IError> InternalConvert(Guid source)
+    {
+        if (source == Guid.Empty)
+        {
+            return new ObjectValidationError<Guid>(source);
+        }
+
+#pragma warning disable CA2252 // This API requires opting into preview features
+        var builder = TId.CreateBuilder();
+#pragma warning restore CA2252 // This API requires opting into preview features
+        builder.WithValue(new ValueSupplier<Guid>(source));
+        return builder.Invoke();
     }
 }

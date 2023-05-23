@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Models;
+﻿using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,5 +23,5 @@ public class UserModelConfigurationTests : BaseTest
         primaryKey!.Properties.Should().ContainSingle(x => x.Name == nameof(UserModel.Id));
     }
 
-    private static UserModelConfiguration CreateSut() => new(GuidIdFactory.Create(id => new UserId(id)));
+    private static UserModelConfiguration CreateSut() => new();
 }
