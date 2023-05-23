@@ -47,6 +47,18 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().BeSameAs(expected);
     }
 
+    [Fact]
+    public async ValueTask WithUnitOfWorkAsync_ShouldReturnBeDifferent_WhenCalledSecondTimeAndDisposedFirst()
+    {
+        var sut = CreateSut();
+        var first = await sut.WithUnitOfWorkAsync(Cancellation.Token);
+        await first.DisposeAsync();
+
+        var actual = await sut.WithUnitOfWorkAsync(Cancellation.Token);
+
+        actual.Should().NotBeSameAs(first);
+    }
+
     private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTime);
 
     private class FakeRepository : Repository<FakeModel, FakeEntity>

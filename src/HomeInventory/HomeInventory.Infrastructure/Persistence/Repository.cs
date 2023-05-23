@@ -219,8 +219,17 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     private async ValueTask<(IUnitOfWork unit, IAsyncDisposable resource)> CreateUnitOfWorkAsync(CancellationToken cancellationToken = default)
     {
         var context = await _factory.CreateDbContextAsync(cancellationToken);
-        var unit = new UnitOfWork(context, _dateTimeService);
+        var unit = new UnitOfWork(context, _dateTimeService, new ReleaseUnitOfWork(this));
         return (unit, unit);
+    }
+
+    private sealed class ReleaseUnitOfWork : IDisposable
+    {
+        private readonly Repository<TModel, TEntity> _repository;
+
+        public ReleaseUnitOfWork(Repository<TModel, TEntity> repository) => _repository = repository;
+
+        void IDisposable.Dispose() => _repository._unitOfWork = Optional.None<IUnitOfWork>();
     }
 
     private sealed class EmptyAsyncDisposable : IAsyncDisposable

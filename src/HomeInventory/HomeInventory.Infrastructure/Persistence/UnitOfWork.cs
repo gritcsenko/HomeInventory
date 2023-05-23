@@ -11,19 +11,21 @@ internal sealed class UnitOfWork : Disposable, IUnitOfWork
 {
     private readonly DbContext _context;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IDisposable _attachedResource;
     private readonly bool _ownContext;
     private readonly ChangeTracker _changeTracker;
     private readonly DbSet<OutboxMessage> _messages;
 
-    public UnitOfWork(DbContext context, IDateTimeService dateTimeService)
-        : this(context, dateTimeService, true)
+    public UnitOfWork(DbContext context, IDateTimeService dateTimeService, IDisposable attachedResource)
+        : this(context, dateTimeService, attachedResource, true)
     {
     }
 
-    public UnitOfWork(DbContext context, IDateTimeService dateTimeService, bool ownContext)
+    public UnitOfWork(DbContext context, IDateTimeService dateTimeService, IDisposable attachedResource, bool ownContext)
     {
         _context = context;
         _dateTimeService = dateTimeService;
+        _attachedResource = attachedResource;
         _ownContext = ownContext;
         _changeTracker = _context.ChangeTracker;
         _messages = _context.Set<OutboxMessage>();
@@ -44,6 +46,8 @@ internal sealed class UnitOfWork : Disposable, IUnitOfWork
 
     protected override async ValueTask DisposeAsyncCore()
     {
+        _attachedResource.Dispose();
+
         if (_ownContext)
         {
             await _context.DisposeAsync();
