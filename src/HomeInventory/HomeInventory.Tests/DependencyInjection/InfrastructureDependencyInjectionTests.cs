@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using HomeInventory.Application;
-using HomeInventory.Application.Interfaces.Persistence;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +14,7 @@ public class InfrastructureDependencyInjectionTests : BaseDependencyInjectionTes
     {
         Services.AddSingleton(Substitute.For<IHostEnvironment>());
         Services.AddSingleton(Substitute.For<IMapper>());
+        AddDateTime();
     }
 
     [Fact]

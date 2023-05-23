@@ -1,10 +1,6 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
 using DotNext;
-using HomeInventory.Application.Cqrs.Commands.Register;
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Interfaces.Persistence.Specifications;
-using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Mapping;
@@ -13,12 +9,6 @@ public abstract class MappingProfile : Profile
 {
     protected MappingProfile()
     {
-        CreateMap<RegisterCommand, FilterSpecification<User>>()
-            .ConstructUsing(c => UserSpecifications.HasEmail(c.Email));
-        CreateMap<AuthenticateQuery, FilterSpecification<User>>()
-            .ConstructUsing(c => UserSpecifications.HasEmail(c.Email));
-        CreateMap<RegisterCommand, CreateUserSpecification>()
-            .ConstructUsing(c => new CreateUserSpecification(c.Email, c.Password, new DelegatingSupplier<Guid>(Guid.NewGuid)));
     }
 
     protected void CreateMapForId<TId>()

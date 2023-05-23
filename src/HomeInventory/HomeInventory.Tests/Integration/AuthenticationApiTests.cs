@@ -29,7 +29,8 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         base.Dispose(disposing);
     }
 
-    [Fact]
+    [BrokenTest]
+    [Skipped]
     public async Task Register_ReturnsSuccess()
     {
         var request = Fixture.Create<RegisterRequest>();

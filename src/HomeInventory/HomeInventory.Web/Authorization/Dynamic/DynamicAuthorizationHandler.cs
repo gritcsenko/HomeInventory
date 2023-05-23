@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
-using HomeInventory.Application.Interfaces.Persistence;
-using HomeInventory.Application.Interfaces.Persistence.Specifications;
 using HomeInventory.Application.Mapping;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -48,7 +47,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
                 var permissions = requirement.GetPermissions(endpoint);
                 foreach (var permission in permissions)
                 {
-                    if (await repository.HasAsync(UserSpecifications.HasId(userId), httpContext.RequestAborted))
+                    if (await repository.HasPermissionAsync(userId, permission.ToString(), httpContext.RequestAborted))
                     {
                         context.Succeed(requirement);
                         return;

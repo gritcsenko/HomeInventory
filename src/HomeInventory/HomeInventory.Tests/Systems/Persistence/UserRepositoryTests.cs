@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HomeInventory.Application.Interfaces.Persistence.Specifications;
+﻿using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
@@ -10,8 +9,6 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class UserRepositoryTests : BaseRepositoryTest
 {
-    private readonly IDatabaseContext _context = Substitute.For<IDatabaseContext>();
-    private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly User _user;
     private readonly UserModel _userModel;
 
@@ -20,7 +17,6 @@ public class UserRepositoryTests : BaseRepositoryTest
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
 
-        Fixture.CustomizeEmail();
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()
             .With(x => x.Id, _user.Id.Id)
@@ -33,51 +29,50 @@ public class UserRepositoryTests : BaseRepositoryTest
     }
 
     [Fact]
-    public async Task CreateAsync_Should_CreateUser_AccordingToSpec()
+    public async Task AddAsync_Should_CreateUser_AccordingToSpec()
     {
-        var userId = Fixture.Create<UserId>();
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(userId.Id));
-        var spec = Fixture.Create<CreateUserSpecification>();
+        var entitiesSaved = 0;
         var sut = CreateSut();
+        await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
+        Context.SavedChanges += (_, e) => entitiesSaved += e.EntitiesSavedCount;
 
-        var result = await sut.CreateAsync(spec, Cancellation.Token);
+        await sut.AddAsync(_user, Cancellation.Token);
+        await unit.SaveChangesAsync(Cancellation.Token);
 
-        var user = result.AsT0;
-        user.Should().NotBeNull();
-        user.Id.Id.Should().Be(userId.Id);
-        user.Email.Should().Be(spec.Email);
-        user.Password.Should().Be(spec.Password);
+        entitiesSaved.Should().Be(1);
     }
 
     [Fact]
-    public async Task HasAsync_Should_RetrunTrue_WhenUserAdded()
+    public async Task HasAsync_Should_ReturnTrue_WhenUserAdded()
     {
-        var userId = Fixture.Create<UserId>();
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(userId.Id));
-        var spec = Fixture.Create<CreateUserSpecification>();
+        Context.Set<UserModel>().Add(_userModel);
+        await Context.SaveChangesAsync();
         var sut = CreateSut();
-        await sut.CreateAsync(spec, Cancellation.Token);
 
-        var result = await sut.HasAsync(UserSpecifications.HasId(userId), Cancellation.Token);
+        var result = await sut.IsUserHasEmailAsync(_user.Email, Cancellation.Token);
 
         result.Should().BeTrue();
     }
 
     [Fact]
-    public async Task FindFirstOrNotFoundAsync_Should_RetrunCorrectUser_WhenUserAdded()
+    public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        var userId = Fixture.Create<UserId>();
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(userId.Id));
-        var spec = Fixture.Create<CreateUserSpecification>();
+        Mapper.ProjectTo<User>(Arg.Any<IQueryable>(), Cancellation.Token).Returns(ci =>
+        {
+            var query = ci.Arg<IQueryable>();
+            var userModels = query.Cast<UserModel>();
+            return userModels.Select(x => _user);
+        });
+        Context.Set<UserModel>().Add(_userModel);
+        await Context.SaveChangesAsync();
         var sut = CreateSut();
-        var expected = await sut.CreateAsync(spec, Cancellation.Token);
 
-        var result = await sut.FindFirstOrNotFoundAsync(UserSpecifications.HasId(userId), Cancellation.Token);
+        var result = await sut.FindFirstByEmailOrNotFoundUserAsync(_user.Email, Cancellation.Token);
 
         var actual = result.AsT0;
         actual.Should().NotBeNull();
-        actual.Should().BeEquivalentTo(expected.AsT0);
+        actual.Should().BeEquivalentTo(_user);
     }
 
-    private UserRepository CreateSut() => new(_context, _mapper);
+    private UserRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTime);
 }

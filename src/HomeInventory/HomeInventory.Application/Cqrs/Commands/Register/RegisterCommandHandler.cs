@@ -1,48 +1,51 @@
-﻿using AutoMapper;
-using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Application.Interfaces.Persistence;
-using HomeInventory.Application.Interfaces.Persistence.Specifications;
+﻿using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.ValueObjects;
 using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal class RegisterCommandHandler : CommandHandler<RegisterCommand, RegistrationResult>
+internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IMapper _mapper;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IMapper mapper)
+    public RegisterCommandHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
-        _mapper = mapper;
     }
 
-    protected override async Task<OneOf<RegistrationResult, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
+    protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand query, CancellationToken cancellationToken)
     {
-        if (await IsUserHasEmailAsync(command, cancellationToken))
+        await using var unit = await _userRepository.WithUnitOfWorkAsync(cancellationToken);
+        if (await IsUserHasEmailAsync(query, cancellationToken))
         {
             return new DuplicateEmailError();
         }
 
-        var result = await CreateUserAsync(command, cancellationToken);
+        await CreateUserAsync(query, cancellationToken);
+        await unit.SaveChangesAsync(cancellationToken);
 
-        return result.Match<OneOf<RegistrationResult, IError>>(
-            user => new RegistrationResult(user.Id),
-            _ => new UserCreationError());
+        return new Success();
     }
 
-    private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken)
-    {
-        var specification = _mapper.Map<FilterSpecification<User>>(request);
-        return await _userRepository.HasAsync(specification, cancellationToken);
-    }
+    private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken) =>
+        await _userRepository.IsUserHasEmailAsync(request.Email, cancellationToken);
 
-    private async Task<OneOf<User, OneOf.Types.None>> CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
+    private async Task CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var specification = _mapper.Map<CreateUserSpecification>(request);
-        return await _userRepository.CreateAsync(specification, cancellationToken);
+#pragma warning disable CA2252 // This API requires opting into preview features
+        var builder = UserId.CreateBuilder();
+#pragma warning restore CA2252 // This API requires opting into preview features
+        var userId = builder.WithValue(request.UserIdSupplier).Invoke();
+        var user = new User(userId)
+        {
+            Email = request.Email,
+            Password = request.Password,
+        };
+        await _userRepository.AddAsync(user, cancellationToken);
     }
 }
