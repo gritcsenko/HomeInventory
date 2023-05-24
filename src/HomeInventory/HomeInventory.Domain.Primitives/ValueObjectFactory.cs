@@ -7,17 +7,12 @@ public abstract class ValueObjectFactory<TObject>
     where TObject : IValueObject<TObject>
 {
     protected static OneOf<TObject, IError> TryCreate<TValue>(TValue value, Func<TValue, bool> isValidFunc, Func<TValue, TObject> createFunc)
-        => TryCreate(() => isValidFunc(value), () => CreateValidationError(value), () => createFunc(value));
-
-    protected static OneOf<TObject, IError> TryCreate(Func<bool> isValidFunc, Func<Error> createErrorFunc, Func<TObject> createFunc)
     {
-        if (isValidFunc())
+        if (isValidFunc(value))
         {
-            return createFunc();
+            return createFunc(value);
         }
 
-        return createErrorFunc();
+        return new ObjectValidationError<TValue>(value);
     }
-
-    protected static Error CreateValidationError<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
 }

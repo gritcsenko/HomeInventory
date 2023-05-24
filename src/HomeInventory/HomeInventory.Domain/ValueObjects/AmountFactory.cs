@@ -14,7 +14,7 @@ internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
     public OneOf<Amount, IError> Create(decimal value, AmountUnit unit)
     {
         var validateFunc = Validators.GetValueOrDefault(unit, SelectValidator);
-        return TryCreate(() => validateFunc(value), () => CreateValidationError((value, unit)), () => new Amount(value, unit));
+        return TryCreate((value, unit), x => validateFunc(x.value), x => new Amount(x.value, x.unit));
     }
 
     private Func<decimal, bool> SelectValidator(AmountUnit unit) => unit switch
