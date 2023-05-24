@@ -2,7 +2,6 @@
 using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Cqrs.Queries.UserId;
-using HomeInventory.Application.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Mapping;

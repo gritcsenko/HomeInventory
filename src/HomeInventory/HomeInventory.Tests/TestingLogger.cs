@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Tests;
 
