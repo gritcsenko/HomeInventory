@@ -28,10 +28,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     {
         var model = ToModel(entity);
 
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        await set.AddAsync(model, cancellationToken);
+        await container.Set.AddAsync(model, cancellationToken);
         return entity;
     }
 
@@ -39,10 +38,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     {
         var models = entities.Select(ToModel);
 
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        await set.AddRangeAsync(models, cancellationToken);
+        await container.Set.AddRangeAsync(models, cancellationToken);
         return entities;
     }
 
@@ -50,64 +48,57 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     {
         var model = ToModel(entity);
 
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        set.Update(model);
+        container.Set.Update(model);
     }
 
     public async Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
 
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        set.UpdateRange(models);
+        container.Set.UpdateRange(models);
     }
 
     public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
 
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        set.Remove(model);
+        container.Set.Remove(model);
     }
 
     public async Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
 
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        set.RemoveRange(models);
+        container.Set.RemoveRange(models);
     }
 
     public async Task<int> CountAsync(CancellationToken cancellationToken = default)
     {
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        return await set.CountAsync(cancellationToken);
+        return await container.Set.CountAsync(cancellationToken);
     }
 
     public async Task<bool> AnyAsync(CancellationToken cancellationToken = default)
     {
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        return await set.AnyAsync(cancellationToken);
+        return await container.Set.AnyAsync(cancellationToken);
     }
 
     public async IAsyncEnumerable<TEntity> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        await foreach (var entity in ToEntity(set, cancellationToken))
+        await foreach (var entity in ToEntity(container.Set, cancellationToken))
         {
             yield return entity;
         }
@@ -116,13 +107,6 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     public async Task<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default) =>
         await _container.CreateNewAsync(cancellationToken);
 
-    protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
-
-    protected TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);
-
-    protected IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
-        _mapper.ProjectTo<TEntity>(query, cancellationToken);
-
     protected async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         if (specification is ICompiledSingleResultSpecification<TModel> compiled)
@@ -130,10 +114,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
             return await FindFirstCompiledOptionalAsync(compiled, cancellationToken);
         }
 
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-        var query = ApplySpecification(set, specification);
+        var query = ApplySpecification(container.Set, specification);
         var projected = ToEntity(query, cancellationToken);
         if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
         {
@@ -145,9 +128,8 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     protected async ValueTask<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
-        var (set, resource) = await GetDbSetAsync(cancellationToken);
-        await using var _ = resource;
-        var query = ApplySpecification(set, specification, evaluateCriteriaOnly: true);
+        await using var container = await GetDbSetAsync(cancellationToken);
+        var query = ApplySpecification(container.Set, specification, evaluateCriteriaOnly: true);
         return await query.AnyAsync(cancellationToken);
     }
 
@@ -173,11 +155,11 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     protected virtual IQueryable<TResult> ApplySpecification<TResult>(DbSet<TModel> set, ISpecification<TModel, TResult> specification) =>
         _evaluator.GetQuery(set.AsQueryable(), specification);
 
-    protected async ValueTask<(DbSet<TModel> set, IAsyncDisposable resource)> GetDbSetAsync(CancellationToken cancellationToken = default)
+    protected async ValueTask<IDbSetContainer> GetDbSetAsync(CancellationToken cancellationToken = default)
     {
         var context = await _container.EnsureAsync(cancellationToken);
 
-        return (context.Set<TModel>(), _container.Resource);
+        return new DbSetContainer(context.Set<TModel>(), _container.Resource);
     }
 
     private async ValueTask<Optional<TEntity>> FindFirstCompiledOptionalAsync(ICompiledSingleResultSpecification<TModel> compiled, CancellationToken cancellationToken = default)
@@ -191,5 +173,32 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         }
 
         return Optional.None<TEntity>();
+    }
+
+    private TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
+
+    private TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);
+
+    private IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
+        _mapper.ProjectTo<TEntity>(query, cancellationToken);
+
+    protected interface IDbSetContainer : IAsyncDisposable
+    {
+        DbSet<TModel> Set { get; }
+    }
+
+    private sealed class DbSetContainer : Disposable, IDbSetContainer
+    {
+        private readonly IAsyncDisposable _resource;
+
+        public DbSetContainer(DbSet<TModel> set, IAsyncDisposable resource)
+        {
+            Set = set;
+            _resource = resource;
+        }
+
+        public DbSet<TModel> Set { get; }
+
+        ValueTask IAsyncDisposable.DisposeAsync() => _resource.DisposeAsync();
     }
 }
