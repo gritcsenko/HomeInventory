@@ -175,17 +175,17 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     protected async ValueTask<(DbSet<TModel> set, IAsyncDisposable resource)> GetDbSetAsync(CancellationToken cancellationToken = default)
     {
-        var unit = await _container.EnsureAsync(cancellationToken);
+        var context = await _container.EnsureAsync(cancellationToken);
 
-        return (unit.DbContext.Set<TModel>(), _container.Resource);
+        return (context.Set<TModel>(), _container.Resource);
     }
 
     private async ValueTask<Optional<TEntity>> FindFirstCompiledOptionalAsync(ICompiledSingleResultSpecification<TModel> compiled, CancellationToken cancellationToken = default)
     {
-        var unit = await _container.EnsureAsync(cancellationToken);
+        var context = await _container.EnsureAsync(cancellationToken);
         await using var _ = _container.Resource;
 
-        if (await compiled.ExecuteAsync(unit.DbContext, cancellationToken) is TModel model)
+        if (await compiled.ExecuteAsync(context, cancellationToken) is TModel model)
         {
             return ToEntity(model);
         }

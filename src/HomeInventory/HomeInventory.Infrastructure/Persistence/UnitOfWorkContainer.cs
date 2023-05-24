@@ -15,15 +15,16 @@ internal class UnitOfWorkContainer : IResettable
 
     public IAsyncDisposable Resource { get; private set; } = EmptyAsyncDisposable.Instance;
 
-    public async Task<UnitOfWork> EnsureAsync(CancellationToken cancellationToken = default)
+    public async Task<DbContext> EnsureAsync(CancellationToken cancellationToken = default)
     {
+        Resource = EmptyAsyncDisposable.Instance;
         if (_unitOfWork.HasValue)
         {
-            Resource = EmptyAsyncDisposable.Instance;
-            return _unitOfWork.Value;
+            return _unitOfWork.Value.DbContext;
         }
 
-        return await CreateNewAsync(cancellationToken);
+        var unit = await CreateNewAsync(cancellationToken);
+        return unit.DbContext;
     }
 
     public async Task<UnitOfWork> CreateNewAsync(CancellationToken cancellationToken = default)
