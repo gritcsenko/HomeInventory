@@ -139,8 +139,8 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// </summary>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TModel> ApplySpecification(DbSet<TModel> set, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false) =>
-        _evaluator.GetQuery(set.AsQueryable(), specification, evaluateCriteriaOnly);
+    protected virtual IQueryable<TModel> ApplySpecification(IQueryable<TModel> set, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false) =>
+        _evaluator.GetQuery(set, specification, evaluateCriteriaOnly);
 
     /// <summary>
     /// Filters all entities of <typeparamref name="T" />, that matches the encapsulated query logic of the
@@ -152,10 +152,10 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// <typeparam name="TResult">The type of the value returned by the projection.</typeparam>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered projected entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TResult> ApplySpecification<TResult>(DbSet<TModel> set, ISpecification<TModel, TResult> specification) =>
-        _evaluator.GetQuery(set.AsQueryable(), specification);
+    protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TModel> set, ISpecification<TModel, TResult> specification) =>
+        _evaluator.GetQuery(set, specification);
 
-    protected async ValueTask<IDbSetContainer> GetDbSetAsync(CancellationToken cancellationToken = default)
+    private async ValueTask<DbSetContainer> GetDbSetAsync(CancellationToken cancellationToken = default)
     {
         var context = await _container.EnsureAsync(cancellationToken);
 
@@ -182,12 +182,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     private IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
         _mapper.ProjectTo<TEntity>(query, cancellationToken);
 
-    protected interface IDbSetContainer : IAsyncDisposable
-    {
-        DbSet<TModel> Set { get; }
-    }
-
-    private sealed class DbSetContainer : Disposable, IDbSetContainer
+    private sealed class DbSetContainer : Disposable, IAsyncDisposable
     {
         private readonly IAsyncDisposable _resource;
 
