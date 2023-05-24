@@ -2,6 +2,7 @@
 using Ardalis.Specification;
 using AutoMapper;
 using DotNext;
+using DotNext.Collections.Generic;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
@@ -15,15 +16,13 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     private readonly IDbContextFactory<DatabaseContext> _factory;
     private readonly IMapper _mapper;
     private readonly ISpecificationEvaluator _evaluator;
-    private readonly IDateTimeService _dateTimeService;
     private Optional<IUnitOfWork> _unitOfWork = Optional.None<IUnitOfWork>();
 
-    protected Repository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
+    protected Repository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator)
     {
         _factory = contextFactory;
         _mapper = mapper;
         _evaluator = evaluator;
-        _dateTimeService = dateTimeService;
     }
 
     public Optional<IUnitOfWork> UnitOfWork => _unitOfWork;
@@ -111,14 +110,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         var (set, resource) = await GetDbSetAsync(cancellationToken);
         await using var _ = resource;
 
-        await foreach (var entity in set)
+        await foreach (var entity in ToEntity(set, cancellationToken))
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                yield break;
-            }
-
-            yield return ToEntity(entity);
+            yield return entity;
         }
     }
 
@@ -140,8 +134,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     {
         if (specification is ICompiledSingleResultSpecification<TModel> compiled)
         {
-            return await FindFirstOptionalAsync(compiled, cancellationToken);
+            return await FindFirstCompiledOptionalAsync(compiled, cancellationToken);
         }
+
         var (set, resource) = await GetDbSetAsync(cancellationToken);
         await using var _ = resource;
 
@@ -196,7 +191,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return (unit.DbContext.Set<TModel>(), resource);
     }
 
-    private async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ICompiledSingleResultSpecification<TModel> compiled, CancellationToken cancellationToken = default)
+    private async ValueTask<Optional<TEntity>> FindFirstCompiledOptionalAsync(ICompiledSingleResultSpecification<TModel> compiled, CancellationToken cancellationToken = default)
     {
         var (unit, resource) = await GetUnitOfWorkAsync(cancellationToken);
         await using var _ = resource;
@@ -217,7 +212,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     private async ValueTask<(IUnitOfWork unit, IAsyncDisposable resource)> CreateUnitOfWorkAsync(CancellationToken cancellationToken = default)
     {
         var context = await _factory.CreateDbContextAsync(cancellationToken);
-        var unit = new UnitOfWork(context, _dateTimeService, new ReleaseUnitOfWork(this));
+        var unit = new UnitOfWork(context, new ReleaseUnitOfWork(this));
         return (unit, unit);
     }
 

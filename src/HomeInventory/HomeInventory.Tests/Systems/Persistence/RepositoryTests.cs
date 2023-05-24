@@ -1,7 +1,6 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
@@ -59,12 +58,12 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().NotBeSameAs(first);
     }
 
-    private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTime);
+    private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default);
 
     private class FakeRepository : Repository<FakeModel, FakeEntity>
     {
-        public FakeRepository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
-            : base(contextFactory, mapper, evaluator, dateTimeService)
+        public FakeRepository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator)
+            : base(contextFactory, mapper, evaluator)
         {
         }
     }
