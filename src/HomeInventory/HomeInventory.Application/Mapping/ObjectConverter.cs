@@ -27,8 +27,6 @@ public class ObjectConverter<TBuilder, TObject, TValue> : GenericValueObjectConv
         _isValid = isValid;
     }
 
-    public OneOf<TObject, IError> Convert(TValue source) => InternalConvert(source);
-
     protected override OneOf<TObject, IError> InternalConvert(TValue source)
     {
         if (!_isValid(source))
