@@ -2,7 +2,6 @@
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
 
@@ -13,13 +12,13 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
 {
     private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
     private readonly UserId _id;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
 
     public ByIdFilterSpecificationTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         _id = Fixture.Create<UserId>();
-        _unitOfWork = new UnitOfWork(Context, DateTime, Substitute.For<IDisposable>());
+        _unitOfWork.DbContext.Returns(Context);
     }
 
     [Fact]

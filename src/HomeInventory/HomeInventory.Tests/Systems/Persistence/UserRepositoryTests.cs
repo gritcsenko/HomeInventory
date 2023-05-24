@@ -67,11 +67,9 @@ public class UserRepositoryTests : BaseRepositoryTest
         await Context.SaveChangesAsync();
         var sut = CreateSut();
 
-        var result = await sut.FindFirstByEmailOrNotFoundUserAsync(_user.Email, Cancellation.Token);
+        var result = await sut.FindFirstByEmailUserOptionalAsync(_user.Email, Cancellation.Token);
 
-        var actual = result.AsT0;
-        actual.Should().NotBeNull();
-        actual.Should().BeEquivalentTo(_user);
+        result.Should().HaveSameValueAs(_user);
     }
 
     private UserRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTime);
