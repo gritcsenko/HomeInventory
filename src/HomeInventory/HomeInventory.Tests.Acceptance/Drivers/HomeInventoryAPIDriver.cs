@@ -35,7 +35,7 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
         {
             var id = Guid.NewGuid();
             // Replace real database with in-memory database for tests
-            services.ReplaceWithScoped(sp => new DbContextOptionsBuilder<DatabaseContext>()
+            services.ReplaceWithSingleton(sp => new DbContextOptionsBuilder<DatabaseContext>()
                 .UseApplicationServiceProvider(sp)
                 .UseInMemoryDatabase($"HomeInventory{id:D}")
                 .Options);
