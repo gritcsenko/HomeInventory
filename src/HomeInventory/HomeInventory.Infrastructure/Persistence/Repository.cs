@@ -34,14 +34,11 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return entity;
     }
 
-    public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        var models = entities.Select(ToModel);
-
         await using var container = await GetDbSetAsync(cancellationToken);
 
-        await container.Set.AddRangeAsync(models, cancellationToken);
-        return entities;
+        await container.Set.AddRangeAsync(entities.Select(ToModel), cancellationToken);
     }
 
     public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)

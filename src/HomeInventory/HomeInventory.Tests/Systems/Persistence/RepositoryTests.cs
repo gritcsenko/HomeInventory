@@ -37,6 +37,105 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().NotBeSameAs(first);
     }
 
+    [Fact]
+    public async ValueTask AddAsync_ShouldReturnSameEntityAsProvided()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+
+        var actual = await sut.AddAsync(entity, Cancellation.Token);
+
+        actual.Should().BeSameAs(entity);
+    }
+
+    [Fact]
+    public async ValueTask AddAsync_ShouldAdd_WhenUsingUnitOfWork()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+        await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
+
+        var _ = await sut.AddAsync(entity, Cancellation.Token);
+
+        await unit.SaveChangesAsync(Cancellation.Token);
+
+        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
+        actual.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async ValueTask AddAsync_ShouldAdd_WhenNotUsingUnitOfWork()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+
+        var _ = await sut.AddAsync(entity, Cancellation.Token);
+
+        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
+        actual.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async ValueTask AddRangeAsync_ShouldAdd_WhenUsingUnitOfWork()
+    {
+        var entities = Fixture.CreateMany<FakeEntity>();
+        var sut = CreateSut();
+        await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
+
+        await sut.AddRangeAsync(entities, Cancellation.Token);
+
+        await unit.SaveChangesAsync(Cancellation.Token);
+
+        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
+        actual.Should().HaveSameCount(entities);
+    }
+
+    [Fact]
+    public async ValueTask AddRangeAsync_ShouldAdd_WhenNotUsingUnitOfWork()
+    {
+        var entities = Fixture.CreateMany<FakeEntity>();
+        var sut = CreateSut();
+
+        await sut.AddRangeAsync(entities, Cancellation.Token);
+
+        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
+        actual.Should().HaveSameCount(entities);
+    }
+
+    [Fact]
+    public async ValueTask GetAllAsync_ShouldReturnExpected()
+    {
+        var model = Fixture.Create<FakeModel>();
+        var sut = CreateSut();
+        await Context.Set<FakeModel>().AddAsync(model, Cancellation.Token);
+
+        var actual = await sut.GetAllAsync(Cancellation.Token).ToArrayAsync(Cancellation.Token);
+
+        actual.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async ValueTask AnyAsync_ShouldReturnFalse_WhenNoModels()
+    {
+        var sut = CreateSut();
+
+        var actual = await sut.AnyAsync(Cancellation.Token);
+
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
+    public async ValueTask AnyAsync_ShouldReturnTrue_WhenModelsStored()
+    {
+        var model = Fixture.Create<FakeModel>();
+        var sut = CreateSut();
+        await Context.Set<FakeModel>().AddAsync(model, Cancellation.Token);
+
+        var actual = await sut.AnyAsync(Cancellation.Token);
+
+        actual.Should().BeTrue();
+    }
+
     private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default);
 
     private class FakeRepository : Repository<FakeModel, FakeEntity>
