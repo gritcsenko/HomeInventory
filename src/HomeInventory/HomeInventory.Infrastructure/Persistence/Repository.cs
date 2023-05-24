@@ -4,7 +4,6 @@ using AutoMapper;
 using DotNext;
 using DotNext.Collections.Generic;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
@@ -105,11 +104,6 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     protected async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
-        if (specification is ICompiledSingleResultSpecification<TModel> compiled)
-        {
-            return await FindFirstCompiledOptionalAsync(compiled, cancellationToken);
-        }
-
         await using var container = await GetDbSetAsync(cancellationToken);
 
         var query = ApplySpecification(container.Set, specification);
@@ -158,22 +152,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return new DbSetContainer(context.Set<TModel>(), _container.Resource);
     }
 
-    private async ValueTask<Optional<TEntity>> FindFirstCompiledOptionalAsync(ICompiledSingleResultSpecification<TModel> compiled, CancellationToken cancellationToken = default)
-    {
-        var context = await _container.EnsureAsync(cancellationToken);
-        await using var _ = _container.Resource;
-
-        if (await compiled.ExecuteAsync(context, cancellationToken) is TModel model)
-        {
-            return ToEntity(model);
-        }
-
-        return Optional.None<TEntity>();
-    }
-
     private TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
-
-    private TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);
 
     private IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
         _mapper.ProjectTo<TEntity>(query, cancellationToken);

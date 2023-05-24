@@ -17,13 +17,13 @@ internal class UserRepository : Repository<UserModel, User>, IUserRepository
     {
     }
 
-    public async Task<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default) =>
-        await HasAsync(new UserHasEmailSpecification(email), cancellationToken);
+    public ValueTask<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default) =>
+        HasAsync(new UserHasEmailSpecification(email), cancellationToken);
 
-    public async Task<Optional<User>> FindFirstByEmailUserOptionalAsync(Email email, CancellationToken cancellationToken = default) =>
-        await FindFirstOptionalAsync(new UserHasEmailSpecification(email), cancellationToken);
+    public ValueTask<Optional<User>> FindFirstByEmailUserOptionalAsync(Email email, CancellationToken cancellationToken = default) =>
+        FindFirstOptionalAsync(new UserHasEmailSpecification(email), cancellationToken);
 
-    public async Task<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
+    public async ValueTask<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
         var userResult = await FindFirstOptionalAsync(new UserHasIdSpecification(userId), cancellationToken);
         return userResult.HasValue;

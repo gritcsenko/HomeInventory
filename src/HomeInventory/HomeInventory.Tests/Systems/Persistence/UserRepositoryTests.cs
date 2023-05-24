@@ -72,5 +72,24 @@ public class UserRepositoryTests : BaseRepositoryTest
         result.Should().HaveSameValueAs(_user);
     }
 
+    [Fact]
+    public async Task HasPermissionAsync_Should_ReturnTreu_WhenUserAdded()
+    {
+        Mapper.ProjectTo<User>(Arg.Any<IQueryable>(), Cancellation.Token).Returns(ci =>
+        {
+            var query = ci.Arg<IQueryable>();
+            var userModels = query.Cast<UserModel>();
+            return userModels.Select(x => _user);
+        });
+        var permission = Fixture.Create<string>();
+        Context.Set<UserModel>().Add(_userModel);
+        await Context.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var result = await sut.HasPermissionAsync(_user.Id, permission, Cancellation.Token);
+
+        result.Should().BeTrue();
+    }
+
     private UserRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default);
 }
