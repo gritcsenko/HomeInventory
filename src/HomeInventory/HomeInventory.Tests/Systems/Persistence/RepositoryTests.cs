@@ -38,24 +38,13 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
     [Fact]
-    public async ValueTask AddAsync_ShouldReturnSameEntityAsProvided()
-    {
-        var entity = Fixture.Create<FakeEntity>();
-        var sut = CreateSut();
-
-        var actual = await sut.AddAsync(entity, Cancellation.Token);
-
-        actual.Should().BeSameAs(entity);
-    }
-
-    [Fact]
     public async ValueTask AddAsync_ShouldAdd_WhenUsingUnitOfWork()
     {
         var entity = Fixture.Create<FakeEntity>();
         var sut = CreateSut();
         await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
 
-        var _ = await sut.AddAsync(entity, Cancellation.Token);
+        await sut.AddAsync(entity, Cancellation.Token);
 
         await unit.SaveChangesAsync(Cancellation.Token);
 
@@ -69,7 +58,7 @@ public class RepositoryTests : BaseRepositoryTest
         var entity = Fixture.Create<FakeEntity>();
         var sut = CreateSut();
 
-        var _ = await sut.AddAsync(entity, Cancellation.Token);
+        await sut.AddAsync(entity, Cancellation.Token);
 
         var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
         actual.Should().ContainSingle();
@@ -134,6 +123,22 @@ public class RepositoryTests : BaseRepositoryTest
         var actual = await sut.AnyAsync(Cancellation.Token);
 
         actual.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async ValueTask CountAsync_ShouldReturnCorrectCount(int expectedCount)
+    {
+        var models = Fixture.CreateMany<FakeModel>(expectedCount);
+        var sut = CreateSut();
+        await Context.Set<FakeModel>().AddRangeAsync(models, Cancellation.Token);
+
+        var actual = await sut.CountAsync(Cancellation.Token);
+
+        actual.Should().Be(expectedCount);
     }
 
     private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default);

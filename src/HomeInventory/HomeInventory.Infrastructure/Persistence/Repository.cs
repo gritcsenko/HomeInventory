@@ -24,24 +24,23 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         _evaluator = evaluator;
     }
 
-    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async ValueTask AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
 
         await using var container = await GetDbSetAsync(cancellationToken);
 
-        await container.Set.AddAsync(model, cancellationToken);
-        return entity;
+        container.Set.Add(model);
     }
 
-    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async ValueTask AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await using var container = await GetDbSetAsync(cancellationToken);
 
-        await container.Set.AddRangeAsync(entities.Select(ToModel), cancellationToken);
+        container.Set.AddRange(entities.Select(ToModel));
     }
 
-    public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async ValueTask UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
 
@@ -50,7 +49,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         container.Set.Update(model);
     }
 
-    public async Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async ValueTask UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
 
@@ -59,7 +58,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         container.Set.UpdateRange(models);
     }
 
-    public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async ValueTask DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
 
@@ -68,7 +67,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         container.Set.Remove(model);
     }
 
-    public async Task DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async ValueTask DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
 
@@ -77,14 +76,14 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         container.Set.RemoveRange(models);
     }
 
-    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<int> CountAsync(CancellationToken cancellationToken = default)
     {
         await using var container = await GetDbSetAsync(cancellationToken);
 
         return await container.Set.CountAsync(cancellationToken);
     }
 
-    public async Task<bool> AnyAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default)
     {
         await using var container = await GetDbSetAsync(cancellationToken);
 
@@ -101,7 +100,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         }
     }
 
-    public async Task<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default) =>
+    public async ValueTask<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default) =>
         await _container.CreateNewAsync(cancellationToken);
 
     protected async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)

@@ -2,6 +2,7 @@ using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 
@@ -32,7 +33,8 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         // Given
         _userRepository.IsUserHasEmailAsync(_command.Email, Cancellation.Token).Returns(false);
-        _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(ci => Task.FromResult(ci.Arg<User>()));
+        _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(ValueTask.CompletedTask);
+        _userRepository.WithUnitOfWorkAsync(Cancellation.Token).Returns(Substitute.For<IUnitOfWork>());
 
         var sut = CreateSut();
         // When
