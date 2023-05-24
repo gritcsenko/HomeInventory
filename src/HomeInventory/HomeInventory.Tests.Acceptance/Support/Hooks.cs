@@ -1,6 +1,5 @@
 ﻿using BoDi;
 using HomeInventory.Tests.Acceptance.Drivers;
-using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Acceptance.Support;
 
@@ -14,7 +13,7 @@ internal class Hooks
     [BeforeScenario(Order = 1)]
     public void RegisterDependencies(IObjectContainer objectContainer)
     {
-        objectContainer.RegisterInstanceAs<ITestingConfiguration>(new TestingConfiguration { EnvironmentName = Environments.Development });
+        objectContainer.RegisterInstanceAs<ITestingConfiguration>(new TestingConfiguration { EnvironmentName = "Testing" });
         objectContainer.RegisterTypeAs<HomeInventoryAPIDriver, IHomeInventoryAPIDriver>().InstancePerContext();
     }
 

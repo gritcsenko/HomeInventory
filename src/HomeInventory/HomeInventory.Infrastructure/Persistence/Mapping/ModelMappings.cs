@@ -14,7 +14,7 @@ internal class ModelMappings : MappingProfile
         CreateMapForId<StorageAreaId>();
         CreateMapForId<ProductId>();
 
-        CreateMapForString<Email>(x => x.Value);
+        CreateMapForString(x => new Email(x), x => x.Value);
 
         CreateMap<User, UserModel>().ReverseMap();
 
