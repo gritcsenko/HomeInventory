@@ -1,14 +1,11 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿namespace HomeInventory.Infrastructure.Persistence.Models;
 
-namespace HomeInventory.Infrastructure.Persistence.Models;
-
-internal interface IPersistentModel
+internal interface IPersistentModel : IPersistentModel<Guid>
 {
-    Guid Id { get; }
 }
 
 internal interface IPersistentModel<out TId>
-    where TId : GuidIdentifierObject<TId>
+    where TId : notnull, IEquatable<TId>
 {
     TId Id { get; }
 }
