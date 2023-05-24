@@ -4,7 +4,6 @@
     <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Scrutor" />
-    <PackageReference Include="StronglyTypedId" />
   </ItemGroup>
 
   <ItemGroup>
