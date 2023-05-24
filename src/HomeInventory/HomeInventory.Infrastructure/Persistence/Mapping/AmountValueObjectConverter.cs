@@ -10,17 +10,8 @@ internal class AmountValueObjectConverter : GenericValueObjectConverter<Amount, 
 {
     private readonly IAmountFactory _factory;
 
-    public AmountValueObjectConverter(IAmountFactory factory)
-    {
-        _factory = factory;
-    }
+    public AmountValueObjectConverter(IAmountFactory factory) => _factory = factory;
 
-    protected override OneOf<Amount, IError> InternalConvert(ProductAmountModel source)
-    {
-        var unit = AmountUnit.TryParse(source.UnitName).Match(
-                    x => x,
-                    notFound => throw new InvalidOperationException("")
-                );
-        return _factory.Create(source.Value, unit);
-    }
+    protected override OneOf<Amount, IError> InternalConvert(ProductAmountModel source) =>
+        _factory.Create(source.Value, AmountUnit.Parse(source.UnitName));
 }

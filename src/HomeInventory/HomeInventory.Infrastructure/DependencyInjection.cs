@@ -35,11 +35,10 @@ public static class DependencyInjection
     private static IServiceCollection AddRepository<TEntity, TRepository, TRepositoryImplementation>(this IServiceCollection services)
         where TEntity : class, Domain.Primitives.IEntity<TEntity>
         where TRepository : class, IRepository<TEntity>
-        where TRepositoryImplementation : class, TRepository
-    {
-        return services.AddScoped<TRepository, TRepositoryImplementation>()
+        where TRepositoryImplementation : class, TRepository =>
+        services
+            .AddScoped<TRepository, TRepositoryImplementation>()
             .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>());
-    }
 
     private static IServiceCollection AddDatabase(this IServiceCollection services)
     {

@@ -1,25 +1,21 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
 {
     private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
     private readonly UserId _id;
-    private readonly IUnitOfWork _unitOfWork;
 
     public ByIdFilterSpecificationTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         _id = Fixture.Create<UserId>();
-        _unitOfWork = new UnitOfWork(Context, DateTime);
     }
 
     [Fact]
@@ -57,7 +53,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
         var query = new[] { user }.AsQueryable();
         var sut = CreateSut();
 
-        var actual = await sut.ExecuteAsync(_unitOfWork, Cancellation.Token);
+        var actual = await sut.ExecuteAsync(Context, Cancellation.Token);
 
         actual.Should().BeSameAs(user);
     }
@@ -69,7 +65,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
         var query = new[] { user }.AsQueryable();
         var sut = CreateSut();
 
-        var actual = await sut.ExecuteAsync(_unitOfWork, Cancellation.Token);
+        var actual = await sut.ExecuteAsync(Context, Cancellation.Token);
 
         actual.Should().NotBeSameAs(user);
     }

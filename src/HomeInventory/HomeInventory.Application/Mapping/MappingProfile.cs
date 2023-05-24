@@ -7,6 +7,10 @@ namespace HomeInventory.Application.Mapping;
 
 public abstract class MappingProfile : Profile
 {
+    protected MappingProfile()
+    {
+    }
+
     protected void CreateMapForId<TId>()
         where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder>
     {

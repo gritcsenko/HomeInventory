@@ -1,28 +1,26 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using DotNext;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal sealed class UnitOfWork : CompositeAsyncDisposable, IUnitOfWork
+internal sealed class UnitOfWork : Disposable, IUnitOfWork
 {
     private readonly DbContext _context;
+    private readonly IDisposable _attachedResource;
     private readonly IDateTimeService _dateTimeService;
     private readonly ChangeTracker _changeTracker;
     private readonly DbSet<OutboxMessage> _messages;
 
-    public UnitOfWork(DbContext context, IDateTimeService dateTimeService, bool ownContext = true)
-        : base(context)
+    public UnitOfWork(DbContext context, IDateTimeService dateTimeService, IDisposable attachedResource)
     {
         _context = context;
         _dateTimeService = dateTimeService;
+        _attachedResource = attachedResource;
         _changeTracker = _context.ChangeTracker;
         _messages = _context.Set<OutboxMessage>();
-        if (!ownContext)
-        {
-            Remove(context);
-        }
     }
 
     public DbContext DbContext => _context;
@@ -36,6 +34,17 @@ internal sealed class UnitOfWork : CompositeAsyncDisposable, IUnitOfWork
         UpdateAuditableEntities(now);
 
         await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
+
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        _attachedResource.Dispose();
+
+        await _context.DisposeAsync();
+
+        await base.DisposeAsyncCore();
     }
 
     private async Task ConvertDomainEventsToOutboxMessagesAsync(DateTimeOffset now, CancellationToken cancellationToken)

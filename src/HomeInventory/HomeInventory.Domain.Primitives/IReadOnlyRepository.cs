@@ -10,7 +10,7 @@ public interface IReadOnlyRepository<TEntity>
     /// A task that represents the asynchronous operation. The task result contains the
     /// number of elements in the input sequence.
     /// </returns>
-    Task<int> CountAsync(CancellationToken cancellationToken = default);
+    ValueTask<int> CountAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Returns a boolean whether any entity exists or not.
@@ -19,7 +19,7 @@ public interface IReadOnlyRepository<TEntity>
     /// A task that represents the asynchronous operation. The task result contains true if the 
     /// source sequence contains any elements; otherwise, false.
     /// </returns>
-    Task<bool> AnyAsync(CancellationToken cancellationToken = default);
+    ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<TEntity> GetAllAsync(CancellationToken cancellationToken = default);
 }

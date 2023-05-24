@@ -10,7 +10,7 @@ public class User : AggregateRoot<User, UserId>
     {
     }
 
-    public Email Email { get; init; } = null!;
+    public required Email Email { get; init; }
 
-    public string Password { get; init; } = null!;
+    public required string Password { get; init; }
 }

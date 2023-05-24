@@ -6,11 +6,13 @@ namespace HomeInventory.Application.Mapping;
 
 public abstract class GenericValueObjectConverter<TObject, TValue> : IValueConverter<TValue, TObject>, ITypeConverter<TValue, TObject>
 {
-    public TObject Convert(TValue sourceMember, ResolutionContext context) => Convert(sourceMember);
+    public TObject Convert(TValue sourceMember, ResolutionContext context) => ConvertCore(sourceMember);
 
-    public TObject Convert(TValue source, TObject destination, ResolutionContext context) => Convert(source);
+    public TObject Convert(TValue source, TObject destination, ResolutionContext context) => ConvertCore(source);
 
-    private TObject Convert(TValue source) =>
+    public OneOf<TObject, IError> Convert(TValue source) => InternalConvert(source);
+
+    private TObject ConvertCore(TValue source) =>
         InternalConvert(source)
         .Match(
             obj => obj,

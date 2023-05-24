@@ -11,16 +11,16 @@ namespace HomeInventory.Application.Cqrs.Commands.Register;
 
 internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
 {
-    private readonly IUserRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public RegisterCommandHandler(IUserRepository userRepository)
     {
-        _repository = userRepository;
+        _userRepository = userRepository;
     }
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand query, CancellationToken cancellationToken)
     {
-        await using var unit = await _repository.WithUnitOfWorkAsync(cancellationToken);
+        await using var unit = await _userRepository.WithUnitOfWorkAsync(cancellationToken);
         if (await IsUserHasEmailAsync(query, cancellationToken))
         {
             return new DuplicateEmailError();
@@ -33,7 +33,7 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
     }
 
     private async Task<bool> IsUserHasEmailAsync(RegisterCommand request, CancellationToken cancellationToken) =>
-        await _repository.IsUserHasEmailAsync(request.Email, cancellationToken);
+        await _userRepository.IsUserHasEmailAsync(request.Email, cancellationToken);
 
     private async Task CreateUserAsync(RegisterCommand request, CancellationToken cancellationToken)
     {
@@ -46,6 +46,6 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
             Email = request.Email,
             Password = request.Password,
         };
-        await _repository.AddAsync(user, cancellationToken);
+        await _userRepository.AddAsync(user, cancellationToken);
     }
 }

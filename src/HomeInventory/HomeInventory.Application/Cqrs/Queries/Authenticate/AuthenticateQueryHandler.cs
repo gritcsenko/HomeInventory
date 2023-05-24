@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
+﻿using DotNext;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
@@ -14,6 +15,7 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
     private readonly IUserRepository _userRepository;
     private readonly IDateTimeService _dateTimeService;
+
     public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IDateTimeService dateTimeService)
     {
         _tokenGenerator = tokenGenerator;
@@ -24,12 +26,17 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
     protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
     {
         var result = await TryFindUserAsync(query, cancellationToken);
-        if (result.TryPickT1(out _, out var user))
+        if (!result.HasValue)
         {
             return new InvalidCredentialsError();
         }
 
-        if (user.Password != query.Password)
+        return await HandleUserAsync(result.Value, query.Password, cancellationToken);
+    }
+
+    private async Task<OneOf<AuthenticateResult, IError>> HandleUserAsync(User user, string password, CancellationToken cancellationToken)
+    {
+        if (IsPasswordMatch(user, password))
         {
             return new InvalidCredentialsError();
         }
@@ -38,6 +45,11 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
         return new AuthenticateResult(user.Id, token);
     }
 
-    private async Task<OneOf<User, OneOf.Types.NotFound>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
-        await _userRepository.FindFirstByEmailOrNotFoundUserAsync(request.Email, cancellationToken);
+    private static bool IsPasswordMatch(User user, string password)
+    {
+        return user.Password != password;
+    }
+
+    private async Task<Optional<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
+        await _userRepository.FindFirstByEmailUserOptionalAsync(request.Email, cancellationToken);
 }

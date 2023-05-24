@@ -5,9 +5,9 @@ public interface IEnumeration : IValueObject
 }
 
 public interface IEnumeration<TEnum> : IEnumeration, IValueObject<TEnum>
-    where TEnum : IEnumeration<TEnum>
+    where TEnum : notnull, IEnumeration<TEnum>
 {
-    static IReadOnlyCollection<TEnum> Items { get; } = null!;
+    static IReadOnlyCollection<TEnum> Items { get; } = Array.Empty<TEnum>();
 
     string Name { get; }
 }

@@ -5,10 +5,7 @@ public sealed class ValuesCollection
     private readonly List<ValueContainer> _values = new();
     private readonly Type _valueType;
 
-    public ValuesCollection(Type valueType)
-    {
-        _valueType = valueType;
-    }
+    public ValuesCollection(Type valueType) => _valueType = valueType;
 
     public bool TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
@@ -18,9 +15,7 @@ public sealed class ValuesCollection
             return false;
         }
 
-        var value = createValueFunc();
-        var container = new ValueContainer(Optional.Some<object>(value), _valueType);
-        _values.Add(container);
+        AddCore(createValueFunc());
         return true;
     }
 
@@ -32,9 +27,7 @@ public sealed class ValuesCollection
             return false;
         }
 
-        var value = await createValueFunc();
-        var container = new ValueContainer(Optional.Some<object>(value), _valueType);
-        _values.Add(container);
+        AddCore(await createValueFunc());
         return true;
     }
 
@@ -66,4 +59,8 @@ public sealed class ValuesCollection
     }
 
     private bool IsAsignable<T>() => _valueType.IsAssignableFrom(typeof(T));
+
+    private void AddCore<T>(T value)
+        where T : notnull =>
+        _values.Add(new ValueContainer(Optional.Some<object>(value), _valueType));
 }

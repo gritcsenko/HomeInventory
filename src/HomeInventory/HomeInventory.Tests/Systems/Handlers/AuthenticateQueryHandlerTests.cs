@@ -5,7 +5,6 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
-using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -32,7 +31,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var query = new AuthenticateQuery(_user.Email, _user.Password);
         var token = Fixture.Create<string>();
 
-        _userRepository.FindFirstByEmailOrNotFoundUserAsync(query.Email, Cancellation.Token).Returns(_user);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
         _tokenGenerator.GenerateTokenAsync(_user, DateTime, Cancellation.Token).Returns(token);
 
         var sut = CreateSut();
@@ -53,7 +52,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<AuthenticateQuery>();
-        _userRepository.FindFirstByEmailOrNotFoundUserAsync(query.Email, Cancellation.Token).Returns(new NotFound());
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional.None<User>());
 
         var sut = CreateSut();
         // When
@@ -71,7 +70,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = new AuthenticateQuery(_user.Email, Fixture.Create<string>());
-        _userRepository.FindFirstByEmailOrNotFoundUserAsync(query.Email, Cancellation.Token).Returns(_user);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
 
         var sut = CreateSut();
         // When

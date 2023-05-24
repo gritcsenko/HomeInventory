@@ -14,6 +14,7 @@ internal class ContractsMappings : MappingProfile
     public ContractsMappings()
     {
         CreateMapForId<UserId>();
+        CreateMapForString<Email>(x => x.Value);
 
         CreateMapForString<Email>(x => x.Value);
 
