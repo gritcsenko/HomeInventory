@@ -1,8 +1,7 @@
-﻿using HomeInventory.Infrastructure.Persistence.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace HomeInventory.Infrastructure.Persistence;
+namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
 internal class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
 {

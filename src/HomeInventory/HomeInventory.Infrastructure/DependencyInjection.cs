@@ -1,9 +1,14 @@
-﻿using HomeInventory.Application;
-using HomeInventory.Application.Interfaces.Persistence;
+﻿using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
+using HomeInventory.Application;
+using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Infrastructure;
@@ -13,7 +18,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddDatabase();
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
+        services.AddRepository<User, IUserRepository, UserRepository>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
         services.AddSingleton<AmountValueObjectConverter>();
@@ -21,9 +27,17 @@ public static class DependencyInjection
         return services;
     }
 
+    private static IServiceCollection AddRepository<TEntity, TRepository, TRepositoryImplementation>(this IServiceCollection services)
+        where TEntity : class, Domain.Primitives.IEntity<TEntity>
+        where TRepository : class, IRepository<TEntity>
+        where TRepositoryImplementation : class, TRepository =>
+        services
+            .AddScoped<TRepository, TRepositoryImplementation>()
+            .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>());
+
     private static IServiceCollection AddDatabase(this IServiceCollection services)
     {
-        return services.AddDbContext<IDatabaseContext, DatabaseContext>((sp, builder) =>
+        return services.AddDbContextFactory<DatabaseContext>((sp, builder) =>
         {
             var env = sp.GetRequiredService<IHostEnvironment>();
             builder.UseInMemoryDatabase("HomeInventory").UseApplicationServiceProvider(sp);

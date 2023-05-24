@@ -1,9 +1,10 @@
 using AutoMapper;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Queries.UserId;
+using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
@@ -13,14 +14,15 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OneOf;
+using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Controllers;
 
 [UnitTest]
 public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.GivenTestContext>
 {
-    private static readonly Variable<RegistrationResult> _registrationResult = new(nameof(_registrationResult));
+    private static readonly Variable<UserIdQuery> _userIdQuery = new(nameof(_userIdQuery));
+    private static readonly Variable<UserIdResult> _userIdResult = new(nameof(_userIdResult));
     private static readonly Variable<RegisterResponse> _registerResponse = new(nameof(_registerResponse));
     private static readonly Variable<RegisterRequest> _registerRequest = new(nameof(_registerRequest));
     private static readonly Variable<RegisterCommand> _registerCommand = new(nameof(_registerCommand));
@@ -36,6 +38,7 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
         Fixture.CustomizeEmail();
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(Guid.NewGuid()));
     }
 
     [Fact]
@@ -43,8 +46,10 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
     {
         Given
             .Map(_registerRequest, _registerCommand)
-            .Map(_registrationResult, _registerResponse)
-            .OnSendReturn(_registerCommand, _registrationResult);
+            .Map(_registerRequest, _userIdQuery)
+            .Map(_userIdResult, _registerResponse)
+            .OnSendReturn(_registerCommand, new Success())
+            .OnSendReturn(_userIdQuery, _userIdResult);
 
         var then = await When
             .InvokedAsync(Given.Context, _registerRequest, AuthenticationModule.RegisterAsync);
@@ -137,11 +142,19 @@ public class AuthenticationModuleTests : BaseTest<AuthenticationModuleTests.Give
         public IndexedVariable<HttpContext> Context => _context.WithIndex(0);
 
         public GivenTestContext OnSendReturn<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
-            where TRequest : notnull, IRequest<OneOf<TResult, IError>>
+            where TRequest : notnull, IQuery<TResult>
             where TResult : notnull
         {
             var requestValue = Variables.Get(request.WithIndex(0));
             var resultValue = Variables.Get(result.WithIndex(0));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
+            return this;
+        }
+
+        public GivenTestContext OnSendReturn<TRequest>(Variable<TRequest> request, Success resultValue)
+            where TRequest : notnull, ICommand
+        {
+            var requestValue = Variables.Get(request.WithIndex(0));
             _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
             return this;
         }

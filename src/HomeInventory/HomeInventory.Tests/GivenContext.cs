@@ -29,6 +29,18 @@ public class GivenContext<TContext> : Context
     public TContext EmptyHashCode(IVariable<HashCode> hash) =>
         Add(hash, () => new HashCode());
 
+    public TContext SubstituteFor<T>(IVariable<T> variable, params Action<T, VariablesCollection>[] setups)
+        where T : class =>
+        Add(variable, () =>
+        {
+            var value = Substitute.For<T>();
+            foreach (var setup in setups)
+            {
+                setup(value, Variables);
+            }
+            return value;
+        });
+
     protected TContext Add<T>(IVariable<T> variable, Func<T> createValue)
         where T : notnull
     {
@@ -39,7 +51,6 @@ public class GivenContext<TContext> : Context
 
         return (TContext)this;
     }
-
     public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull =>
         AddToHashCode(hash, variable, 1);

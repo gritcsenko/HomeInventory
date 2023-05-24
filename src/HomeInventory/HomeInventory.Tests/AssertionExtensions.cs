@@ -15,4 +15,8 @@ internal static class AssertionExtensions
     public static ServiceCollectionAssertions Should(this IServiceCollection actualValue) => new(actualValue);
 
     public static OkResultAssertions<TValue> Should<TValue>(this Ok<TValue> actualValue) => new(actualValue);
+
+    public static OptionAssertions<T> Should<T>(this Optional<T> actualValue)
+        where T : notnull =>
+        new(actualValue);
 }

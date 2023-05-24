@@ -7,25 +7,25 @@ using HomeInventory.Infrastructure.Specifications;
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
-public class UserHasEmailSpecificationTests : BaseTest
+public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
 {
     private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
+    private readonly UserId _id;
 
-    public UserHasEmailSpecificationTests()
+    public ByIdFilterSpecificationTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
-        Fixture.CustomizeEmail();
+        _id = Fixture.Create<UserId>();
     }
 
     [Fact]
-    public void Should_SatisfyWithCorrectEmail()
+    public void Should_SatisfyWithCorrectId()
     {
-        var email = Fixture.Create<string>();
         var user = Fixture.Build<UserModel>()
-            .With(x => x.Email, email)
+            .With(m => m.Id, _id.Id)
             .Create();
         var query = new[] { user }.AsQueryable();
-        var sut = new UserHasEmailSpecification(new Email(email));
+        var sut = CreateSut();
 
         var actual = _evaluator.GetQuery(query, sut).Any();
 
@@ -33,16 +33,16 @@ public class UserHasEmailSpecificationTests : BaseTest
     }
 
     [Fact]
-    public void Should_NotSatisfyWithWrongEmail()
+    public void Should_NotSatisfyWithWrongId()
     {
-        var query = Fixture.Build<UserModel>()
-            .With(x => x.Email, Fixture.Create<string>())
-            .CreateMany()
-            .AsQueryable();
-        var sut = new UserHasEmailSpecification(new Email(Fixture.Create<string>()));
+        var user = Fixture.Create<UserModel>();
+        var query = new[] { user }.AsQueryable();
+        var sut = CreateSut();
 
         var actual = _evaluator.GetQuery(query, sut).Any();
 
         actual.Should().BeFalse();
     }
+
+    private ByIdFilterSpecification<UserModel> CreateSut() => new(_id.Id);
 }
