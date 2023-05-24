@@ -1,5 +1,4 @@
 ﻿using Ardalis.Specification;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,5 +17,5 @@ internal class UserHasEmailSpecification : Specification<UserModel>, ISingleResu
         _email = email;
     }
 
-    public Task<UserModel?> ExecuteAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken) => _cachedQuery(unitOfWork.DbContext, _email.Value, cancellationToken);
+    public Task<UserModel?> ExecuteAsync(DbContext context, CancellationToken cancellationToken) => _cachedQuery(context, _email.Value, cancellationToken);
 }

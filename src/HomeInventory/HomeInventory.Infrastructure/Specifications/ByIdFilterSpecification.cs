@@ -1,5 +1,4 @@
 ﻿using Ardalis.Specification;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,5 +27,5 @@ internal class ByIdFilterSpecification<TModel, TId> : Specification<TModel>, ISi
         _id = id;
     }
 
-    public Task<TModel?> ExecuteAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken) => _cachedQuery(unitOfWork.DbContext, _id, cancellationToken);
+    public Task<TModel?> ExecuteAsync(DbContext context, CancellationToken cancellationToken) => _cachedQuery(context, _id, cancellationToken);
 }

@@ -15,27 +15,6 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
     [Fact]
-    public void UnitOfWork_ShouldBeNone_WhenCreated()
-    {
-        var sut = CreateSut();
-
-        var actual = sut.UnitOfWork;
-
-        actual.Should().HaveNoValue();
-    }
-
-    [Fact]
-    public async ValueTask UnitOfWork_ShouldBeSame_WhenWithUnitOfWorkAsyncCalled()
-    {
-        var sut = CreateSut();
-        var expected = await sut.WithUnitOfWorkAsync(Cancellation.Token);
-
-        var actual = sut.UnitOfWork;
-
-        actual.Should().HaveSameValueAs(expected);
-    }
-
-    [Fact]
     public async ValueTask WithUnitOfWorkAsync_ShouldReturnBeSame_WhenCalledSecondTime()
     {
         var sut = CreateSut();

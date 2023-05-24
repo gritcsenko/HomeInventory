@@ -13,19 +13,16 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     where TModel : class
     where TEntity : class, Domain.Primitives.IEntity<TEntity>
 {
-    private readonly IDbContextFactory<DatabaseContext> _factory;
+    private readonly UnitOfWorkContainer _container;
     private readonly IMapper _mapper;
     private readonly ISpecificationEvaluator _evaluator;
-    private Optional<IUnitOfWork> _unitOfWork = Optional.None<IUnitOfWork>();
 
     protected Repository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator)
     {
-        _factory = contextFactory;
+        _container = new UnitOfWorkContainer(contextFactory);
         _mapper = mapper;
         _evaluator = evaluator;
     }
-
-    public Optional<IUnitOfWork> UnitOfWork => _unitOfWork;
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
@@ -116,19 +113,15 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         }
     }
 
-    public async Task<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default)
-    {
-        var (unit, _) = await CreateUnitOfWorkAsync(cancellationToken);
-
-        _unitOfWork = Optional.Some(unit);
-        return unit;
-    }
+    public async Task<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default) =>
+        await _container.CreateNewAsync(cancellationToken);
 
     protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
 
     protected TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);
 
-    protected IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) => _mapper.ProjectTo<TEntity>(query, cancellationToken);
+    protected IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
+        _mapper.ProjectTo<TEntity>(query, cancellationToken);
 
     protected async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
@@ -164,10 +157,8 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// </summary>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TModel> ApplySpecification(DbSet<TModel> set, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false)
-    {
-        return _evaluator.GetQuery(set.AsQueryable(), specification, evaluateCriteriaOnly);
-    }
+    protected virtual IQueryable<TModel> ApplySpecification(DbSet<TModel> set, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false) =>
+        _evaluator.GetQuery(set.AsQueryable(), specification, evaluateCriteriaOnly);
 
     /// <summary>
     /// Filters all entities of <typeparamref name="T" />, that matches the encapsulated query logic of the
@@ -179,60 +170,26 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// <typeparam name="TResult">The type of the value returned by the projection.</typeparam>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered projected entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TResult> ApplySpecification<TResult>(DbSet<TModel> set, ISpecification<TModel, TResult> specification)
-    {
-        return _evaluator.GetQuery(set.AsQueryable(), specification);
-    }
+    protected virtual IQueryable<TResult> ApplySpecification<TResult>(DbSet<TModel> set, ISpecification<TModel, TResult> specification) =>
+        _evaluator.GetQuery(set.AsQueryable(), specification);
 
     protected async ValueTask<(DbSet<TModel> set, IAsyncDisposable resource)> GetDbSetAsync(CancellationToken cancellationToken = default)
     {
-        var (unit, resource) = await GetUnitOfWorkAsync(cancellationToken);
+        var unit = await _container.EnsureAsync(cancellationToken);
 
-        return (unit.DbContext.Set<TModel>(), resource);
+        return (unit.DbContext.Set<TModel>(), _container.Resource);
     }
 
     private async ValueTask<Optional<TEntity>> FindFirstCompiledOptionalAsync(ICompiledSingleResultSpecification<TModel> compiled, CancellationToken cancellationToken = default)
     {
-        var (unit, resource) = await GetUnitOfWorkAsync(cancellationToken);
-        await using var _ = resource;
+        var unit = await _container.EnsureAsync(cancellationToken);
+        await using var _ = _container.Resource;
 
-        if (await compiled.ExecuteAsync(unit, cancellationToken) is TModel model)
+        if (await compiled.ExecuteAsync(unit.DbContext, cancellationToken) is TModel model)
         {
             return ToEntity(model);
         }
 
         return Optional.None<TEntity>();
-    }
-
-    private ValueTask<(IUnitOfWork unit, IAsyncDisposable resource)> GetUnitOfWorkAsync(CancellationToken cancellationToken = default) =>
-        _unitOfWork.HasValue
-            ? new ValueTask<(IUnitOfWork unit, IAsyncDisposable resource)>((_unitOfWork.Value, EmptyAsyncDisposable.Instance))
-            : CreateUnitOfWorkAsync(cancellationToken);
-
-    private async ValueTask<(IUnitOfWork unit, IAsyncDisposable resource)> CreateUnitOfWorkAsync(CancellationToken cancellationToken = default)
-    {
-        var context = await _factory.CreateDbContextAsync(cancellationToken);
-        var unit = new UnitOfWork(context, new ReleaseUnitOfWork(this));
-        return (unit, unit);
-    }
-
-    private sealed class ReleaseUnitOfWork : IDisposable
-    {
-        private readonly Repository<TModel, TEntity> _repository;
-
-        public ReleaseUnitOfWork(Repository<TModel, TEntity> repository) => _repository = repository;
-
-        void IDisposable.Dispose() => _repository._unitOfWork = Optional.None<IUnitOfWork>();
-    }
-
-    private sealed class EmptyAsyncDisposable : IAsyncDisposable
-    {
-        private EmptyAsyncDisposable()
-        {
-        }
-
-        public static IAsyncDisposable Instance { get; } = new EmptyAsyncDisposable();
-
-        ValueTask IAsyncDisposable.DisposeAsync() => ValueTask.CompletedTask;
     }
 }

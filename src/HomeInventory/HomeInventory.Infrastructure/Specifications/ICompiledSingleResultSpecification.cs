@@ -1,8 +1,8 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Specifications;
 
 internal interface ICompiledSingleResultSpecification<T>
 {
-    Task<T?> ExecuteAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken);
+    Task<T?> ExecuteAsync(DbContext context, CancellationToken cancellationToken);
 }
