@@ -13,11 +13,11 @@ public class AmountUnitTests : BaseTest
 
     [Theory]
     [MemberData(nameof(Data))]
-    public void PropertiesShouldMatch(AmountUnit sut, string name, MeasurementType type, decimal factor)
+    public void PropertiesShouldMatch(AmountUnit sut, string name, MeasurementType type, bool isMetric)
     {
         sut.Name.Should().Be(name);
         sut.Measurement.Should().Be(type);
-        sut.MetricUnitFactor.Should().BeApproximately(factor, 0.000_000_000_000_001m);
+        sut.IsMetric.Should().Be(isMetric);
     }
 
     [Theory]
@@ -29,13 +29,14 @@ public class AmountUnitTests : BaseTest
         dictionary.Should().ContainKey(sut);
     }
 
-    public static TheoryData<AmountUnit, string, MeasurementType, decimal> Data()
+    public static TheoryData<AmountUnit, string, MeasurementType, bool> Data()
     {
         return new()
         {
-            { AmountUnit.Piece, nameof(AmountUnit.Piece), MeasurementType.Count, 1m },
-            { AmountUnit.CubicMeter, nameof(AmountUnit.CubicMeter), MeasurementType.Volume, 1m },
-            { AmountUnit.Gallon, nameof(AmountUnit.Gallon), MeasurementType.Volume, 0.0037854117840007m },
+            { AmountUnit.Piece, nameof(AmountUnit.Piece), MeasurementType.Count, true },
+            { AmountUnit.CubicMeter, nameof(AmountUnit.CubicMeter), MeasurementType.Volume, true },
+            { AmountUnit.Kelvin, nameof(AmountUnit.Kelvin), MeasurementType.Temperature, true },
+            { AmountUnit.Gallon, nameof(AmountUnit.Gallon), MeasurementType.Volume, false },
         };
     }
 

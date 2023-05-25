@@ -13,9 +13,7 @@ internal class ContractsMappings : MappingProfile
     public ContractsMappings()
     {
         CreateMapForId<UserId>();
-        CreateMapForString<Email>(x => x.Value);
-
-        CreateMap<RegisterRequest, RegisterCommand>();
+        CreateMapForString(x => new Email(x), x => x.Value);
 
         CreateMap<RegisterRequest, RegisterCommand>()
             .ConstructUsing((c, ctx) => new RegisterCommand(ctx.Mapper.Map<Email>(c.Email), c.Password, new DelegatingSupplier<Guid>(Guid.NewGuid)));

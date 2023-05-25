@@ -20,13 +20,13 @@ public abstract class MappingProfile : Profile
             .ConvertUsing(new GuidIdConverter<TId>());
     }
 
-    protected void CreateMapForString<TObject>(Expression<Func<TObject, string>> convertToValue)
-        where TObject : notnull, ValueObject<TObject>, IBuildable<TObject, ValueObject<TObject>.Builder<string>>
+    protected void CreateMapForString<TObject>(Expression<Func<string, TObject>> convertFromValue, Expression<Func<TObject, string>> convertToValue)
+        where TObject : notnull
     {
         CreateMap<TObject, string>()
             .ConstructUsing(convertToValue);
         CreateMap<string, TObject>()
-            .ConvertUsing(new StringObjectConverter<TObject>());
+            .ConstructUsing(convertFromValue);
     }
 
     protected void CreateMapForValue<TObject, TValue, TConverter>(Expression<Func<TObject, TValue>> convertToValue)

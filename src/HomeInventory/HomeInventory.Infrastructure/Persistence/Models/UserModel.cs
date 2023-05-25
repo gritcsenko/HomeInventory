@@ -1,8 +1,10 @@
-﻿namespace HomeInventory.Infrastructure.Persistence.Models;
+﻿using HomeInventory.Domain.ValueObjects;
 
-internal class UserModel : IPersistentModel
+namespace HomeInventory.Infrastructure.Persistence.Models;
+
+internal class UserModel : IPersistentModel<UserId>
 {
-    public required Guid Id { get; init; }
+    public required UserId Id { get; init; }
     public required string Email { get; init; }
     public required string Password { get; init; }
 }

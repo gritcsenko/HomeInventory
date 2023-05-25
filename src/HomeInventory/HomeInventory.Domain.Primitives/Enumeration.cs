@@ -20,11 +20,11 @@ public abstract class Enumeration<TEnum> : ValueObject<TEnum>, IEnumeration<TEnu
     private static IEnumerable<TEnum> CollectItems()
     {
         var enumType = typeof(TEnum);
-        var assembly = enumType.Assembly;
-        var allTypes = assembly.GetTypes();
-        var derivedTypes = allTypes.Where(enumType.IsAssignableFrom);
-        var allFields = derivedTypes.SelectMany(t => t.GetFieldsOfType<TEnum>());
-        return allFields;
+        return enumType
+            .Assembly
+            .GetTypes()
+            .Where(enumType.IsAssignableFrom)
+            .SelectMany(t => t.GetFieldsOfType<TEnum>());
     }
 
     public static TEnum Parse(string name) =>

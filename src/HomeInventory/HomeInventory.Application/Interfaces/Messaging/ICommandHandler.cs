@@ -5,12 +5,7 @@ using OneOf.Types;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 
-internal interface ICommandHandler<TCommand, TResponse> : IRequestHandler<TCommand, OneOf<TResponse, IError>>
-    where TCommand : ICommand<TResponse>
-{
-}
-
-internal interface ICommandHandler<TCommand> : ICommandHandler<TCommand, Success>
+internal interface ICommandHandler<TCommand> : IRequestHandler<TCommand, OneOf<Success, IError>>
     where TCommand : ICommand
 {
 }
