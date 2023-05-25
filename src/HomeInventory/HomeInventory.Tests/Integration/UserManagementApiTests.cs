@@ -41,7 +41,7 @@ public class UserManagementApiTests : BaseTest, IDisposable
             .And.Be(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<RegisterResponse>(options: null, Cancellation.Token);
         body.Should().NotBeNull();
-        body!.Id.Should().NotBeEmpty();
+        body!.UserId.Should().NotBeEmpty();
     }
 
     [Fact]
