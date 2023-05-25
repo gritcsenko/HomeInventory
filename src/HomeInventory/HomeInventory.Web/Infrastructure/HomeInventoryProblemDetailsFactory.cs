@@ -12,11 +12,12 @@ namespace HomeInventory.Web.Infrastructure;
 public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 {
     private readonly ApiBehaviorOptions _options;
-    private readonly ErrorMapping _errorMapping = new();
+    private readonly ErrorMapping _errorMapping;
 
-    public HomeInventoryProblemDetailsFactory(IOptions<ApiBehaviorOptions> options)
+    public HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options)
     {
-        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _errorMapping = errorMapping;
+        _options = options.Value;
     }
 
     public override ProblemDetails CreateProblemDetails(
@@ -74,30 +75,34 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         return problemDetails;
     }
 
-    public ProblemDetails ConvertToProblem(HttpContext context, IReadOnlyCollection<IError> errors)
+    public ProblemDetails ConvertToProblem(HttpContext httpContext, IEnumerable<IError> errors)
     {
-        if (errors.Count == 0)
+        httpContext.SetItem(HttpContextItems.Errors, errors);
+        var problemsAndStatuses = errors.Select(error => (Problem: ConvertToProblem(httpContext, error), Status: _errorMapping.GetError(error))).ToReadOnly();
+        if (problemsAndStatuses.Count == 0)
         {
             throw new InvalidOperationException("Has to be at least one error provided");
         }
 
-        context.SetItem(HttpContextItems.Errors, errors);
-        if (errors.Count == 1)
+        if (problemsAndStatuses.Count == 1)
         {
-            return ConvertToProblem(context, errors.First());
+            return problemsAndStatuses.First().Problem;
         }
 
-        var statuses = errors.Select(_errorMapping.GetError).ToHashSet();
-        var result = CreateProblemDetails(
-            context,
-            statuses.Count == 1 ? statuses.First() : _errorMapping.GetDefaultError(),
+        var statuses = problemsAndStatuses.Select(x => x.Status).ToHashSet();
+        var status = statuses.Count == 1 ? statuses.First() : _errorMapping.GetDefaultError();
+        var problemDetails = CreateProblemDetails(
+            httpContext,
+            status,
             "Multiple Problems",
             type: null,
             "There were multiple problems that have occurred.",
             instance: null);
-        result.Extensions["problems"] = errors.Select(error => ConvertToProblem(context, error)).ToArray();
+        problemDetails.Extensions["problems"] = problemsAndStatuses.Select(x => x.Problem).ToArray();
 
-        return result;
+        ApplyProblemDetailsDefaults(httpContext, problemDetails);
+
+        return problemDetails;
     }
 
     private ProblemDetails ConvertToProblem(HttpContext context, IError error)

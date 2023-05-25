@@ -4,7 +4,7 @@ namespace HomeInventory.Domain.ValueObjects;
 
 public sealed class MeasurementType : Enumeration<MeasurementType, Guid>
 {
-    private MeasurementType(string name)
+    internal MeasurementType(string name)
         : base(name, Guid.NewGuid())
     {
     }

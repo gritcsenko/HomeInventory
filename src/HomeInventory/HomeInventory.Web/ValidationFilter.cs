@@ -4,14 +4,10 @@ namespace HomeInventory.Web;
 
 internal class ValidationFilter<T> : IEndpointFilter
 {
-    public ValidationFilter()
-    {
-    }
-
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        var arg = context.Arguments.OfType<T>().First();
-        var validationResult = await context.HttpContext.ValidateAsync(arg);
+        var argument = context.Arguments.OfType<T>().First();
+        var validationResult = await context.HttpContext.ValidateAsync(argument);
         if (!validationResult.IsValid)
         {
             return context.HttpContext.Problem(validationResult);

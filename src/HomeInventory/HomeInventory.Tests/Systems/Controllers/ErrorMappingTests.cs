@@ -1,6 +1,5 @@
 ﻿using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
 
@@ -56,6 +55,17 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Result(actual => actual.Should().Be(StatusCodes.Status409Conflict));
     }
 
+    [Fact]
+    public void GetErrorT_Shoud_Return403_When_InvalidCredentialsError()
+    {
+        Given
+            .Sut(_sut);
+
+        When
+            .Invoked(_sut, sut => sut.GetError<InvalidCredentialsError>())
+            .Result(actual => actual.Should().Be(StatusCodes.Status403Forbidden));
+    }
+
     protected override GivenContext CreateGiven(VariablesCollection variables) => new(variables, Fixture);
 
     public sealed class GivenContext : GivenContext<GivenContext>
@@ -77,7 +87,6 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             Add(new ValidationError(""), StatusCodes.Status400BadRequest);
             Add(new ObjectValidationError<string>(""), StatusCodes.Status400BadRequest);
             Add(new NotFoundError(""), StatusCodes.Status404NotFound);
-            Add(new ValidatorNotFoundError(AmountUnit.Piece), StatusCodes.Status404NotFound);
         }
     }
 }

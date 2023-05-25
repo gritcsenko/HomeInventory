@@ -5,10 +5,6 @@ using OneOf.Types;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 
-public interface ICommand<TResponse> : IRequest<OneOf<TResponse, IError>>
-{
-}
-
-public interface ICommand : ICommand<Success>
+public interface ICommand : IRequest<OneOf<Success, IError>>
 {
 }

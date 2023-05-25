@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace HomeInventory.Tests.Integration;
 
 [IntegrationTest]
-public class AuthenticationApiTests : BaseTest, IDisposable
+public class UserManagementApiTests : BaseTest, IDisposable
 {
     private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
 
-    public AuthenticationApiTests()
+    public UserManagementApiTests()
     {
         _client = _appFactory.CreateClient();
         Fixture.Customize(new RegisterRequestCustomization());
@@ -35,7 +35,7 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         var request = Fixture.Create<RegisterRequest>();
         var content = JsonContent.Create(request);
 
-        var response = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
+        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.OK);
@@ -50,8 +50,8 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         var request = Fixture.Create<RegisterRequest>();
         var content = JsonContent.Create(request);
 
-        _ = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
-        var response = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
+        _ = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.Conflict);

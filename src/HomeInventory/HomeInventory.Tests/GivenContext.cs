@@ -11,6 +11,8 @@ public class GivenContext<TContext> : Context
 
     protected IFixture Fixture { get; }
 
+    protected TContext This => (TContext)this;
+
     public TContext New<T>(IVariable<T> variable)
         where T : notnull =>
         Add(variable, Fixture.Create<T>);
@@ -23,7 +25,7 @@ public class GivenContext<TContext> : Context
             Add(variable, () => item);
         }
 
-        return (TContext)this;
+        return This;
     }
 
     public TContext EmptyHashCode(IVariable<HashCode> hash) =>
@@ -49,8 +51,9 @@ public class GivenContext<TContext> : Context
             throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
         }
 
-        return (TContext)this;
+        return This;
     }
+
     public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull =>
         AddToHashCode(hash, variable, 1);
@@ -70,7 +73,7 @@ public class GivenContext<TContext> : Context
         {
             throw new InvalidOperationException($"Failed to update variable '{hash.Name}'");
         }
-        return (TContext)this;
+        return This;
     }
 
     private HashCode AddNewHashCode(IndexedVariable<HashCode> hash)

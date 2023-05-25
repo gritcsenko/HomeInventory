@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddHealthChecksUI()
             .AddInMemoryStorage();
 
+        services.AddSingleton<ErrorMapping>();
         services.AddSingleton<HomeInventoryProblemDetailsFactory>();
         services.AddSingleton<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
@@ -89,6 +90,7 @@ public static class DependencyInjection
         services.AddOptionsWithValidator<JwtOptions>();
 
         services.AddCarter(configurator: config => config
+            .WithModule<UserManagementModule>()
             .WithModule<AuthenticationModule>()
             .WithModule<PermissionModule>());
 

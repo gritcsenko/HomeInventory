@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -110,7 +111,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
     {
         var sut = CreateSut();
-        var errors = new[] { new UserCreationError() };
+        var errors = new[] { new DuplicateEmailError() };
         _context.Items["Errors"] = errors;
 
         var details = sut.CreateProblemDetails(_context);
@@ -283,7 +284,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateValidationProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
     {
         var sut = CreateSut();
-        var errors = new[] { new UserCreationError() };
+        var errors = new[] { new DuplicateEmailError() };
         _context.Items["Errors"] = errors;
 
         var details = sut.CreateValidationProblemDetails(_context, _state);
@@ -294,5 +295,5 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
             .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
-    private HomeInventoryProblemDetailsFactory CreateSut() => new(Options.Create(_options));
+    private HomeInventoryProblemDetailsFactory CreateSut() => new(new ErrorMapping(), Options.Create(_options));
 }

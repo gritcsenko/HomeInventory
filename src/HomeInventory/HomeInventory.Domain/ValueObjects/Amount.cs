@@ -14,4 +14,6 @@ public sealed class Amount : ValueObject<Amount>
     public decimal Value { get; }
 
     public AmountUnit Unit { get; }
+
+    public Amount ToMetric() => Unit.IsMetric ? this : new Amount(Unit.ToMetric(Value), Unit.MetricUnit);
 }

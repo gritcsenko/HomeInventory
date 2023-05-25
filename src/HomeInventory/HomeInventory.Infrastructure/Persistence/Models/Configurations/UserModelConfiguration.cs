@@ -8,6 +8,8 @@ internal class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
     public void Configure(EntityTypeBuilder<UserModel> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .HasIdConversion();
 
         builder.Property(x => x.Email)
             .IsRequired();

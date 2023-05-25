@@ -1,6 +1,4 @@
-using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
@@ -19,29 +17,9 @@ internal class AuthenticationModule : ApiModule
 
     protected override void AddRoutes(RouteGroupBuilder group)
     {
-        group.MapPost("register", RegisterAsync)
-            .AllowAnonymous()
-            .WithValidationOf<RegisterRequest>();
-
         group.MapPost("login", LoginAsync)
             .AllowAnonymous()
             .WithValidationOf<LoginRequest>();
-    }
-
-    public static async Task<IResult> RegisterAsync(HttpContext context, [FromBody] RegisterRequest body, CancellationToken cancellationToken = default)
-    {
-        var mapper = context.GetMapper();
-
-        var command = mapper.Map<RegisterCommand>(body);
-        var result = await context.GetSender().Send(command, cancellationToken);
-        return await result.Match(
-            async _ =>
-            {
-                var query = mapper.Map<UserIdQuery>(body);
-                var queryResult = await context.GetSender().Send(query, cancellationToken);
-                return context.MatchToOk(queryResult, mapper.Map<RegisterResponse>);
-            },
-            error => Task.FromResult(context.Problem(error)));
     }
 
     public static async Task<IResult> LoginAsync(HttpContext context, [FromBody] LoginRequest body, CancellationToken cancellationToken = default)

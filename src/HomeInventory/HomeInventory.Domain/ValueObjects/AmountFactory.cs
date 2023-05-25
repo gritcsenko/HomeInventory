@@ -1,47 +1,45 @@
-﻿using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Primitives;
+﻿using DotNext;
 using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-internal sealed class AmountFactory : ValueObjectFactory<Amount>, IAmountFactory
+internal sealed class AmountFactory : IAmountFactory
 {
-    private static readonly IReadOnlyDictionary<AmountUnit, Validator> _validators = new Validator[]
-    {
-        new(AmountUnit.Piece, x => x >= 0m && decimal.Truncate(x) == x),
-        new(AmountUnit.Gallon, x => x >= 0m),
-        new(AmountUnit.CubicMeter, x => x >= 0m),
-    }.ToDictionary(x => x.Unit);
-
-    public OneOf<Amount, IError> Create(decimal value, AmountUnit unit) => Create(value, GetValidator(unit));
-
-    private static OneOf<Validator, IError> GetValidator(AmountUnit unit) =>
-        _validators.TryGetValue(unit, out var validator) ? validator : new ValidatorNotFoundError(unit);
-
-    private OneOf<Amount, IError> Create(decimal value, OneOf<Validator, IError> validationResult)
-    {
-        return validationResult.Match(v =>
-        {
-            if (v.IsValid(value))
-            {
-                return new Amount(value, v.Unit);
-            }
-            else
-            {
-                return GetValidationError((value, v.Unit));
-            }
-        }, e => OneOf<Amount, IError>.FromT1(e));
-    }
+    public OneOf<Amount, IError> Create(decimal value, AmountUnit unit) =>
+        new Validator(unit)
+            .Validate(value)
+            .Convert(OneOf<Amount, IError>.FromT1)
+            .OrInvoke(() => new Amount(value, unit));
 
     private class Validator
     {
-        private readonly Func<decimal, bool> _validatorFunc;
+        private readonly AmountUnit _unit;
 
-        public Validator(AmountUnit unit, Func<decimal, bool> validatorFunc) => (Unit, _validatorFunc) = (unit, validatorFunc);
+        public Validator(AmountUnit unit) => _unit = unit;
 
-        public AmountUnit Unit { get; }
+        public Optional<IError> Validate(decimal value)
+        {
+            var func = SelectValidator();
+            if (func(value))
+            {
+                return Optional.None<IError>();
+            }
 
-        public bool IsValid(decimal value) => _validatorFunc(value);
+            return Optional.Some(GetValidationError((value, _unit)));
+        }
+
+        private static IError GetValidationError<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
+
+        private Func<decimal, bool> SelectValidator() => _unit switch
+        {
+            { } u when u == AmountUnit.Kelvin => x => x >= 0m,
+            { } u when u.Measurement == MeasurementType.Count => x => x >= 0m && decimal.Truncate(x) == x,
+            { } u when u.Measurement == MeasurementType.Volume => x => x >= 0m,
+            { } u when u.Measurement == MeasurementType.Area => x => x >= 0m,
+            { } u when u.Measurement == MeasurementType.Length => x => x >= 0m,
+            { } u when u.Measurement == MeasurementType.Weight => x => x >= 0m,
+            _ => x => true,
+        };
     }
 }
