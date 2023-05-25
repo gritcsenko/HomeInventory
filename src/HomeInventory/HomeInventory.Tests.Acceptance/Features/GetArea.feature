@@ -1,6 +1,6 @@
 ﻿Feature: GetArea
     As a registered user
-    I would like to see available areas:
+    I would like to see available areas
     So that I know where I can add inventory
 
     Link to a feature: [GetArea](HomeInventory.Tests.Acceptance/Features/GetArea.feature)

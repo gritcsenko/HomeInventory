@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace HomeInventory.Tests.Integration;
 
 [IntegrationTest]
-public class AuthenticationApiTests : BaseTest, IDisposable
+public class UserManagementApiTests : BaseTest, IDisposable
 {
     private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
 
-    public AuthenticationApiTests()
+    public UserManagementApiTests()
     {
         _client = _appFactory.CreateClient();
         Fixture.Customize(new RegisterRequestCustomization());
@@ -29,20 +29,19 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         base.Dispose(disposing);
     }
 
-    [BrokenTest]
-    [Skipped("Expected the enum to be HttpStatusCode.OK {value: 200}, but found HttpStatusCode.InternalServerError {value: 500}.")]
+    [Fact]
     public async Task Register_ReturnsSuccess()
     {
         var request = Fixture.Create<RegisterRequest>();
         var content = JsonContent.Create(request);
 
-        var response = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
+        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<RegisterResponse>(options: null, Cancellation.Token);
         body.Should().NotBeNull();
-        body!.Id.Should().NotBeEmpty();
+        body!.UserId.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -51,8 +50,8 @@ public class AuthenticationApiTests : BaseTest, IDisposable
         var request = Fixture.Create<RegisterRequest>();
         var content = JsonContent.Create(request);
 
-        _ = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
-        var response = await _client.PostAsync("/api/Authentication/register", content, Cancellation.Token);
+        _ = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.Conflict);

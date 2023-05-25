@@ -102,7 +102,7 @@ public class GetAreaStepDefinitions
             Password: row["Password"]);
 
     private async ValueTask RegisterAsync(RegisterRequest request) =>
-        _ = await _apiDriver.Authentication.RegisterAsync(request);
+        _ = await _apiDriver.UserManagement.RegisterAsync(request);
 
     private async ValueTask<LoginResponse> LoginUserAsync(string email)
     {

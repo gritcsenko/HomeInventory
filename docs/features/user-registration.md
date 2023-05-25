@@ -2,6 +2,8 @@
 
 This feature is to support the registration of the new users in the system.
 
+Issue for reference: [#287](https://github.com/gritcsenko/HomeInventory/issues/287)
+
 ## Overview
 
 In order to have any users in the system after initial deployment we need a way to add new users.
@@ -10,7 +12,7 @@ In order to have any users in the system after initial deployment we need a way 
 
 User registration will use HTTP JSON API.
 
-- Endpoint: `POST /users/manage/register`
+- Endpoint: `POST /api/users/manage/register`
 - Body:
 
     ```json

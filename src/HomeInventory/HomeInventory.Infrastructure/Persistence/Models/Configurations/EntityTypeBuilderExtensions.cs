@@ -7,8 +7,6 @@ namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 internal static class EntityTypeBuilderExtensions
 {
     public static PropertyBuilder<TId> HasIdConversion<TId>(this PropertyBuilder<TId> builder)
-        where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder>
-    {
-        return builder.HasConversion(new GuidIdValueConverter<TId>());
-    }
+        where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder> =>
+        builder.HasConversion(new GuidIdValueConverter<TId>());
 }

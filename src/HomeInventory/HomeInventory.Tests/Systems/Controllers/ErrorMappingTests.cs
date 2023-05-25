@@ -55,6 +55,17 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Result(actual => actual.Should().Be(StatusCodes.Status409Conflict));
     }
 
+    [Fact]
+    public void GetErrorT_Shoud_Return403_When_InvalidCredentialsError()
+    {
+        Given
+            .Sut(_sut);
+
+        When
+            .Invoked(_sut, sut => sut.GetError<InvalidCredentialsError>())
+            .Result(actual => actual.Should().Be(StatusCodes.Status403Forbidden));
+    }
+
     protected override GivenContext CreateGiven(VariablesCollection variables) => new(variables, Fixture);
 
     public sealed class GivenContext : GivenContext<GivenContext>

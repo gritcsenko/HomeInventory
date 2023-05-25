@@ -21,7 +21,7 @@ internal abstract class ApiModule : CarterModule
 
     protected void MapToApiVersion(ApiVersion version) => _version = version;
 
-    public override void AddRoutes(IEndpointRouteBuilder app)
+    public sealed override void AddRoutes(IEndpointRouteBuilder app)
     {
         var versionSet = app.GetVersionSet();
 

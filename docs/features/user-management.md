@@ -9,7 +9,7 @@ After we have users we need to have the ability to login, logoff, update, and re
 
 ### API
 
-All user-related endpoints should have `/users` prefix in the path.
+All user-related endpoints should have `/api/users` prefix in the path.
 
 ### Registering users
 

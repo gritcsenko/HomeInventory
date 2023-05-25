@@ -10,16 +10,20 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
 {
     private readonly ITestingConfiguration _configuration;
     private readonly Lazy<IAuthenticationAPIDriver> _lazyAuthentication;
+    private readonly Lazy<IUserManagementAPIDriver> _lazyUserManagement;
     private readonly Lazy<IAreaAPIDriver> _lazyArea;
 
     public HomeInventoryAPIDriver(ITestingConfiguration configuration)
     {
         _configuration = configuration;
         _lazyAuthentication = new(CreateAuthentication, true);
+        _lazyUserManagement = new(CreateUserManagement, true);
         _lazyArea = new(CreateArea, true);
     }
 
     public IAuthenticationAPIDriver Authentication => _lazyAuthentication.Value;
+
+    public IUserManagementAPIDriver UserManagement => _lazyUserManagement.Value;
 
     public IAreaAPIDriver Area => _lazyArea.Value;
 
@@ -47,6 +51,8 @@ internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInv
     }
 
     private AuthenticationAPIDriver CreateAuthentication() => new(Server);
+
+    private UserManagementAPIDriver CreateUserManagement() => new(Server);
 
     private AreaAPIDriver CreateArea() => new(Server);
 

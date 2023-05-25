@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using DotNext;
 using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
@@ -7,33 +7,33 @@ namespace HomeInventory.Domain.ValueObjects;
 internal sealed class AmountFactory : IAmountFactory
 {
     public OneOf<Amount, IError> Create(decimal value, AmountUnit unit) =>
-        TryCreate((value, unit), x => Validator.Validate(x.value, x.unit), x => new Amount(x.value, x.unit));
-
-    private static OneOf<Amount, IError> TryCreate<TValue>(TValue value, Func<TValue, bool> isValidFunc, Func<TValue, Amount> createFunc)
-    {
-        if (isValidFunc(value))
-        {
-            return createFunc(value);
-        }
-
-        return new ObjectValidationError<TValue>(value);
-    }
+        new Validator(unit)
+            .Validate(value)
+            .Convert(OneOf<Amount, IError>.FromT1)
+            .OrInvoke(() => new Amount(value, unit));
 
     private class Validator
     {
-        private static readonly IReadOnlyDictionary<AmountUnit, Func<decimal, bool>> _validators = new Dictionary<AmountUnit, Func<decimal, bool>>
-        {
-            [AmountUnit.Kelvin] = x => x >= 0m,
-        };
+        private readonly AmountUnit _unit;
 
-        public static bool Validate(decimal value, AmountUnit unit)
+        public Validator(AmountUnit unit) => _unit = unit;
+
+        public Optional<IError> Validate(decimal value)
         {
-            var validateFunc = _validators.GetValueOrDefault(unit, SelectValidator);
-            return validateFunc(value);
+            var func = SelectValidator();
+            if (func(value))
+            {
+                return Optional.None<IError>();
+            }
+
+            return Optional.Some(GetValidationError((value, _unit)));
         }
 
-        private static Func<decimal, bool> SelectValidator(AmountUnit unit) => unit switch
+        private static IError GetValidationError<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
+
+        private Func<decimal, bool> SelectValidator() => _unit switch
         {
+            { } u when u == AmountUnit.Kelvin => x => x >= 0m,
             { } u when u.Measurement == MeasurementType.Count => x => x >= 0m && decimal.Truncate(x) == x,
             { } u when u.Measurement == MeasurementType.Volume => x => x >= 0m,
             { } u when u.Measurement == MeasurementType.Area => x => x >= 0m,

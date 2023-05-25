@@ -21,6 +21,21 @@ public class AmountFactoryTests : BaseTest
     }
 
     [Fact]
+    public void Create_Should_Return_Value_When_UnknownMeasurementType()
+    {
+        var sut = CreateSut();
+        var value = 0m;
+        var unknownUnit = new AmountUnit(Fixture.Create<string>(), new MeasurementType(Fixture.Create<string>()));
+
+        var result = sut.Create(value, unknownUnit);
+
+        result.IsT0.Should().BeTrue();
+        var amount = result.AsT0;
+        amount.Value.Should().Be(value);
+        amount.Unit.Should().Be(unknownUnit);
+    }
+
+    [Fact]
     public void Create_Should_Return_Error_When_PieceIsFractional()
     {
         var sut = CreateSut();

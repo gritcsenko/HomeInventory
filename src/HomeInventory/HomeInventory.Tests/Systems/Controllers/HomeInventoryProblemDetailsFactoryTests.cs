@@ -295,5 +295,5 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
             .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
-    private HomeInventoryProblemDetailsFactory CreateSut() => new(Options.Create(_options));
+    private HomeInventoryProblemDetailsFactory CreateSut() => new(new ErrorMapping(), Options.Create(_options));
 }

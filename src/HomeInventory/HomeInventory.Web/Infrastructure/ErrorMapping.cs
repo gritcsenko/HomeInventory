@@ -1,31 +1,40 @@
-﻿using DotNext;
+﻿using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Infrastructure;
 
-internal sealed class ErrorMapping
+public sealed class ErrorMapping
 {
-    private readonly IReadOnlyDictionary<Optional<Type>, int> _errorMapping = new Dictionary<Optional<Type>, int>
+    private readonly int _defaultError = StatusCodes.Status500InternalServerError;
+    private readonly IReadOnlyDictionary<Type, int> _errorMapping = new Dictionary<Type, int>
     {
-        [Optional.Some(typeof(ConflictError))] = StatusCodes.Status409Conflict,
-        [Optional.Some(typeof(ValidationError))] = StatusCodes.Status400BadRequest,
-        [Optional.Some(typeof(NotFoundError))] = StatusCodes.Status404NotFound,
-        [Optional.None<Type>()] = StatusCodes.Status500InternalServerError,
+        [typeof(ConflictError)] = StatusCodes.Status409Conflict,
+        [typeof(ValidationError)] = StatusCodes.Status400BadRequest,
+        [typeof(NotFoundError)] = StatusCodes.Status404NotFound,
+        [typeof(InvalidCredentialsError)] = StatusCodes.Status403Forbidden,
     };
 
-    public int GetDefaultError() => _errorMapping[Optional.None<Type>()];
+    public ErrorMapping()
+    {
+    }
 
-    public int GetError(IError error) => GetError(error.GetType());
+    public int GetDefaultError() => _defaultError;
+
+    public int GetError(IError error) => GetErrorCore(error.GetType());
 
     public int GetError<T>()
         where T : IError =>
-        GetError(typeof(T));
+        GetErrorCore(typeof(T));
 
-    private int GetError(Type type) =>
-        _errorMapping.GetValueOrDefault(type, GetErrroForBase);
-
-    private int GetErrroForBase(Type type) =>
-        type.BaseType is { } baseType ? GetError(baseType) : GetDefaultError();
+    private int GetErrorCore(Type type) =>
+        _errorMapping
+            .GetValueOptional(type)
+            .OrInvoke(() =>
+                type switch
+                {
+                    { BaseType: not null } t => GetErrorCore(t.BaseType),
+                    _ => _defaultError,
+                });
 }
