@@ -1,7 +1,8 @@
 # User registration
 
 This feature is to support the registration of the new users in the system. 
-Issuse for reference: #287
+
+Issuse for reference: [#287](https://github.com/gritcsenko/HomeInventory/issues/287)
 
 ## Overview
 
