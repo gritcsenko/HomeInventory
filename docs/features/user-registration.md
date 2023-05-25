@@ -1,6 +1,7 @@
 # User registration
 
-This feature is to support the registration of the new users in the system.
+This feature is to support the registration of the new users in the system. 
+Issuse for reference: #287
 
 ## Overview
 
