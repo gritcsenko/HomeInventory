@@ -71,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: 'Specflow Test Results'
-          path: src/HomeInventory/Acceptance
+          path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
       - name: Add Coverage PR Comment
