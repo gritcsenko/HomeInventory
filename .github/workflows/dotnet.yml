@@ -59,20 +59,21 @@ jobs:
           output: both
           thresholds: "60 80"
       - name: Run Acceptance Tests
-        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity normal --logger:"trx;verbosity=normal;LogFileName=AcceptanceTestResults.trx"
+        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity normal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory
       - name: Generate Living Documentation Specification
         run: |
           dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
-          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "AcceptanceTestResults.html"
+          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
         uses: actions/upload-artifact@v2
         with:
           name: 'Specflow Test Results'
-          path: |
-            AcceptanceTestResults.trx
+          path: Acceptance
+          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
+          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
