@@ -116,17 +116,23 @@ jobs:
           livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "MyTestResults.html"
         working-directory: ./src/HomeInventory
       - name: SpecFlow Tests
-        uses: cryptic-wizard/run-specflow-tests@v1.3.1
+        uses: cryptic-wizard/run-specflow-tests@v1.3.2
         with:
           test-assembly-path: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
           test-assembly-dll: HomeInventory.Tests.Acceptance.dll
-          test-execution-json: TestExecution.json
           configuration: Release
-          output-html: MyTestResults.html
+          output-html: AcceptanceTestResults.html
           build-verbosity: normal
           test-verbosity: minimal
           framework: net7
           no-build: true
           logger: trx
-          logger-file-name: ../../MyTestResults.trx
-          upload-artifact: false
+          logger-file-name: ../../AcceptanceTestResults.trx
+          upload-artifact: true
+      - name: Publish Specflow Test Logs
+        if: success() || failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: SpecflowLogs
+          path: |
+            AcceptanceTestResults.trx
