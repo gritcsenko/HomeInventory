@@ -1,6 +1,8 @@
-﻿namespace HomeInventory.Tests.Domain;
+﻿using HomeInventory.Domain.Primitives;
 
-[Trait("Category", "Unit")]
+namespace HomeInventory.Tests.Domain.Primitives;
+
+[UnitTest]
 public class EnumerableExtensionsTests : BaseTest
 {
     [Fact]
@@ -14,5 +16,26 @@ public class EnumerableExtensionsTests : BaseTest
         var actual = source.Concat(item);
 
         actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void EmptyIfNull_Should_ReturnOriginal_When_NotNull()
+    {
+        var totalCount = 3;
+        var expected = Fixture.CreateMany<int>(totalCount).ToArray();
+
+        var actual = expected.EmptyIfNull();
+
+        actual.Should().BeSameAs(expected);
+    }
+
+    [Fact]
+    public void EmptyIfNull_Should_ReturnEmpty_When_Null()
+    {
+        IEnumerable<int>? sut = null;
+
+        var actual = sut.EmptyIfNull();
+
+        actual.Should().BeEmpty();
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal class TestingConfiguration : ITestingConfiguration
+internal sealed class TestingConfiguration : ITestingConfiguration
 {
     public string EnvironmentName { get; init; } = "Testing";
 }

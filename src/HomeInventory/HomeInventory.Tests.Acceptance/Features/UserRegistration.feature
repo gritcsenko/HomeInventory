@@ -3,7 +3,7 @@
     I would like to be registered
     So that I can have an account
 
-    Link to a feature: [GetArea](HomeInventory.Tests.Acceptance/Features/UserRegistration.feature)
+    Link to a feature: [UserRegistration](HomeInventory.Tests.Acceptance/Features/UserRegistration.feature)
 
 Background:
     Given That today is 05/25/2023

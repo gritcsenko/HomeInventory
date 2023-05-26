@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Tests.Acceptance.Drivers;
 
-public interface IHomeInventoryAPIDriver : IApiDriver
+internal interface IHomeInventoryAPIDriver : IApiDriver
 {
     IAuthenticationAPIDriver Authentication { get; }
 

@@ -6,7 +6,7 @@ using Humanizer;
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 
 [Binding]
-public class GetAreaStepDefinitions
+internal class GetAreaStepDefinitions
 {
     private static class Keys
     {
@@ -28,12 +28,6 @@ public class GetAreaStepDefinitions
         // method.
         _context = context;
         _apiDriver = apiDriver;
-    }
-
-    [Given(@$"That today is {Patterns.DateOnly}")]
-    public void GivenThatTodayIs(DateOnly todayDate)
-    {
-        _apiDriver.SetToday(todayDate);
     }
 
     [Given(@"Following environment")]

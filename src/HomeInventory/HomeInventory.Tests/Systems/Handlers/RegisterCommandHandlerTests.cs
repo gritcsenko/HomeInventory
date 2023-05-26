@@ -33,7 +33,9 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         // Given
         _userRepository.IsUserHasEmailAsync(_command.Email, Cancellation.Token).Returns(false);
+#pragma warning disable CA2012 // Use ValueTasks correctly
         _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(ValueTask.CompletedTask);
+#pragma warning restore CA2012 // Use ValueTasks correctly
         _userRepository.WithUnitOfWorkAsync(Cancellation.Token).Returns(Substitute.For<IUnitOfWork>());
 
         var sut = CreateSut();
@@ -59,6 +61,8 @@ public class RegisterCommandHandlerTests : BaseTest
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
             .Which.Should().BeOfType<DuplicateEmailError>();
+#pragma warning disable CA2012 // Use ValueTasks correctly
         _ = _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), Cancellation.Token);
+#pragma warning restore CA2012 // Use ValueTasks correctly
     }
 }

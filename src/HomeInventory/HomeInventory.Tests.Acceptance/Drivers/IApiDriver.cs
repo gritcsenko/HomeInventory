@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-public interface IApiDriver : IDisposable, IAsyncDisposable
+internal interface IApiDriver : IDisposable, IAsyncDisposable
 {
     TestServer Server { get; }
 

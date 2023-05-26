@@ -30,4 +30,19 @@ internal abstract class ApiDriver
         var body = await result.Content.ReadFromJsonAsync<TResponse>();
         return body.ThrowIfNull().Value;
     }
+
+
+    protected async ValueTask<TResponse> PostAsync<TRequest, TResponse>(string path, TRequest requestBody)
+        where TResponse : class
+    {
+        var result = await _server
+            .CreateRequest(_basePath + path)
+            .And(m => m.Content = JsonContent.Create(requestBody))
+            .PostAsync();
+
+        result.EnsureSuccessStatusCode();
+
+        var body = await result.Content.ReadFromJsonAsync<TResponse>();
+        return body.ThrowIfNull().Value;
+    }
 }

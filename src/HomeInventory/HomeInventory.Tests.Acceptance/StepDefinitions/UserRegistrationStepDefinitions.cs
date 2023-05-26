@@ -5,7 +5,7 @@ using HomeInventory.Tests.Acceptance.Support;
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 
 [Binding]
-public class UserRegistrationStepDefinitions
+internal sealed class UserRegistrationStepDefinitions
 {
     private static class Keys
     {
@@ -49,7 +49,7 @@ public class UserRegistrationStepDefinitions
     }
 
     [Then(@"User should get an ID as a confirmation of the successful registration")]
-    public void ThenUserShouldGetAnIDAsAConfirmationOfTheSuccessfulRegistration()
+    public void ThenUserShouldGetAnId()
     {
         var userId = _context.Get<Guid>(Keys.UserId);
         userId.Should().NotBeEmpty();

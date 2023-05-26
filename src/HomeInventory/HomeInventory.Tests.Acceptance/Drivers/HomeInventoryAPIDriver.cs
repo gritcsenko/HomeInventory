@@ -6,7 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
-internal class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInventoryAPIDriver
+
+internal sealed class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInventoryAPIDriver
 {
     private readonly ITestingConfiguration _configuration;
     private readonly Lazy<IAuthenticationAPIDriver> _lazyAuthentication;
