@@ -17,5 +17,7 @@ internal class OptionAssertions<T> : ReferenceTypeAssertions<Optional<T>, Option
 
     public AndConstraint<ObjectAssertions> HaveSameValueAs(T value) => HaveSomeValue().And.Subject.OrThrow(Fail).Should().BeSameAs(value);
 
+    public AndConstraint<ObjectAssertions> HaveValue(T value) => HaveSomeValue().And.Subject.OrThrow(Fail).Should().Be(value);
+
     private Exception Fail() => throw new InvalidOperationException("This method should not be called");
 }

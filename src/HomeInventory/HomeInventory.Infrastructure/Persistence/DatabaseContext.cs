@@ -11,7 +11,7 @@ internal class DatabaseContext : DbContext
     {
     }
 
-    public DbSet<UserModel> Users { get; init; } = null!;
+    public required DbSet<UserModel> Users { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
