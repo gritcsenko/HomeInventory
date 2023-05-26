@@ -83,6 +83,7 @@ public class ModelMappingsTests : BaseMappingsTests
             { fixture.Create<UserModel>(), typeof(User) },
 
             { fixture.Create<Amount>(), typeof(ProductAmountModel) },
+            { fixture.Create<ProductAmountModel>(), typeof(Amount) },
         };
     }
 }
