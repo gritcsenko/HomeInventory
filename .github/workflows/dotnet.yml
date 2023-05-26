@@ -68,7 +68,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: 'Specflow Test Results'
           path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
