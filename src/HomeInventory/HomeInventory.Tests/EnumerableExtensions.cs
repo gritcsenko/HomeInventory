@@ -12,13 +12,4 @@ internal static class EnumerableExtensions
             yield return item;
         }
     }
-
-    public static async IAsyncEnumerable<T> DoAsync<T>(this IAsyncEnumerable<T> source, Func<T, ValueTask> asyncAction)
-    {
-        await foreach (var item in source)
-        {
-            await asyncAction(item);
-            yield return item;
-        }
-    }
 }

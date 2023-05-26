@@ -5,10 +5,6 @@ namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
 internal class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
 {
-    public UserModelConfiguration()
-    {
-    }
-
     public void Configure(EntityTypeBuilder<UserModel> builder)
     {
         builder.HasKey(x => x.Id);

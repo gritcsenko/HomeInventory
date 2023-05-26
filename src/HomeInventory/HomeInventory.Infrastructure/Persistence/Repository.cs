@@ -2,8 +2,8 @@
 using Ardalis.Specification;
 using AutoMapper;
 using DotNext;
+using DotNext.Collections.Generic;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
@@ -34,11 +34,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     public async ValueTask AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        var models = entities.Select(ToModel);
-
         await using var container = await GetDbSetAsync(cancellationToken);
 
-        container.Set.AddRange(models);
+        container.Set.AddRange(entities.Select(ToModel));
     }
 
     public async ValueTask UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -95,23 +93,30 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     {
         await using var container = await GetDbSetAsync(cancellationToken);
 
-        await foreach (var entity in container.Set)
+        await foreach (var entity in ToEntity(container.Set, cancellationToken))
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                yield break;
-            }
-
-            yield return ToEntity(entity);
+            yield return entity;
         }
     }
 
     public async ValueTask<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default) =>
         await _container.CreateNewAsync(cancellationToken);
 
-    protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
+    protected async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    {
+        await using var container = await GetDbSetAsync(cancellationToken);
 
-    protected TEntity ToEntity(TModel model) => _mapper.Map<TModel, TEntity>(model);
+        var query = ApplySpecification(container.Set, specification);
+        var projected = ToEntity(query, cancellationToken);
+        if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
+        {
+            return entity;
+        }
+
+        return Optional.None<TEntity>();
+    }
+
+    protected TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
 
     protected IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) => _mapper.ProjectTo<TEntity>(query, cancellationToken);
 
@@ -128,10 +133,8 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// </summary>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TModel> ApplySpecification(DbSet<TModel> set, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false)
-    {
-        return _evaluator.GetQuery(set.AsQueryable(), specification, evaluateCriteriaOnly);
-    }
+    protected virtual IQueryable<TModel> ApplySpecification(DbSet<TModel> set, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false) =>
+        _evaluator.GetQuery(set.AsQueryable(), specification, evaluateCriteriaOnly);
 
     /// <summary>
     /// Filters all entities of <typeparamref name="T" />, that matches the encapsulated query logic of the
@@ -143,30 +146,14 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     /// <typeparam name="TResult">The type of the value returned by the projection.</typeparam>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered projected entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TResult> ApplySpecification<TResult>(DbSet<TModel> set, ISpecification<TModel, TResult> specification)
-    {
-        return _evaluator.GetQuery(set.AsQueryable(), specification);
-    }
+    protected virtual IQueryable<TResult> ApplySpecification<TResult>(DbSet<TModel> set, ISpecification<TModel, TResult> specification) =>
+        _evaluator.GetQuery(set.AsQueryable(), specification);
 
     private async ValueTask<DbSetContainer> GetDbSetAsync(CancellationToken cancellationToken = default)
     {
         var context = await _container.EnsureAsync(cancellationToken);
 
         return new DbSetContainer(context.Set<TModel>(), _container.Resource);
-    }
-
-    protected async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
-    {
-        await using var container = await GetDbSetAsync(cancellationToken);
-
-        var query = ApplySpecification(container.Set, specification);
-        var projected = ToEntity(query, cancellationToken);
-        if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
-        {
-            return entity;
-        }
-
-        return Optional.None<TEntity>();
     }
 
     private sealed class DbSetContainer : Disposable, IAsyncDisposable
@@ -182,16 +169,5 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         public DbSet<TModel> Set { get; }
 
         ValueTask IAsyncDisposable.DisposeAsync() => _resource.DisposeAsync();
-    }
-}
-
-internal abstract class Repository<TModel, TEntity, TId> : Repository<TModel, TEntity>
-    where TModel : class, IPersistentModel<TId>
-    where TEntity : class, Domain.Primitives.IEntity<TEntity>
-    where TId : GuidIdentifierObject<TId>
-{
-    protected Repository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
-        : base(contextFactory, mapper, evaluator, dateTimeService)
-    {
     }
 }

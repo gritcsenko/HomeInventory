@@ -27,7 +27,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     {
         AddConfiguration(new Dictionary<string, string?>
         {
-            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Secret)}"] = "Some long enough secret key string with many-many characters",
+            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Secret)}"] = "Some Secret",
             [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Issuer)}"] = "HomeInventory",
             [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Audience)}"] = "HomeInventory",
         });

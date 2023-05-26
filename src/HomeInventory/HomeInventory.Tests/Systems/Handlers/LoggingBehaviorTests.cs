@@ -20,7 +20,7 @@ public class LoggingBehaviorTests : BaseTest
         Fixture.CustomizeEmail();
         _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>>>();
         _request = Fixture.Create<AuthenticateQuery>();
-        _response = Fixture.Create<OneOf<AuthenticateResult, IError>>();
+        _response = Fixture.Create<AuthenticateResult>();
     }
 
     [Fact]

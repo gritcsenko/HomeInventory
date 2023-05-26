@@ -205,17 +205,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         public GivenTestContext TestEntity(IVariable<TestEntity> entity, IndexedVariable<EntityId> id) =>
             Add(entity, () => CreateTestEntity(id));
 
-        public GivenTestContext IdHashCode(IVariable<HashCode> hash, IndexedVariable<EntityId> id) =>
-            Add(hash, () => CreateIdHash(id));
-
         private TestEntity CreateTestEntity(IIndexedVariable<EntityId> id) => new(Variables.Get(id));
-
-        private HashCode CreateIdHash(IIndexedVariable<EntityId> id)
-        {
-            var hashCode = new HashCode();
-            hashCode.Add(Variables.Get(id));
-            return hashCode;
-        }
     }
 
     public class EntityId : GuidIdentifierObject<EntityId>
