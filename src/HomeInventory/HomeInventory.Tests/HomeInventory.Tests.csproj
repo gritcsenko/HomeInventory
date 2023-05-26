@@ -1,12 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Compile Remove="Systems\Services\**" />
-    <EmbeddedResource Remove="Systems\Services\**" />
-    <None Remove="Systems\Services\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoBogus.Conventions" />
     <PackageReference Include="AutoBogus.NSubstitute" />
     <PackageReference Include="AutoFixture" />

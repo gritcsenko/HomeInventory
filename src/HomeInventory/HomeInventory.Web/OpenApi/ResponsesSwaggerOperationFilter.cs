@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HomeInventory.Web.OpenApi;

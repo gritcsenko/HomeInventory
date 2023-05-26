@@ -14,7 +14,6 @@ public class UserHasEmailSpecificationTests : BaseTest
     public UserHasEmailSpecificationTests()
     {
         Fixture.CustomizeGuidId(guid => new UserId(guid));
-        Fixture.CustomizeEmail();
     }
 
     [Fact]

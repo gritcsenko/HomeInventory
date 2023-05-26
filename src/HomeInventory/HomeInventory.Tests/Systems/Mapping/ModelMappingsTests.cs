@@ -17,7 +17,7 @@ public class ModelMappingsTests : BaseMappingsTests
     }
 
     [Theory]
-    [MemberData(nameof(Data))]
+    [MemberData(nameof(MapData))]
     public void ShouldMap(object instance, Type destination)
     {
         var sut = CreateSut<ModelMappings>();
@@ -28,7 +28,35 @@ public class ModelMappingsTests : BaseMappingsTests
         target.Should().BeAssignableTo(destination);
     }
 
-    public static TheoryData<object, Type> Data()
+    [Fact]
+    public void ShouldProjectUserModelToUser()
+    {
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        var sut = CreateSut<ModelMappings>();
+        var instance = Fixture.Create<UserModel>();
+        var source = new[] { instance }.AsQueryable();
+
+        var target = sut.ProjectTo<User>(source, Cancellation.Token).ToArray();
+
+        target.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void ShouldMapUserModelToUser()
+    {
+        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        var sut = CreateSut<ModelMappings>();
+        var instance = Fixture.Create<UserModel>();
+        var source = new[] { instance }.AsQueryable();
+
+        var target = sut.Map<User>(instance);
+
+        target.Id.Id.Should().Be(instance.Id.Id);
+        target.Email.Value.Should().Be(instance.Email);
+        target.Password.Should().Be(instance.Password);
+    }
+
+    public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
         fixture.CustomizeGuidId(guid => new UserId(guid));
