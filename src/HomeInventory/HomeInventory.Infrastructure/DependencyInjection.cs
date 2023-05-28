@@ -26,7 +26,6 @@ public static class DependencyInjection
 
         services.AddSingleton<AmountValueObjectConverter>();
 
-
         services.AddHealthChecks()
              .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
         return services;
