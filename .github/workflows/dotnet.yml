@@ -10,6 +10,8 @@ env:
 
 jobs:
   build:
+    permissions:
+      pull-requests: write
     name: Build and Test .NET
     runs-on: ubuntu-latest
 
