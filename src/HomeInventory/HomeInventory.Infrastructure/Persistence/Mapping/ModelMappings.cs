@@ -16,6 +16,6 @@ internal class ModelMappings : MappingProfile
 
         CreateMap<User, UserModel>().ReverseMap();
 
-        CreateMapForValue<Amount, ProductAmountModel, AmountValueObjectConverter>(obj => new ProductAmountModel { Value = obj.Value, UnitName = obj.Unit.Name });
+        CreateMapForValue<Amount, ProductAmountModel, AmountObjectConverter>(obj => new ProductAmountModel { Value = obj.Value, UnitName = obj.Unit.Name });
     }
 }

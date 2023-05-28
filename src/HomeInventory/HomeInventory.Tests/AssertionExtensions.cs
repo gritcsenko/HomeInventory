@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,8 @@ internal static class AssertionExtensions
     public static ServiceCollectionAssertions Should(this IServiceCollection actualValue) => new(actualValue);
 
     public static OkResultAssertions<TValue> Should<TValue>(this Ok<TValue> actualValue) => new(actualValue);
+
+    public static DictionaryAssertions ShouldBeDictionaryAnd(this IDictionary actualValue) => new(actualValue);
 
     public static OptionAssertions<T> Should<T>(this Optional<T> actualValue)
         where T : notnull =>

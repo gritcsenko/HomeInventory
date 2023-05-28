@@ -31,7 +31,7 @@ public abstract class MappingProfile : Profile
 
     protected void CreateMapForValue<TObject, TValue, TConverter>(Expression<Func<TObject, TValue>> convertToValue)
         where TObject : ValueObject<TObject>
-        where TConverter : GenericValueObjectConverter<TObject, TValue>
+        where TConverter : ITypeConverter<TValue, TObject>
     {
         CreateMap<TObject, TValue>()
             .ConstructUsing(convertToValue);

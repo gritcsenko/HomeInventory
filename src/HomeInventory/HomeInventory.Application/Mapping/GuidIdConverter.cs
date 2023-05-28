@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Application.Mapping;
 
-public class GuidIdConverter<TId> : ObjectConverter<GuidIdentifierObjectBuilder<TId>, TId, Guid>
+public class GuidIdConverter<TId> : BuilderObjectConverter<GuidIdentifierObjectBuilder<TId>, TId, Guid>
     where TId : class, IGuidIdentifierObject<TId>
 {
     public GuidIdConverter()

@@ -10,7 +10,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConverterTests.GivenTestContext>
 {
-    private static readonly Variable<AmountValueObjectConverter> _sut = new(nameof(_sut));
+    private static readonly Variable<AmountObjectConverter> _sut = new(nameof(_sut));
     private static readonly Variable<IAmountFactory> _factory = new(nameof(_factory));
     private static readonly Variable<ProductAmountModel> _amountModel = new(nameof(_amountModel));
     private static readonly Variable<Amount> _amount = new(nameof(_amount));
@@ -49,7 +49,7 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             Fixture.Customize(new AmountCustomization());
         }
 
-        internal GivenTestContext Sut(IVariable<AmountValueObjectConverter> sut, IVariable<IAmountFactory> factoryVariable)
+        internal GivenTestContext Sut(IVariable<AmountObjectConverter> sut, IVariable<IAmountFactory> factoryVariable)
         {
             var factory = Variables.Get(factoryVariable.WithIndex(0));
             Add(sut, () => new(factory));

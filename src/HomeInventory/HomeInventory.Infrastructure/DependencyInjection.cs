@@ -24,7 +24,7 @@ public static class DependencyInjection
         services.AddRepository<User, IUserRepository, UserRepository>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
-        services.AddSingleton<AmountValueObjectConverter>();
+        services.AddSingleton<AmountObjectConverter>();
 
         services.AddHealthChecks()
              .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
