@@ -1,14 +1,17 @@
-﻿using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
 
 [UnitTest]
 public class AmountTests : BaseTest
 {
+    private static readonly EnumerationItemsCollection<AmountUnit> _items = EnumerationItemsCollection.CreateFor<AmountUnit>();
+
     [Fact]
     public void Equals_Should_ReturnTrueIfSameValueAndUnit()
     {
-        var a = new Amount(Fixture.Create<decimal>(), AmountUnit.Items.PeekRandom(new Random()).Value);
+        var a = new Amount(Fixture.Create<decimal>(), _items.PeekRandom(new Random()).Value);
         var b = new Amount(a.Value, a.Unit);
 
         var result = a.Equals(b);
@@ -19,7 +22,7 @@ public class AmountTests : BaseTest
     [Fact]
     public void OpEquality_Should_ReturnTrueIfSameValueAndUnit()
     {
-        var a = new Amount(Fixture.Create<decimal>(), AmountUnit.Items.PeekRandom(new Random()).Value);
+        var a = new Amount(Fixture.Create<decimal>(), _items.PeekRandom(new Random()).Value);
         var b = new Amount(a.Value, a.Unit);
 
         var result = a == b;
@@ -30,7 +33,7 @@ public class AmountTests : BaseTest
     [Fact]
     public void OpInequality_Should_ReturnFalseIfSameValueAndUnit()
     {
-        var a = new Amount(Fixture.Create<decimal>(), AmountUnit.Items.PeekRandom(new Random()).Value);
+        var a = new Amount(Fixture.Create<decimal>(), _items.PeekRandom(new Random()).Value);
         var b = new Amount(a.Value, a.Unit);
 
         var result = a != b;

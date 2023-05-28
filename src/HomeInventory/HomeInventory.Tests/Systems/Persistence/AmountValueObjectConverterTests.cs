@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -69,7 +70,8 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             public void Customize(IFixture fixture)
             {
                 var rnd = new Random();
-                fixture.Customize<AmountUnit>(c => c.FromFactory(() => AmountUnit.Items.PeekRandom(rnd).Value));
+                var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
+                fixture.Customize<AmountUnit>(c => c.FromFactory(() => items.PeekRandom(rnd).Value));
             }
         }
 
