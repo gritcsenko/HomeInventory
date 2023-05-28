@@ -13,7 +13,7 @@ public sealed class GuidIdentifierObjectBuilder<TObject> : ValueObjectBuilder<Gu
     }
 
     private static TObject CreateInstance(Guid value) =>
-        TypeExtensions.CreateInstance<TObject>(value)
+        ReflectionMethods.CreateInstance<TObject>(value)
             ?? throw new InvalidOperationException($"Got null instance during instance creation of {typeof(TObject).AssemblyQualifiedName}");
 
     public GuidIdentifierObjectBuilder<TObject> WithNewValue() => WithValue(_newSupplier);
