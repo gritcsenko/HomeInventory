@@ -34,9 +34,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore --verbosity minimal
         working-directory: ./src/HomeInventory
-      - name: Build Debug
-        run: dotnet build -m:1 --no-incremental --no-restore --configuration Debug --self-contained false --verbosity minimal
-        working-directory: ./src/HomeInventory
       - name: Build Release
         run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity minimal
         working-directory: ./src/HomeInventory
