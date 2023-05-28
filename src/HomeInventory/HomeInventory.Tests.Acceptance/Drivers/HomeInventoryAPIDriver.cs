@@ -1,7 +1,5 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,11 +40,7 @@ internal sealed class HomeInventoryAPIDriver : WebApplicationFactory<Program>, I
             services.ReplaceWithScoped<IDateTimeService>(sp => sp.GetRequiredService<MutableDateTimeService>());
         });
 
-        var host = base.CreateHost(builder);
-        var server = host.Services.GetRequiredService<IServer>();
-        var serverAddresses = server.Features.Get<IServerAddressesFeature>();
-        serverAddresses?.Addresses.Add("http://localhost:5006");
-        return host;
+        return base.CreateHost(builder);
     }
 
     private UserManagementAPIDriver CreateUserManagement() => new(Server);

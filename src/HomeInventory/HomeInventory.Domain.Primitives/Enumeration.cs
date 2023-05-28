@@ -20,7 +20,7 @@ public abstract class Enumeration<TSelf> : ValueObject<TSelf>, IEnumeration<TSel
             .OrThrow(() => throw new InvalidOperationException($"Failed to parse '{text}' to {typeof(TSelf).Name}"));
 
     public static Optional<TSelf> TryParse(string text) =>
-        _items.Value.TryFind(text);
+        _items.Value.FirstOrNone(text);
 }
 
 public abstract class Enumeration<TSelf, TValue> : Enumeration<TSelf>, IEnumeration<TSelf, TValue>
