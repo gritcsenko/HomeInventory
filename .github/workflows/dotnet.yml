@@ -76,7 +76,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Summary"
-          hide: true
+          hide_and_recreate: true
           hide_classify: "OUTDATED"
           path: code-coverage-results.md
       - name: Write coverage to Job Summary
@@ -106,7 +106,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Detailed"
-          hide: true
+          hide_and_recreate: true
           hide_classify: "OUTDATED"
           path: coveragereport/SummaryGithub.md
       - name: Write coverage to Job Summary 2
