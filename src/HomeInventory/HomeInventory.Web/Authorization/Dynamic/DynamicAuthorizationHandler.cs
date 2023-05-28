@@ -39,7 +39,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
         using var scope = httpContext.RequestServices.CreateScope();
         var sp = scope.ServiceProvider;
         var converter = new GuidIdConverter<UserId>();
-        await converter.Convert(id)
+        await converter.TryConvert(id)
             .Match(async userId =>
             {
                 var repository = sp.GetRequiredService<IUserRepository>();

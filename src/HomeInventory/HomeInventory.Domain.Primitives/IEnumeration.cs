@@ -3,8 +3,6 @@
 public interface IEnumeration<TSelf> : IValueObject<TSelf>, IParseableValue<TSelf>
     where TSelf : notnull, IEnumeration<TSelf>
 {
-    static IReadOnlyCollection<TSelf> Items { get; } = Array.Empty<TSelf>();
-
     string Name { get; }
 }
 

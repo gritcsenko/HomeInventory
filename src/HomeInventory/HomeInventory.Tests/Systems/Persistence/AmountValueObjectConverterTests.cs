@@ -28,7 +28,7 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             .Sut(_sut, _factory);
 
         When
-            .Invoked(_sut, _amountModel, (sut, amount) => sut.Convert(amount))
+            .Invoked(_sut, _amountModel, (sut, amount) => sut.TryConvert(amount))
             .Result(_amount.WithIndex(0), (r, a) =>
             {
                 r.IsT0.Should().BeTrue();

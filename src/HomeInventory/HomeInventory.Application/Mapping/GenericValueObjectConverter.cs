@@ -1,4 +1,5 @@
 using AutoMapper;
+using DotNext;
 using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
 
@@ -6,19 +7,17 @@ namespace HomeInventory.Application.Mapping;
 
 public abstract class GenericValueObjectConverter<TObject, TValue> : IValueConverter<TValue, TObject>, ITypeConverter<TValue, TObject>
 {
-    public TObject Convert(TValue sourceMember, ResolutionContext context) => ConvertCore(sourceMember);
+    public TObject Convert(TValue sourceMember, ResolutionContext context) => Convert(sourceMember);
 
-    public TObject Convert(TValue source, TObject destination, ResolutionContext context) => ConvertCore(source);
+    public TObject Convert(TValue source, TObject destination, ResolutionContext context) => Convert(source);
 
-    public OneOf<TObject, IError> Convert(TValue source) => InternalConvert(source);
+    public TObject Convert(TValue source) =>
+        TryConvert(source)
+            .Match(Func.Identity<TObject>(), error => throw CreateException(error));
 
-    private TObject ConvertCore(TValue source) =>
-        InternalConvert(source)
-        .Match(
-            obj => obj,
-            error => throw CreateException(error));
+    public OneOf<TObject, IError> TryConvert(TValue source) => TryConvertCore(source);
 
-    protected abstract OneOf<TObject, IError> InternalConvert(TValue source);
+    protected abstract OneOf<TObject, IError> TryConvertCore(TValue source);
 
     private static Exception CreateException(IError error)
     {

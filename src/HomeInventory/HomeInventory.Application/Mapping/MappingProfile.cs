@@ -13,10 +13,11 @@ public abstract class MappingProfile : Profile
     protected void CreateMapForId<TId>()
         where TId : class, IGuidIdentifierObject<TId>
     {
+        var converter = new GuidIdConverter<TId>();
         CreateMap<TId, Guid>()
             .ConstructUsing(x => x.Id);
         CreateMap<Guid, TId>()
-            .ConvertUsing(new GuidIdConverter<TId>());
+            .ConstructUsing(id => converter.Convert(id));
     }
 
     protected void CreateMapForString<TObject>(Expression<Func<string, TObject>> convertFromValue, Expression<Func<TObject, string>> convertToValue)

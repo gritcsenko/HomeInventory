@@ -12,6 +12,6 @@ internal class AmountValueObjectConverter : GenericValueObjectConverter<Amount, 
 
     public AmountValueObjectConverter(IAmountFactory factory) => _factory = factory;
 
-    protected override OneOf<Amount, IError> InternalConvert(ProductAmountModel source) =>
+    protected override OneOf<Amount, IError> TryConvertCore(ProductAmountModel source) =>
         _factory.Create(source.Value, AmountUnit.Parse(source.UnitName));
 }
