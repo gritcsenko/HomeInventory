@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using DotNext;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Mapping;
@@ -12,7 +11,7 @@ public abstract class MappingProfile : Profile
     }
 
     protected void CreateMapForId<TId>()
-        where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder>
+        where TId : class, IGuidIdentifierObject<TId>
     {
         CreateMap<TId, Guid>()
             .ConstructUsing(x => x.Id);

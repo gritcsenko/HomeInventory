@@ -1,13 +1,12 @@
-﻿using DotNext;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Mapping;
 
-public class GuidIdConverter<TId> : ObjectConverter<GuidIdentifierObject<TId>.Builder, TId, Guid>
-    where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder>
+public class GuidIdConverter<TId> : ObjectConverter<GuidIdentifierObjectBuilder<TId>, TId, Guid>
+    where TId : class, IGuidIdentifierObject<TId>
 {
     public GuidIdConverter()
-        : base(id => id != Guid.Empty)
+        : base(GuidIdentifierObjectBuilder<TId>.IsValid)
     {
     }
 }

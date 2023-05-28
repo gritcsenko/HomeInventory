@@ -4,7 +4,7 @@ public interface IValueObject
 {
 }
 
-public interface IValueObject<TObject> : IValueObject, IEquatable<TObject>
-    where TObject : IValueObject<TObject>
+public interface IValueObject<TSelf> : IValueObject, IEquatable<TSelf>
+    where TSelf : IValueObject<TSelf>
 {
 }

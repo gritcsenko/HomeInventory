@@ -76,7 +76,7 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
-        services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
 
         services.ConfigureOptions<JwtBearerOptionsSetup>();
 

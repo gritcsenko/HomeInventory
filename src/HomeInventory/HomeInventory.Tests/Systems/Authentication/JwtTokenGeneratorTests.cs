@@ -36,7 +36,7 @@ public class JwtTokenGeneratorTests : BaseTest
         var sut = CreateSut();
         var validFrom = DateTime.UtcNow.DropSubSeconds().UtcDateTime;
 
-        var actualTokenString = await sut.GenerateTokenAsync(_user, DateTime, Cancellation.Token);
+        var actualTokenString = await sut.GenerateTokenAsync(_user, Cancellation.Token);
 
         actualTokenString.Should().NotBeNullOrEmpty();
         var actualToken = new JwtSecurityTokenHandler().ReadJwtToken(actualTokenString);
@@ -51,5 +51,5 @@ public class JwtTokenGeneratorTests : BaseTest
         actualToken.Payload.Should().Contain(JwtRegisteredClaimNames.Email, _user.Email.Value);
     }
 
-    private JwtTokenGenerator CreateSut() => new(_jtiGenerator, Options.Create(_options));
+    private JwtTokenGenerator CreateSut() => new(_jtiGenerator, DateTime, Options.Create(_options));
 }

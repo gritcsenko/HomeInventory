@@ -5,9 +5,9 @@ using OneOf;
 
 namespace HomeInventory.Application.Mapping;
 
-public class ObjectConverter<TObject, TValue> : ObjectConverter<ValueObject<TObject>.Builder<TValue>, TObject, TValue>
+public class ObjectConverter<TObject, TValue> : ObjectConverter<ValueObjectBuilder<TObject, TValue>, TObject, TValue>
     where TValue : notnull
-    where TObject : notnull, ValueObject<TObject>, IBuildable<TObject, ValueObject<TObject>.Builder<TValue>>
+    where TObject : class, IValueObject<TObject>, IBuildable<TObject, ValueObjectBuilder<TObject, TValue>>
 {
     public ObjectConverter(Func<TValue, bool> isValid)
         : base(isValid)
@@ -18,7 +18,7 @@ public class ObjectConverter<TObject, TValue> : ObjectConverter<ValueObject<TObj
 public class ObjectConverter<TBuilder, TObject, TValue> : GenericValueObjectConverter<TObject, TValue>
     where TValue : notnull
     where TBuilder : IValueObjectBuilder<TBuilder, TObject, TValue>
-    where TObject : notnull, ValueObject<TObject>, IBuildable<TObject, TBuilder>
+    where TObject : class, IValueObject<TObject>, IBuildable<TObject, TBuilder>
 {
     private readonly Func<TValue, bool> _isValid;
 
@@ -27,7 +27,7 @@ public class ObjectConverter<TBuilder, TObject, TValue> : GenericValueObjectConv
         _isValid = isValid;
     }
 
-    protected override OneOf<TObject, IError> InternalConvert(TValue source)
+    protected sealed override OneOf<TObject, IError> InternalConvert(TValue source)
     {
         if (!_isValid(source))
         {

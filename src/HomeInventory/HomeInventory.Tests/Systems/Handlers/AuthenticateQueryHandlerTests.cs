@@ -22,7 +22,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         _user = Fixture.Create<User>();
     }
 
-    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository, DateTime);
+    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -32,7 +32,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var token = Fixture.Create<string>();
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
-        _tokenGenerator.GenerateTokenAsync(_user, DateTime, Cancellation.Token).Returns(token);
+        _tokenGenerator.GenerateTokenAsync(_user, Cancellation.Token).Returns(token);
 
         var sut = CreateSut();
         // When
@@ -62,7 +62,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
            .Which.Should().BeOfType<InvalidCredentialsError>();
-        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), DateTime, Cancellation.Token);
+        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
     }
 
     [Fact]
@@ -80,6 +80,6 @@ public class AuthenticateQueryHandlerTests : BaseTest
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
            .Which.Should().BeOfType<InvalidCredentialsError>();
-        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), DateTime, Cancellation.Token);
+        _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
     }
 }
