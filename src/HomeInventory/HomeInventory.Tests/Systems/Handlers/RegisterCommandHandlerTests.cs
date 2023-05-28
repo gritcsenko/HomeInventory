@@ -17,7 +17,7 @@ public class RegisterCommandHandlerTests : BaseTest
 
     public RegisterCommandHandlerTests()
     {
-        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeGuidId<UserId>();
         Fixture.CustomizeEmail();
 
         _userId = Fixture.Create<UserId>();

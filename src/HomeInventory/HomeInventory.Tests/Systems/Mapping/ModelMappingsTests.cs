@@ -31,7 +31,7 @@ public class ModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldProjectUserModelToUser()
     {
-        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeGuidId<UserId>();
         var sut = CreateSut<ModelMappings>();
         var instance = Fixture.Create<UserModel>();
         var source = new[] { instance }.AsQueryable();
@@ -44,10 +44,9 @@ public class ModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldMapUserModelToUser()
     {
-        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeGuidId<UserId>();
         var sut = CreateSut<ModelMappings>();
         var instance = Fixture.Create<UserModel>();
-        var source = new[] { instance }.AsQueryable();
 
         var target = sut.Map<User>(instance);
 
@@ -59,8 +58,8 @@ public class ModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
-        fixture.CustomizeGuidId(guid => new UserId(guid));
-        fixture.CustomizeGuidId(guid => new ProductId(guid));
+        fixture.CustomizeGuidId<UserId>();
+        fixture.CustomizeGuidId<ProductId>();
         fixture.CustomizeEmail();
         fixture.CustomizeFromFactory<int, AmountUnit>(i => AmountUnit.Items.ElementAt(i % AmountUnit.Items.Count));
         fixture.CustomizeFromFactory<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit));
