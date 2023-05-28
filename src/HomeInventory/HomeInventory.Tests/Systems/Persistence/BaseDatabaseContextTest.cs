@@ -1,11 +1,12 @@
-﻿using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
 public abstract class BaseDatabaseContextTest : BaseTest
 {
-    private readonly DatabaseContext _context = HomeInventory.Domain.Primitives.TypeExtensions.CreateInstance<DatabaseContext>(GetDatabaseOptions())!;
+    private readonly DatabaseContext _context = ReflectionMethods.CreateInstance<DatabaseContext>(GetDatabaseOptions())!;
 
     protected private DatabaseContext Context => _context;
 

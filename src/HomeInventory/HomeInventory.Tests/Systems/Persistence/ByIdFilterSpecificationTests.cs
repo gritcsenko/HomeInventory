@@ -14,7 +14,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
 
     public ByIdFilterSpecificationTests()
     {
-        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeGuidId<UserId>();
         _id = Fixture.Create<UserId>();
     }
 

@@ -5,8 +5,8 @@ namespace HomeInventory.Tests;
 internal class OptionAssertions<T> : ReferenceTypeAssertions<Optional<T>, OptionAssertions<T>>
     where T : notnull
 {
-    public OptionAssertions(Optional<T> value)
-        : base(value) =>
+    public OptionAssertions(Optional<T> subject)
+        : base(subject) =>
         Identifier = Subject.GetType().GetFormattedName();
 
     protected override string Identifier { get; }

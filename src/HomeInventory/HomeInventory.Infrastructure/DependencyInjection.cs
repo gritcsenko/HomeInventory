@@ -6,9 +6,11 @@ using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
+using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Infrastructure;
@@ -22,8 +24,10 @@ public static class DependencyInjection
         services.AddRepository<User, IUserRepository, UserRepository>();
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
-        services.AddSingleton<AmountValueObjectConverter>();
+        services.AddSingleton<AmountObjectConverter>();
 
+        services.AddHealthChecks()
+             .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
         return services;
     }
 

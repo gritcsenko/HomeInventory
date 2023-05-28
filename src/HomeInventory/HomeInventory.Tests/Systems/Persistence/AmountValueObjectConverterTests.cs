@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -9,7 +10,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConverterTests.GivenTestContext>
 {
-    private static readonly Variable<AmountValueObjectConverter> _sut = new(nameof(_sut));
+    private static readonly Variable<AmountObjectConverter> _sut = new(nameof(_sut));
     private static readonly Variable<IAmountFactory> _factory = new(nameof(_factory));
     private static readonly Variable<ProductAmountModel> _amountModel = new(nameof(_amountModel));
     private static readonly Variable<Amount> _amount = new(nameof(_amount));
@@ -27,7 +28,7 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             .Sut(_sut, _factory);
 
         When
-            .Invoked(_sut, _amountModel, (sut, amount) => sut.Convert(amount))
+            .Invoked(_sut, _amountModel, (sut, amount) => sut.TryConvert(amount))
             .Result(_amount.WithIndex(0), (r, a) =>
             {
                 r.IsT0.Should().BeTrue();
@@ -48,7 +49,7 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             Fixture.Customize(new AmountCustomization());
         }
 
-        internal GivenTestContext Sut(IVariable<AmountValueObjectConverter> sut, IVariable<IAmountFactory> factoryVariable)
+        internal GivenTestContext Sut(IVariable<AmountObjectConverter> sut, IVariable<IAmountFactory> factoryVariable)
         {
             var factory = Variables.Get(factoryVariable.WithIndex(0));
             Add(sut, () => new(factory));
@@ -69,7 +70,8 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             public void Customize(IFixture fixture)
             {
                 var rnd = new Random();
-                fixture.Customize<AmountUnit>(c => c.FromFactory(() => AmountUnit.Items.PeekRandom(rnd).Value));
+                var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
+                fixture.Customize<AmountUnit>(c => c.FromFactory(() => items.PeekRandom(rnd).Value));
             }
         }
 

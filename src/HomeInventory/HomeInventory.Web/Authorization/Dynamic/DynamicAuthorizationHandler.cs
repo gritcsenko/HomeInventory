@@ -10,6 +10,8 @@ namespace HomeInventory.Web.Authorization.Dynamic;
 
 public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
 {
+    private static readonly GuidIdConverter<UserId> _idConverter = new();
+
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DynamicPermissionRequirement requirement)
     {
         if (context.Resource is not HttpContext httpContext)
@@ -36,13 +38,12 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
             return;
         }
 
-        using var scope = httpContext.RequestServices.CreateScope();
-        var sp = scope.ServiceProvider;
-        var converter = new GuidIdConverter<UserId>();
-        await converter.Convert(id)
+        await _idConverter.TryConvert(id)
             .Match(async userId =>
             {
-                var repository = sp.GetRequiredService<IUserRepository>();
+                using var scope = httpContext.RequestServices.CreateScope();
+                var provider = scope.ServiceProvider;
+                var repository = provider.GetRequiredService<IUserRepository>();
 
                 var permissions = requirement.GetPermissions(endpoint);
                 foreach (var permission in permissions)

@@ -25,7 +25,7 @@ public class ContractsMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> Data()
     {
         var fixture = new Fixture();
-        fixture.CustomizeGuidId(guid => new UserId(guid));
+        fixture.CustomizeGuidId<UserId>();
         fixture.CustomizeEmail();
         return new()
         {

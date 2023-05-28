@@ -58,7 +58,7 @@ public class ThenContext<TResult> : Context
 
     private TResult GetResult()
     {
-        var variable = _resultVariable.OfType<TResult>().WithIndex(0);
+        var variable = _resultVariable.WithIndex(0);
         return Variables.Get(variable);
     }
 }

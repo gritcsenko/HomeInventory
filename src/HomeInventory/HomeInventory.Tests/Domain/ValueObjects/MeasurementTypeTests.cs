@@ -1,14 +1,17 @@
-﻿using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
 
 [UnitTest]
 public class MeasurementTypeTests : BaseTest
 {
+    private static readonly EnumerationItemsCollection<MeasurementType> _items = EnumerationItemsCollection.CreateFor<MeasurementType>();
+
     [Fact]
     public void Items_Should_NotBeEmpty()
     {
-        MeasurementType.Items.Should().NotBeEmpty();
+        _items.Should().NotBeEmpty();
     }
 
     [Theory]
@@ -22,16 +25,15 @@ public class MeasurementTypeTests : BaseTest
     [MemberData(nameof(Keys))]
     public void CanBeUsedAsDictionaryKey(MeasurementType sut)
     {
-        var dictionary = MeasurementType.Items.ToDictionary(x => x, x => x.Name);
+        var dictionary = _items.ToDictionary(x => x, x => x.Name);
 
         var actual = dictionary.ContainsKey(sut);
 
         actual.Should().BeTrue();
     }
 
-    public static TheoryData<MeasurementType, string> Data()
-    {
-        return new()
+    public static TheoryData<MeasurementType, string> Data() =>
+        new()
         {
             { MeasurementType.Count, nameof(MeasurementType.Count) },
             { MeasurementType.Length, nameof(MeasurementType.Length) },
@@ -40,12 +42,11 @@ public class MeasurementTypeTests : BaseTest
             { MeasurementType.Weight, nameof(MeasurementType.Weight) },
             { MeasurementType.Temperature, nameof(MeasurementType.Temperature) },
         };
-    }
 
     public static TheoryData<MeasurementType> Keys()
     {
         var data = new TheoryData<MeasurementType>();
-        foreach (var item in MeasurementType.Items)
+        foreach (var item in _items)
         {
             data.Add(item);
         }

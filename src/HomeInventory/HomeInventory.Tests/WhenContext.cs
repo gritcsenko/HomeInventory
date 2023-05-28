@@ -14,6 +14,16 @@ public class WhenContext : Context
         _cancellation = cancellation;
     }
 
+    public ThenCatchedContext Catched<TSut, TArg>(IVariable<TSut> sut, IVariable<TArg> arg, Action<TSut, TArg> invoke)
+        where TSut : notnull
+        where TArg : notnull =>
+        Catched(sut.WithIndex(0), arg.WithIndex(0), invoke);
+
+    public ThenCatchedContext Catched<TSut, TArg>(IIndexedVariable<TSut> sut, IIndexedVariable<TArg> arg, Action<TSut, TArg> invoke)
+        where TSut : notnull
+        where TArg : notnull =>
+        Catched(sut, sutValue => invoke(sutValue, Variables.Get(arg)));
+
     public ThenContext<TResult> Invoked<TSut, TResult>(IVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
         where TResult : notnull =>
@@ -37,6 +47,15 @@ public class WhenContext : Context
     {
         var variable = _resultVariable.OfType<TResult>();
         Variables.TryAdd(variable, () => invoke(Variables.Get(sut)));
+        return new(Variables, variable);
+    }
+
+    public ThenCatchedContext Catched<TSut>(IIndexedVariable<TSut> sut, Action<TSut> invoke)
+        where TSut : notnull
+    {
+        var variable = _resultVariable.OfType<Action>();
+        Action action = () => invoke(Variables.Get(sut));
+        Variables.TryAdd(variable, () => action);
         return new(Variables, variable);
     }
 

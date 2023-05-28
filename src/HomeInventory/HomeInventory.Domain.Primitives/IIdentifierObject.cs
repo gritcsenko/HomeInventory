@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public interface IIdentifierObject<TObject> : IValueObject<TObject>
-    where TObject : IIdentifierObject<TObject>
+public interface IIdentifierObject<TSelf> : IValueObject<TSelf>
+    where TSelf : IIdentifierObject<TSelf>
 {
 }

@@ -29,7 +29,7 @@ public class AuthenticationModuleTests : BaseApiModuleTests
 
         then
             .Result(_loginResponse, (actual, expected) =>
-                actual.Should().BeOfType<Ok<LoginResponse>>()
+                actual.Result.Should().BeOfType<Ok<LoginResponse>>()
                     .Which.Should().HaveValue(expected));
     }
 
@@ -46,7 +46,7 @@ public class AuthenticationModuleTests : BaseApiModuleTests
 
         then
             .Result(_error, (actual, error) =>
-                actual.Should().BeOfType<ProblemHttpResult>()
+                actual.Result.Should().BeOfType<ProblemHttpResult>()
                     .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
                     .And.Match(x => x.Detail == error.Message));
     }
