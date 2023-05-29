@@ -1,4 +1,5 @@
-﻿using NetArchTest.Rules;
+﻿using HomeInventory.Domain.Primitives;
+using NetArchTest.Rules;
 
 namespace HomeInventory.Tests.Architecture;
 

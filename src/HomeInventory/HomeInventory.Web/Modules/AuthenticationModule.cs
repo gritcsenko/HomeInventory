@@ -3,6 +3,7 @@ using HomeInventory.Contracts;
 using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
@@ -22,7 +23,7 @@ internal class AuthenticationModule : ApiModule
             .WithValidationOf<LoginRequest>();
     }
 
-    public static async Task<IResult> LoginAsync(HttpContext context, [FromBody] LoginRequest body, CancellationToken cancellationToken = default)
+    public static async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync(HttpContext context, [FromBody] LoginRequest body, CancellationToken cancellationToken = default)
     {
         var mapper = context.GetMapper();
 

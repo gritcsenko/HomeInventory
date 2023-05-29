@@ -10,8 +10,7 @@ public class Product : Entity<Product, ProductId>
     {
     }
 
-    public string Name { get; init; } = null!;
+    public required string Name { get; init; }
 
-    public Amount Amount { get; init; } = null!;
+    public required Amount Amount { get; init; }
 }
-

@@ -30,7 +30,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
 {
     protected BaseApiModuleTests()
     {
-        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeGuidId<UserId>();
         Fixture.CustomizeEmail();
         Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(Guid.NewGuid()));
     }

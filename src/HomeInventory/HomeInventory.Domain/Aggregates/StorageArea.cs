@@ -19,7 +19,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
 
     public IReadOnlyCollection<Product> Products => _products;
 
-    public StorageAreaName Name { get; init; } = null!;
+    public required StorageAreaName Name { get; init; }
 
     public OneOf<Success, DuplicateProductError> Add(Product item)
     {

@@ -33,7 +33,7 @@ public class UserManagementModuleTests : BaseApiModuleTests
 
         then
             .Result(_registerResponse, (actual, expected) =>
-                actual.Should().BeOfType<Ok<RegisterResponse>>()
+                actual.Result.Should().BeOfType<Ok<RegisterResponse>>()
                     .Which.Should().HaveValue(expected));
     }
 
@@ -50,7 +50,7 @@ public class UserManagementModuleTests : BaseApiModuleTests
 
         then
             .Result(_error, (actual, error) =>
-                actual.Should().BeOfType<ProblemHttpResult>()
+                actual.Result.Should().BeOfType<ProblemHttpResult>()
                     .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
                     .And.Match(x => x.Detail == error.Message));
     }

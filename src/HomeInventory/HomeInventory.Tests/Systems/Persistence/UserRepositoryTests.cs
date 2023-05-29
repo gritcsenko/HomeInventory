@@ -14,7 +14,7 @@ public class UserRepositoryTests : BaseRepositoryTest
 
     public UserRepositoryTests()
     {
-        Fixture.CustomizeGuidId(guid => new UserId(guid));
+        Fixture.CustomizeGuidId<UserId>();
         Fixture.CustomizeEmail();
 
         _user = Fixture.Create<User>();

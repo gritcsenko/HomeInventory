@@ -16,7 +16,6 @@ using HomeInventory.Web.Middleware;
 using HomeInventory.Web.Modules;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -77,7 +76,7 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
-        services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
 
         services.ConfigureOptions<JwtBearerOptionsSetup>();
 
@@ -142,31 +141,18 @@ public static class DependencyInjection
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
             Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
         app.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
             Predicate = x => x.Tags.Contains(HealthCheckTags.Ready),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
         app.MapHealthChecks("/health/live", new HealthCheckOptions
         {
             Predicate = _ => false,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
-    }
-
-    private static TBuilder RequirePermission<TBuilder>(this TBuilder builder, params Permission[] permissions)
-        where TBuilder : IEndpointConventionBuilder
-    {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
-
-        var attributes = permissions.Select(p => new AuthorizeAttribute(policy: p.ToString())).ToArray();
-
-        return builder.RequireAuthorization(attributes);
     }
 
     private static bool Is<T>(this AssemblyScanner.AssemblyScanResult result) => result.ValidatorType.IsAssignableTo(typeof(T));

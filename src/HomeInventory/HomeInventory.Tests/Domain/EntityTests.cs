@@ -5,7 +5,7 @@ namespace HomeInventory.Tests.Domain;
 [UnitTest]
 public class EntityTests : BaseTest<EntityTests.GivenTestContext>
 {
-    private static readonly Variable<EntityId> _id = new(nameof(_id));
+    private static readonly Variable<TestEntityId> _id = new(nameof(_id));
     private static readonly Variable<TestEntity> _other = new(nameof(_other));
     private static readonly Variable<TestEntity> _sut = new(nameof(_sut));
     private static readonly Variable<HashCode> _hash = new(nameof(_hash));
@@ -202,23 +202,23 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         {
         }
 
-        public GivenTestContext TestEntity(IVariable<TestEntity> entity, IndexedVariable<EntityId> id) =>
+        public GivenTestContext TestEntity(IVariable<TestEntity> entity, IndexedVariable<TestEntityId> id) =>
             Add(entity, () => CreateTestEntity(id));
 
-        private TestEntity CreateTestEntity(IIndexedVariable<EntityId> id) => new(Variables.Get(id));
+        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
     }
 
-    public class EntityId : GuidIdentifierObject<EntityId>
+    public class TestEntityId : GuidIdentifierObject<TestEntityId>
     {
-        public EntityId(Guid value)
+        public TestEntityId(Guid value)
             : base(value)
         {
         }
     }
 
-    public class TestEntity : Entity<TestEntity, EntityId>
+    public class TestEntity : Entity<TestEntity, TestEntityId>
     {
-        public TestEntity(EntityId id)
+        public TestEntity(TestEntityId id)
             : base(id)
         {
         }

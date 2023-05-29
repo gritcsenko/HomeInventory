@@ -1,6 +1,7 @@
 ﻿using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
@@ -19,8 +20,6 @@ internal class PermissionModule : ApiModule
             .RequireDynamicAuthorization(Permission.ReadPermission);
     }
 
-    public static Task<IResult> GetPermissionsAsync([FromServices] PermissionList list, CancellationToken cancellationToken = default)
-    {
-        return Task.FromResult<IResult>(TypedResults.Ok(list.Select(p => p.ToString())));
-    }
+    public static Task<Ok<IEnumerable<string>>> GetPermissionsAsync([FromServices] PermissionList list, CancellationToken cancellationToken = default)
+        => Task.FromResult(TypedResults.Ok(list.Select(p => p.ToString())));
 }

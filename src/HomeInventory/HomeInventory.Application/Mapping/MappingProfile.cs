@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using DotNext;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Mapping;
@@ -12,16 +11,17 @@ public abstract class MappingProfile : Profile
     }
 
     protected void CreateMapForId<TId>()
-        where TId : notnull, GuidIdentifierObject<TId>, IBuildable<TId, GuidIdentifierObject<TId>.Builder>
+        where TId : class, IGuidIdentifierObject<TId>
     {
+        var converter = new GuidIdConverter<TId>();
         CreateMap<TId, Guid>()
             .ConstructUsing(x => x.Id);
         CreateMap<Guid, TId>()
-            .ConvertUsing(new GuidIdConverter<TId>());
+            .ConstructUsing(id => converter.Convert(id));
     }
 
     protected void CreateMapForString<TObject>(Expression<Func<string, TObject>> convertFromValue, Expression<Func<TObject, string>> convertToValue)
-        where TObject : notnull
+        where TObject : class, IValueObject<TObject>
     {
         CreateMap<TObject, string>()
             .ConstructUsing(convertToValue);
@@ -30,8 +30,8 @@ public abstract class MappingProfile : Profile
     }
 
     protected void CreateMapForValue<TObject, TValue, TConverter>(Expression<Func<TObject, TValue>> convertToValue)
-        where TObject : ValueObject<TObject>
-        where TConverter : GenericValueObjectConverter<TObject, TValue>
+        where TObject : class, IValueObject<TObject>
+        where TConverter : ITypeConverter<TValue, TObject>
     {
         CreateMap<TObject, TValue>()
             .ConstructUsing(convertToValue);
