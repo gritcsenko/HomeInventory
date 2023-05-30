@@ -38,6 +38,32 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
     [Fact]
+    public async ValueTask DeleteAsync_ShouldRemoveExisting()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+        await sut.AddAsync(entity, Cancellation.Token);
+
+        await sut.DeleteAsync(entity, Cancellation.Token);
+
+        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
+        actual.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async ValueTask DeleteRangeAsync_ShouldRemoveExisting()
+    {
+        var entities = Fixture.CreateMany<FakeEntity>();
+        var sut = CreateSut();
+        await sut.AddRangeAsync(entities, Cancellation.Token);
+
+        await sut.DeleteRangeAsync(entities, Cancellation.Token);
+
+        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
+        actual.Should().HaveSameCount(entities);
+    }
+
+    [Fact]
     public async ValueTask GetAllAsync_ShouldReturnExpected()
     {
         var model = Fixture.Create<FakeModel>();
