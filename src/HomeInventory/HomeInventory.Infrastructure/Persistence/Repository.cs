@@ -1,8 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using Ardalis.Specification;
+﻿using Ardalis.Specification;
 using AutoMapper;
 using DotNext;
-using DotNext.Collections.Generic;
 using HomeInventory.Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +32,9 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
     public ValueTask AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        Set().AddRange(entities.Select(ToModel));
+        var models = entities.Select(ToModel);
+
+        Set().AddRange(models);
 
         return ValueTask.CompletedTask;
     }
@@ -75,23 +75,14 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return ValueTask.CompletedTask;
     }
 
-    public async ValueTask<int> CountAsync(CancellationToken cancellationToken = default)
-    {
-        return await Set().CountAsync(cancellationToken);
-    }
+    public async ValueTask<int> CountAsync(CancellationToken cancellationToken = default) =>
+        await Set().CountAsync(cancellationToken);
 
-    public async ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default)
-    {
-        return await Set().AnyAsync(cancellationToken);
-    }
+    public async ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default) =>
+        await Set().AnyAsync(cancellationToken);
 
-    public async IAsyncEnumerable<TEntity> GetAllAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        await foreach (var entity in ToEntity(Set(), cancellationToken))
-        {
-            yield return entity;
-        }
-    }
+    public IAsyncEnumerable<TEntity> GetAllAsync(CancellationToken cancellationToken = default) =>
+        AsyncEnumerable.ToAsyncEnumerable(ToEntity(Set(), cancellationToken));
 
     public async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
