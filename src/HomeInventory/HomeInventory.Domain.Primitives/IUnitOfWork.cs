@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public interface IUnitOfWork : IAsyncDisposable
+public interface IUnitOfWork
 {
-    Task SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,8 +1,10 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -13,47 +15,8 @@ public class RepositoryTests : BaseRepositoryTest
     public RepositoryTests()
     {
     }
-
     [Fact]
-    public async ValueTask WithUnitOfWorkAsync_ShouldReturnBeSame_WhenCalledSecondTime()
-    {
-        var sut = CreateSut();
-        var expected = await sut.WithUnitOfWorkAsync(Cancellation.Token);
-
-        var actual = await sut.WithUnitOfWorkAsync(Cancellation.Token);
-
-        actual.Should().BeSameAs(expected);
-    }
-
-    [Fact]
-    public async ValueTask WithUnitOfWorkAsync_ShouldReturnBeDifferent_WhenCalledSecondTimeAndDisposedFirst()
-    {
-        var sut = CreateSut();
-        var first = await sut.WithUnitOfWorkAsync(Cancellation.Token);
-        await first.DisposeAsync();
-
-        var actual = await sut.WithUnitOfWorkAsync(Cancellation.Token);
-
-        actual.Should().NotBeSameAs(first);
-    }
-
-    [Fact]
-    public async ValueTask AddAsync_ShouldAdd_WhenUsingUnitOfWork()
-    {
-        var entity = Fixture.Create<FakeEntity>();
-        var sut = CreateSut();
-        await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
-
-        await sut.AddAsync(entity, Cancellation.Token);
-
-        await unit.SaveChangesAsync(Cancellation.Token);
-
-        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
-        actual.Should().ContainSingle();
-    }
-
-    [Fact]
-    public async ValueTask AddAsync_ShouldAdd_WhenNotUsingUnitOfWork()
+    public async ValueTask AddAsync_ShouldAdd()
     {
         var entity = Fixture.Create<FakeEntity>();
         var sut = CreateSut();
@@ -65,30 +28,76 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
     [Fact]
-    public async ValueTask AddRangeAsync_ShouldAdd_WhenUsingUnitOfWork()
+    public async ValueTask AddRangeAsync_ShouldAdd()
     {
         var entities = Fixture.CreateMany<FakeEntity>();
         var sut = CreateSut();
-        await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
 
         await sut.AddRangeAsync(entities, Cancellation.Token);
-
-        await unit.SaveChangesAsync(Cancellation.Token);
 
         var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
         actual.Should().HaveSameCount(entities);
     }
 
     [Fact]
-    public async ValueTask AddRangeAsync_ShouldAdd_WhenNotUsingUnitOfWork()
+    public async ValueTask DeleteAsync_ShouldRemoveExisting()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+        await sut.AddAsync(entity, Cancellation.Token);
+
+        await sut.DeleteAsync(entity, Cancellation.Token);
+
+        var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
+        actual.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async ValueTask DeleteRangeAsync_ShouldRemoveExisting()
     {
         var entities = Fixture.CreateMany<FakeEntity>();
         var sut = CreateSut();
-
         await sut.AddRangeAsync(entities, Cancellation.Token);
+
+        await sut.DeleteRangeAsync(entities, Cancellation.Token);
 
         var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
         actual.Should().HaveSameCount(entities);
+    }
+
+    [Fact]
+    public async ValueTask FindFirstOptionalAsync_ShouldFindExisting()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+        await sut.AddAsync(entity, Cancellation.Token);
+
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+
+        actual.Should().HaveSomeValue();
+    }
+
+    [Fact]
+    public async ValueTask FindFirstOptionalAsync_ShouldNotFindNonExisting()
+    {
+        var entityId = Fixture.Create<Guid>();
+        var sut = CreateSut();
+
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entityId), Cancellation.Token);
+
+        actual.Should().HaveNoValue();
+    }
+
+    [Fact]
+    public async ValueTask HasAsync_ShouldFindExisting()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+        await sut.AddAsync(entity, Cancellation.Token);
+
+        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -141,12 +150,12 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().Be(expectedCount);
     }
 
-    private FakeRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default);
+    private FakeRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default);
 
     private class FakeRepository : Repository<FakeModel, FakeEntity>
     {
-        public FakeRepository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator)
-            : base(contextFactory, mapper, evaluator)
+        public FakeRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
+            : base(context, mapper, evaluator)
         {
         }
     }
@@ -156,7 +165,23 @@ public class RepositoryTests : BaseRepositoryTest
         public Guid Id { get; init; }
     }
 
-    private class FakeEntity : HomeInventory.Domain.Primitives.IEntity<FakeEntity>
+#pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
+    private class FakeEntity : IEntity<FakeEntity, FakeId>
+#pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
     {
+        public required FakeId Id { get; init; }
+
+        public bool Equals(FakeEntity? other)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    private class FakeId : GuidIdentifierObject<FakeId>
+    {
+        public FakeId(Guid value)
+            : base(value)
+        {
+        }
     }
 }
