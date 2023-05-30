@@ -6,14 +6,13 @@ using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
-using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
 internal class UserRepository : Repository<UserModel, User>, IUserRepository
 {
-    public UserRepository(IDbContextFactory<DatabaseContext> contextFactory, IMapper mapper, ISpecificationEvaluator evaluator)
-        : base(contextFactory, mapper, evaluator)
+    public UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
+        : base(context, mapper, evaluator)
     {
     }
 

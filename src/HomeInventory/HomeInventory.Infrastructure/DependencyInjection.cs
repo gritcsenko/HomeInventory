@@ -39,14 +39,15 @@ public static class DependencyInjection
             .AddScoped<TRepository, TRepositoryImplementation>()
             .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>());
 
-    private static IServiceCollection AddDatabase(this IServiceCollection services)
-    {
-        return services.AddDbContextFactory<DatabaseContext>((sp, builder) =>
-        {
-            var env = sp.GetRequiredService<IHostEnvironment>();
-            builder.UseInMemoryDatabase("HomeInventory").UseApplicationServiceProvider(sp);
-            builder.EnableDetailedErrors(!env.IsProduction());
-            builder.EnableSensitiveDataLogging(!env.IsProduction());
-        });
-    }
+    private static IServiceCollection AddDatabase(this IServiceCollection services) =>
+        services
+            .AddDbContext<DatabaseContext>((sp, builder) =>
+            {
+                var env = sp.GetRequiredService<IHostEnvironment>();
+                builder.UseInMemoryDatabase("HomeInventory").UseApplicationServiceProvider(sp);
+                builder.EnableDetailedErrors(!env.IsProduction());
+                builder.EnableSensitiveDataLogging(!env.IsProduction());
+            })
+            .AddScoped<IDatabaseContext>(sp => sp.GetRequiredService<DatabaseContext>())
+            .AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<DatabaseContext>());
 }

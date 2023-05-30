@@ -12,6 +12,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly RegisterCommand _command;
     private readonly UserId _userId;
 
@@ -26,7 +27,7 @@ public class RegisterCommandHandlerTests : BaseTest
         _command = Fixture.Create<RegisterCommand>();
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository);
+    private RegisterCommandHandler CreateSut() => new(_userRepository, _unitOfWork);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -36,7 +37,6 @@ public class RegisterCommandHandlerTests : BaseTest
 #pragma warning disable CA2012 // Use ValueTasks correctly
         _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(ValueTask.CompletedTask);
 #pragma warning restore CA2012 // Use ValueTasks correctly
-        _userRepository.WithUnitOfWorkAsync(Cancellation.Token).Returns(Substitute.For<IUnitOfWork>());
 
         var sut = CreateSut();
         // When

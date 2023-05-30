@@ -1,10 +1,11 @@
-﻿using HomeInventory.Infrastructure.Persistence.Models;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class DatabaseContext : DbContext
+internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
 {
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
