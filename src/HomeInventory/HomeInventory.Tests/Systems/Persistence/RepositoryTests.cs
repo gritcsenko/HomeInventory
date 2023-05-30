@@ -78,6 +78,17 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
     [Fact]
+    public async ValueTask FindFirstOptionalAsync_ShouldNotFindNonExisting()
+    {
+        var entityId = Fixture.Create<Guid>();
+        var sut = CreateSut();
+
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entityId), Cancellation.Token);
+
+        actual.Should().HaveNoValue();
+    }
+
+    [Fact]
     public async ValueTask HasAsync_ShouldFindExisting()
     {
         var entity = Fixture.Create<FakeEntity>();
