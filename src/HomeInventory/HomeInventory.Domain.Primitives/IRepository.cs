@@ -52,6 +52,4 @@ public interface IRepository<TEntity> : IReadOnlyRepository<TEntity>
     /// <param name="entities">The entities to remove.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     ValueTask DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
-
-    ValueTask<IUnitOfWork> WithUnitOfWorkAsync(CancellationToken cancellationToken = default);
 }

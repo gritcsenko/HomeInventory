@@ -33,11 +33,10 @@ public class UserRepositoryTests : BaseRepositoryTest
     {
         var entitiesSaved = 0;
         var sut = CreateSut();
-        await using var unit = await sut.WithUnitOfWorkAsync(Cancellation.Token);
         Context.SavedChanges += (_, e) => entitiesSaved += e.EntitiesSavedCount;
 
         await sut.AddAsync(_user, Cancellation.Token);
-        await unit.SaveChangesAsync(Cancellation.Token);
+        await Context.SaveChangesAsync();
 
         entitiesSaved.Should().Be(1);
     }
@@ -91,5 +90,5 @@ public class UserRepositoryTests : BaseRepositoryTest
         result.Should().BeTrue();
     }
 
-    private UserRepository CreateSut() => new(Factory, Mapper, SpecificationEvaluator.Default, DateTime);
+    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default, DateTime);
 }

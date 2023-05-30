@@ -21,7 +21,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
 
     public required StorageAreaName Name { get; init; }
 
-    public OneOf<Success, DuplicateProductError> Add(Product item)
+    public OneOf<Success, DuplicateProductError> Add(Product item, IDateTimeService dateTimeService)
     {
         if (_products.Contains(item))
         {
@@ -29,11 +29,11 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
         }
 
         _products.AddLast(item);
-        AddEvent(new ProductAddedEvent(this, item.Id));
+        AddEvent(new ProductAddedEvent(Guid.NewGuid(), dateTimeService.UtcNow, this, item.Id));
         return new Success();
     }
 
-    public Success Remove(Product item)
+    public Success Remove(Product item, IDateTimeService dateTimeService)
     {
         if (!_products.Contains(item))
         {
@@ -41,7 +41,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
         }
 
         _products.Remove(item);
-        AddEvent(new ProductRemovedEvent(this, item.Id));
+        AddEvent(new ProductRemovedEvent(Guid.NewGuid(), dateTimeService.UtcNow, this, item.Id));
         return new Success();
     }
 }

@@ -3,5 +3,5 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Events;
 
-public record ProductAddedEvent(IAggregateRoot Source, ProductId ProductId) : IDomainEvent;
+public record ProductAddedEvent(Guid Id, DateTimeOffset Created, IAggregateRoot Source, ProductId ProductId) : IDomainEvent;
 

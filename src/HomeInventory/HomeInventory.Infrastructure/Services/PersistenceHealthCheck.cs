@@ -13,6 +13,7 @@ internal class PersistenceHealthCheck : BaseHealthCheck
     protected override async ValueTask<bool> IsHealthyAsync(CancellationToken cancellationToken)
     {
         await using var dbContext = await _factory.CreateDbContextAsync(cancellationToken);
-        return await dbContext.Database.CanConnectAsync(cancellationToken);
+        return await dbContext.Database.CanConnectAsync(cancellationToken)
+            && !(await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).Any();
     }
 }
