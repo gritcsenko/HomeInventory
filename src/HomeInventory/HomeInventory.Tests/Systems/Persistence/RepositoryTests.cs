@@ -1,8 +1,10 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -61,6 +63,30 @@ public class RepositoryTests : BaseRepositoryTest
 
         var actual = await Context.Set<FakeModel>().ToArrayAsync(Cancellation.Token);
         actual.Should().HaveSameCount(entities);
+    }
+
+    [Fact]
+    public async ValueTask FindFirstOptionalAsync_ShouldFindExisting()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+        await sut.AddAsync(entity, Cancellation.Token);
+
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+
+        actual.Should().HaveSomeValue();
+    }
+
+    [Fact]
+    public async ValueTask HasAsync_ShouldFindExisting()
+    {
+        var entity = Fixture.Create<FakeEntity>();
+        var sut = CreateSut();
+        await sut.AddAsync(entity, Cancellation.Token);
+
+        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+
+        actual.Should().BeTrue();
     }
 
     [Fact]
@@ -128,7 +154,23 @@ public class RepositoryTests : BaseRepositoryTest
         public Guid Id { get; init; }
     }
 
-    private class FakeEntity : HomeInventory.Domain.Primitives.IEntity<FakeEntity>
+#pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
+    private class FakeEntity : IEntity<FakeEntity, FakeId>
+#pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
     {
+        public required FakeId Id { get; init; }
+
+        public bool Equals(FakeEntity? other)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    private class FakeId : GuidIdentifierObject<FakeId>
+    {
+        public FakeId(Guid value)
+            : base(value)
+        {
+        }
     }
 }

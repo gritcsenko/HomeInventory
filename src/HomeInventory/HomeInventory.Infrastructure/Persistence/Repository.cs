@@ -93,7 +93,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         }
     }
 
-    protected async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query, cancellationToken);
@@ -105,7 +105,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return Optional.None<TEntity>();
     }
 
-    protected async ValueTask<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async ValueTask<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification, evaluateCriteriaOnly: true);
         return await query.AnyAsync(cancellationToken);

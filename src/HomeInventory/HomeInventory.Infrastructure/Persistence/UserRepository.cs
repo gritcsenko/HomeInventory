@@ -24,7 +24,7 @@ internal class UserRepository : Repository<UserModel, User>, IUserRepository
 
     public async ValueTask<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
-        var userResult = await FindFirstOptionalAsync(new UserHasIdSpecification(userId), cancellationToken);
+        var userResult = await FindFirstOptionalAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken);
         return userResult.HasValue;
     }
 }
