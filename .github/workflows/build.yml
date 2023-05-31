@@ -146,6 +146,9 @@ jobs:
         uses: actions/download-artifact@v3.0.2
         with:
           path: "./src/HomeInventory"
+      - name: Info
+        run: ls -s
+        working-directory: ./src/HomeInventory
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory
