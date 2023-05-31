@@ -1,12 +1,26 @@
-name: CI Build
+name: Build
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
+  release:
+    types:
+      - published
+  workflow_dispatch:
 env:
   CI: true
+  # Disable the .NET logo in the console output.
+  DOTNET_NOLOGO: true
+  # Disable the .NET first time experience to skip caching NuGet packages and speed up the build.
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending .NET CLI telemetry to Microsoft.
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # Set the build number in MinVer.
+  MINVERBUILDMETADATA: build.${{github.run_number}}
 
 jobs:
   build:
@@ -16,9 +30,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout files
-        uses: actions/checkout@v3
-      - name: Setup .NET
+      - name: "Checkout"
+        uses: actions/checkout@v3.5.2
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: ./src/HomeInventory/global.json
