@@ -1,51 +1,31 @@
-﻿using System.Net.Http.Json;
-using HomeInventory.Contracts;
+﻿using HomeInventory.Contracts;
 using Microsoft.AspNetCore.TestHost;
-using Throw;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal class AuthenticationAPIDriver : IAuthenticationAPIDriver
+internal class AuthenticationAPIDriver : ApiDriver, IAuthenticationAPIDriver
 {
-    private readonly TestServer _server;
-    private readonly string _basePath;
-
     public AuthenticationAPIDriver(TestServer server)
-        : this(server, "/api/Authentication")
+        : base(server, "/api/Authentication")
     {
-    }
-
-    public AuthenticationAPIDriver(TestServer server, string basePath)
-    {
-        _server = server;
-        _basePath = basePath;
     }
 
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest requestBody)
     {
-        var result = await _server.CreateRequest(_basePath + "/register")
-            .And(m => m.Content = JsonContent.Create(requestBody))
-            .PostAsync();
+        var result = await PostAsync("/register", requestBody);
+
         if (result.StatusCode == System.Net.HttpStatusCode.Conflict)
         {
             return new RegisterResponse(Guid.NewGuid());
         }
 
-        result.EnsureSuccessStatusCode();
+        await EnsureSuccessStatusCodeAsync(result);
 
-        var body = await result.Content.ReadFromJsonAsync<RegisterResponse>();
-        return body.ThrowIfNull().Value;
+        return await ReadBodyAsync<RegisterResponse>(result);
     }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest requestBody)
     {
-        var result = await _server.CreateRequest(_basePath + "/login")
-            .And(m => m.Content = JsonContent.Create(requestBody))
-            .PostAsync();
-
-        result.EnsureSuccessStatusCode();
-
-        var body = await result.Content.ReadFromJsonAsync<LoginResponse>();
-        return body.ThrowIfNull().Value;
+        return await PostAsync<LoginRequest, LoginResponse>("/login", requestBody);
     }
 }
