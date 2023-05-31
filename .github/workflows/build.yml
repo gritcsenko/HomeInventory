@@ -147,7 +147,10 @@ jobs:
         with:
           path: "./Build"
       - name: Info
-        run: ls -s
+        run: |
+          ls -s
+          cd Build
+          ls -s
         working-directory: ./Build
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
