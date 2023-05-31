@@ -10,7 +10,7 @@ public class Material : Entity<Material, MaterialId>
     {
     }
 
-    public string Name { get; init; } = null!;
+    public required string Name { get; init; }
 
-    public Amount Amount { get; init; } = null!;
+    public required Amount Amount { get; init; }
 }

@@ -57,22 +57,6 @@ jobs:
           indicators: true
           output: both
           thresholds: "60 80"
-      - name: Run Acceptance Tests
-        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
-        working-directory: ./src/HomeInventory
-      - name: Generate Living Documentation Specification
-        run: |
-          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
-          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
-        working-directory: ./src/HomeInventory
-      - name: Publish Specflow Test Results
-        if: success() || failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: "Specflow Test Results"
-          path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
-          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
-          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
       - name: Add Coverage PR Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
@@ -120,5 +104,21 @@ jobs:
         with:
           name: CoverageReport # Artifact name
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
+          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
+          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+      - name: Run Acceptance Tests
+        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
+        working-directory: ./src/HomeInventory
+      - name: Generate Living Documentation Specification
+        run: |
+          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        working-directory: ./src/HomeInventory
+      - name: Publish Specflow Test Results
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Specflow Test Results"
+          path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
