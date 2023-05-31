@@ -33,11 +33,11 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
         return new Success();
     }
 
-    public Success Remove(Product item, IDateTimeService dateTimeService)
+    public OneOf<Success, NotFound> Remove(Product item, IDateTimeService dateTimeService)
     {
         if (!_products.Contains(item))
         {
-            return new Success();
+            return new NotFound();
         }
 
         _products.Remove(item);
