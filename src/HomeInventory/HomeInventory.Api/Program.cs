@@ -5,7 +5,7 @@ using HomeInventory.Infrastructure;
 using HomeInventory.Web;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
+using var log = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
@@ -32,11 +32,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "An unhandled exception occurred during bootstrapping");
-}
-finally
-{
-    Log.CloseAndFlush();
+    log.Write(Serilog.Events.LogEventLevel.Fatal, ex, "An unhandled exception occurred during bootstrapping");
 }
 
 public partial class Program { }
