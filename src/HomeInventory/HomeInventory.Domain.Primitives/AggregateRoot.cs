@@ -1,8 +1,8 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class AggregateRoot<TAggregate, TIdentity> : Entity<TAggregate, TIdentity>, IAggregateRoot
+public abstract class AggregateRoot<TSelf, TIdentity> : Entity<TSelf, TIdentity>, IAggregateRoot
     where TIdentity : IIdentifierObject<TIdentity>
-    where TAggregate : AggregateRoot<TAggregate, TIdentity>
+    where TSelf : AggregateRoot<TSelf, TIdentity>
 {
     private readonly List<IDomainEvent> _events = new();
 

@@ -8,5 +8,5 @@ public static class ReflectionMethods
 
     public static T? CreateInstance<T>(params object?[]? args)
         where T : class
-        => (T?)Activator.CreateInstance(typeof(T), _createInstanceBindingAttr, null, args, null);
+        => Activator.CreateInstance(typeof(T), _createInstanceBindingAttr, null, args, null) as T;
 }

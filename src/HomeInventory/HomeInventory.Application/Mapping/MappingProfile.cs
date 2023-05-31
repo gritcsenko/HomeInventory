@@ -15,26 +15,26 @@ public abstract class MappingProfile : Profile
     {
         var converter = new GuidIdConverter<TId>();
         CreateMap<TId, Guid>()
-            .ConstructUsing(x => x.Id);
+            .ConvertUsing(x => x.Id);
         CreateMap<Guid, TId>()
-            .ConstructUsing(id => converter.Convert(id));
+            .ConvertUsing(id => converter.Convert(id));
     }
 
     protected void CreateMapForString<TObject>(Expression<Func<string, TObject>> convertFromValue, Expression<Func<TObject, string>> convertToValue)
-        where TObject : notnull
+        where TObject : class, IValueObject<TObject>
     {
         CreateMap<TObject, string>()
-            .ConstructUsing(convertToValue);
+            .ConvertUsing(convertToValue);
         CreateMap<string, TObject>()
-            .ConstructUsing(convertFromValue);
+            .ConvertUsing(convertFromValue);
     }
 
     protected void CreateMapForValue<TObject, TValue, TConverter>(Expression<Func<TObject, TValue>> convertToValue)
-        where TObject : ValueObject<TObject>
+        where TObject : class, IValueObject<TObject>
         where TConverter : ITypeConverter<TValue, TObject>
     {
         CreateMap<TObject, TValue>()
-            .ConstructUsing(convertToValue);
+            .ConvertUsing(convertToValue);
         CreateMap<TValue, TObject>()
             .ConvertUsing<TConverter>();
     }

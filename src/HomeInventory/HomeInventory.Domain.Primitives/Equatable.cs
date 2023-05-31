@@ -1,21 +1,21 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class Equatable<T> : IEquatable<T>
-    where T : Equatable<T>
+public abstract class Equatable<TSelf> : IEquatable<TSelf>
+    where TSelf : Equatable<TSelf>
 {
-    private readonly EquatableComponent<T> _component;
+    private readonly EquatableComponent<TSelf> _component;
 
-    protected Equatable(params object[] components) => _component = new EquatableComponent<T>(components);
+    protected Equatable(params object[] components) => _component = new EquatableComponent<TSelf>(components);
 
-    public static bool operator ==(Equatable<T>? left, T? right) => left?.Equals(right) ?? right is null;
+    public static bool operator ==(Equatable<TSelf>? left, TSelf? right) => left?.Equals(right) ?? right is null;
 
-    public static bool operator !=(Equatable<T>? left, T? right) => !(left == right);
+    public static bool operator !=(Equatable<TSelf>? left, TSelf? right) => !(left == right);
 
-    public sealed override bool Equals(object? obj) => Equals(obj as T);
+    public sealed override bool Equals(object? obj) => Equals(obj as TSelf);
 
     public sealed override int GetHashCode() => _component.GetHashCode();
 
-    public bool Equals(T? other) => ReferenceEquals(other, this) || (other is not null && EqualsCore(other));
+    public bool Equals(TSelf? other) => ReferenceEquals(other, this) || (other is not null && EqualsCore(other));
 
-    private bool EqualsCore(T other) => _component.Equals(other._component);
+    private bool EqualsCore(TSelf other) => _component.Equals(other._component);
 }
