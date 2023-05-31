@@ -56,6 +56,15 @@ jobs:
       - name: Build Release
         run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity minimal
         working-directory: ./src/HomeInventory
+      - name: "Publish Artefacts"
+        uses: actions/upload-artifact@v3.1.2
+        if: ${{ success() }}
+        with:
+          name: "Build"
+          path: "./src/HomeInventory"
+          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
+          retention-days: 1 # Duration after which artifact will expire in days. 0 means using default retention.
+
       - name: Unit Tests & Collect Coverage
         run: |
           dotnet test HomeInventory.Tests --filter "Category=Unit|Category=Architecture" --no-build --no-restore --configuration Release --verbosity minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
@@ -123,6 +132,20 @@ jobs:
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+
+  acceptance-test:
+    name: "Acceptance Test .NET"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Download Artefact"
+        uses: actions/download-artifact@v3.0.2
+        with:
+          path: "./src/HomeInventory"
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory
@@ -133,7 +156,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: "Specflow Test Results"
           path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
