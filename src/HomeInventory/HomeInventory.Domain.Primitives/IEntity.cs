@@ -10,14 +10,14 @@ public interface IEntityWithId<out TIdentifier> : IEntity
     TIdentifier Id { get; }
 }
 
-public interface IEntity<TEntity> : IEntity
-    where TEntity : IEntity<TEntity>
+public interface IEntity<TSelf> : IEntity
+    where TSelf : IEntity<TSelf>
 {
 
 }
 
-public interface IEntity<TEntity, out TIdentifier> : IEntity<TEntity>, IEntityWithId<TIdentifier>, IEquatable<TEntity>
+public interface IEntity<TSelf, out TIdentifier> : IEntity<TSelf>, IEntityWithId<TIdentifier>, IEquatable<TSelf>
     where TIdentifier : IIdentifierObject<TIdentifier>
-    where TEntity : IEntity<TEntity, TIdentifier>
+    where TSelf : IEntity<TSelf, TIdentifier>
 {
 }
