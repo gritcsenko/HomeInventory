@@ -4,7 +4,7 @@ namespace HomeInventory.Domain.ValueObjects;
 
 public sealed class StorageAreaName : ValueObject<StorageAreaName>
 {
-    internal StorageAreaName(string value)
+    public StorageAreaName(string value)
         : base(value)
     {
         Value = value;
