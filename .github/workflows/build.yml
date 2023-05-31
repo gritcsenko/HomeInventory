@@ -146,15 +146,12 @@ jobs:
         uses: actions/download-artifact@v3.0.2
         with:
           path: "./Build"
-      - name: Info
+      - name: Run Acceptance Tests
         run: |
           ls -s
           cd Build
           ls -s
-        working-directory: ./Build
-      - name: Run Acceptance Tests
-        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
-        working-directory: ./Build
+          dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
       - name: Generate Living Documentation Specification
         run: |
           dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
