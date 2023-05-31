@@ -1,0 +1,141 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types:
+      - published
+  workflow_dispatch:
+env:
+  CI: true
+  # Disable the .NET logo in the console output.
+  DOTNET_NOLOGO: true
+  # Disable the .NET first time experience to skip caching NuGet packages and speed up the build.
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending .NET CLI telemetry to Microsoft.
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # Set the build number in MinVer.
+  MINVERBUILDMETADATA: build.${{github.run_number}}
+
+jobs:
+  build:
+    permissions:
+      pull-requests: write
+    name: Build and Test .NET
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3.5.2
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+      - name: Restore dependencies
+        run: dotnet restore --verbosity minimal
+        working-directory: ./src/HomeInventory
+      - name: Build Release
+        run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity minimal
+        working-directory: ./src/HomeInventory
+      - name: Unit Tests & Collect Coverage
+        run: |
+          dotnet test HomeInventory.Tests --filter "Category=Unit|Category=Architecture" --no-build --no-restore --configuration Release --verbosity minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
+          cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
+        working-directory: ./src/HomeInventory
+      - name: Code Coverage Summary Report
+        id: report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: ./src/HomeInventory/coverage.cobertura.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "60 80"
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
+        with:
+          header: "Summary"
+          hide_and_recreate: true
+          hide_classify: "OUTDATED"
+          path: code-coverage-results.md
+      - name: Write coverage to Job Summary
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+      - name: Create code coverage report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.21
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
+        with:
+          reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
+          targetdir: "coveragereport" # REQUIRED # The directory where the generated report should be saved.
+          reporttypes: "MarkdownSummaryGithub;HtmlInline_AzurePipelines_Dark;Cobertura" # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, Html_Dark, Html_Light, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlInline_AzurePipelines_Light, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MarkdownSummary, MarkdownSummaryGithub, MarkdownDeltaSummary, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, TextDeltaSummary, Xml, XmlSummary
+          sourcedirs: "./src/HomeInventory" # Optional directories which contain the corresponding source code (separated by semicolon). The source directories are used if coverage report contains classes without path information.
+          historydir: "" # Optional directory for storing persistent coverage information. Can be used in future reports to show coverage evolution.
+          plugins: "" # Optional plugin files for custom reports or custom history storage (separated by semicolon).
+          assemblyfilters: "+*" # Optional list of assemblies that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+          classfilters: "+*" # Optional list of classes that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+          filefilters: "+*" # Optional list of files that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+          verbosity: "Info" # The verbosity level of the log messages. Values: Verbose, Info, Warning, Error, Off
+          title: "" # Optional title.
+          tag: "${{ github.run_number }}_${{ github.run_id }}" # Optional tag or build version.
+          license: "" # Optional license for PRO version. Get your license here: https://reportgenerator.io/pro
+          customSettings: "" # Optional custom settings (separated by semicolon). See: https://github.com/danielpalme/ReportGenerator/wiki/Settings.
+          toolpath: "reportgeneratortool" # Default directory for installing the dotnet tool.
+      - name: Add Coverage PR Comment 2
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
+        with:
+          header: "Detailed"
+          hide_and_recreate: true
+          hide_classify: "OUTDATED"
+          path: coveragereport/SummaryGithub.md
+      - name: Write coverage to Job Summary 2
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
+        run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v3.1.2
+        if: ${{ success() || steps.report.conclusion == 'failure' }}
+        with:
+          name: CoverageReport # Artifact name
+          path: coveragereport # A file, directory or wildcard pattern that describes what to upload
+          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
+          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+      - name: Run Acceptance Tests
+        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
+        working-directory: ./src/HomeInventory
+      - name: Generate Living Documentation Specification
+        run: |
+          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
+          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        working-directory: ./src/HomeInventory
+      - name: Publish Specflow Test Results
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Specflow Test Results"
+          path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
+          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
+          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
