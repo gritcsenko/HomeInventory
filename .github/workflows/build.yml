@@ -145,23 +145,23 @@ jobs:
       - name: "Download Artefact"
         uses: actions/download-artifact@v3.0.2
         with:
-          path: "./src/HomeInventory"
+          path: "./Build"
       - name: Info
         run: ls -s
-        working-directory: ./src/HomeInventory
+        working-directory: ./Build
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
-        working-directory: ./src/HomeInventory
+        working-directory: ./Build
       - name: Generate Living Documentation Specification
         run: |
           dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
           livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
-        working-directory: ./src/HomeInventory
+        working-directory: ./Build
       - name: Publish Specflow Test Results
         if: success() || failure()
         uses: actions/upload-artifact@v3.1.2
         with:
           name: "Specflow Test Results"
-          path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
+          path: Build/Acceptance/AcceptanceTestResults.html
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
