@@ -7,16 +7,13 @@ using Serilog;
 
 using var log = new LoggerConfiguration()
     .WriteTo.Console()
-    .CreateBootstrapLogger();
+    .CreateLogger();
 
 try
 {
-    var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-    {
-        Args = args,
-    });
+    var builder = WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog(SerilogConfigurator.Configure, preserveStaticLogger: false, writeToProviders: false);
+    builder.Host.UseSerilog(SerilogConfigurator.Configure);
 
     builder.Services
         .AddMediatR(MediatRConfigurator.Configure)
@@ -32,7 +29,7 @@ try
 }
 catch (Exception ex)
 {
-    log.Write(Serilog.Events.LogEventLevel.Fatal, ex, "An unhandled exception occurred during bootstrapping");
+    log.Fatal(ex, "An unhandled exception occurred during bootstrapping");
 }
 
 public partial class Program { }
