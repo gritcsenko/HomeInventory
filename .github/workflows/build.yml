@@ -146,6 +146,13 @@ jobs:
         uses: actions/download-artifact@v3.0.2
         with:
           path: "./Build"
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./Build/Build/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./Build/Build
       - name: Run Acceptance Tests
         run: |
           ls -s
