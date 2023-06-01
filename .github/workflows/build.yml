@@ -149,7 +149,7 @@ jobs:
       - name: Run Acceptance Tests
         run: |
           ls -s
-          cd Build
+          cd Build/Build
           ls -s
           dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
       - name: Generate Living Documentation Specification
