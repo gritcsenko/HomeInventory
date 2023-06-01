@@ -150,20 +150,13 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: ./Build/Build/global.json
-      - name: Info
-        run: dotnet --info
-        working-directory: ./Build/Build
+      - name: Install Living Documentation Tool
+        run: dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
       - name: Run Acceptance Tests
-        run: |
-          ls -s
-          cd Build/Build
-          ls -s
-          dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
+        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
       - name: Generate Living Documentation Specification
-        run: |
-          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
-          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
-        working-directory: ./Build
+        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        working-directory: ./Build/Build
       - name: Publish Specflow Test Results
         if: success() || failure()
         uses: actions/upload-artifact@v3.1.2
