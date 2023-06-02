@@ -6,13 +6,6 @@ namespace HomeInventory.Application;
 
 public static class MediatRServiceConfigurationExtensions
 {
-    public static MediatRServiceConfiguration SetNotificationPublisher<T>(this MediatRServiceConfiguration configuration, T instance)
-        where T : INotificationPublisher
-    {
-        configuration.NotificationPublisher = instance;
-        return configuration;
-    }
-
     public static MediatRServiceConfiguration SetNotificationPublisher<T>(this MediatRServiceConfiguration configuration)
         where T : INotificationPublisher
     {
@@ -22,4 +15,7 @@ public static class MediatRServiceConfigurationExtensions
 
     public static MediatRServiceConfiguration AddLoggingBehavior(this MediatRServiceConfiguration configuration) =>
         configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
+
+    public static MediatRServiceConfiguration AddUnitOfWorkBehavior(this MediatRServiceConfiguration configuration) =>
+        configuration.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
 }

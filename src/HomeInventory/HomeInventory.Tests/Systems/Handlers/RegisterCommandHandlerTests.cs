@@ -2,7 +2,6 @@ using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 
@@ -12,7 +11,6 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly RegisterCommand _command;
     private readonly UserId _userId;
 
@@ -27,7 +25,7 @@ public class RegisterCommandHandlerTests : BaseTest
         _command = Fixture.Create<RegisterCommand>();
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository, _unitOfWork);
+    private RegisterCommandHandler CreateSut() => new(_userRepository);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
