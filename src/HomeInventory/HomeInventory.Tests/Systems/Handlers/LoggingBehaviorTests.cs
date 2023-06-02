@@ -1,7 +1,11 @@
-﻿using HomeInventory.Application.Cqrs.Behaviors;
+﻿using HomeInventory.Application;
+using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
+using MediatR;
+using MediatR.Registration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneOf;
 
@@ -10,7 +14,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class LoggingBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>> _logger;
+    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>> _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>>>();
     private readonly AuthenticateQuery _request;
     private readonly OneOf<AuthenticateResult, IError> _response;
 
@@ -18,9 +22,25 @@ public class LoggingBehaviorTests : BaseTest
     {
         Fixture.CustomizeGuidId<UserId>();
         Fixture.CustomizeEmail();
-        _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, AuthenticateResult>>>();
         _request = Fixture.Create<AuthenticateQuery>();
         _response = Fixture.Create<AuthenticateResult>();
+    }
+
+    [Fact]
+    public void Should_BeResolved()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+
+        var serviceConfig = new MediatRServiceConfiguration()
+            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
+            .AddLoggingBehavior();
+        ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
+        ServiceRegistrar.AddRequiredServices(services, serviceConfig);
+
+        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>>();
+
+        behavior.Should().NotBeNull();
     }
 
     [Fact]
@@ -28,9 +48,14 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        var response = await sut.Handle(_request, () => Task.FromResult(_response), Cancellation.Token);
+        var response = await sut.Handle(_request, Handler, Cancellation.Token);
 
         response.Value.Should().Be(_response.Value);
+
+        Task<OneOf<AuthenticateResult, IError>> Handler()
+        {
+            return Task.FromResult(_response);
+        }
     }
 
     [Fact]
@@ -38,13 +63,15 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        _ = await sut.Handle(_request, () =>
+        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+
+        Task<OneOf<AuthenticateResult, IError>> Handler()
         {
             _logger
                 .Received(1)
                 .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
             return Task.FromResult(_response);
-        }, Cancellation.Token);
+        }
     }
 
     [Fact]
@@ -52,16 +79,18 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        _ = await sut.Handle(_request, () =>
-        {
-            _logger.ClearReceivedCalls();
-            return Task.FromResult(_response);
-        }, Cancellation.Token);
+        _ = await sut.Handle(_request, Handler, Cancellation.Token);
 
         _logger
             .Received(1)
             .Log(LogLevel.Information, new EventId(0), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
+
+        Task<OneOf<AuthenticateResult, IError>> Handler()
+        {
+            _logger.ClearReceivedCalls();
+            return Task.FromResult(_response);
+        }
     }
 
-    private LoggingBehavior<AuthenticateQuery, AuthenticateResult> CreateSut() => new(_logger);
+    private LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>> CreateSut() => new(_logger);
 }

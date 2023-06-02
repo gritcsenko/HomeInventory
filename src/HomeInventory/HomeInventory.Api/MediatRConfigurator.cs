@@ -8,6 +8,7 @@ internal static class MediatRConfigurator
     public static void Configure(MediatRServiceConfiguration configuration) =>
         configuration
             .RegisterServicesFromAssemblies(Application.AssemblyReference.Assembly, Infrastructure.AssemblyReference.Assembly)
-            .SetNotificationPublisher<TaskWhenAllPublisher>()
-            .AddLoggingBehavior();
+            .AddLoggingBehavior()
+            .AddUnitOfWorkBehavior()
+            .SetNotificationPublisher<TaskWhenAllPublisher>();
 }
