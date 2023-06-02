@@ -4,19 +4,14 @@ public abstract class AggregateRoot<TSelf, TIdentity> : Entity<TSelf, TIdentity>
     where TIdentity : IIdentifierObject<TIdentity>
     where TSelf : AggregateRoot<TSelf, TIdentity>
 {
-    private readonly List<IDomainEvent> _events = new();
+    private readonly EventsCollection _events = new();
 
     protected AggregateRoot(TIdentity id)
         : base(id)
     {
     }
 
-    public IReadOnlyCollection<IDomainEvent> GetAndClearEvents()
-    {
-        var events = _events.ToArray();
-        _events.Clear();
-        return events;
-    }
+    public IReadOnlyCollection<IDomainEvent> PopAllEvents() => _events.PopAllDomainEvents();
 
-    protected void AddEvent(IDomainEvent @event) => _events.Add(@event);
+    protected void Push(IDomainEvent @event) => _events.Push(@event);
 }

@@ -2,5 +2,5 @@
 
 public interface IAggregateRoot
 {
-    IReadOnlyCollection<IDomainEvent> GetAndClearEvents();
+    IReadOnlyCollection<IDomainEvent> PopAllEvents();
 }

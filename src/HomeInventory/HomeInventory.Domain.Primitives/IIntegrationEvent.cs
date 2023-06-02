@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public interface IDomainEvent : IEvent, IHaveCreationAudit
+public interface IIntegrationEvent : IEvent, IHaveCreationAudit
 {
     IAggregateRoot Source { get; }
 }
