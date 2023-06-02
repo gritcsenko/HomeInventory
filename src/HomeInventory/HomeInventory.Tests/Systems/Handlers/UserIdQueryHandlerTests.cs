@@ -10,13 +10,10 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class UserIdQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly User _user;
 
     public UserIdQueryHandlerTests()
     {
-        Fixture.CustomizeGuidId<UserId>();
         Fixture.CustomizeEmail();
-        _user = Fixture.Create<User>();
     }
 
     private UserIdQueryHandler CreateSut() => new(_userRepository);
@@ -25,6 +22,8 @@ public class UserIdQueryHandlerTests : BaseTest
     public async Task Handle_OnSuccess_ReturnsResult()
     {
         // Given
+        Fixture.CustomizeGuidId<UserId>();
+        var _user = Fixture.Create<User>();
         var query = new UserIdQuery(_user.Email);
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
