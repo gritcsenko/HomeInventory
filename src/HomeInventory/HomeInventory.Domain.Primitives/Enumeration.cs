@@ -6,11 +6,13 @@ public abstract class Enumeration<TSelf> : ValueObject<TSelf>, IEnumeration<TSel
     where TSelf : Enumeration<TSelf>
 {
     private static readonly Lazy<EnumerationItemsCollection<TSelf>> _items = new(EnumerationItemsCollection.CreateFor<TSelf>, LazyThreadSafetyMode.ExecutionAndPublication);
+    private readonly object _key;
 
     protected Enumeration(string name, object key)
         : base(name, key)
     {
         Name = name;
+        _key = key;
     }
 
     public string Name { get; }
@@ -21,6 +23,8 @@ public abstract class Enumeration<TSelf> : ValueObject<TSelf>, IEnumeration<TSel
 
     public static Optional<TSelf> TryParse(string text) =>
         _items.Value.FirstOrNone(text);
+
+    public override string ToString() => $"{Name} ({_key})";
 }
 
 public abstract class Enumeration<TSelf, TValue> : Enumeration<TSelf>, IEnumeration<TSelf, TValue>
