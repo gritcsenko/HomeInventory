@@ -155,12 +155,12 @@ jobs:
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./Build/Build
-      - name: Generate Living Documentation Specification
-        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
-        working-directory: ./Build/Build
       - name: List
         run: ls -a
         working-directory: ./Build/Build/HomeInventory.Tests.Acceptance/bin/Release/net7
+      - name: Generate Living Documentation Specification
+        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        working-directory: ./Build/Build
       - name: Publish Specflow Test Results
         if: success() || failure()
         uses: actions/upload-artifact@v3.1.2
