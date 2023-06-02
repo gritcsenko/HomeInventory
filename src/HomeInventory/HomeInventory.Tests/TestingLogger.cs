@@ -46,4 +46,11 @@ public abstract class TestingLogger<T> : ILogger<T>
             base.Dispose(disposing);
         }
     }
+
+    internal sealed class Stub : TestingLogger<T>
+    {
+        public override void Log(LogLevel logLevel, EventId eventId, object state, Exception? exception, Func<object, Exception?, string> formatter)
+        {
+        }
+    }
 }
