@@ -13,4 +13,7 @@ public class User : AggregateRoot<User, UserId>
     public required Email Email { get; init; }
 
     public required string Password { get; init; }
+
+    public void OnUserCreated(IDateTimeService dateTimeService) =>
+        Raise(new UserCreatedDomainEvent(dateTimeService.UtcNow, this));
 }

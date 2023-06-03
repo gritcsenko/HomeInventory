@@ -25,7 +25,7 @@ public class RegisterCommandHandlerTests : BaseTest
         _command = Fixture.Create<RegisterCommand>();
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository);
+    private RegisterCommandHandler CreateSut() => new(_userRepository, DateTime);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

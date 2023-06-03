@@ -8,15 +8,7 @@ internal sealed class EventsCollection
     {
     }
 
-    public void Push(IDomainEvent domainEvent)
-    {
-        _events.Add(domainEvent);
-    }
+    public void Push(IDomainEvent domainEvent) => _events.Add(domainEvent);
 
-    public IReadOnlyCollection<IDomainEvent> PopAllDomainEvents()
-    {
-        var events = _events.ToArray();
-        _events.Clear();
-        return events;
-    }
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _events;
 }

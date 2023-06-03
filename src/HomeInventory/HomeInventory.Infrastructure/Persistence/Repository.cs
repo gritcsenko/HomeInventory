@@ -8,7 +8,7 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     where TModel : class
-    where TEntity : class, Domain.Primitives.IEntity<TEntity>
+    where TEntity : class, Domain.Primitives.IEntity<TEntity>, IAggregateRoot
 {
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;

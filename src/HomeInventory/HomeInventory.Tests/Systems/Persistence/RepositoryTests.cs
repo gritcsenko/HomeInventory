@@ -166,10 +166,12 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
 #pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
-    private class FakeEntity : IEntity<FakeEntity, FakeId>
+    private class FakeEntity : IEntity<FakeEntity, FakeId>, IAggregateRoot
 #pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
     {
         public required FakeId Id { get; init; }
+
+        public IReadOnlyCollection<IDomainEvent> DomainEvents { get; } = Array.Empty<IDomainEvent>();
 
         public bool Equals(FakeEntity? other)
         {
