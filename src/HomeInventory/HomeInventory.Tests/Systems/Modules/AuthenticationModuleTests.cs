@@ -4,7 +4,7 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Web.Modules;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace HomeInventory.Tests.Systems.Controllers;
+namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
 public class AuthenticationModuleTests : BaseApiModuleTests

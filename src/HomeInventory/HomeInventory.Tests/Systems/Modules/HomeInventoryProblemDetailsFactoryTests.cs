@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 
-namespace HomeInventory.Tests.Systems.Controllers;
+namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
 public class HomeInventoryProblemDetailsFactoryTests : BaseTest
