@@ -9,24 +9,17 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace HomeInventory.Tests.Integration;
 
 [IntegrationTest]
-public class UserManagementApiTests : BaseTest, IDisposable
+public class UserManagementApiTests : BaseTest
 {
     private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
 
     public UserManagementApiTests()
     {
+        AddDisposable(_appFactory);
+
         _client = _appFactory.CreateClient();
         Fixture.Customize(new RegisterRequestCustomization());
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _appFactory.Dispose();
-        }
-        base.Dispose(disposing);
     }
 
     [Fact]
