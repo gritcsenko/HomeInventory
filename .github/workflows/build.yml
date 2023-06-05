@@ -167,6 +167,13 @@ jobs:
         uses: actions/download-artifact@v3.0.2
         with:
           path: "./Artifacts"
+      - name: List artifact
+        run: |
+          ls -a
+          cd Artifacts
+          ls -a
+          cd Acceptance
+          ls -a
       - name: "Copy Acceptance Test Artifacts"
         run: mv -n -t ../../src/HomeInventory/HomeInventory.Tests.Acceptance .
         working-directory: ./Artifacts/Acceptance
