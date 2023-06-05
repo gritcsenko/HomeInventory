@@ -59,6 +59,7 @@ jobs:
       - name: Cleanup Acceptance Test bin
         run: |
           ls -a
+          rm -r refs
           rm -r runtimes
           ls -a
         working-directory: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
