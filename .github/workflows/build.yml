@@ -150,7 +150,10 @@ jobs:
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v3
         with:
-          global-json-file: ./Build/Build/global.json
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
       - name: Install Living Documentation Tool
         run: dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
       - name: "Download Artifacts"
