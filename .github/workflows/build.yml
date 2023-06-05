@@ -170,11 +170,11 @@ jobs:
       - name: "Copy Acceptance Test Artifacts"
         run: mv -n -t ../../src/HomeInventory/HomeInventory.Tests.Acceptance .
         working-directory: ./Artifacts/Acceptance
-      - name: List root
-        run: ls -a
       - name: List
-        run: ls -a
-        working-directory: src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
+        run: |
+          ls -a
+          cd src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
+          ls -a
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory
