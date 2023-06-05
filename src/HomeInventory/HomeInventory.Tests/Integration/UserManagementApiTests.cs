@@ -2,9 +2,13 @@
 using System.Net.Http.Json;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Integration;
 
@@ -20,6 +24,23 @@ public class UserManagementApiTests : BaseTest
 
         _client = _appFactory.CreateClient();
         Fixture.Customize(new RegisterRequestCustomization());
+    }
+
+    [Fact]
+    public void VerifyEndpoints()
+    {
+        var endpoints = _appFactory.Services
+            .GetServices<EndpointDataSource>()
+            .SelectMany(s => s.Endpoints)
+            .OfType<RouteEndpoint>()
+            .ToReadOnly();
+
+        var endpoint = endpoints.Should().ContainSingle(e => e.RoutePattern.RawText == "/api/users/manage/register")
+            .Subject;
+        endpoint.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
+        var method = (IHttpMethodMetadata)endpoint.Metadata.Should().ContainSingle(x => x is IHttpMethodMetadata)
+            .Subject;
+        method.HttpMethods.Should().ContainSingle(m => m == HttpMethods.Post);
     }
 
     [Fact]
