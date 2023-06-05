@@ -170,6 +170,8 @@ jobs:
       - name: "Copy Acceptance Test Artifacts"
         run: mv -n -t ../../src/HomeInventory/HomeInventory.Tests.Acceptance .
         working-directory: ./Artifacts/Acceptance
+      - name: List root
+        run: ls -a
       - name: List
         run: ls -a
         working-directory: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
