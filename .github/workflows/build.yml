@@ -54,8 +54,14 @@ jobs:
         run: dotnet restore --verbosity minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity minimal
+        run: dotnet build -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
+      - name: Cleanup Acceptance Test bin
+        run: |
+          rm -r ref
+          rm -r runtimes
+          ls -a
+        working-directory: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
       - name: "Publish Acceptance Test Artifacts"
         uses: actions/upload-artifact@v3.1.2
         if: ${{ success() }}
