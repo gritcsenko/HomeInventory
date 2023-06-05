@@ -174,7 +174,7 @@ jobs:
         run: ls -a
       - name: List
         run: ls -a
-        working-directory: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
+        working-directory: src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory
