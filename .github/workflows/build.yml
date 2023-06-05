@@ -42,7 +42,7 @@ jobs:
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
-      - name: Cache dependencies
+      - name: Download cached dependencies
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
@@ -54,7 +54,7 @@ jobs:
         run: dotnet restore --verbosity minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        run: dotnet build -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cleanup Acceptance Test bin
         run: |
