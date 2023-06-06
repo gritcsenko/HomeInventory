@@ -181,7 +181,7 @@ jobs:
           cd net7
           ls -a
       - name: "Copy Acceptance Test Artifacts"
-        run: cp -n -t . ../../src/HomeInventory/HomeInventory.Tests.Acceptance
+        run: mv -n -t . ../../src/HomeInventory/HomeInventory.Tests.Acceptance
         working-directory: ./Artifacts/Acceptance
       - name: List
         run: |
