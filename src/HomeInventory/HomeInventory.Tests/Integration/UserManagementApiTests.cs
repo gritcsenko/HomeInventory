@@ -35,12 +35,11 @@ public class UserManagementApiTests : BaseTest
             .OfType<RouteEndpoint>()
             .ToReadOnly();
 
-        var endpoint = endpoints.Should().ContainSingle(e => e.RoutePattern.RawText == "/api/users/manage/register")
+        var endpoint = endpoints.Should().ContainSingle(e =>
+            e.RoutePattern.RawText == "/api/users/manage/register"
+            && e.Metadata.OfType<IHttpMethodMetadata>().First().HttpMethods.Contains(HttpMethods.Post) == true)
             .Subject;
         endpoint.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
-        var method = (IHttpMethodMetadata)endpoint.Metadata.Should().ContainSingle(x => x is IHttpMethodMetadata)
-            .Subject;
-        method.HttpMethods.Should().ContainSingle(m => m == HttpMethods.Post);
     }
 
     [Fact]
