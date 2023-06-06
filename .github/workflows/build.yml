@@ -71,6 +71,12 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.run_number}}
+      - run: ls -R
       - name: "Checkout"
         uses: actions/checkout@v3.5.2
         with:
@@ -83,11 +89,6 @@ jobs:
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
-      - name: Cache build results
-        uses: actions/cache@v3
-        with:
-          path: ./src/HomeInventory
-          key: ${{ runner.os }}-build-${{github.run_number}}
       - name: Run Unit Tests & Collect Coverage
         run: |
           dotnet test HomeInventory.Tests --filter "Category=Unit|Category=Architecture" --no-build --no-restore --configuration Release --verbosity minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
