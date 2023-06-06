@@ -168,24 +168,14 @@ jobs:
         with:
           path: "./Artifacts"
       - name: "Copy Acceptance Test Artifacts"
-        run: cp -R Artifacts/Acceptance src/HomeInventory/HomeInventory.Tests.Acceptance
+        run: cp -R Artifacts/Acceptance/bin src/HomeInventory/HomeInventory.Tests.Acceptance
       - name: List
-        run: |
-          ls -R
-          cd src
-          ls -a
-          cd HomeInventory
-          ls -a
-          cd HomeInventory.Tests.Acceptance
-          ls -a
-          cd bin/Release/net7
-          ls -a
+        run: ls -R
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory
       - name: List
-        run: ls -a
-        working-directory: ./src/HomeInventory/HomeInventory.Tests.Acceptance/bin/Release/net7
+        run: ls -R
       - name: Generate Living Documentation Specification
         run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
