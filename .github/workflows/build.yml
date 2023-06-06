@@ -26,7 +26,7 @@ jobs:
   build:
     permissions:
       pull-requests: write
-    name: Build and Test .NET
+    name: Build .NET
     runs-on: ubuntu-latest
 
     steps:
