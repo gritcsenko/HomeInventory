@@ -2,31 +2,44 @@
 using System.Net.Http.Json;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Integration;
 
 [IntegrationTest]
-public class UserManagementApiTests : BaseTest, IDisposable
+public class UserManagementApiTests : BaseTest
 {
     private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
 
     public UserManagementApiTests()
     {
+        AddDisposable(_appFactory);
+
         _client = _appFactory.CreateClient();
         Fixture.Customize(new RegisterRequestCustomization());
     }
 
-    protected override void Dispose(bool disposing)
+    [Fact]
+    public void VerifyEndpoints()
     {
-        if (disposing)
-        {
-            _appFactory.Dispose();
-        }
-        base.Dispose(disposing);
+        var endpoints = _appFactory.Services
+            .GetServices<EndpointDataSource>()
+            .SelectMany(s => s.Endpoints)
+            .OfType<RouteEndpoint>()
+            .ToReadOnly();
+
+        var endpoint = endpoints.Should().ContainSingle(e =>
+            e.RoutePattern.RawText == "/api/users/manage/register"
+            && e.Metadata.OfType<IHttpMethodMetadata>().First().HttpMethods.Contains(HttpMethods.Post) == true)
+            .Subject;
+        endpoint.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
     }
 
     [Fact]

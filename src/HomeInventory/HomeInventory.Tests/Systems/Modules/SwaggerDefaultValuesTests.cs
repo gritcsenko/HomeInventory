@@ -10,7 +10,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace HomeInventory.Tests.Systems.Controllers;
+namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
 public class SwaggerDefaultValuesTests : BaseTest

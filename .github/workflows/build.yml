@@ -49,7 +49,7 @@ jobs:
           # Look to see if there is a cache hit for the corresponding requirements file
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
-            ${{ runner.os }}-nuget
+            ${{ runner.os }}-nuget-refs/heads/main
       - name: Restore dependencies
         run: dotnet restore -v minimal
         working-directory: ./src/HomeInventory
@@ -88,7 +88,7 @@ jobs:
           # Look to see if there is a cache hit for the corresponding requirements file
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
-            ${{ runner.os }}-nuget
+            ${{ runner.os }}-nuget-refs/heads/main
       - name: Run Unit Tests
         run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
         working-directory: ./src/HomeInventory
@@ -187,7 +187,7 @@ jobs:
           # Look to see if there is a cache hit for the corresponding requirements file
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
-            ${{ runner.os }}-nuget
+            ${{ runner.os }}-nuget-refs/heads/main
       - name: Run Acceptance Tests
         run: dotnet test HomeInventory.Tests.Acceptance -c Release -v minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory

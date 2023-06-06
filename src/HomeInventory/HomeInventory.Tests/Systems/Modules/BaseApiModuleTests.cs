@@ -10,7 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OneOf.Types;
 
-namespace HomeInventory.Tests.Systems.Controllers;
+namespace HomeInventory.Tests.Systems.Modules;
+
 public abstract class BaseApiModuleTests : BaseApiModuleTests<BaseApiModuleTests.ApiGivenTestContext>
 {
     protected override ApiGivenTestContext CreateGiven(VariablesCollection variables) =>

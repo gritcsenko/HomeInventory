@@ -3,7 +3,7 @@ using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
 
-namespace HomeInventory.Tests.Systems.Controllers;
+namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
 public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>

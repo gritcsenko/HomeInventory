@@ -4,7 +4,7 @@ using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests;
 
-public abstract class BaseTest : Disposable
+public abstract class BaseTest : CompositeDisposable
 {
     private readonly Lazy<CancellationImplementation> _lazyCancellation = new(() => new CancellationImplementation());
     private readonly Lazy<IFixture> _lazyFixture = new(() => new Fixture());
@@ -12,6 +12,7 @@ public abstract class BaseTest : Disposable
 
     protected BaseTest()
     {
+        AddDisposable(_lazyCancellation);
     }
 
     protected IFixture Fixture => _lazyFixture.Value;
@@ -27,15 +28,6 @@ public abstract class BaseTest : Disposable
 
         // Type without parameterless constructor
         return FormatterServices.GetUninitializedObject(type);
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _lazyCancellation.TryDispose();
-        }
-        base.Dispose(disposing);
     }
 
     public interface ICancellation
