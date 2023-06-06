@@ -168,10 +168,10 @@ jobs:
         with:
           path: "./Artifacts"
       - name: "Copy Acceptance Test Artifacts"
-        run: cp Artifacts/Acceptance src/HomeInventory/HomeInventory.Tests.Acceptance
+        run: cp -R Artifacts/Acceptance src/HomeInventory/HomeInventory.Tests.Acceptance
       - name: List
         run: |
-          ls -a
+          ls -R
           cd src
           ls -a
           cd HomeInventory
