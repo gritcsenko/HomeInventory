@@ -78,7 +78,7 @@ jobs:
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget
       - name: Restore dependencies
