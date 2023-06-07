@@ -54,16 +54,28 @@ public class WhenContext : Context
         where TSut : notnull
     {
         var variable = _resultVariable.OfType<Action>();
-        Action action = () => invoke(Variables.Get(sut));
+        void action() => invoke(Variables.Get(sut));
         Variables.TryAdd(variable, () => action);
         return new(Variables, variable);
     }
+
+    public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg, TResult>(IVariable<TSut> sut, IIndexedVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task<TResult>> invoke)
+        where TSut : notnull
+        where TArg : notnull
+        where TResult : notnull =>
+        await InvokedAsync(sut.WithIndex(0), arg, invoke);
 
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg, TResult>(IIndexedVariable<TSut> sut, IVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull
         where TArg : notnull
         where TResult : notnull =>
-        await InvokedAsync(sut, (s, t) => invoke(s, Variables.Get(arg.WithIndex(0)), t));
+        await InvokedAsync(sut, arg.WithIndex(0), invoke);
+
+    public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg, TResult>(IIndexedVariable<TSut> sut, IIndexedVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task<TResult>> invoke)
+        where TSut : notnull
+        where TArg : notnull
+        where TResult : notnull =>
+        await InvokedAsync(sut, (s, t) => invoke(s, Variables.Get(arg), t));
 
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TResult>(IIndexedVariable<TSut> sut, Func<TSut, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull

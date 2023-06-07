@@ -119,7 +119,7 @@ public static class DependencyInjection
         app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
         app.Map("/error", (HttpContext context) =>
         {
-            var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+            var exception = context.GetFeature<IExceptionHandlerFeature>()?.Error;
             return Results.Problem(detail: exception?.Message);
         });
 
