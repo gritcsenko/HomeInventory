@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Api\HomeInventory.Api.csproj" />
+    <ProjectReference Include="..\HomeInventory.Tests.Framework\HomeInventory.Tests.Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

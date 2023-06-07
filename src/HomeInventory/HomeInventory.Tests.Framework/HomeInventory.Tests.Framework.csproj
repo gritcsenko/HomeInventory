@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="xunit.core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
+    <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
