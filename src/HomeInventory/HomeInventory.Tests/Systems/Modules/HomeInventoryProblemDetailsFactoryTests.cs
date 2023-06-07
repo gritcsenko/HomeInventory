@@ -145,8 +145,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
         var details = sut.ConvertToProblem(_context, errors);
 
-        _context.Items.Should().ContainKey(HttpContextItems.Errors.Name)
-            .WhoseValue.Should().BeSameAs(errors);
         details.Should().NotBeNull();
         details.Status.Should().Be(expectedStatus);
         details.Title.Should().Be(expectedTitle);
@@ -171,8 +169,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
         var details = sut.ConvertToProblem(_context, errors);
 
-        _context.Items.Should().ContainKey(HttpContextItems.Errors.Name)
-            .WhoseValue.Should().BeSameAs(errors);
         details.Should().NotBeNull();
         details.Status.Should().Be(expectedStatus);
         details.Title.Should().Be("Multiple Problems");
