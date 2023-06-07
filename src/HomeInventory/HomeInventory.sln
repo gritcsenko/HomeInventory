@@ -51,6 +51,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Domain.Primit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Tests.Framework", "HomeInventory.Tests.Framework\HomeInventory.Tests.Framework.csproj", "{BAEB09F5-11D6-42AE-9D08-0E03873CA4A7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Tests.Integration", "HomeInventory.Tests.Integration\HomeInventory.Tests.Integration.csproj", "{CD231292-1763-4477-95CB-718810CBF613}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,10 @@ Global
 		{BAEB09F5-11D6-42AE-9D08-0E03873CA4A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAEB09F5-11D6-42AE-9D08-0E03873CA4A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAEB09F5-11D6-42AE-9D08-0E03873CA4A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD231292-1763-4477-95CB-718810CBF613}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD231292-1763-4477-95CB-718810CBF613}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD231292-1763-4477-95CB-718810CBF613}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD231292-1763-4477-95CB-718810CBF613}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{1AF7B57D-C08D-4FCC-B66E-0218AC32C1BC} = {9AD3FEAC-AE79-4EF0-A851-4A5A7418DC5D}
 		{DA949C90-7FA7-4F99-8588-6EE99156A142} = {8998FD12-C90F-4511-990B-C166FF2D4497}
 		{BAEB09F5-11D6-42AE-9D08-0E03873CA4A7} = {9AD3FEAC-AE79-4EF0-A851-4A5A7418DC5D}
+		{CD231292-1763-4477-95CB-718810CBF613} = {9AD3FEAC-AE79-4EF0-A851-4A5A7418DC5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9269F40D-EEA5-4AC9-B352-7F8388545168}

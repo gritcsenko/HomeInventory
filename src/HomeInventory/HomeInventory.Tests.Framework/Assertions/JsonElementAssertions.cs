@@ -3,7 +3,7 @@ using HomeInventory.Tests.Framework.Assertions;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-internal class JsonElementAssertions : ObjectAssertions<JsonElement, JsonElementAssertions>
+public class JsonElementAssertions : ObjectAssertions<JsonElement, JsonElementAssertions>
 {
     public JsonElementAssertions(JsonElement value)
         : base(value)

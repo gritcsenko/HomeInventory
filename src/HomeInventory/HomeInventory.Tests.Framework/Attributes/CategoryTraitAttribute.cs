@@ -5,8 +5,8 @@ namespace HomeInventory.Tests.Framework.Attributes;
 /// <summary>
 /// Applies a category trait to a test.
 /// </summary>
-[TraitDiscoverer(CategoryTraitDiscoverer._fullyQualifiedName, CategoryTraitDiscoverer._namespace)]
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+[TraitDiscoverer(CategoryTraitDiscoverer._fullyQualifiedName, CategoryTraitDiscoverer._assemblyName)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 public abstract class CategoryTraitAttribute : Attribute, ITraitAttribute
 {
     /// <summary>

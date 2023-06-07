@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-internal class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>
+public class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>
 {
     public ServiceCollectionAssertions(IServiceCollection value)
         : base(value)

@@ -6,11 +6,12 @@
     <PackageReference Include="SpecFlow.xUnit" />
     <PackageReference Include="Throw" />
     <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio"/>
+    <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeInventory.Tests\HomeInventory.Tests.csproj" />
+    <ProjectReference Include="..\HomeInventory.Api\HomeInventory.Api.csproj" />
+    <ProjectReference Include="..\HomeInventory.Tests.Framework\HomeInventory.Tests.Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

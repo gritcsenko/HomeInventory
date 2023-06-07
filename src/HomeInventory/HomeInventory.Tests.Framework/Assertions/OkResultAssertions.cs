@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-internal class OkResultAssertions<TValue> : ObjectAssertions<Ok<TValue>, OkResultAssertions<TValue>>
+public class OkResultAssertions<TValue> : ObjectAssertions<Ok<TValue>, OkResultAssertions<TValue>>
 {
     public OkResultAssertions(Ok<TValue> value)
         : base(value)

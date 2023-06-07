@@ -2,53 +2,35 @@
 using System.Net.Http.Json;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Primitives;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Integration;
 
-[IntegrationTest]
-public class UserManagementApiTests : BaseTest
+public class UserManagementApiTests : BaseIntegrationTest
 {
-    private readonly WebApplicationFactory<Program> _appFactory = new();
-    private readonly HttpClient _client;
+    private const string _registerRoute = "/api/users/manage/register";
+    private readonly JsonContent _content;
 
     public UserManagementApiTests()
     {
-        AddDisposable(_appFactory);
-
-        _client = _appFactory.CreateClient();
-        Fixture.Customize(new RegisterRequestCustomization());
+        Fixture.CustomizeRegisterRequest();
+        var request = Fixture.Create<RegisterRequest>();
+        _content = JsonContent.Create(request);
     }
 
     [Fact]
     public void VerifyEndpoints()
     {
-        var endpoints = _appFactory.Services
-            .GetServices<EndpointDataSource>()
-            .SelectMany(s => s.Endpoints)
-            .OfType<RouteEndpoint>()
-            .ToReadOnly();
-
-        var endpoint = endpoints.Should().ContainSingle(e =>
-            e.RoutePattern.RawText == "/api/users/manage/register"
-            && e.Metadata.OfType<IHttpMethodMetadata>().First().HttpMethods.Contains(HttpMethods.Post) == true)
-            .Subject;
-        endpoint.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
+        Endpoints.Should().ContainEndpoint(_registerRoute, HttpMethods.Post)
+            .Which.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
     }
 
     [Fact]
     public async Task Register_ReturnsSuccess()
     {
-        var request = Fixture.Create<RegisterRequest>();
-        var content = JsonContent.Create(request);
-
-        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        var response = await PostAsync(_registerRoute, _content);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.OK);
@@ -60,11 +42,8 @@ public class UserManagementApiTests : BaseTest
     [Fact]
     public async Task RegisterSameTwice_ReturnsFailure()
     {
-        var request = Fixture.Create<RegisterRequest>();
-        var content = JsonContent.Create(request);
-
-        _ = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
-        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        _ = await PostAsync(_registerRoute, _content);
+        var response = await PostAsync(_registerRoute, _content);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.Conflict);

@@ -14,12 +14,12 @@ public class CategoryTraitDiscoverer : ITraitDiscoverer
     /// <summary>
     /// The namespace of this class
     /// </summary>
-    internal const string _namespace = nameof(HomeInventory) + "." + nameof(Tests);
+    internal const string _assemblyName = nameof(HomeInventory) + "." + nameof(Tests) + "." + nameof(Framework);
 
     /// <summary>
     /// The fully qualified name of this class
     /// </summary>
-    internal const string _fullyQualifiedName = _namespace + "." + nameof(CategoryTraitDiscoverer);
+    internal const string _fullyQualifiedName = _assemblyName + "." + nameof(Attributes) + "." + nameof(CategoryTraitDiscoverer);
 
     /// <summary>
     /// Gets the trait values from the Category attribute.
@@ -32,7 +32,9 @@ public class CategoryTraitDiscoverer : ITraitDiscoverer
     /// </returns>
     public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)
     {
-        var categoryValue = traitAttribute.GetNamedArgument<string>("Category");
+        var info = traitAttribute as ReflectionAttributeInfo;
+        var categoryAttribute = info?.Attribute as CategoryTraitAttribute;
+        var categoryValue = categoryAttribute?.Category;
 
         if (!string.IsNullOrWhiteSpace(categoryValue))
         {

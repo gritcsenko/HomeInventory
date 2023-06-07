@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-internal class OptionAssertions<T> : ReferenceTypeAssertions<Optional<T>, OptionAssertions<T>>
+public class OptionAssertions<T> : ReferenceTypeAssertions<Optional<T>, OptionAssertions<T>>
     where T : notnull
 {
     public OptionAssertions(Optional<T> subject)
