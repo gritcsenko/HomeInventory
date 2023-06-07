@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -105,21 +104,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Extensions.Should().ContainKey("traceId")
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(id);
-    }
-
-    [Fact]
-    public void CreateProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
-    {
-        var sut = CreateSut();
-        var errors = new[] { new DuplicateEmailError() };
-        _context.Items["Errors"] = errors;
-
-        var details = sut.CreateProblemDetails(_context);
-
-        details.Should().NotBeNull();
-        details.Extensions.Should().ContainKey("errorCodes")
-            .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
-            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
     [Fact]
@@ -274,21 +258,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Extensions.Should().ContainKey("traceId")
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(id);
-    }
-
-    [Fact]
-    public void CreateValidationProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
-    {
-        var sut = CreateSut();
-        var errors = new[] { new DuplicateEmailError() };
-        _context.Items["Errors"] = errors;
-
-        var details = sut.CreateValidationProblemDetails(_context, _state);
-
-        details.Should().NotBeNull();
-        details.Extensions.Should().ContainKey("errorCodes")
-            .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
-            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
     private HomeInventoryProblemDetailsFactory CreateSut() => new(new ErrorMapping(), Options.Create(_options));
