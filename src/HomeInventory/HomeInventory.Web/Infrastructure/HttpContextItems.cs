@@ -1,27 +1,26 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+﻿using DotNext;
+using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Infrastructure;
 
 internal static class HttpContextItems
 {
-    public static HttpContextItem<IEnumerable<IError>> Errors { get; } = new HttpContextItem<IEnumerable<IError>> { Name = nameof(Errors) };
+    public static HttpContextItem<IEnumerable<IError>> Errors { get; } = new(nameof(Errors));
 
-    public static void SetItem<T>(this HttpContext context, HttpContextItem<T> item, T? value)
-        where T : class
+    public static void SetItem<T>(this HttpContext context, HttpContextItem<T> item, Optional<T> optional)
     {
-        context.Items[item.Name] = value;
+        if (optional.TryGet(out var value))
+        {
+            context.Items[item.Name] = value;
+        }
     }
 
-    public static T? GetItem<T>(this HttpContext context, HttpContextItem<T> item)
-        where T : class
-    {
-        return context.Items[item.Name] as T;
-    }
+    public static Optional<T> GetItem<T>(this HttpContext context, HttpContextItem<T> item) =>
+        context.Items.GetValueOptional(item.Name)
+            .Convert(x => new Optional<object>(x))
+            .Convert(x => (T)x);
 
-    public readonly struct HttpContextItem<T>
-        where T : class
-    {
-        public string Name { get; init; }
-    }
+    public record HttpContextItem<T>(string Name);
 }
