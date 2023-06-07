@@ -1,20 +1,19 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public abstract class CompositeDisposable : Disposable
+public class CompositeDisposable : Disposable
 {
     private readonly List<Action> _disposeActions = new();
 
-    protected void AddDisposable<TDisposable>(TDisposable disposable)
-        where TDisposable : notnull, IDisposable
-    {
-        _disposeActions.Add(disposable.Dispose);
-    }
+    public void AddDisposable<TDisposable>(TDisposable disposable)
+        where TDisposable : notnull, IDisposable =>
+        AddDisposable(disposable.Dispose);
 
-    protected void AddDisposable<TDisposable>(Lazy<TDisposable> lazyDisposable)
-           where TDisposable : notnull, IDisposable
-    {
-        _disposeActions.Add(() => lazyDisposable.TryDispose());
-    }
+    public void AddDisposable<TDisposable>(Lazy<TDisposable> lazyDisposable)
+        where TDisposable : notnull, IDisposable =>
+        AddDisposable(() => lazyDisposable.TryDispose());
+
+    public void AddDisposable(Action action) =>
+        _disposeActions.Add(action);
 
     protected sealed override void Dispose(bool disposing)
     {
