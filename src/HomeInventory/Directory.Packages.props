@@ -52,7 +52,7 @@
     <PackageVersion Include="AutoFixture" Version="4.18.0" />
     <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageVersion Include="Carter" Version="7.1.0" />
-    <PackageVersion Include="DotNext" Version="4.12.1" />
+    <PackageVersion Include="DotNext" Version="4.12.2" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="FluentAssertions" Version="6.11.0" />
     <PackageVersion Include="FluentValidation" Version="11.5.2" />
