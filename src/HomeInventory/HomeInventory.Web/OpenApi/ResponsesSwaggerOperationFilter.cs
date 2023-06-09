@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using System.Globalization;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HomeInventory.Web.OpenApi;
@@ -14,7 +15,7 @@ internal sealed class ResponsesSwaggerOperationFilter : ISwaggerOperationFilter
         foreach (var responseType in apiDescription.SupportedResponseTypes)
         {
             // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/b7cf75e7905050305b115dd96640ddd6e74c7ac9/src/Swashbuckle.AspNetCore.SwaggerGen/SwaggerGenerator/SwaggerGenerator.cs#L383-L387
-            var responseKey = responseType.IsDefaultResponse ? "default" : responseType.StatusCode.ToString();
+            var responseKey = responseType.IsDefaultResponse ? "default" : responseType.StatusCode.ToString(CultureInfo.InvariantCulture);
             var response = operation.Responses[responseKey];
 
             // remove media types not supported by the API
