@@ -1,6 +1,8 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using System.Diagnostics.CodeAnalysis;
 
-public readonly struct EquatableComponent<T>
+namespace HomeInventory.Domain.Primitives;
+
+public readonly struct EquatableComponent<T> : IEquatable<EquatableComponent<T>>
 {
     private readonly IReadOnlyCollection<object> _components;
 
@@ -11,13 +13,19 @@ public readonly struct EquatableComponent<T>
 
     public EquatableComponent(params object[] components) => _components = components;
 
-    public override int GetHashCode() => _components.Aggregate(new HashCode(), Combine).ToHashCode();
+    public override int GetHashCode() => _components.Aggregate(new HashCode(), (h, o) => h.Combine(o)).ToHashCode();
+
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is EquatableComponent<T> component && Equals(component);
 
     public bool Equals(EquatableComponent<T> other) => _components.SequenceEqual(other._components);
 
-    private static HashCode Combine(HashCode hash, object obj)
+    public static bool operator ==(EquatableComponent<T> left, EquatableComponent<T> right)
     {
-        hash.Add(obj);
-        return hash;
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(EquatableComponent<T> left, EquatableComponent<T> right)
+    {
+        return !(left == right);
     }
 }
