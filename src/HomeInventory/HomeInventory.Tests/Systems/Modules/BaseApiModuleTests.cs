@@ -67,13 +67,8 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
 
         internal TGiven OnQueryReturn<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
             where TRequest : notnull, IQuery<TResult>
-            where TResult : notnull
-        {
-            var requestValue = Variables.Get(request.WithIndex(0));
-            var resultValue = Variables.Get(result.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
-            return This;
-        }
+            where TResult : notnull =>
+            OnRequestReturnResult(request, result);
 
         internal TGiven OnCommandReturnSuccess<TRequest>(Variable<TRequest> request)
             where TRequest : notnull, ICommand
@@ -86,23 +81,13 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
         internal TGiven OnQueryReturnError<TRequest, TResult, TError>(Variable<TRequest> request, Variable<TError> result)
             where TRequest : notnull, IQuery<TResult>
             where TResult : notnull
-            where TError : notnull, IError
-        {
-            var requestValue = Variables.Get(request.WithIndex(0));
-            var resultValue = Variables.Get(result.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
-            return This;
-        }
+            where TError : notnull, IError =>
+            OnRequestReturnResult(request, result);
 
         internal TGiven OnCommandReturnError<TRequest, TError>(Variable<TRequest> request, Variable<TError> result)
             where TRequest : notnull, ICommand
-            where TError : notnull, IError
-        {
-            var requestValue = Variables.Get(request.WithIndex(0));
-            var resultValue = Variables.Get(result.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
-            return This;
-        }
+            where TError : notnull, IError =>
+            OnRequestReturnResult(request, result);
 
         public TGiven Map<TSource, TDestination>(Variable<TSource> source, Variable<TDestination> destination)
             where TSource : notnull
@@ -112,6 +97,16 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             New(destination);
             _mapper.Map<TDestination>(Variables.Get(source.WithIndex(0)))
                 .Returns(Variables.Get(destination.WithIndex(0)));
+            return This;
+        }
+
+        private TGiven OnRequestReturnResult<TRequest, TError>(Variable<TRequest> request, Variable<TError> result)
+            where TRequest : notnull
+            where TError : notnull
+        {
+            var requestValue = Variables.Get(request.WithIndex(0));
+            var resultValue = Variables.Get(result.WithIndex(0));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
             return This;
         }
     }
