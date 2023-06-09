@@ -208,7 +208,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Detail.Should().Be(_detail);
         details.Instance.Should().Be(_instance);
         details.Errors.Should().ContainKey(key)
-            .WhoseValue.Should().BeEquivalentTo(new[] { errorMessage });
+            .WhoseValue.Should().BeEquivalentTo(errorMessage);
     }
 
     [Fact]

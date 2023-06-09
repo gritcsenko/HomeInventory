@@ -110,7 +110,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
         await sut.InvokeAsync(_httpContext, next);
 
         _httpResponseFeature.Received(1).OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>());
-        _httpResponseFeature.Headers[HeaderNames.CorrelationId].Should().BeEquivalentTo(new[] { _container.CorrelationId });
+        _httpResponseFeature.Headers[HeaderNames.CorrelationId].Should().BeEquivalentTo(_container.CorrelationId);
     }
 
     private CorrelationIdMiddleware CreateSut()
