@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Web.Authorization.Dynamic;
 
-public enum Permission
+public enum PermissionType
 {
     Undefined = 0,
     AccessAreas = 1,
