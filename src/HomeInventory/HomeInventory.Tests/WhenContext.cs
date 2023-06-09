@@ -12,7 +12,7 @@ public class WhenContext : Context
         _cancellation = cancellation;
     }
 
-    public ThenCatchedContext Catched<TSut, TArg>(IVariable<TSut> sut, IVariable<TArg> arg, Action<TSut, TArg> invoke)
+    internal ThenCatchedContext Catched<TSut, TArg>(IVariable<TSut> sut, IVariable<TArg> arg, Action<TSut, TArg> invoke)
         where TSut : notnull
         where TArg : notnull =>
         Catched(sut.WithIndex(0), arg.WithIndex(0), invoke);
@@ -31,12 +31,12 @@ public class WhenContext : Context
         return new(Variables, variable);
     }
 
-    public ThenContext<TResult> Invoked<TSut, TResult>(IVariable<TSut> sut, Func<TSut, TResult> invoke)
+    internal ThenContext<TResult> Invoked<TSut, TResult>(IVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
         where TResult : notnull =>
         Invoked(sut.WithIndex(0), invoke);
 
-    public ThenContext<TResult> Invoked<TSut, TArg, TResult>(IVariable<TSut> sut, IVariable<TArg> arg, Func<TSut, TArg, TResult> invoke)
+    internal ThenContext<TResult> Invoked<TSut, TArg, TResult>(IVariable<TSut> sut, IVariable<TArg> arg, Func<TSut, TArg, TResult> invoke)
         where TSut : notnull
         where TArg : notnull
         where TResult : notnull =>
