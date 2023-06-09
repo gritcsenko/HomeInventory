@@ -53,6 +53,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Tests.Framewo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Tests.Integration", "HomeInventory.Tests.Integration\HomeInventory.Tests.Integration.csproj", "{CD231292-1763-4477-95CB-718810CBF613}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{05679B0B-F5D0-422A-B0C7-AF2EBF80914B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{CD231292-1763-4477-95CB-718810CBF613}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD231292-1763-4477-95CB-718810CBF613}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD231292-1763-4477-95CB-718810CBF613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05679B0B-F5D0-422A-B0C7-AF2EBF80914B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05679B0B-F5D0-422A-B0C7-AF2EBF80914B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05679B0B-F5D0-422A-B0C7-AF2EBF80914B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05679B0B-F5D0-422A-B0C7-AF2EBF80914B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

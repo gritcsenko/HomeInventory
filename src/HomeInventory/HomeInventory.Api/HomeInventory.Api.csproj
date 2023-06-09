@@ -8,6 +8,7 @@
     <!--<ContainerRegistry>registry.mycorp.com:1234</ContainerRegistry>-->
     <ContainerImageTag>0.0.1-alpha1</ContainerImageTag>
     <ContainerImageTags>0.0.1-alpha1;latest</ContainerImageTags>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
