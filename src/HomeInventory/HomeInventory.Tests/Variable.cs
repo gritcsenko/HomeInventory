@@ -21,6 +21,7 @@ public class Variable<T> : IVariable<T>
 
     public string Name { get; }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "operator")]
     public static implicit operator IndexedVariable<T>(Variable<T> variable) =>
         variable.CreateIndexed(0);
 
