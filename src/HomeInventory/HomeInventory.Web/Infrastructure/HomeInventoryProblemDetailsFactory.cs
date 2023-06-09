@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web.Infrastructure;
 
-public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
+internal class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 {
     private readonly ApiBehaviorOptions _options;
     private readonly ErrorMapping _errorMapping;
