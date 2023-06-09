@@ -1,6 +1,4 @@
-﻿using static HomeInventory.Tests.BaseTest;
-
-namespace HomeInventory.Tests;
+﻿namespace HomeInventory.Tests;
 
 public class WhenContext : Context
 {
@@ -23,6 +21,15 @@ public class WhenContext : Context
         where TSut : notnull
         where TArg : notnull =>
         Catched(sut, sutValue => invoke(sutValue, Variables.Get(arg)));
+
+    public ThenCatchedContext Catched<TSut>(IIndexedVariable<TSut> sut, Action<TSut> invoke)
+        where TSut : notnull
+    {
+        var variable = _resultVariable.OfType<Action>();
+        Action action = () => invoke(Variables.Get(sut));
+        Variables.TryAdd(variable, () => action);
+        return new(Variables, variable);
+    }
 
     public ThenContext<TResult> Invoked<TSut, TResult>(IVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
@@ -47,15 +54,6 @@ public class WhenContext : Context
     {
         var variable = _resultVariable.OfType<TResult>();
         Variables.TryAdd(variable, () => invoke(Variables.Get(sut)));
-        return new(Variables, variable);
-    }
-
-    public ThenCatchedContext Catched<TSut>(IIndexedVariable<TSut> sut, Action<TSut> invoke)
-        where TSut : notnull
-    {
-        var variable = _resultVariable.OfType<Action>();
-        Action action = () => invoke(Variables.Get(sut));
-        Variables.TryAdd(variable, () => action);
         return new(Variables, variable);
     }
 
