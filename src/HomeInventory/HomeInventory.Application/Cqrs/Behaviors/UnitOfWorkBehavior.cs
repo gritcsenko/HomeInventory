@@ -47,10 +47,10 @@ internal class UnitOfWorkBehavior<TRequest, TIgnored> : IPipelineBehavior<TReque
         switch (count)
         {
             case 0:
-                _logger.LogWarning("{Request} was attempted to save changes and saved nothing", _requestName);
+                _logger.HandleUnitOfWorkNotSaved(_requestName);
                 break;
             default:
-                _logger.LogInformation("{Request} was attempted to save changes and saved {Count}", _requestName, count);
+                _logger.HandleUnitOfWorkSaved(_requestName, count);
                 break;
         }
     }
