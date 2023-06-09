@@ -15,14 +15,18 @@ namespace HomeInventory.Tests.Integration;
 [IntegrationTest]
 public class UserManagementApiTests : BaseTest
 {
+#pragma warning disable CA2213 // Disposable fields should be disposed
     private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
+#pragma warning restore CA2213 // Disposable fields should be disposed
 
     public UserManagementApiTests()
     {
         AddDisposable(_appFactory);
 
         _client = _appFactory.CreateClient();
+        AddDisposable(_client);
+
         Fixture.Customize(new RegisterRequestCustomization());
     }
 
@@ -37,7 +41,7 @@ public class UserManagementApiTests : BaseTest
 
         var endpoint = endpoints.Should().ContainSingle(e =>
             e.RoutePattern.RawText == "/api/users/manage/register"
-            && e.Metadata.OfType<IHttpMethodMetadata>().First().HttpMethods.Contains(HttpMethods.Post) == true)
+            && e.Metadata.OfType<IHttpMethodMetadata>().First().HttpMethods.Contains(HttpMethods.Post))
             .Subject;
         endpoint.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
     }
@@ -46,9 +50,9 @@ public class UserManagementApiTests : BaseTest
     public async Task Register_ReturnsSuccess()
     {
         var request = Fixture.Create<RegisterRequest>();
-        var content = JsonContent.Create(request);
+        using var content = JsonContent.Create(request);
 
-        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        var response = await _client.PostAsync(new Uri("/api/users/manage/register", UriKind.Relative), content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.OK);
@@ -61,10 +65,10 @@ public class UserManagementApiTests : BaseTest
     public async Task RegisterSameTwice_ReturnsFailure()
     {
         var request = Fixture.Create<RegisterRequest>();
-        var content = JsonContent.Create(request);
+        using var content = JsonContent.Create(request);
 
-        _ = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
-        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        _ = await _client.PostAsync(new Uri("/api/users/manage/register", UriKind.Relative), content, Cancellation.Token);
+        var response = await _client.PostAsync(new Uri("/api/users/manage/register", UriKind.Relative), content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.Conflict);

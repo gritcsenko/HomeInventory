@@ -117,7 +117,9 @@ internal static class ObjectExtensions
             return source.Equals(converted.ConvertTo(sourceType))
                 && converted.Equals(target);
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch
+#pragma warning restore CA1031 // Do not catch general exception types
         {
             // ignored
             return false;
@@ -132,7 +134,7 @@ internal static class ObjectExtensions
     private static bool IsNumericType(this object obj)
     {
         // "is not null" is due to https://github.com/dotnet/runtime/issues/47920#issuecomment-774481505
-        return obj is not null and (
+        return obj is
             int or
             long or
             float or
@@ -143,6 +145,6 @@ internal static class ObjectExtensions
             short or
             ushort or
             uint or
-            ulong);
+            ulong;
     }
 }

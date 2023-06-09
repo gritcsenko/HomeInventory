@@ -8,15 +8,11 @@ public static class TypeExtensions
 
     internal static IEnumerable<TFieldType> GetFieldsOfType<TFieldType>(this Type type)
     {
-        var fields = type.GetFields(_getFieldBindingAttr);
         var fieldType = typeof(TFieldType);
-        foreach (var field in fields)
-        {
-            if (fieldType.IsAssignableFrom(field.FieldType))
-            {
-                yield return (TFieldType)field.GetValue(null)!;
-            }
-        }
+        return type.GetFields(_getFieldBindingAttr)
+            .Where(field => fieldType.IsAssignableFrom(field.FieldType))
+            .Select(field => field.GetValue(null))
+            .Cast<TFieldType>();
     }
 
     public static string GetFormattedName(this Type type) =>
@@ -31,6 +27,6 @@ public static class TypeExtensions
     {
         var args = type.GenericTypeArguments;
         var name = type.Name;
-        return $"{name.Replace("`" + args.Length, string.Empty)}<{string.Join(',', args.Select(GetFormattedName))}>";
+        return $"{name.Replace("`" + args.Length, string.Empty, StringComparison.Ordinal)}<{string.Join(',', args.Select(GetFormattedName))}>";
     }
 }

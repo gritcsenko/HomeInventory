@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -78,7 +78,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateProblemDetails_Should_SetTraceIdentifierFromCurrentActivity()
     {
         var sut = CreateSut();
-        var activity = new Activity("Testing");
+        using var activity = new Activity("Testing");
         activity.Start();
         var id = activity.Id;
 
@@ -108,21 +108,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     }
 
     [Fact]
-    public void CreateProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
-    {
-        var sut = CreateSut();
-        var errors = new[] { new DuplicateEmailError() };
-        _context.Items["Errors"] = errors;
-
-        var details = sut.CreateProblemDetails(_context);
-
-        details.Should().NotBeNull();
-        details.Extensions.Should().ContainKey("errorCodes")
-            .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
-            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
-    }
-
-    [Fact]
     public void ConvertToProblem_Should_ThrowInvalidOperationException_When_NoErrors()
     {
         var sut = CreateSut();
@@ -139,14 +124,12 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var expectedDetail = Fixture.Create<string>();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
-        var errors = new[] { new ValidationError(expectedDetail, metadata) };
+        var errors = new[] { new ValidationError(expectedDetail, metadata) }.ToReadOnly();
         var expectedStatus = new ErrorMapping().GetError(errors.First());
         var expectedTitle = errors.First().GetType().Name;
 
         var details = sut.ConvertToProblem(_context, errors);
 
-        _context.Items.Should().ContainKey(HttpContextItems.Errors.Name)
-            .WhoseValue.Should().BeSameAs(errors);
         details.Should().NotBeNull();
         details.Status.Should().Be(expectedStatus);
         details.Title.Should().Be(expectedTitle);
@@ -171,8 +154,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
         var details = sut.ConvertToProblem(_context, errors);
 
-        _context.Items.Should().ContainKey(HttpContextItems.Errors.Name)
-            .WhoseValue.Should().BeSameAs(errors);
         details.Should().NotBeNull();
         details.Status.Should().Be(expectedStatus);
         details.Title.Should().Be("Multiple Problems");
@@ -190,7 +171,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var messages = Fixture.CreateMany<string>(2).ToArray();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
-        var errors = new IError[] { new ValidationError(messages[0], metadata), new ObjectValidationError<string>(messages[1]) };
+        var errors = new IError[] { new ValidationError(messages[0], metadata), new ObjectValidationError<string>(messages[1]) }.ToReadOnly();
         var expectedStatus = new ErrorMapping().GetError(errors.First());
 
         var details = sut.ConvertToProblem(_context, errors);
@@ -228,7 +209,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Detail.Should().Be(_detail);
         details.Instance.Should().Be(_instance);
         details.Errors.Should().ContainKey(key)
-            .WhoseValue.Should().BeEquivalentTo(new[] { errorMessage });
+            .WhoseValue.Should().BeEquivalentTo(errorMessage);
     }
 
     [Fact]
@@ -251,7 +232,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateValidationProblemDetails_Should_SetTraceIdentifierFromCurrentActivity()
     {
         var sut = CreateSut();
-        var activity = new Activity("Testing");
+        using var activity = new Activity("Testing");
         activity.Start();
         var id = activity.Id;
 
@@ -278,21 +259,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         details.Extensions.Should().ContainKey("traceId")
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(id);
-    }
-
-    [Fact]
-    public void CreateValidationProblemDetails_Should_SetErrorCodesIfProvidedViaContext()
-    {
-        var sut = CreateSut();
-        var errors = new[] { new DuplicateEmailError() };
-        _context.Items["Errors"] = errors;
-
-        var details = sut.CreateValidationProblemDetails(_context, _state);
-
-        details.Should().NotBeNull();
-        details.Extensions.Should().ContainKey("errorCodes")
-            .WhoseValue.Should().BeAssignableTo<IEnumerable<string>>()
-            .Which.Should().BeEquivalentTo(new[] { errors[0].GetType().Name });
     }
 
     private HomeInventoryProblemDetailsFactory CreateSut() => new(new ErrorMapping(), Options.Create(_options));

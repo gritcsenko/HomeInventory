@@ -9,7 +9,7 @@ public abstract class TestingLogger<T> : ILogger<T>
     public IDisposable BeginScope<TState>(TState state)
         where TState : notnull
         =>
-        new TestingScope<TState>(this, _currentScope.Value);
+        new TestingScope(this, _currentScope.Value);
 
     public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
@@ -23,7 +23,7 @@ public abstract class TestingLogger<T> : ILogger<T>
         ITestingScope? Parent { get; }
     }
 
-    internal class TestingScope<TState> : Disposable, ITestingScope
+    internal class TestingScope : Disposable, ITestingScope
     {
         private readonly TestingLogger<T> _logger;
 

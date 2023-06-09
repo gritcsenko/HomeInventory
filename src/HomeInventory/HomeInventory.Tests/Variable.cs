@@ -21,8 +21,20 @@ public class Variable<T> : IVariable<T>
 
     public string Name { get; }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "operator")]
     public static implicit operator IndexedVariable<T>(Variable<T> variable) =>
         variable.CreateIndexed(0);
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Fix for CA2225: Provide a method named 'ToIndexedVariable' or 'FromVariable' as an alternate for operator op_Implicit")]
+    public static IndexedVariable<T> ToIndexedVariable(Variable<T> variable)
+    {
+        if (variable is null)
+        {
+            throw new ArgumentNullException(nameof(variable));
+        }
+
+        return variable.CreateIndexed(0);
+    }
 
     public IVariable<TOther> OfType<TOther>() => new Variable<TOther>(Name);
 

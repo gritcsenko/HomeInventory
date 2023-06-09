@@ -20,11 +20,11 @@ public class JwtBearerOptionsSetupTests : BaseTest
         parameters.Should().NotBeNull();
         parameters.ValidateLifetime.Should().BeTrue();
         parameters.ValidateIssuer.Should().BeTrue();
-        parameters.ValidIssuers.Should().BeEquivalentTo(new[] { jwtOptions.Issuer });
+        parameters.ValidIssuers.Should().BeEquivalentTo(jwtOptions.Issuer);
         parameters.ValidateAudience.Should().BeTrue();
-        parameters.ValidAudiences.Should().BeEquivalentTo(new[] { jwtOptions.Audience });
+        parameters.ValidAudiences.Should().BeEquivalentTo(jwtOptions.Audience);
         parameters.ValidateIssuerSigningKey.Should().BeTrue();
         parameters.IssuerSigningKey.Should().Be(jwtOptions.SecurityKey);
-        parameters.ValidAlgorithms.Should().BeEquivalentTo(new[] { jwtOptions.Algorithm });
+        parameters.ValidAlgorithms.Should().BeEquivalentTo(jwtOptions.Algorithm);
     }
 }

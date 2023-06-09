@@ -78,6 +78,8 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.AddWeb();
         var appBuilder = new TestAppBuilder(Services);
 
-        appBuilder.UseWeb();
+        Action action = () => appBuilder.UseWeb();
+
+        action.Should().NotThrow();
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
-public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
+internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
 {
     private static readonly GuidIdConverter<UserId> _idConverter = new();
 

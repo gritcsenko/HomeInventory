@@ -9,10 +9,10 @@ namespace HomeInventory.Web.Modules;
 internal abstract class ApiModule : CarterModule
 {
     private readonly string _groupPrefix;
-    private readonly Permission[] _permissions;
+    private readonly PermissionType[] _permissions;
     private ApiVersion _version = new(1);
 
-    protected ApiModule(string groupPrefix, params Permission[] permissions)
+    protected ApiModule(string groupPrefix, params PermissionType[] permissions)
     {
         IncludeInOpenApi();
         _groupPrefix = groupPrefix;

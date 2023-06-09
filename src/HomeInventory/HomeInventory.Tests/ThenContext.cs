@@ -1,57 +1,44 @@
 ﻿namespace HomeInventory.Tests;
 
-public class ThenContext : Context
-{
-    private readonly IVariable _resultVariable;
-
-    public ThenContext(VariablesCollection variables, IVariable resultVariable)
-        : base(variables) =>
-        _resultVariable = resultVariable;
-
-    public ThenContext Result<TResult>(Action<TResult> assert)
-        where TResult : notnull
-    {
-        assert(GetResult<TResult>());
-        return this;
-    }
-
-    public ThenContext Result<TResult, TArg>(IndexedVariable<TArg> arg, Action<TResult, TArg> assert)
-        where TArg : notnull
-        where TResult : notnull
-    {
-        assert(GetResult<TResult>(), Variables.Get(arg));
-        return this;
-    }
-
-    private TResult GetResult<TResult>() where TResult : notnull
-    {
-        var variable = _resultVariable.OfType<TResult>().WithIndex(0);
-        return Variables.Get(variable);
-    }
-}
-
-public class ThenContext<TResult> : Context
+public class ThenContext<TResult> : BaseContext
     where TResult : notnull
 {
     private readonly IVariable<TResult> _resultVariable;
 
-    public ThenContext(VariablesCollection variables, IVariable<TResult> resultVariable)
+    public ThenContext(VariablesContainer variables, IVariable<TResult> resultVariable)
         : base(variables) =>
         _resultVariable = resultVariable;
 
     public ThenContext<TResult> Result(Action<TResult> assert)
     {
+        if (assert is null)
+        {
+            throw new ArgumentNullException(nameof(assert));
+        }
+
         assert(GetResult());
         return this;
     }
 
     public ThenContext<TResult> Result<TArg>(Variable<TArg> arg, Action<TResult, TArg> assert)
-        where TArg : notnull =>
-        Result(arg.WithIndex(0), assert);
+        where TArg : notnull
+    {
+        if (arg is null)
+        {
+            throw new ArgumentNullException(nameof(arg));
+        }
+
+        return Result(arg.WithIndex(0), assert);
+    }
 
     public ThenContext<TResult> Result<TArg>(IndexedVariable<TArg> arg, Action<TResult, TArg> assert)
         where TArg : notnull
     {
+        if (assert is null)
+        {
+            throw new ArgumentNullException(nameof(assert));
+        }
+
         assert(GetResult(), Variables.Get(arg));
         return this;
     }

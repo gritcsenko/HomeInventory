@@ -2,17 +2,22 @@
 
 namespace HomeInventory.Tests;
 
-public class ThenCatchedContext : Context
+public class ThenCatchedContext : BaseContext
 {
     private readonly IVariable<Action> _resultVariable;
 
-    public ThenCatchedContext(VariablesCollection variables, IVariable<Action> resultVariable)
+    public ThenCatchedContext(VariablesContainer variables, IVariable<Action> resultVariable)
         : base(variables) =>
         _resultVariable = resultVariable;
 
     public void Exception<TException>(Action<ExceptionAssertions<TException>> assert)
         where TException : Exception
     {
+        if (assert is null)
+        {
+            throw new ArgumentNullException(nameof(assert));
+        }
+
         assert(GetException<TException>());
     }
 

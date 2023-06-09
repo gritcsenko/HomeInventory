@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
-public static class DependencyInjection
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDynamicAuthorization(this IServiceCollection services)
     {
@@ -46,15 +46,15 @@ public static class DependencyInjection
         return app;
     }
 
-    public static TBuilder RequireDynamicAuthorization<TBuilder>(this TBuilder builder, params Permission[] permissions)
+    public static TBuilder RequireDynamicAuthorization<TBuilder>(this TBuilder builder, params PermissionType[] permissions)
          where TBuilder : IEndpointConventionBuilder =>
         builder.RequireAuthorization(AuthorizationPolicyNames.Dynamic).WithMetadata(new PermissionMetadata(permissions));
 
-    private static IEnumerable<Permission> GetPermissions(this Endpoint endpoint) =>
+    private static IEnumerable<PermissionType> GetPermissions(this Endpoint endpoint) =>
         endpoint.Metadata.GetOrderedMetadata<PermissionMetadata>().SelectMany(a => a.Permissions);
 
     private static class AuthorizationPolicyNames
     {
-        public static readonly string Dynamic = nameof(Dynamic);
+        public const string Dynamic = nameof(Dynamic);
     }
 }

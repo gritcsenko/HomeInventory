@@ -5,6 +5,6 @@ using OneOf.Types;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 
-public interface ICommand : IRequest<OneOf<Success, IError>>
+internal interface ICommand : IRequest<OneOf<Success, IError>>
 {
 }

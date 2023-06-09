@@ -62,7 +62,9 @@ public class AuthenticateQueryHandlerTests : BaseTest
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
            .Which.Should().BeOfType<InvalidCredentialsError>();
+#pragma warning disable CA2012 // Use ValueTasks correctly
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
+#pragma warning restore CA2012 // Use ValueTasks correctly
     }
 
     [Fact]
@@ -80,6 +82,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
            .Which.Should().BeOfType<InvalidCredentialsError>();
+#pragma warning disable CA2012 // Use ValueTasks correctly
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
+#pragma warning restore CA2012 // Use ValueTasks correctly
     }
 }

@@ -13,12 +13,6 @@ namespace HomeInventory.Web;
 
 internal static class HttpContextExtensions
 {
-    public static ProblemHttpResult Problem(this HttpContext context, ValidationResult result)
-    {
-        var errors = result.Errors.Select(x => new ValidationError(x.ErrorMessage));
-        return context.Problem(errors);
-    }
-
     public static Results<Ok<TResponse>, ProblemHttpResult> MatchToOk<T, TResponse>(this HttpContext context, OneOf<T, IError> errorOrResult, Func<T, TResponse> onValue) =>
         errorOrResult.Match<Results<Ok<TResponse>, ProblemHttpResult>>(value => TypedResults.Ok(onValue(value)), error => context.Problem(error));
 
@@ -34,6 +28,12 @@ internal static class HttpContextExtensions
     public static T GetService<T>(this HttpContext context)
         where T : notnull =>
         context.RequestServices.GetRequiredService<T>();
+
+    public static ProblemHttpResult Problem(this HttpContext context, ValidationResult result)
+    {
+        var errors = result.Errors.Select(x => new ValidationError(x.ErrorMessage));
+        return context.Problem(errors);
+    }
 
     public static ProblemHttpResult Problem(this HttpContext context, params IError[] errors) =>
         context.Problem(errors.AsEnumerable());
