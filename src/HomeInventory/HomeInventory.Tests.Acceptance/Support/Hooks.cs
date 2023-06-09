@@ -27,5 +27,6 @@ public sealed class Hooks
 #pragma warning restore IDE0060 // Remove unused parameter
 #pragma warning restore CA1822 // Mark members as static
     {
+        // Nothing to clean up yet
     }
 }
