@@ -51,10 +51,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Restore dependencies
-        run: dotnet restore -v minimal
+        run: dotnet restore HomeInventory.sln -v minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v3
