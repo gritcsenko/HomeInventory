@@ -7,7 +7,7 @@ public abstract class TestingLogger<T> : ILogger<T>
     public abstract IDisposable BeginScope<TState>(TState state)
         where TState : notnull;
 
-    public abstract bool IsEnabled(LogLevel logLevel);
+    public bool IsEnabled(LogLevel logLevel) => true;
 
     void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
         Log(logLevel, eventId, state!, exception, (object s, Exception? e) => formatter((TState)s, e));
@@ -27,8 +27,6 @@ public abstract class TestingLogger<T> : ILogger<T>
 
             return _currentScope.Value = disposable;
         }
-
-        public override bool IsEnabled(LogLevel logLevel) => true;
 
         public override void Log(LogLevel logLevel, EventId eventId, object state, Exception? exception, Func<object, Exception?, string> formatter)
         {
