@@ -107,6 +107,11 @@ public static class ServiceCollectionExtensions
             var descriptions = app.DescribeApiVersions();
             foreach (var description in descriptions)
             {
+                AddSwaggerEndpoint(options, description);
+            }
+
+            static void AddSwaggerEndpoint(Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIOptions options, Asp.Versioning.ApiExplorer.ApiVersionDescription description)
+            {
                 var url = $"/swagger/{description.GroupName}/swagger.json";
                 var name = description.GroupName.ToUpperInvariant();
                 options.SwaggerEndpoint(url, name);
