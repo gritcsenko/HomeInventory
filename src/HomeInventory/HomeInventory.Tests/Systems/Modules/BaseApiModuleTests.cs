@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OneOf;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Modules;
@@ -65,33 +66,25 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
 
         public IIndexedVariable<HttpContext> Context => _context.WithIndex(0);
 
-        protected ICancellation Cancellation => _cancellation;
-
-        protected ISender Mediator => _mediator;
-
         internal TGiven OnQueryReturn<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
             where TRequest : notnull, IQuery<TResult>
             where TResult : notnull =>
             OnRequestReturnResult(request, result);
 
         internal TGiven OnCommandReturnSuccess<TRequest>(Variable<TRequest> request)
-            where TRequest : notnull, ICommand
-        {
-            var requestValue = Variables.Get(request.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(new Success());
-            return This;
-        }
+            where TRequest : notnull, ICommand =>
+            OnRequestReturnResult(request, new Success());
 
         internal TGiven OnQueryReturnError<TRequest, TResult, TError>(Variable<TRequest> request, Variable<TError> result)
             where TRequest : notnull, IQuery<TResult>
             where TResult : notnull
             where TError : notnull, IError =>
-            OnRequestReturnResult(request, result);
+            OnRequestReturnError<TRequest, TResult, TError>(request, result);
 
         internal TGiven OnCommandReturnError<TRequest, TError>(Variable<TRequest> request, Variable<TError> result)
             where TRequest : notnull, ICommand
             where TError : notnull, IError =>
-            OnRequestReturnResult(request, result);
+            OnRequestReturnError<TRequest, Success, TError>(request, result);
 
         public TGiven Map<TSource, TDestination>(Variable<TSource> source, Variable<TDestination> destination)
             where TSource : notnull
@@ -109,18 +102,34 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
 
             New(source);
             New(destination);
-            _mapper.Map<TDestination>(Variables.Get(source.WithIndex(0)))
-                .Returns(Variables.Get(destination.WithIndex(0)));
+            var sourceValue = Variables.Get(source.WithIndex(0));
+            var destinationValue = Variables.Get(destination.WithIndex(0));
+            _mapper.Map<TDestination>(sourceValue).Returns(destinationValue);
             return This;
         }
 
-        private TGiven OnRequestReturnResult<TRequest, TError>(Variable<TRequest> request, Variable<TError> result)
-            where TRequest : notnull
-            where TError : notnull
+        private TGiven OnRequestReturnError<TRequest, TResult, TError>(Variable<TRequest> request, Variable<TError> result)
+            where TRequest : IRequest<OneOf<TResult, IError>>
+            where TResult : notnull
+            where TError : IError
         {
             var requestValue = Variables.Get(request.WithIndex(0));
             var resultValue = Variables.Get(result.WithIndex(0));
-            _mediator.Send(requestValue, _cancellation.Token).Returns(resultValue);
+            _mediator.Send(requestValue, _cancellation.Token).Returns(OneOf<TResult, IError>.FromT1(resultValue));
+            return This;
+        }
+
+        private TGiven OnRequestReturnResult<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
+            where TRequest : IRequest<OneOf<TResult, IError>>
+            where TResult : notnull =>
+            OnRequestReturnResult(request, Variables.Get(result.WithIndex(0)));
+
+        private TGiven OnRequestReturnResult<TRequest, TResult>(Variable<TRequest> request, TResult resultValue)
+            where TRequest : IRequest<OneOf<TResult, IError>>
+            where TResult : notnull
+        {
+            var requestValue = Variables.Get(request.WithIndex(0));
+            _mediator.Send(requestValue, _cancellation.Token).Returns(OneOf<TResult, IError>.FromT0(resultValue));
             return This;
         }
     }

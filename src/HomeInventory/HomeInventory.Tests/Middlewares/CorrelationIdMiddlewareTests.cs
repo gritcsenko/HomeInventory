@@ -50,7 +50,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
 
         Func<Task> invocation = async () => await sut.InvokeAsync(_httpContext, next);
 
-        await invocation.Should().ThrowExactlyAsync<Exception>();
+        await invocation.Should().ThrowExactlyAsync<InvalidOperationException>();
     }
 
     [Fact]

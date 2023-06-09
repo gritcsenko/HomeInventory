@@ -4,9 +4,9 @@ namespace HomeInventory.Application;
 
 internal static class LogEvents
 {
-    private static readonly EventId _handleUnitOfWork = new(1, "Handle UnitOfWork result");
-    private static readonly EventId _sendingRequest = new(2, "Sending request");
-    private static readonly EventId _handleResponse = new(3, "Handle response");
+    internal static readonly EventId _handleUnitOfWork = new(1, "Handle UnitOfWork result");
+    internal static readonly EventId _sendingRequest = new(2, "Sending request");
+    internal static readonly EventId _handleResponse = new(3, "Handle response");
 
     private static readonly Action<ILogger, string, Exception?> _handleUnitOfWorkNotSaved = LoggerMessage.Define<string>(LogLevel.Warning, _handleUnitOfWork, "{Request} was attempted to save changes and saved nothing");
 
