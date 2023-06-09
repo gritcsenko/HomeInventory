@@ -50,7 +50,7 @@ internal class UnitOfWorkBehavior<TRequest, TIgnored> : IPipelineBehavior<TReque
                 _logger.LogWarning("{Request} was attempted to save changes and saved nothing", _requestName);
                 break;
             default:
-                _logger.LogInformation("{Request} was attempted to save changes and saved {count}", _requestName, count);
+                _logger.LogInformation("{Request} was attempted to save changes and saved {Count}", _requestName, count);
                 break;
         }
     }
