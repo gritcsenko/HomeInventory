@@ -65,7 +65,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
 
         protected ISender Mediator => _mediator;
 
-        public TGiven OnQueryReturn<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
+        internal TGiven OnQueryReturn<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
             where TRequest : notnull, IQuery<TResult>
             where TResult : notnull
         {
@@ -75,7 +75,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             return This;
         }
 
-        public TGiven OnCommandReturnSuccess<TRequest>(Variable<TRequest> request)
+        internal TGiven OnCommandReturnSuccess<TRequest>(Variable<TRequest> request)
             where TRequest : notnull, ICommand
         {
             var requestValue = Variables.Get(request.WithIndex(0));
@@ -83,7 +83,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             return This;
         }
 
-        public TGiven OnQueryReturnError<TRequest, TResult, TError>(Variable<TRequest> request, Variable<TError> result)
+        internal TGiven OnQueryReturnError<TRequest, TResult, TError>(Variable<TRequest> request, Variable<TError> result)
             where TRequest : notnull, IQuery<TResult>
             where TResult : notnull
             where TError : notnull, IError
@@ -94,7 +94,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             return This;
         }
 
-        public TGiven OnCommandReturnError<TRequest, TError>(Variable<TRequest> request, Variable<TError> result)
+        internal TGiven OnCommandReturnError<TRequest, TError>(Variable<TRequest> request, Variable<TError> result)
             where TRequest : notnull, ICommand
             where TError : notnull, IError
         {
