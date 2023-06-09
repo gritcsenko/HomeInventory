@@ -11,6 +11,11 @@ public sealed class Hooks
     public void RegisterDependencies(IObjectContainer objectContainer)
 #pragma warning restore CA1822 // Mark members as static
     {
+        if (objectContainer is null)
+        {
+            throw new ArgumentNullException(nameof(objectContainer));
+        }
+
         objectContainer.RegisterInstanceAs<ITestingConfiguration>(new TestingConfiguration { EnvironmentName = "Testing" });
         objectContainer.RegisterTypeAs<HomeInventoryAPIDriver, IHomeInventoryAPIDriver>().InstancePerContext();
     }

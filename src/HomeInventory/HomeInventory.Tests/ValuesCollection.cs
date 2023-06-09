@@ -12,6 +12,11 @@ public sealed class ValuesCollection : IEnumerable<ValueContainer>
     public bool TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
     {
+        if (createValueFunc is null)
+        {
+            throw new ArgumentNullException(nameof(createValueFunc));
+        }
+
         if (!IsAsignable<T>())
         {
             return false;
@@ -24,6 +29,11 @@ public sealed class ValuesCollection : IEnumerable<ValueContainer>
     public async Task<bool> TryAddAsync<T>(Func<Task<T>> createValueFunc)
         where T : notnull
     {
+        if (createValueFunc is null)
+        {
+            throw new ArgumentNullException(nameof(createValueFunc));
+        }
+
         if (!IsAsignable<T>())
         {
             return false;
@@ -39,6 +49,11 @@ public sealed class ValuesCollection : IEnumerable<ValueContainer>
         if (!IsAsignable<T>() || index < 0 || index >= _values.Count)
         {
             return false;
+        }
+
+        if (createValueFunc is null)
+        {
+            throw new ArgumentNullException(nameof(createValueFunc));
         }
 
         var container = _values[index];

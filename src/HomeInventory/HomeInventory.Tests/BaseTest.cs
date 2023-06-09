@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization;
-using HomeInventory.Domain;
+﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests;
@@ -20,15 +19,6 @@ public abstract class BaseTest : CompositeDisposable
     protected ICancellation Cancellation => _lazyCancellation.Value;
 
     protected IDateTimeService DateTime => _lazyDateTime.Value;
-
-    protected static object? GetInstanceOf(Type type)
-    {
-        if (type.GetConstructor(Type.EmptyTypes) != null)
-            return Activator.CreateInstance(type);
-
-        // Type without parameterless constructor
-        return FormatterServices.GetUninitializedObject(type);
-    }
 
     private sealed class CancellationImplementation : Disposable, ICancellation
     {

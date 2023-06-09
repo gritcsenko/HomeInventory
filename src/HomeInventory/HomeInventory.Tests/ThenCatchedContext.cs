@@ -13,6 +13,11 @@ public class ThenCatchedContext : Context
     public void Exception<TException>(Action<ExceptionAssertions<TException>> assert)
         where TException : Exception
     {
+        if (assert is null)
+        {
+            throw new ArgumentNullException(nameof(assert));
+        }
+
         assert(GetException<TException>());
     }
 

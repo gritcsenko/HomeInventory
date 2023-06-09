@@ -93,6 +93,16 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             where TSource : notnull
             where TDestination : notnull
         {
+            if (source is null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (destination is null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
             New(source);
             New(destination);
             _mapper.Map<TDestination>(Variables.Get(source.WithIndex(0)))

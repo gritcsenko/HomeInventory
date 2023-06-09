@@ -46,6 +46,11 @@ public class GivenContext<TContext> : Context
     protected TContext Add<T>(IVariable<T> variable, Func<T> createValue)
         where T : notnull
     {
+        if (variable is null)
+        {
+            throw new ArgumentNullException(nameof(variable));
+        }
+
         if (!Variables.TryAdd(variable, createValue))
         {
             throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
@@ -61,6 +66,11 @@ public class GivenContext<TContext> : Context
     public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable, int count)
         where T : notnull
     {
+        if (hash is null)
+        {
+            throw new ArgumentNullException(nameof(hash));
+        }
+
         var hashValue = Variables.TryGet(hash)
             .OrInvoke(() => AddNewHashCode(hash));
 

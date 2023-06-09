@@ -32,7 +32,7 @@ public class CategoryTraitDiscoverer : ITraitDiscoverer
     /// </returns>
     public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)
     {
-        var categoryValue = traitAttribute.GetNamedArgument<string>("Category");
+        var categoryValue = traitAttribute?.GetNamedArgument<string>("Category");
 
         if (!string.IsNullOrWhiteSpace(categoryValue))
         {
