@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -123,7 +124,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var expectedDetail = Fixture.Create<string>();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
-        var errors = new[] { new ValidationError(expectedDetail, metadata) };
+        var errors = new[] { new ValidationError(expectedDetail, metadata) }.ToReadOnly();
         var expectedStatus = new ErrorMapping().GetError(errors.First());
         var expectedTitle = errors.First().GetType().Name;
 
@@ -170,7 +171,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var messages = Fixture.CreateMany<string>(2).ToArray();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
-        var errors = new IError[] { new ValidationError(messages[0], metadata), new ObjectValidationError<string>(messages[1]) };
+        var errors = new IError[] { new ValidationError(messages[0], metadata), new ObjectValidationError<string>(messages[1]) }.ToReadOnly();
         var expectedStatus = new ErrorMapping().GetError(errors.First());
 
         var details = sut.ConvertToProblem(_context, errors);
