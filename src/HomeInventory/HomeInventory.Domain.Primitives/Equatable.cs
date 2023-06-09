@@ -1,5 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4035:Classes implementing \"IEquatable<T>\" should be sealed", Justification = "Designed to be a base class")]
 public abstract class Equatable<TSelf> : IEquatable<TSelf>
     where TSelf : Equatable<TSelf>
 {
