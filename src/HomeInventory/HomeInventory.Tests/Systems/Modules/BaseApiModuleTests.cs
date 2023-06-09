@@ -17,7 +17,9 @@ public abstract class BaseApiModuleTests : BaseApiModuleTests<BaseApiModuleTests
     protected override ApiGivenTestContext CreateGiven(VariablesContainer variables) =>
         new(variables, Fixture, Cancellation);
 
+#pragma warning disable CA1034 // Nested types should not be visible
     public sealed class ApiGivenTestContext : BaseApiGivenTestContext
+#pragma warning restore CA1034 // Nested types should not be visible
     {
         public ApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation)
             : base(variables, fixture, cancellation)
@@ -36,7 +38,9 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
         Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(Guid.NewGuid()));
     }
 
+#pragma warning disable CA1034 // Nested types should not be visible
     public class BaseApiGivenTestContext : GivenContext<TGiven>
+#pragma warning restore CA1034 // Nested types should not be visible
     {
         private readonly Variable<HttpContext> _context = new(nameof(_context));
         private readonly ISender _mediator = Substitute.For<ISender>();

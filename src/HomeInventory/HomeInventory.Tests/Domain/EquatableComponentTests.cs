@@ -100,7 +100,9 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
     protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
         new(variables, Fixture);
 
+#pragma warning disable CA1034 // Nested types should not be visible
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
+#pragma warning restore CA1034 // Nested types should not be visible
     {
         public GivenTestContext(VariablesContainer variables, IFixture fixture)
             : base(variables, fixture)
