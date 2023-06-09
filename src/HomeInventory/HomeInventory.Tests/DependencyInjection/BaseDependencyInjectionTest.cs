@@ -24,7 +24,9 @@ public abstract class BaseDependencyInjectionTest : BaseTest
         {
             new MemoryConfigurationProvider(source)
         };
+#pragma warning disable CA2000 // Dispose objects before losing scope
         Services.AddSingleton<IConfiguration>(new ConfigurationRoot(providers));
+#pragma warning restore CA2000 // Dispose objects before losing scope
     }
 
     protected void AddDateTime() => Services.AddScoped(_ => DateTime);
