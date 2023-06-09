@@ -27,7 +27,7 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web;
 
-public static class DependencyInjection
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddWeb(this IServiceCollection services)
     {
