@@ -41,7 +41,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
         static Task next(HttpContext ctx)
         {
             var source = new TaskCompletionSource();
-            var exception = new Exception();
+            var exception = new InvalidOperationException();
             source.SetException(exception);
             return source.Task;
         }
