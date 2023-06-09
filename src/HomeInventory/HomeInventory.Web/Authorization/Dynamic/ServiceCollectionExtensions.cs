@@ -55,6 +55,6 @@ public static class ServiceCollectionExtensions
 
     private static class AuthorizationPolicyNames
     {
-        public static readonly string Dynamic = nameof(Dynamic);
+        public const string Dynamic = nameof(Dynamic);
     }
 }
