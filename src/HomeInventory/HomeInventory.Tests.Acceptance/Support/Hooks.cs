@@ -17,7 +17,7 @@ public sealed class Hooks
         }
 
         objectContainer.RegisterInstanceAs<ITestingConfiguration>(new TestingConfiguration { EnvironmentName = "Testing" });
-        objectContainer.RegisterTypeAs<HomeInventoryAPIDriver, IHomeInventoryAPIDriver>().InstancePerContext();
+        objectContainer.RegisterTypeAs<HomeInventoryApiDriver, IHomeInventoryApiDriver>().InstancePerContext();
     }
 
     [AfterScenario(Order = 1)]

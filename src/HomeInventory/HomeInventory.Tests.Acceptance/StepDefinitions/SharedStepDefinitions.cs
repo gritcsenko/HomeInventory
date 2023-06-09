@@ -6,9 +6,9 @@ namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 [Binding]
 internal sealed class SharedStepDefinitions
 {
-    private readonly IHomeInventoryAPIDriver _apiDriver;
+    private readonly IHomeInventoryApiDriver _apiDriver;
 
-    public SharedStepDefinitions(IHomeInventoryAPIDriver apiDriver)
+    public SharedStepDefinitions(IHomeInventoryApiDriver apiDriver)
     {
         _apiDriver = apiDriver;
     }
