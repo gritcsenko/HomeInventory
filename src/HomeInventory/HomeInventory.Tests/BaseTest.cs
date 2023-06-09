@@ -51,41 +51,25 @@ public abstract class BaseTest : CompositeDisposable
     }
 }
 
-public abstract class BaseTest<TGiven, TWhen, TThen> : BaseTest
+public abstract class BaseTest<TGiven> : BaseTest
     where TGiven : GivenContext<TGiven>
-    where TWhen : WhenContext
-    where TThen : ThenContext
 {
     private readonly VariablesContainer _variables = new();
+    private TGiven? _given;
 
     protected BaseTest()
     {
-        Given = CreateGiven(_variables);
         When = CreateWhen(_variables);
-        Then = CreateThen(_variables);
     }
 
-    public TGiven Given { get; }
+    public TGiven Given => _given ??= CreateGiven(_variables);
 
-    public TWhen When { get; }
-
-    public TThen Then { get; }
+    public WhenContext When { get; }
 
     protected IVariable Result { get; } = new Variable(nameof(Result));
 
     protected abstract TGiven CreateGiven(VariablesContainer variables);
 
-    protected abstract TWhen CreateWhen(VariablesContainer variables);
-
-    protected abstract TThen CreateThen(VariablesContainer variables);
-}
-
-public abstract class BaseTest<TGiven> : BaseTest<TGiven, WhenContext, ThenContext>
-    where TGiven : GivenContext<TGiven>
-{
-    protected override WhenContext CreateWhen(VariablesContainer variables) =>
+    private WhenContext CreateWhen(VariablesContainer variables) =>
         new(variables, Result, Cancellation);
-
-    protected override ThenContext CreateThen(VariablesContainer variables) =>
-        new(variables, Result);
 }
