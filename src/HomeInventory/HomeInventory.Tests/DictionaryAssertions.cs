@@ -117,7 +117,9 @@ internal static class ObjectExtensions
             return source.Equals(converted.ConvertTo(sourceType))
                 && converted.Equals(target);
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch
+#pragma warning restore CA1031 // Do not catch general exception types
         {
             // ignored
             return false;
