@@ -62,7 +62,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
         var _request = Fixture.Create<RegisterCommand>();
         var _response = OneOf<Success, IError>.FromT0(new Success());
 
-        var response = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.Handle(_request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(1)
@@ -78,7 +78,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
         var _request = Fixture.Create<RegisterCommand>();
         var _response = OneOf<Success, IError>.FromT1(new NotFoundError(Fixture.Create<string>()));
 
-        var response = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.Handle(_request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(0)

@@ -60,7 +60,6 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
         {
             public void Customize(IFixture fixture)
             {
-                var rnd = new Random();
                 fixture.Customize<ProductAmountModel>(c => c
                     .With<string, AmountUnit>(m => m.UnitName, u => u.Name));
             }
@@ -79,7 +78,6 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
         {
             public void Customize(IFixture fixture)
             {
-                var rnd = new Random();
                 fixture.Customize<Amount>(c => c.FromFactory<decimal, AmountUnit>((v, u) => new Amount(v, u)));
             }
         }
