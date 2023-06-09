@@ -32,4 +32,9 @@ catch (Exception ex)
     log.Fatal(ex, "An unhandled exception occurred during bootstrapping");
 }
 
-public partial class Program { }
+public partial class Program
+{
+    protected Program()
+    {
+    }
+}
