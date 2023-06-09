@@ -48,7 +48,7 @@ public class UserManagementApiTests : BaseTest
         var request = Fixture.Create<RegisterRequest>();
         using var content = JsonContent.Create(request);
 
-        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        var response = await _client.PostAsync(new Uri("/api/users/manage/register"), content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.OK);
@@ -63,8 +63,8 @@ public class UserManagementApiTests : BaseTest
         var request = Fixture.Create<RegisterRequest>();
         using var content = JsonContent.Create(request);
 
-        _ = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
-        var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
+        _ = await _client.PostAsync(new Uri("/api/users/manage/register"), content, Cancellation.Token);
+        var response = await _client.PostAsync(new Uri("/api/users/manage/register"), content, Cancellation.Token);
 
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.Conflict);
