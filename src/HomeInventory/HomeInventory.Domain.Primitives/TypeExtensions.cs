@@ -27,6 +27,6 @@ public static class TypeExtensions
     {
         var args = type.GenericTypeArguments;
         var name = type.Name;
-        return $"{name.Replace("`" + args.Length, string.Empty)}<{string.Join(',', args.Select(GetFormattedName))}>";
+        return $"{name.Replace("`" + args.Length, string.Empty, StringComparison.Ordinal)}<{string.Join(',', args.Select(GetFormattedName))}>";
     }
 }
