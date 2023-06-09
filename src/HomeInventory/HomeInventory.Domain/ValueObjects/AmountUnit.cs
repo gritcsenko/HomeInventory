@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class AmountUnit : Enumeration<AmountUnit, Guid>
+public sealed class AmountUnit : BaseEnumeration<AmountUnit, Guid>
 {
     private readonly decimal _metricUnitScale = 1m;
     private readonly double _power = 1D;
