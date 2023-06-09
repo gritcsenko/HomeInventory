@@ -5,7 +5,6 @@ namespace HomeInventory.Domain.ValueObjects;
 public sealed class AmountUnit : BaseEnumeration<AmountUnit, Guid>
 {
     private readonly decimal _metricUnitScale = 1m;
-    private readonly double _power = 1D;
 
     internal AmountUnit(string name, MeasurementType measurement)
         : base(name, Guid.NewGuid())
@@ -21,8 +20,8 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Guid>
         Measurement = baseUnit.Measurement;
 
         _metricUnitScale = baseUnit._metricUnitScale * baseUnitScale;
-        _power = Math.Log10(decimal.ToDouble(_metricUnitScale));
-        IsMetric = double.IsFinite(_power) && Math.Round(_power) == _power;
+        var power = Math.Log10(decimal.ToDouble(_metricUnitScale));
+        IsMetric = double.IsFinite(power) && Math.Round(power) == power;
     }
 
     public static readonly AmountUnit Kelvin = new(nameof(Kelvin), MeasurementType.Temperature);
