@@ -2,4 +2,4 @@
 
 namespace HomeInventory.Domain.Errors;
 
-public record InvalidCredentialsError() : Error("Invalid credentials");
+public record InvalidCredentialsError() : BaseError("Invalid credentials");

@@ -15,7 +15,23 @@ public static class FixtureExtensions
 
     public static IFixture CustomizeString<TValue>(this IFixture fixture, Func<string, TValue> createFunc) => fixture.CustomizeFromFactory((string value) => createFunc(value));
 
-    public static IFixture CustomizeFromFactory<TValue, TObject>(this IFixture fixture, Func<TValue, TObject> createFunc) => fixture.Customize(new FromFactoryCustomization<TValue, TObject>(createFunc));
+    public static IFixture CustomizeFromFactory<TValue, TObject>(this IFixture fixture, Func<TValue, TObject> createFunc)
+    {
+        if (fixture is null)
+        {
+            throw new ArgumentNullException(nameof(fixture));
+        }
 
-    public static IFixture CustomizeRegisterRequest(this IFixture fixture) => fixture.Customize(new RegisterRequestCustomization());
+        return fixture.Customize(new FromFactoryCustomization<TValue, TObject>(createFunc));
+    }
+
+    public static IFixture CustomizeRegisterRequest(this IFixture fixture)
+    {
+        if (fixture is null)
+        {
+            throw new ArgumentNullException(nameof(fixture));
+        }
+
+        return fixture.Customize(new RegisterRequestCustomization());
+    }
 }

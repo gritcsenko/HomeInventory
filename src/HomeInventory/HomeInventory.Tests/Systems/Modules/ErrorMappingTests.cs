@@ -66,27 +66,17 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Result(actual => actual.Should().Be(StatusCodes.Status403Forbidden));
     }
 
-    protected override GivenContext CreateGiven(VariablesCollection variables) => new(variables, Fixture);
+    protected override GivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
 
+#pragma warning disable CA1034 // Nested types should not be visible
     public sealed class GivenContext : GivenContext<GivenContext>
+#pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenContext(VariablesCollection variables, IFixture fixture)
+        public GivenContext(VariablesContainer variables, IFixture fixture)
              : base(variables, fixture)
         {
         }
 
         internal GivenContext Sut(IVariable<ErrorMapping> sut) => Add(sut, () => new());
-    }
-
-    public sealed class ErrorInstancesData : TheoryData<IError, int>
-    {
-        public ErrorInstancesData()
-        {
-            Add(new ConflictError(""), StatusCodes.Status409Conflict);
-            Add(new DuplicateEmailError(), StatusCodes.Status409Conflict);
-            Add(new ValidationError(""), StatusCodes.Status400BadRequest);
-            Add(new ObjectValidationError<string>(""), StatusCodes.Status400BadRequest);
-            Add(new NotFoundError(""), StatusCodes.Status404NotFound);
-        }
     }
 }

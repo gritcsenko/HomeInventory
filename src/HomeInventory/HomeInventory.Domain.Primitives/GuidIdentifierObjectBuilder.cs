@@ -12,5 +12,5 @@ public sealed class GuidIdentifierObjectBuilder<TObject> : ValueObjectBuilder<Gu
         ReflectionMethods.CreateInstance<TObject>(value)
             ?? throw new InvalidOperationException($"Got null instance during instance creation of {typeof(TObject).AssemblyQualifiedName}");
 
-    public static bool IsValid(Guid value) => value != Guid.Empty;
+    public override bool IsValueValid<TSupplier>(in TSupplier value) => value.Invoke() != Guid.Empty;
 }

@@ -10,8 +10,13 @@ public class JsonElementAssertions : ObjectAssertions<JsonElement, JsonElementAs
     {
     }
 
-    public void BeArrayEqualTo(string[] items)
+    public void BeArrayEqualTo(params string[] items)
     {
+        if (items is null)
+        {
+            throw new ArgumentNullException(nameof(items));
+        }
+
         Subject.ValueKind.Should().Be(JsonValueKind.Array);
         Subject.GetArrayLength().Should().Be(items.Length);
         var subElements = Subject.EnumerateArray().ToArray();

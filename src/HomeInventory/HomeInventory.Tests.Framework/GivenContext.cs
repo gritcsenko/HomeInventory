@@ -1,9 +1,9 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public class GivenContext<TContext> : Context
+public class GivenContext<TContext> : BaseContext
     where TContext : GivenContext<TContext>
 {
-    public GivenContext(VariablesCollection variables, IFixture fixture)
+    public GivenContext(VariablesContainer variables, IFixture fixture)
         : base(variables)
     {
         Fixture = fixture;
@@ -31,7 +31,7 @@ public class GivenContext<TContext> : Context
     public TContext EmptyHashCode(IVariable<HashCode> hash) =>
         Add(hash, () => new HashCode());
 
-    public TContext SubstituteFor<T>(IVariable<T> variable, params Action<T, VariablesCollection>[] setups)
+    public TContext SubstituteFor<T>(IVariable<T> variable, params Action<T, VariablesContainer>[] setups)
         where T : class =>
         Add(variable, () =>
         {
@@ -46,6 +46,11 @@ public class GivenContext<TContext> : Context
     protected TContext Add<T>(IVariable<T> variable, Func<T> createValue)
         where T : notnull
     {
+        if (variable is null)
+        {
+            throw new ArgumentNullException(nameof(variable));
+        }
+
         if (!Variables.TryAdd(variable, createValue))
         {
             throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
@@ -61,6 +66,11 @@ public class GivenContext<TContext> : Context
     public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable, int count)
         where T : notnull
     {
+        if (hash is null)
+        {
+            throw new ArgumentNullException(nameof(hash));
+        }
+
         var hashValue = Variables.TryGet(hash)
             .OrInvoke(() => AddNewHashCode(hash));
 

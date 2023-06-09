@@ -8,6 +8,11 @@ public abstract class BaseHealthCheck : IHealthCheck
 {
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
+        if (context is null)
+        {
+            throw new ArgumentNullException(nameof(context));
+        }
+
         var (token, resources) = cancellationToken.WithTimeout(context.Registration.Timeout);
         try
         {
@@ -19,7 +24,9 @@ public abstract class BaseHealthCheck : IHealthCheck
 
             return new HealthCheckResult(context.Registration.FailureStatus);
         }
+#pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
         {
             return new HealthCheckResult(context.Registration.FailureStatus, exception: ex);
         }

@@ -17,16 +17,31 @@ public static class AssertionExtensions
 
     public static OkResultAssertions<TValue> Should<TValue>(this Ok<TValue> actualValue) => new(actualValue);
 
-    public static DictionaryAssertions ShouldBeDictionaryAnd(this IDictionary actualValue) => new(actualValue);
-
     public static OptionAssertions<T> Should<T>(this Optional<T> actualValue)
         where T : notnull =>
         new(actualValue);
 
-    public static AndWhichConstraint<ObjectAssertions, JsonElement> BeJsonElement(this ObjectAssertions assertions) => new(assertions, assertions.BeAssignableTo<JsonElement>().Subject);
+    public static DictionaryAssertions ShouldBeDictionaryAnd(this IDictionary actualValue) => new(actualValue);
 
-    public static AndWhichConstraint<GenericCollectionAssertions<RouteEndpoint>, RouteEndpoint> ContainEndpoint(this GenericCollectionAssertions<RouteEndpoint> assertions, string routePattern, string httpMethod) =>
-        assertions.ContainSingle(e =>
+    public static AndWhichConstraint<ObjectAssertions, JsonElement> BeJsonElement(this ObjectAssertions assertions)
+    {
+        if (assertions is null)
+        {
+            throw new ArgumentNullException(nameof(assertions));
+        }
+
+        return new(assertions, assertions.BeAssignableTo<JsonElement>().Subject);
+    }
+
+    public static AndWhichConstraint<GenericCollectionAssertions<RouteEndpoint>, RouteEndpoint> ContainEndpoint(this GenericCollectionAssertions<RouteEndpoint> assertions, string routePattern, string httpMethod)
+    {
+        if (assertions is null)
+        {
+            throw new ArgumentNullException(nameof(assertions));
+        }
+
+        return assertions.ContainSingle(e =>
             e.RoutePattern.RawText == routePattern
             && e.Metadata.OfType<IHttpMethodMetadata>().First().HttpMethods.Contains(httpMethod));
+    }
 }

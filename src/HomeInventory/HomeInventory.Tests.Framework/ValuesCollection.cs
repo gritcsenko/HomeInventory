@@ -1,15 +1,24 @@
-﻿namespace HomeInventory.Tests.Framework;
+﻿using System.Collections;
 
-public sealed class ValuesCollection
+namespace HomeInventory.Tests.Framework;
+
+public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
 {
     private readonly List<ValueContainer> _values = new();
     private readonly Type _valueType;
+
+    public int Count => ((IReadOnlyCollection<ValueContainer>)_values).Count;
 
     public ValuesCollection(Type valueType) => _valueType = valueType;
 
     public bool TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
     {
+        if (createValueFunc is null)
+        {
+            throw new ArgumentNullException(nameof(createValueFunc));
+        }
+
         if (!IsAsignable<T>())
         {
             return false;
@@ -22,6 +31,11 @@ public sealed class ValuesCollection
     public async Task<bool> TryAddAsync<T>(Func<Task<T>> createValueFunc)
         where T : notnull
     {
+        if (createValueFunc is null)
+        {
+            throw new ArgumentNullException(nameof(createValueFunc));
+        }
+
         if (!IsAsignable<T>())
         {
             return false;
@@ -37,6 +51,11 @@ public sealed class ValuesCollection
         if (!IsAsignable<T>() || index < 0 || index >= _values.Count)
         {
             return false;
+        }
+
+        if (createValueFunc is null)
+        {
+            throw new ArgumentNullException(nameof(createValueFunc));
         }
 
         var container = _values[index];
@@ -63,4 +82,14 @@ public sealed class ValuesCollection
     private void AddCore<T>(T value)
         where T : notnull =>
         _values.Add(new ValueContainer(Optional.Some<object>(value), _valueType));
+
+    public IEnumerator<ValueContainer> GetEnumerator()
+    {
+        return ((IEnumerable<ValueContainer>)_values).GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)_values).GetEnumerator();
+    }
 }

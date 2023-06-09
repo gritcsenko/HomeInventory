@@ -14,6 +14,10 @@ public class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectBuilder<TS
 
     protected TSelf This => (TSelf)this;
 
+    public virtual bool IsValueValid<TSupplier>(in TSupplier value)
+        where TSupplier : ISupplier<TValue> =>
+        true;
+
     public TSelf WithValue<TSupplier>(in TSupplier value)
         where TSupplier : ISupplier<TValue>
     {

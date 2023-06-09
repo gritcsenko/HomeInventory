@@ -27,7 +27,7 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web;
 
-public static class DependencyInjection
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddWeb(this IServiceCollection services)
     {
@@ -107,6 +107,11 @@ public static class DependencyInjection
             var descriptions = app.DescribeApiVersions();
             foreach (var description in descriptions)
             {
+                AddSwaggerEndpoint(options, description);
+            }
+
+            static void AddSwaggerEndpoint(Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIOptions options, Asp.Versioning.ApiExplorer.ApiVersionDescription description)
+            {
                 var url = $"/swagger/{description.GroupName}/swagger.json";
                 var name = description.GroupName.ToUpperInvariant();
                 options.SwaggerEndpoint(url, name);
@@ -170,7 +175,7 @@ public static class DependencyInjection
         return builder;
     }
 
-    private class FluentOptionsValidator<TOptions> : IValidateOptions<TOptions>
+    private sealed class FluentOptionsValidator<TOptions> : IValidateOptions<TOptions>
         where TOptions : class
     {
         private readonly Action<ValidationStrategy<TOptions>>? _validationOptions;

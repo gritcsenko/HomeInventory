@@ -192,23 +192,25 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
             .Result(actual => actual.Should().BeTrue());
     }
 
-    protected override GivenTestContext CreateGiven(VariablesCollection variables) =>
+    protected sealed override GivenTestContext CreateGiven(VariablesContainer variables) =>
         new(variables, Fixture);
 
+#pragma warning disable CA1034 // Nested types should not be visible
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
+#pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesCollection variables, IFixture fixture)
+        public GivenTestContext(VariablesContainer variables, IFixture fixture)
             : base(variables, fixture)
         {
         }
 
-        public GivenTestContext TestEntity(IVariable<TestEntity> entity, IndexedVariable<TestEntityId> id) =>
+        internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IndexedVariable<TestEntityId> id) =>
             Add(entity, () => CreateTestEntity(id));
 
         private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
     }
 
-    public class TestEntityId : GuidIdentifierObject<TestEntityId>
+    internal class TestEntityId : GuidIdentifierObject<TestEntityId>
     {
         public TestEntityId(Guid value)
             : base(value)
@@ -216,7 +218,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         }
     }
 
-    public class TestEntity : Entity<TestEntity, TestEntityId>
+    internal class TestEntity : Entity<TestEntity, TestEntityId>
     {
         public TestEntity(TestEntityId id)
             : base(id)

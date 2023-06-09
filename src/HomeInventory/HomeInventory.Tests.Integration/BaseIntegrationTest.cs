@@ -9,13 +9,16 @@ namespace HomeInventory.Tests.Integration;
 [IntegrationTest]
 public abstract class BaseIntegrationTest : BaseTest
 {
+#pragma warning disable CA2213 // Disposable fields should be disposed
     private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
+#pragma warning restore CA2213 // Disposable fields should be disposed
 
     protected BaseIntegrationTest()
     {
         AddDisposable(_appFactory);
         _client = _appFactory.CreateClient();
+        AddDisposable(_client);
     }
 
     protected IReadOnlyCollection<RouteEndpoint> Endpoints => _appFactory
@@ -26,5 +29,5 @@ public abstract class BaseIntegrationTest : BaseTest
         .ToReadOnly();
 
     protected async Task<HttpResponseMessage> PostAsync(string route, JsonContent content) =>
-        await _client.PostAsync(route, content, Cancellation.Token);
+        await _client.PostAsync(new Uri(route, UriKind.RelativeOrAbsolute), content, Cancellation.Token);
 }

@@ -12,7 +12,7 @@ namespace HomeInventory.Web.Modules;
 internal class AuthenticationModule : ApiModule
 {
     public AuthenticationModule()
-        : base("/api/authentication", Permission.AccessPermissions)
+        : base("/api/authentication", PermissionType.AccessPermissions)
     {
     }
 

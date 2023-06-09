@@ -11,13 +11,16 @@ namespace HomeInventory.Tests.Integration;
 public class UserManagementApiTests : BaseIntegrationTest
 {
     private const string _registerRoute = "/api/users/manage/register";
+#pragma warning disable CA2213 // Disposable fields should be disposed
     private readonly JsonContent _content;
+#pragma warning restore CA2213 // Disposable fields should be disposed
 
     public UserManagementApiTests()
     {
         Fixture.CustomizeRegisterRequest();
         var request = Fixture.Create<RegisterRequest>();
         _content = JsonContent.Create(request);
+        AddDisposable(_content);
     }
 
     [Fact]
@@ -59,6 +62,6 @@ public class UserManagementApiTests : BaseIntegrationTest
             .Which.GetString().Should().NotBeNullOrEmpty();
         body!.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeJsonElement()
-            .Which.Should().BeArrayEqualTo(new[] { nameof(DuplicateEmailError) });
+            .Which.Should().BeArrayEqualTo(nameof(DuplicateEmailError));
     }
 }

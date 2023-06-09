@@ -36,12 +36,14 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             });
     }
 
-    protected override GivenTestContext CreateGiven(VariablesCollection variables) =>
+    protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
         new(variables, Fixture);
 
+#pragma warning disable CA1034 // Nested types should not be visible
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
+#pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesCollection variables, IFixture fixture)
+        public GivenTestContext(VariablesContainer variables, IFixture fixture)
             : base(variables, fixture)
         {
             Fixture.Customize(new AmountUnitCustomization());
@@ -60,7 +62,6 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
         {
             public void Customize(IFixture fixture)
             {
-                var rnd = new Random();
                 fixture.Customize<ProductAmountModel>(c => c
                     .With<string, AmountUnit>(m => m.UnitName, u => u.Name));
             }
@@ -79,7 +80,6 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
         {
             public void Customize(IFixture fixture)
             {
-                var rnd = new Random();
                 fixture.Customize<Amount>(c => c.FromFactory<decimal, AmountUnit>((v, u) => new Amount(v, u)));
             }
         }

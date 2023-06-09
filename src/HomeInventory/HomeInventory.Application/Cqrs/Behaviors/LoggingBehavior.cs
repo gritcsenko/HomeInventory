@@ -17,8 +17,8 @@ internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        using var scope = _logger.BeginScope("Got {Request} and will return {Response}", _requestName, _responseName);
-        _logger.LogInformation("Sending {Request}", request);
+        using var scope = _logger.LoggingBehaviorScope(_requestName, _responseName);
+        _logger.SendingRequest(request);
         var response = await next();
 
         HandleResponse(response);
@@ -33,10 +33,10 @@ internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
             switch (oneof.Index)
             {
                 case 0:
-                    _logger.LogInformation("{Value} was returned", oneof.Value);
+                    _logger.ValueReturned(oneof.Value);
                     break;
                 case 1:
-                    _logger.LogWarning("{Error} was returned", oneof.Value);
+                    _logger.ErrorReturned(oneof.Value);
                     break;
             }
         }

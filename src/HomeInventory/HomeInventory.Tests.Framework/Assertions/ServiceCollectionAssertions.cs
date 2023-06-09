@@ -36,6 +36,16 @@ public class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceC
         ContainSingle<T>(lifetime)
             .Which.GetInstance(provider).Should().BeAssignableTo<T>();
 
+    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle<T>(ServiceLifetime lifetime)
+        where T : class =>
+        ContainSingle(typeof(T), lifetime);
+
+    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime) =>
+        ContainSingle(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
+
+    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime) =>
+        Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
+
     private AndConstraint<ServiceCollectionAssertions> Contain<T>(IServiceProvider provider, ServiceLifetime lifetime)
         where T : class =>
         Contain<T>(lifetime)
@@ -45,17 +55,7 @@ public class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceC
                     d.GetInstance(provider).Should().BeAssignableTo<T>();
             });
 
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle<T>(ServiceLifetime lifetime)
-        where T : class =>
-        ContainSingle(typeof(T), lifetime);
-
     private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain<T>(ServiceLifetime lifetime)
         where T : class =>
         Contain(typeof(T), lifetime);
-
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime) =>
-        ContainSingle(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
-
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime) =>
-        Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
 }
