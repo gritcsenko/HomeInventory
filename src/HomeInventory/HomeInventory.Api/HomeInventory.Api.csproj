@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <UserSecretsId>abc8e7e8-eab5-4b38-8be1-62a2270484f4</UserSecretsId>
@@ -39,6 +39,11 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.dockerignore" Link=".dockerignore" />
+    <None Include="..\Dockerfile" Link="Dockerfile" />
   </ItemGroup>
 
 </Project>
