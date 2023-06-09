@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests;
 
-public class ThenCatchedContext : Context
+public class ThenCatchedContext : BaseContext
 {
     private readonly IVariable<Action> _resultVariable;
 

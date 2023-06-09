@@ -1,10 +1,10 @@
 ﻿namespace HomeInventory.Tests;
 
-public class Context
+public class BaseContext
 {
     private readonly VariablesContainer _variables;
 
-    public Context(VariablesContainer variables)
+    public BaseContext(VariablesContainer variables)
     {
         _variables = variables;
     }

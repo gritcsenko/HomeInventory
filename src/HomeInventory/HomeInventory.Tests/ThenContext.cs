@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Tests;
 
-public class ThenContext<TResult> : Context
+public class ThenContext<TResult> : BaseContext
     where TResult : notnull
 {
     private readonly IVariable<TResult> _resultVariable;

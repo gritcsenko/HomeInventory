@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Tests;
 
-public class WhenContext : Context
+public class WhenContext : BaseContext
 {
     private readonly IVariable _resultVariable;
     private readonly ICancellation _cancellation;

@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Tests;
 
-public class GivenContext<TContext> : Context
+public class GivenContext<TContext> : BaseContext
     where TContext : GivenContext<TContext>
 {
     public GivenContext(VariablesContainer variables, IFixture fixture)
