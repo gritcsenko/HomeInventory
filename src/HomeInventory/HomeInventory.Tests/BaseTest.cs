@@ -30,13 +30,6 @@ public abstract class BaseTest : CompositeDisposable
         return FormatterServices.GetUninitializedObject(type);
     }
 
-    public interface ICancellation
-    {
-        CancellationToken Token { get; }
-
-        void Cancel();
-    }
-
     private sealed class CancellationImplementation : Disposable, ICancellation
     {
         private readonly CancellationTokenSource _source;
