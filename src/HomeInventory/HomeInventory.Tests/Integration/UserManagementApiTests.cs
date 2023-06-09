@@ -15,14 +15,18 @@ namespace HomeInventory.Tests.Integration;
 [IntegrationTest]
 public class UserManagementApiTests : BaseTest
 {
+#pragma warning disable CA2213 // Disposable fields should be disposed
     private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
+#pragma warning restore CA2213 // Disposable fields should be disposed
 
     public UserManagementApiTests()
     {
         AddDisposable(_appFactory);
 
         _client = _appFactory.CreateClient();
+        AddDisposable(_client);
+
         Fixture.Customize(new RegisterRequestCustomization());
     }
 
