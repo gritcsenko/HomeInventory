@@ -51,10 +51,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Restore dependencies
-        run: dotnet restore -v minimal
+        run: dotnet restore HomeInventory.sln -v minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v3
@@ -160,6 +160,37 @@ jobs:
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+
+  intergration-test:
+    name: "Integration Test .NET"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3.5.2
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+      - name: Download cached dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
+      - name: Run Integration Tests
+        run: dotnet test HomeInventory.Tests.Integration --filter "Category=Integration" -c Release -v minimal
+        working-directory: ./src/HomeInventory
 
   acceptance-test:
     name: "Acceptance Test .NET"
