@@ -59,13 +59,17 @@ public class TypeExtensionsTests : BaseTest
     }
 
 #pragma warning disable S2094 // Classes should not be empty
+#pragma warning disable S2326 // Unused type parameters should be removed
     private class GenericClass<T>
+#pragma warning restore S2326 // Unused type parameters should be removed
 #pragma warning restore S2094 // Classes should not be empty
     {
     }
 
 #pragma warning disable S2094 // Classes should not be empty
+#pragma warning disable S2326 // Unused type parameters should be removed
     private class GenericClass<T1, T2>
+#pragma warning restore S2326 // Unused type parameters should be removed
 #pragma warning restore S2094 // Classes should not be empty
     {
     }
