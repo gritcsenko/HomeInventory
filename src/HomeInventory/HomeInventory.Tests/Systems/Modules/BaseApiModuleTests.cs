@@ -14,12 +14,12 @@ namespace HomeInventory.Tests.Systems.Modules;
 
 public abstract class BaseApiModuleTests : BaseApiModuleTests<BaseApiModuleTests.ApiGivenTestContext>
 {
-    protected override ApiGivenTestContext CreateGiven(VariablesCollection variables) =>
+    protected override ApiGivenTestContext CreateGiven(VariablesContainer variables) =>
         new(variables, Fixture, Cancellation);
 
     public sealed class ApiGivenTestContext : BaseApiGivenTestContext
     {
-        public ApiGivenTestContext(VariablesCollection variables, IFixture fixture, ICancellation cancellation)
+        public ApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation)
             : base(variables, fixture, cancellation)
         {
         }
@@ -43,7 +43,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
         private readonly IMapper _mapper = Substitute.For<IMapper>();
         private readonly ICancellation _cancellation;
 
-        public BaseApiGivenTestContext(VariablesCollection variables, IFixture fixture, ICancellation cancellation)
+        public BaseApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation)
             : base(variables, fixture)
         {
             _cancellation = cancellation;

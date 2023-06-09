@@ -66,11 +66,11 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Result(actual => actual.Should().Be(StatusCodes.Status403Forbidden));
     }
 
-    protected override GivenContext CreateGiven(VariablesCollection variables) => new(variables, Fixture);
+    protected override GivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
 
     public sealed class GivenContext : GivenContext<GivenContext>
     {
-        public GivenContext(VariablesCollection variables, IFixture fixture)
+        public GivenContext(VariablesContainer variables, IFixture fixture)
              : base(variables, fixture)
         {
         }

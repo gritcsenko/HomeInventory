@@ -6,7 +6,7 @@ public class ThenCatchedContext : Context
 {
     private readonly IVariable<Action> _resultVariable;
 
-    public ThenCatchedContext(VariablesCollection variables, IVariable<Action> resultVariable)
+    public ThenCatchedContext(VariablesContainer variables, IVariable<Action> resultVariable)
         : base(variables) =>
         _resultVariable = resultVariable;
 

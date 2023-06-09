@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests;
 
-public sealed class VariablesCollection
+public sealed class VariablesContainer
 {
     private readonly Dictionary<string, ValuesCollection> _variables = new();
 

@@ -192,12 +192,12 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
             .Result(actual => actual.Should().BeTrue());
     }
 
-    protected override GivenTestContext CreateGiven(VariablesCollection variables) =>
+    protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
         new(variables, Fixture);
 
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
     {
-        public GivenTestContext(VariablesCollection variables, IFixture fixture)
+        public GivenTestContext(VariablesContainer variables, IFixture fixture)
             : base(variables, fixture)
         {
         }

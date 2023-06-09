@@ -63,7 +63,7 @@ public abstract class BaseTest<TGiven, TWhen, TThen> : BaseTest
     where TWhen : WhenContext
     where TThen : ThenContext
 {
-    private readonly VariablesCollection _variables = new();
+    private readonly VariablesContainer _variables = new();
 
     protected BaseTest()
     {
@@ -80,19 +80,19 @@ public abstract class BaseTest<TGiven, TWhen, TThen> : BaseTest
 
     protected IVariable Result { get; } = new Variable(nameof(Result));
 
-    protected abstract TGiven CreateGiven(VariablesCollection variables);
+    protected abstract TGiven CreateGiven(VariablesContainer variables);
 
-    protected abstract TWhen CreateWhen(VariablesCollection variables);
+    protected abstract TWhen CreateWhen(VariablesContainer variables);
 
-    protected abstract TThen CreateThen(VariablesCollection variables);
+    protected abstract TThen CreateThen(VariablesContainer variables);
 }
 
 public abstract class BaseTest<TGiven> : BaseTest<TGiven, WhenContext, ThenContext>
     where TGiven : GivenContext<TGiven>
 {
-    protected override WhenContext CreateWhen(VariablesCollection variables) =>
+    protected override WhenContext CreateWhen(VariablesContainer variables) =>
         new(variables, Result, Cancellation);
 
-    protected override ThenContext CreateThen(VariablesCollection variables) =>
+    protected override ThenContext CreateThen(VariablesContainer variables) =>
         new(variables, Result);
 }

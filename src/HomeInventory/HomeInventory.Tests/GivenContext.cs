@@ -3,7 +3,7 @@
 public class GivenContext<TContext> : Context
     where TContext : GivenContext<TContext>
 {
-    public GivenContext(VariablesCollection variables, IFixture fixture)
+    public GivenContext(VariablesContainer variables, IFixture fixture)
         : base(variables)
     {
         Fixture = fixture;
@@ -31,7 +31,7 @@ public class GivenContext<TContext> : Context
     public TContext EmptyHashCode(IVariable<HashCode> hash) =>
         Add(hash, () => new HashCode());
 
-    public TContext SubstituteFor<T>(IVariable<T> variable, params Action<T, VariablesCollection>[] setups)
+    public TContext SubstituteFor<T>(IVariable<T> variable, params Action<T, VariablesContainer>[] setups)
         where T : class =>
         Add(variable, () =>
         {

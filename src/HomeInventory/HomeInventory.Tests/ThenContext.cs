@@ -4,7 +4,7 @@ public class ThenContext : Context
 {
     private readonly IVariable _resultVariable;
 
-    public ThenContext(VariablesCollection variables, IVariable resultVariable)
+    public ThenContext(VariablesContainer variables, IVariable resultVariable)
         : base(variables) =>
         _resultVariable = resultVariable;
 
@@ -35,7 +35,7 @@ public class ThenContext<TResult> : Context
 {
     private readonly IVariable<TResult> _resultVariable;
 
-    public ThenContext(VariablesCollection variables, IVariable<TResult> resultVariable)
+    public ThenContext(VariablesContainer variables, IVariable<TResult> resultVariable)
         : base(variables) =>
         _resultVariable = resultVariable;
 

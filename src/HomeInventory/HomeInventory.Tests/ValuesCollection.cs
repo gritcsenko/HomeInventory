@@ -1,6 +1,8 @@
-﻿namespace HomeInventory.Tests;
+﻿using System.Collections;
 
-public sealed class ValuesCollection
+namespace HomeInventory.Tests;
+
+public sealed class ValuesCollection : IEnumerable<ValueContainer>
 {
     private readonly List<ValueContainer> _values = new();
     private readonly Type _valueType;
@@ -63,4 +65,14 @@ public sealed class ValuesCollection
     private void AddCore<T>(T value)
         where T : notnull =>
         _values.Add(new ValueContainer(Optional.Some<object>(value), _valueType));
+
+    public IEnumerator<ValueContainer> GetEnumerator()
+    {
+        return ((IEnumerable<ValueContainer>)_values).GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)_values).GetEnumerator();
+    }
 }

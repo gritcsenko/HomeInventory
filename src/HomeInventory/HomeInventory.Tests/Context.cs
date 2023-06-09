@@ -2,12 +2,12 @@
 
 public class Context
 {
-    private readonly VariablesCollection _variables;
+    private readonly VariablesContainer _variables;
 
-    public Context(VariablesCollection variables)
+    public Context(VariablesContainer variables)
     {
         _variables = variables;
     }
 
-    protected VariablesCollection Variables => _variables;
+    protected VariablesContainer Variables => _variables;
 }

@@ -7,7 +7,7 @@ public class WhenContext : Context
     private readonly IVariable _resultVariable;
     private readonly ICancellation _cancellation;
 
-    public WhenContext(VariablesCollection variables, IVariable resultVariable, ICancellation cancellation)
+    public WhenContext(VariablesContainer variables, IVariable resultVariable, ICancellation cancellation)
         : base(variables)
     {
         _resultVariable = resultVariable;
