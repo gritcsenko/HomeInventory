@@ -170,7 +170,7 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    private class FluentOptionsValidator<TOptions> : IValidateOptions<TOptions>
+    private sealed class FluentOptionsValidator<TOptions> : IValidateOptions<TOptions>
         where TOptions : class
     {
         private readonly Action<ValidationStrategy<TOptions>>? _validationOptions;
