@@ -132,7 +132,7 @@ internal static class ObjectExtensions
     private static bool IsNumericType(this object obj)
     {
         // "is not null" is due to https://github.com/dotnet/runtime/issues/47920#issuecomment-774481505
-        return obj is not null and (
+        return obj is
             int or
             long or
             float or
@@ -143,6 +143,6 @@ internal static class ObjectExtensions
             short or
             ushort or
             uint or
-            ulong);
+            ulong;
     }
 }
