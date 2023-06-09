@@ -50,7 +50,7 @@ public class ArchitectureTests
 
         var result = Types.InAssembly(assembly)
             .That()
-            .HaveNameEndingWith("CommandHandler")
+            .HaveNameEndingWith("CommandHandler", StringComparison.Ordinal)
             .Should()
             .HaveDependencyOn(Namespaces.Domain)
             .GetResult();
@@ -65,7 +65,7 @@ public class ArchitectureTests
 
         var result = Types.InAssembly(assembly)
             .That()
-            .HaveNameEndingWith("QueryHandler")
+            .HaveNameEndingWith("QueryHandler", StringComparison.Ordinal)
             .Should()
             .HaveDependencyOn(Namespaces.Domain)
             .GetResult();
@@ -80,7 +80,7 @@ public class ArchitectureTests
 
         var result = Types.InAssembly(assembly)
             .That()
-            .HaveNameEndingWith("Controller")
+            .HaveNameEndingWith("Controller", StringComparison.Ordinal)
             .And()
             .AreNotAbstract()
             .Should()
@@ -97,7 +97,7 @@ public class ArchitectureTests
 
         var result = Types.InAssembly(assembly)
             .That()
-            .HaveNameEndingWith("Controller")
+            .HaveNameEndingWith("Controller", StringComparison.Ordinal)
             .And()
             .AreNotAbstract()
             .Should()
