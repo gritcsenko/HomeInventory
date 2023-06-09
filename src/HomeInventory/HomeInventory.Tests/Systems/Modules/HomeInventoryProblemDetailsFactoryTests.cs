@@ -77,7 +77,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateProblemDetails_Should_SetTraceIdentifierFromCurrentActivity()
     {
         var sut = CreateSut();
-        var activity = new Activity("Testing");
+        using var activity = new Activity("Testing");
         activity.Start();
         var id = activity.Id;
 
@@ -231,7 +231,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void CreateValidationProblemDetails_Should_SetTraceIdentifierFromCurrentActivity()
     {
         var sut = CreateSut();
-        var activity = new Activity("Testing");
+        using var activity = new Activity("Testing");
         activity.Start();
         var id = activity.Id;
 

@@ -46,7 +46,7 @@ public class UserManagementApiTests : BaseTest
     public async Task Register_ReturnsSuccess()
     {
         var request = Fixture.Create<RegisterRequest>();
-        var content = JsonContent.Create(request);
+        using var content = JsonContent.Create(request);
 
         var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
 
@@ -61,7 +61,7 @@ public class UserManagementApiTests : BaseTest
     public async Task RegisterSameTwice_ReturnsFailure()
     {
         var request = Fixture.Create<RegisterRequest>();
-        var content = JsonContent.Create(request);
+        using var content = JsonContent.Create(request);
 
         _ = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
         var response = await _client.PostAsync("/api/users/manage/register", content, Cancellation.Token);
