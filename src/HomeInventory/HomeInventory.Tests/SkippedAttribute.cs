@@ -14,5 +14,8 @@ public sealed class SkippedAttribute : FactAttribute
     public SkippedAttribute(string reason)
     {
         Skip = reason;
+        Reason = reason;
     }
+
+    public string Reason { get; }
 }
