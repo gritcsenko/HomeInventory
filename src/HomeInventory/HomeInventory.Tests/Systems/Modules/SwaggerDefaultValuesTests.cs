@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
 using Asp.Versioning;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Http;
@@ -80,7 +81,7 @@ public class SwaggerDefaultValuesTests : BaseTest
     {
         var supportedMediaType = Fixture.Create<string>();
         var notSupportedMediaType = Fixture.Create<string>();
-        var responseKey = statusCode?.ToString() ?? "default";
+        var responseKey = statusCode?.ToString(CultureInfo.InvariantCulture) ?? "default";
         var supported = new ApiResponseType
         {
             IsDefaultResponse = statusCode is null,
