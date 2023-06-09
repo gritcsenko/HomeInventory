@@ -1,3 +1,4 @@
+using System.Globalization;
 using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Domain;
@@ -6,7 +7,7 @@ using HomeInventory.Web;
 using Serilog;
 
 using var log = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture)
     .CreateLogger();
 
 try
