@@ -5,11 +5,10 @@ namespace HomeInventory.Tests.Domain.Primitives;
 [Trait("Category", "Unit")]
 public class PoolTests : BaseTest
 {
-    private readonly IPoolObjectActivator<object> _activator;
+    private readonly IPoolObjectActivator<object> _activator = Substitute.For<IPoolObjectActivator<object>>();
 
     public PoolTests()
     {
-        _activator = Substitute.For<IPoolObjectActivator<object>>();
         _activator.Pull().Returns(ci => Fixture.Create<object>());
     }
 
@@ -22,10 +21,29 @@ public class PoolTests : BaseTest
     }
 
     [Fact]
+    public void Count_ShouldBeZero_AfterCreationWithDefault()
+    {
+        var sut = CreateSutWithDefault();
+
+        sut.Count.Should().Be(0);
+    }
+
+    [Fact]
     public void Count_ShouldBeExpected_AfterFill()
     {
         var expected = Fixture.Create<int>();
         var sut = CreateSut();
+
+        sut.Fill(expected);
+
+        sut.Count.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Count_ShouldBeExpected_AfterFillWithDefault()
+    {
+        var expected = Fixture.Create<int>();
+        var sut = CreateSutWithDefault();
 
         sut.Fill(expected);
 
@@ -113,6 +131,11 @@ public class PoolTests : BaseTest
 
     private Pool<object> CreateSut()
     {
-        return new Pool<object>(_activator);
+        return new(_activator);
+    }
+
+    private Pool<object> CreateSutWithDefault()
+    {
+        return new();
     }
 }

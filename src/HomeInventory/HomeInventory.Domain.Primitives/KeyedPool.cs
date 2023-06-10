@@ -1,7 +1,7 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
 public class KeyedPool<TKey, T> : IKeyedPool<TKey, T>
-    where TKey : IEquatable<TKey>
+    where TKey : notnull, IEquatable<TKey>
     where T : class
 {
     private readonly Dictionary<TKey, IPool<T>> _pools = new();
@@ -10,6 +10,8 @@ public class KeyedPool<TKey, T> : IKeyedPool<TKey, T>
     public KeyedPool(Func<TKey, IPool<T>> poolFactory) => _poolFactory = poolFactory;
 
     public int Count => _pools.Values.Sum(pool => pool.Count);
+
+    public IReadOnlyCollection<TKey> Keys => _pools.Keys;
 
     public void Clear()
     {

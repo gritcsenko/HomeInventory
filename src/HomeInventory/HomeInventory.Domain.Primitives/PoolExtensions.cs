@@ -5,12 +5,7 @@ public static class PoolExtensions
     public static PoolHandle<T> PullScoped<T>(this IPool<T> pool)
         where T : class
     {
-        if (pool is null)
-        {
-            throw new ArgumentNullException(nameof(pool));
-        }
-
-        var obj = pool.Pull();
+        var obj = pool?.Pull() ?? throw new ArgumentNullException(nameof(pool));
         return new(pool, obj);
     }
 }
