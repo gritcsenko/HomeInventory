@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  homeinventory.api:
+    image: ${DOCKER_REGISTRY-}homeinventoryapi
+    build:
+      context: .
+      dockerfile: Dockerfile
