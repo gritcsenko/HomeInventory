@@ -25,7 +25,7 @@ public class AuthenticationModuleTests : BaseApiModuleTests
             .OnQueryReturn(_authenticateQuery, _authenticateResult);
 
         var then = await When
-            .InvokedAsync(Given.Context, _loginRequest, AuthenticationModule.LoginAsync);
+            .InvokedAsync(_loginRequest, Given.Context, AuthenticationModule.LoginAsync);
 
         then
             .Result(_loginResponse, (actual, expected) =>
@@ -42,7 +42,7 @@ public class AuthenticationModuleTests : BaseApiModuleTests
             .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(_authenticateQuery, _error);
 
         var then = await When
-            .InvokedAsync(Given.Context, _loginRequest, AuthenticationModule.LoginAsync);
+            .InvokedAsync(_loginRequest, Given.Context, AuthenticationModule.LoginAsync);
 
         then
             .Result(_error, (actual, error) =>
