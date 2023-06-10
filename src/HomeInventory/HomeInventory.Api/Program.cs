@@ -1,3 +1,4 @@
+using System.Globalization;
 using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Domain;
@@ -6,7 +7,7 @@ using HomeInventory.Web;
 using Serilog;
 
 using var log = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture)
     .CreateLogger();
 
 try
@@ -27,9 +28,16 @@ try
         .UseWeb()
         .RunAsync();
 }
+#pragma warning disable CA1031 // Do not catch general exception types
 catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
 {
     log.Fatal(ex, "An unhandled exception occurred during bootstrapping");
 }
 
-public partial class Program { }
+public partial class Program
+{
+    protected Program()
+    {
+    }
+}

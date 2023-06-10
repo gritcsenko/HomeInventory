@@ -40,30 +40,4 @@ public class ReflectionMethodsTests : BaseTest
 
         actual.Should().NotBeNull();
     }
-
-    public sealed class PublicTestSubject
-    {
-        public PublicTestSubject()
-        {
-        }
-
-#pragma warning disable IDE0060 // Remove unused parameter
-        public PublicTestSubject(object arg)
-#pragma warning restore IDE0060 // Remove unused parameter
-        {
-        }
-    }
-
-    public sealed class InternalTestSubject
-    {
-        internal InternalTestSubject()
-        {
-        }
-
-#pragma warning disable IDE0060 // Remove unused parameter
-        internal InternalTestSubject(object arg)
-#pragma warning restore IDE0060 // Remove unused parameter
-        {
-        }
-    }
 }

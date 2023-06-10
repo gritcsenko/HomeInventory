@@ -26,12 +26,12 @@ jobs:
   build:
     permissions:
       pull-requests: write
-    name: Build and Test .NET
+    name: Build .NET
     runs-on: ubuntu-latest
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3.5.3
         with:
           lfs: true
           fetch-depth: 0
@@ -42,24 +42,65 @@ jobs:
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
-      - name: Cache dependencies
+      - name: Download cached dependencies
         uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
-            ${{ runner.os }}-nuget
+            ${{ runner.os }}-nuget-refs/heads/main
       - name: Restore dependencies
-        run: dotnet restore --verbosity minimal
+        run: dotnet restore HomeInventory.sln -v minimal
         working-directory: ./src/HomeInventory
+      # disabling format check until https://github.com/dotnet/sdk/issues/32598 is resolved
+      #- name: Check formatting
+      #  run: dotnet format --no-restore --verify-no-changes --severity warn HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
+      #  working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build -m:1 --no-incremental --no-restore --configuration Release --self-contained false --verbosity minimal
+        run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
-      - name: Unit Tests & Collect Coverage
-        run: |
-          dotnet test HomeInventory.Tests --filter "Category=Unit|Category=Architecture" --no-build --no-restore --configuration Release --verbosity minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
-          cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+
+  unit-test:
+    name: "Unit Test .NET"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3.5.3
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+      - name: Download cached dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
+      - name: Run Unit Tests
+        run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
+        working-directory: ./src/HomeInventory
+      - name: Run Architecture Tests
+        run: dotnet test HomeInventory.Tests --filter "Category=Architecture" -c Release -v minimal
+        working-directory: ./src/HomeInventory
+      - name: Collect Coverage
+        run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
         working-directory: ./src/HomeInventory
       - name: Code Coverage Summary Report
         id: report
@@ -86,7 +127,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.21
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.22
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
@@ -123,19 +164,78 @@ jobs:
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
-      - name: Run Acceptance Tests
-        run: dotnet test HomeInventory.Tests.Acceptance --no-build --no-restore --configuration Release --verbosity minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
+
+  intergration-test:
+    name: "Integration Test .NET"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3.5.2
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+      - name: Download cached dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
+      - name: Run Integration Tests
+        run: dotnet test HomeInventory.Tests.Integration --filter "Category=Integration" -c Release -v minimal
         working-directory: ./src/HomeInventory
+
+  acceptance-test:
+    name: "Acceptance Test .NET"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3.5.3
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+      - name: Download cached dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
+      - name: Run Acceptance Tests
+        run: dotnet test HomeInventory.Tests.Acceptance -c Release -v minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
+        working-directory: ./src/HomeInventory
+      - name: Install Living Documentation Tool
+        run: dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
       - name: Generate Living Documentation Specification
-        run: |
-          dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
-          livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: "Specflow Test Results"
-          path: src/HomeInventory/Acceptance/AcceptanceTestResults.html
+          path: ./Acceptance/AcceptanceTestResults.html
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.

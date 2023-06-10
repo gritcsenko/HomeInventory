@@ -16,6 +16,7 @@ public class AmountUnitTests : BaseTest
 
     [Theory]
     [MemberData(nameof(Data))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Test")]
     public void PropertiesShouldMatch(AmountUnit sut, string name, MeasurementType type, bool isMetric)
     {
         sut.Name.Should().Be(name);

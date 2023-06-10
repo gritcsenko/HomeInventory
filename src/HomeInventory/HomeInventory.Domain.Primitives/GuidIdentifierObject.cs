@@ -14,7 +14,9 @@ public abstract class GuidIdentifierObject<TSelf> : ValueObject<TSelf>, IGuidIde
     public Guid Id { get; }
 
     [RequiresPreviewFeatures]
+#pragma warning disable CA1000 // Do not declare static members on generic types
     public static GuidIdentifierObjectBuilder<TSelf> CreateBuilder() => new();
+#pragma warning restore CA1000 // Do not declare static members on generic types
 
     public override string ToString() => Id.ToString();
 }

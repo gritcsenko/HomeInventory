@@ -2,7 +2,7 @@
 
 public class PermissionMetadata
 {
-    public PermissionMetadata(IReadOnlyCollection<Permission> permissions) => Permissions = permissions;
+    public PermissionMetadata(IReadOnlyCollection<PermissionType> permissions) => Permissions = permissions;
 
-    public IReadOnlyCollection<Permission> Permissions { get; }
+    public IReadOnlyCollection<PermissionType> Permissions { get; }
 }

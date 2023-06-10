@@ -7,18 +7,18 @@ using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal sealed class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInventoryAPIDriver
+internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, IHomeInventoryApiDriver
 {
     private readonly ITestingConfiguration _configuration;
-    private readonly Lazy<IUserManagementAPIDriver> _lazyUserManagement;
+    private readonly Lazy<IUserManagementApiDriver> _lazyUserManagement;
 
-    public HomeInventoryAPIDriver(ITestingConfiguration configuration)
+    public HomeInventoryApiDriver(ITestingConfiguration configuration)
     {
         _configuration = configuration;
         _lazyUserManagement = new(CreateUserManagement, true);
     }
 
-    public IUserManagementAPIDriver UserManagement => _lazyUserManagement.Value;
+    public IUserManagementApiDriver UserManagement => _lazyUserManagement.Value;
 
     public void SetToday(DateOnly today) =>
         Services.GetRequiredService<MutableDateTimeService>().UtcNow = today.ToDateTime(new TimeOnly(12, 0, 0));
@@ -43,7 +43,7 @@ internal sealed class HomeInventoryAPIDriver : WebApplicationFactory<Program>, I
         return base.CreateHost(builder);
     }
 
-    private UserManagementAPIDriver CreateUserManagement() => new(Server);
+    private UserManagementApiDriver CreateUserManagement() => new(Server);
 
     private sealed class MutableDateTimeService : IDateTimeService
     {

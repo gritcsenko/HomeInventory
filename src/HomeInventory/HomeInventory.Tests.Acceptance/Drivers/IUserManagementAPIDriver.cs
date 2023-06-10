@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal interface IUserManagementAPIDriver
+internal interface IUserManagementApiDriver
 {
     ValueTask<RegisterResponse> RegisterAsync(RegisterRequest requestBody);
 }

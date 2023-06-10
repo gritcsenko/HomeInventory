@@ -9,8 +9,8 @@ public class EnumerableExtensionsTests : BaseTest
     public void Concat_Should_AddItemAtTheEnd()
     {
         var totalCount = 3;
-        var expected = Fixture.CreateMany<int>(totalCount).ToArray();
-        var source = expected.Take(totalCount - 1).ToArray();
+        var expected = Fixture.CreateMany<int>(totalCount).ToReadOnly();
+        var source = expected.Take(totalCount - 1).ToReadOnly();
         var item = expected.Last();
 
         var actual = source.Concat(item);
@@ -22,7 +22,7 @@ public class EnumerableExtensionsTests : BaseTest
     public void EmptyIfNull_Should_ReturnOriginal_When_NotNull()
     {
         var totalCount = 3;
-        var expected = Fixture.CreateMany<int>(totalCount).ToArray();
+        var expected = Fixture.CreateMany<int>(totalCount).ToReadOnly();
 
         var actual = expected.EmptyIfNull();
 

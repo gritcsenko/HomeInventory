@@ -15,10 +15,10 @@ internal sealed class UserRegistrationStepDefinitions
     }
 
     private readonly ScenarioContext _context;
-    private readonly IHomeInventoryAPIDriver _apiDriver;
+    private readonly IHomeInventoryApiDriver _apiDriver;
 
     // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-    public UserRegistrationStepDefinitions(ScenarioContext context, IHomeInventoryAPIDriver apiDriver)
+    public UserRegistrationStepDefinitions(ScenarioContext context, IHomeInventoryApiDriver apiDriver)
     {
         // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata
         // To use the multiline text or the table argument of the scenario,

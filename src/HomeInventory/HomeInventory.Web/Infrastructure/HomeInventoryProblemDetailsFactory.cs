@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web.Infrastructure;
 
-public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
+internal class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 {
     private readonly ApiBehaviorOptions _options;
     private readonly ErrorMapping _errorMapping;
@@ -28,16 +28,9 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         string? detail = null,
         string? instance = null)
     {
-        var problemDetails = new ProblemDetails
-        {
-            Status = statusCode ?? _errorMapping.GetDefaultError(),
-            Title = title,
-            Type = type,
-            Detail = detail,
-            Instance = instance,
-        };
+        var problemDetails = CreateProblem(statusCode, title, type, detail, instance);
 
-        ApplyProblemDetailsDefaults(httpContext, problemDetails);
+        AddProblemDetailsExtensions(httpContext, problemDetails, Array.Empty<IError>());
 
         return problemDetails;
     }
@@ -70,15 +63,40 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Title = title;
         }
 
-        ApplyProblemDetailsDefaults(httpContext, problemDetails);
+        ApplyProblemDetailsDefaults(problemDetails);
 
+        AddProblemDetailsExtensions(httpContext, problemDetails, Array.Empty<IError>());
+
+        return problemDetails;
+    }
+
+    private ProblemDetails CreateProblem(int? statusCode, string? title, string? type, string? detail, string? instance)
+    {
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode ?? _errorMapping.GetDefaultError(),
+            Title = title,
+            Type = type,
+            Detail = detail,
+            Instance = instance,
+        };
+
+        ApplyProblemDetailsDefaults(problemDetails);
         return problemDetails;
     }
 
     public ProblemDetails ConvertToProblem(HttpContext httpContext, IEnumerable<IError> errors)
     {
-        httpContext.SetItem(HttpContextItems.Errors, errors);
-        var problemsAndStatuses = errors.Select(error => (Problem: ConvertToProblem(httpContext, error), Status: _errorMapping.GetError(error))).ToReadOnly();
+        var problemDetails = ConvertToProblem(errors);
+
+        AddProblemDetailsExtensions(httpContext, problemDetails, errors);
+
+        return problemDetails;
+    }
+
+    private ProblemDetails ConvertToProblem(IEnumerable<IError> errors)
+    {
+        var problemsAndStatuses = errors.Select(error => (Problem: ConvertToProblem(error), Status: _errorMapping.GetError(error))).ToReadOnly();
         if (problemsAndStatuses.Count == 0)
         {
             throw new InvalidOperationException("Has to be at least one error provided");
@@ -91,8 +109,7 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 
         var statuses = problemsAndStatuses.Select(x => x.Status).ToHashSet();
         var status = statuses.Count == 1 ? statuses.First() : _errorMapping.GetDefaultError();
-        var problemDetails = CreateProblemDetails(
-            httpContext,
+        var problemDetails = CreateProblem(
             status,
             "Multiple Problems",
             type: null,
@@ -100,15 +117,12 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
             instance: null);
         problemDetails.Extensions["problems"] = problemsAndStatuses.Select(x => x.Problem).ToArray();
 
-        ApplyProblemDetailsDefaults(httpContext, problemDetails);
-
         return problemDetails;
     }
 
-    private ProblemDetails ConvertToProblem(HttpContext context, IError error)
+    private ProblemDetails ConvertToProblem(IError error)
     {
-        var result = CreateProblemDetails(
-            context,
+        var result = CreateProblem(
             _errorMapping.GetError(error),
             error.GetType().Name,
             type: null,
@@ -122,21 +136,24 @@ public class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         return result;
     }
 
-    private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails)
+    private void ApplyProblemDetailsDefaults(ProblemDetails problemDetails)
     {
         if (_options.ClientErrorMapping.TryGetValue(problemDetails.Status.GetValueOrDefault(), out var clientErrorData))
         {
             problemDetails.Title ??= clientErrorData.Title;
             problemDetails.Type ??= clientErrorData.Link;
         }
+    }
 
+    private static void AddProblemDetailsExtensions(HttpContext httpContext, ProblemDetails problemDetails, IEnumerable<IError> errors)
+    {
         var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
         if (traceId != null)
         {
             problemDetails.Extensions["traceId"] = traceId;
         }
 
-        var errorCodes = httpContext.GetItem(HttpContextItems.Errors)?.Select(e => e.GetType().Name);
+        var errorCodes = errors.Select(e => e.GetType().Name);
         if (errorCodes != null)
         {
             problemDetails.Extensions["errorCodes"] = errorCodes;

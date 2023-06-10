@@ -1,18 +1,28 @@
 <Project>
+
   <PropertyGroup>
     <TargetFramework>net7</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <CodeAnalysisTreatWarningsAsErrors>True</CodeAnalysisTreatWarningsAsErrors>
     <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <WarningLevel>9999</WarningLevel>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="HomeInventory.Tests"/>
     <InternalsVisibleTo Include="HomeInventory.Tests.Acceptance"/>
+    <InternalsVisibleTo Include="HomeInventory.Tests.Framework"/>
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="All" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
+  </ItemGroup>
+
 </Project>

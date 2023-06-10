@@ -23,7 +23,7 @@ internal class UserManagementModule : ApiModule
             .WithValidationOf<RegisterRequest>();
     }
 
-    public static async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync(HttpContext context, [FromBody] RegisterRequest body, CancellationToken cancellationToken = default)
+    public static async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, HttpContext context, CancellationToken cancellationToken = default)
     {
         var mapper = context.GetMapper();
 

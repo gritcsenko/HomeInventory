@@ -53,12 +53,14 @@ public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestConte
     }
 
 
-    protected override GivenTestContext CreateGiven(VariablesCollection variables) =>
+    protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
         new(variables, Fixture);
 
+#pragma warning disable CA1034 // Nested types should not be visible
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
+#pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesCollection variables, IFixture fixture)
+        public GivenTestContext(VariablesContainer variables, IFixture fixture)
             : base(variables, fixture)
         {
         }
