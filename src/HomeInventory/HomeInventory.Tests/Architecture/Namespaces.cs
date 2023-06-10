@@ -29,7 +29,6 @@ public class ArchitectureTests
     [InlineData(typeof(Contracts.Validations.AssemblyReference), new[] { Namespaces.Contracts })]
     [InlineData(typeof(Web.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
     [InlineData(typeof(Api.AssemblyReference), new[] { Namespaces.Web, Namespaces.Infrastructure })]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Test")]
     public void Should_NotHaveBadDependencies(Type assemblyMarkerType, IEnumerable<string> allowed)
     {
         var assembly = assemblyMarkerType.Assembly;

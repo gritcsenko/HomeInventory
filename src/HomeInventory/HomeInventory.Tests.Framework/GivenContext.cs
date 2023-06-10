@@ -44,20 +44,10 @@ public class GivenContext<TContext> : BaseContext
         });
 
     protected TContext Add<T>(IVariable<T> variable, Func<T> createValue)
-        where T : notnull
-    {
-        if (variable is null)
-        {
-            throw new ArgumentNullException(nameof(variable));
-        }
-
-        if (!Variables.TryAdd(variable, createValue))
-        {
-            throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
-        }
-
-        return This;
-    }
+        where T : notnull =>
+        Variables.TryAdd(variable, createValue)
+            ? This
+            : throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
 
     public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull =>
@@ -66,11 +56,6 @@ public class GivenContext<TContext> : BaseContext
     public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable, int count)
         where T : notnull
     {
-        if (hash is null)
-        {
-            throw new ArgumentNullException(nameof(hash));
-        }
-
         var hashValue = Variables.TryGet(hash)
             .OrInvoke(() => AddNewHashCode(hash));
 
@@ -79,11 +64,9 @@ public class GivenContext<TContext> : BaseContext
             hashValue.Add(value);
         }
 
-        if (!Variables.TryUpdate(hash, () => hashValue))
-        {
-            throw new InvalidOperationException($"Failed to update variable '{hash.Name}'");
-        }
-        return This;
+        return Variables.TryUpdate(hash, () => hashValue)
+            ? This
+            : throw new InvalidOperationException($"Failed to update variable '{hash.Name}'");
     }
 
     private HashCode AddNewHashCode(IndexedVariable<HashCode> hash)

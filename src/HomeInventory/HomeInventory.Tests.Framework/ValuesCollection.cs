@@ -14,11 +14,6 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
     public bool TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
     {
-        if (createValueFunc is null)
-        {
-            throw new ArgumentNullException(nameof(createValueFunc));
-        }
-
         if (!IsAsignable<T>())
         {
             return false;
@@ -31,11 +26,6 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
     public async Task<bool> TryAddAsync<T>(Func<Task<T>> createValueFunc)
         where T : notnull
     {
-        if (createValueFunc is null)
-        {
-            throw new ArgumentNullException(nameof(createValueFunc));
-        }
-
         if (!IsAsignable<T>())
         {
             return false;
@@ -51,11 +41,6 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
         if (!IsAsignable<T>() || index < 0 || index >= _values.Count)
         {
             return false;
-        }
-
-        if (createValueFunc is null)
-        {
-            throw new ArgumentNullException(nameof(createValueFunc));
         }
 
         var container = _values[index];
@@ -77,19 +62,16 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
         return value.Convert(x => (T)x);
     }
 
-    private bool IsAsignable<T>() => _valueType.IsAssignableFrom(typeof(T));
+    private bool IsAsignable<T>() =>
+        _valueType.IsAssignableFrom(typeof(T));
 
     private void AddCore<T>(T value)
         where T : notnull =>
         _values.Add(new ValueContainer(Optional.Some<object>(value), _valueType));
 
-    public IEnumerator<ValueContainer> GetEnumerator()
-    {
-        return ((IEnumerable<ValueContainer>)_values).GetEnumerator();
-    }
+    public IEnumerator<ValueContainer> GetEnumerator() =>
+        ((IEnumerable<ValueContainer>)_values).GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return ((IEnumerable)_values).GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() =>
+        ((IEnumerable)_values).GetEnumerator();
 }
