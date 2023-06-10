@@ -62,6 +62,6 @@ public class UserManagementApiTests : BaseIntegrationTest
             .Which.GetString().Should().NotBeNullOrEmpty();
         body!.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeJsonElement()
-            .Which.Should().BeArrayEqualTo(nameof(DuplicateEmailError));
+            .Which.Should().BeArrayEqualTo(new[] { nameof(DuplicateEmailError) });
     }
 }

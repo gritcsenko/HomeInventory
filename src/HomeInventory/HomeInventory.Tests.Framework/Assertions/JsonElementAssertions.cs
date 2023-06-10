@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Framework.Assertions;
 
 namespace HomeInventory.Tests.Framework.Assertions;
@@ -10,19 +11,17 @@ public class JsonElementAssertions : ObjectAssertions<JsonElement, JsonElementAs
     {
     }
 
-    public void BeArrayEqualTo(params string[] items)
+    public void BeArrayEqualTo(IReadOnlyCollection<string>? items)
     {
         if (items is null)
         {
-            throw new ArgumentNullException(nameof(items));
+            Subject.ValueKind.Should().Be(JsonValueKind.Null);
+            return;
         }
 
         Subject.ValueKind.Should().Be(JsonValueKind.Array);
-        Subject.GetArrayLength().Should().Be(items.Length);
-        var subElements = Subject.EnumerateArray().ToArray();
-        for (var i = 0; i < items.Length; i++)
-        {
-            subElements[i].GetString().Should().Be(items[i]);
-        }
+        Subject.GetArrayLength().Should().Be(items.Count);
+        Subject.EnumerateArray().Zip(items, (actual, expected) =>
+            actual.GetString().Should().Be(expected)).ToReadOnly();
     }
 }
