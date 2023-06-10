@@ -90,5 +90,5 @@ public class UserRepositoryTests : BaseRepositoryTest
         result.Should().BeTrue();
     }
 
-    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default, DateTime);
+    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default);
 }

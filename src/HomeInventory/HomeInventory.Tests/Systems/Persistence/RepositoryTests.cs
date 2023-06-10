@@ -1,5 +1,4 @@
-﻿using Ardalis.Specification;
-using Ardalis.Specification.EntityFrameworkCore;
+﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
@@ -150,12 +149,12 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().Be(expectedCount);
     }
 
-    private FakeRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default, DateTime);
+    private FakeRepository CreateSut() => new(Context, Mapper);
 
     private class FakeRepository : Repository<FakeModel, FakeEntity>
     {
-        public FakeRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
-            : base(context, mapper, evaluator, dateTimeService)
+        public FakeRepository(IDatabaseContext context, IMapper mapper)
+            : base(context, mapper, SpecificationEvaluator.Default)
         {
         }
     }

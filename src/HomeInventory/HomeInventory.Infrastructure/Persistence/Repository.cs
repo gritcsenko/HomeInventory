@@ -14,7 +14,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     private readonly IMapper _mapper;
     private readonly ISpecificationEvaluator _evaluator;
 
-    protected Repository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
+    protected Repository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
     {
         _context = context;
         _mapper = mapper;

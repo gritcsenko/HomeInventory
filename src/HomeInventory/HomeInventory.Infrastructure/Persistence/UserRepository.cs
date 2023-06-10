@@ -3,7 +3,6 @@ using AutoMapper;
 using DotNext;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
@@ -12,8 +11,8 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal class UserRepository : Repository<UserModel, User>, IUserRepository
 {
-    public UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IDateTimeService dateTimeService)
-        : base(context, mapper, evaluator, dateTimeService)
+    public UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
+        : base(context, mapper, evaluator)
     {
     }
 
