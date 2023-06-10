@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="All" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="All" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
   </ItemGroup>
 
 </Project>

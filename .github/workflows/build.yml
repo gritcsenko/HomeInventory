@@ -53,9 +53,10 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore HomeInventory.sln -v minimal
         working-directory: ./src/HomeInventory
-      - name: Check formatting
-        run: dotnet format --no-restore --verify-no-changes --severity warn HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
-        working-directory: ./src/HomeInventory
+      # disabling format check until https://github.com/dotnet/sdk/issues/32598 is resolved
+      #- name: Check formatting
+      #  run: dotnet format --no-restore --verify-no-changes --severity warn HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
+      #  working-directory: ./src/HomeInventory
       - name: Build Release
         run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
