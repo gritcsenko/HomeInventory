@@ -129,13 +129,7 @@ public class PoolTests : BaseTest
         pushArg.Should().Be(expected);
     }
 
-    private Pool<object> CreateSut()
-    {
-        return new(_activator);
-    }
+    private Pool<object> CreateSut() => new(_activator);
 
-    private Pool<object> CreateSutWithDefault()
-    {
-        return new();
-    }
+    private static Pool<object> CreateSutWithDefault() => new();
 }
