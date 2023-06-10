@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Globalization;
 using FluentAssertions.Execution;
 using HomeInventory.Domain.Primitives;
 
@@ -34,8 +33,7 @@ public class DictionaryAssertions : ReferenceTypeAssertions<IDictionary, Diction
         bool success = Execute.Assertion
             .ForCondition(Subject is not null)
             .BecauseOf(because, becauseArgs)
-            .FailWith("Expected {context:dictionary} to contain value {0} at key {1}{reason}, but dictionary is <null>.",
-                value, key);
+            .FailWith("Expected {context:dictionary} to contain value {0} at key {1}{reason}, but dictionary is <null>.", value, key);
 
         if (success)
         {
@@ -44,7 +42,7 @@ public class DictionaryAssertions : ReferenceTypeAssertions<IDictionary, Diction
                 var areSameOrEqual = ObjectExtensions.GetComparer<object>();
 
                 Execute.Assertion
-                    .ForCondition(areSameOrEqual(actual!, value))
+                    .ForCondition(areSameOrEqual(actual, value))
                     .BecauseOf(because, becauseArgs)
                     .FailWith("Expected {context:dictionary} to contain value {0} at key {1}{reason}, but found {2}.", value, key, actual);
             }
@@ -69,82 +67,5 @@ public class DictionaryAssertions : ReferenceTypeAssertions<IDictionary, Diction
 
         value = null;
         return false;
-    }
-}
-
-internal static class ObjectExtensions
-{
-    public static Func<T, T, bool> GetComparer<T>()
-    {
-        if (typeof(T).IsValueType)
-        {
-            // Avoid causing any boxing for value types
-            return (actual, expected) => EqualityComparer<T>.Default.Equals(actual, expected);
-        }
-
-        if (typeof(T) != typeof(object))
-        {
-            // CompareNumerics is only relevant for numerics boxed in an object.
-            return (actual, expected) => actual is null
-                ? expected is null
-                : expected is not null && EqualityComparer<T>.Default.Equals(actual, expected);
-        }
-
-        return (actual, expected) => actual is null
-            ? expected is null
-            : expected is not null
-            && (EqualityComparer<T>.Default.Equals(actual, expected) || CompareNumerics(actual, expected));
-    }
-
-    private static bool CompareNumerics(object actual, object expected)
-    {
-        var expectedType = expected.GetType();
-        var actualType = actual.GetType();
-
-        return actualType != expectedType
-            && actual.IsNumericType()
-            && expected.IsNumericType()
-            && CanConvert(actual, expected, actualType, expectedType)
-            && CanConvert(expected, actual, expectedType, actualType);
-    }
-
-    private static bool CanConvert(object source, object target, Type sourceType, Type targetType)
-    {
-        try
-        {
-            var converted = source.ConvertTo(targetType);
-
-            return source.Equals(converted.ConvertTo(sourceType))
-                && converted.Equals(target);
-        }
-#pragma warning disable CA1031 // Do not catch general exception types
-        catch
-#pragma warning restore CA1031 // Do not catch general exception types
-        {
-            // ignored
-            return false;
-        }
-    }
-
-    private static object ConvertTo(this object source, Type targetType)
-    {
-        return Convert.ChangeType(source, targetType, CultureInfo.InvariantCulture);
-    }
-
-    private static bool IsNumericType(this object obj)
-    {
-        // "is not null" is due to https://github.com/dotnet/runtime/issues/47920#issuecomment-774481505
-        return obj is
-            int or
-            long or
-            float or
-            double or
-            decimal or
-            sbyte or
-            byte or
-            short or
-            ushort or
-            uint or
-            ulong;
     }
 }
