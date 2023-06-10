@@ -5,14 +5,14 @@ namespace HomeInventory.Web.Authorization.Dynamic;
 
 public class DynamicPermissionRequirement : IAuthorizationRequirement
 {
-    private readonly Func<Endpoint, IEnumerable<Permission>> _extractPermissionsFunc;
+    private readonly Func<Endpoint, IEnumerable<PermissionType>> _extractPermissionsFunc;
 
-    public DynamicPermissionRequirement(Func<Endpoint, IEnumerable<Permission>> extractPermissionsFunc)
+    public DynamicPermissionRequirement(Func<Endpoint, IEnumerable<PermissionType>> extractPermissionsFunc)
     {
         _extractPermissionsFunc = extractPermissionsFunc;
     }
 
-    public IEnumerable<Permission> GetPermissions(Endpoint endpoint)
+    public IEnumerable<PermissionType> GetPermissions(Endpoint endpoint)
     {
         return _extractPermissionsFunc(endpoint);
     }

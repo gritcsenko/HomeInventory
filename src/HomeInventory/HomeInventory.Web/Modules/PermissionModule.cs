@@ -10,14 +10,14 @@ namespace HomeInventory.Web.Modules;
 internal class PermissionModule : ApiModule
 {
     public PermissionModule()
-        : base("/api/permissions", Permission.AccessPermissions)
+        : base("/api/permissions", PermissionType.AccessPermissions)
     {
     }
 
     protected override void AddRoutes(RouteGroupBuilder group)
     {
         group.MapGet("", GetPermissionsAsync)
-            .RequireDynamicAuthorization(Permission.ReadPermission);
+            .RequireDynamicAuthorization(PermissionType.ReadPermission);
     }
 
     public static Task<Ok<IEnumerable<string>>> GetPermissionsAsync([FromServices] PermissionList list, CancellationToken cancellationToken = default)

@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-public interface IAreaAPIDriver
+public interface IAreaApiDriver
 {
     IAsyncEnumerable<AreaResponse> GetAllAsync();
 }

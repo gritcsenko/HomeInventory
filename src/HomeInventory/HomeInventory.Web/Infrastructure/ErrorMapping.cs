@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Infrastructure;
 
-public sealed class ErrorMapping
+internal sealed class ErrorMapping
 {
     private readonly int _defaultError = StatusCodes.Status500InternalServerError;
     private readonly IReadOnlyDictionary<Type, int> _errorMapping = new Dictionary<Type, int>

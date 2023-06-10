@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal class AreaAPIDriver : ApiDriver, IAreaAPIDriver
+internal class AreaApiDriver : ApiDriver, IAreaApiDriver
 {
-    public AreaAPIDriver(TestServer server)
+    public AreaApiDriver(TestServer server)
         : base(server, "/api/areas")
     {
     }

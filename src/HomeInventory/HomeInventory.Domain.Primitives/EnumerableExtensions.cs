@@ -12,7 +12,22 @@ public static class EnumerableExtensions
 
     public static IReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> source) => source as IReadOnlyCollection<T> ?? source.ToArray();
 
-    public static async IAsyncEnumerable<T> DoAsync<T>(this IEnumerable<T> source, Func<T, ValueTask> asyncAction)
+    public static IAsyncEnumerable<T> DoAsync<T>(this IEnumerable<T> source, Func<T, ValueTask> asyncAction)
+    {
+        if (source is null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        if (asyncAction is null)
+        {
+            throw new ArgumentNullException(nameof(asyncAction));
+        }
+
+        return source.DoAsyncInternal(asyncAction);
+    }
+
+    private static async IAsyncEnumerable<T> DoAsyncInternal<T>(this IEnumerable<T> source, Func<T, ValueTask> asyncAction)
     {
         foreach (var item in source)
         {

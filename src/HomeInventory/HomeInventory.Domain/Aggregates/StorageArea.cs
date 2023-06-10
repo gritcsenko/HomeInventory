@@ -23,6 +23,16 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
 
     public OneOf<Success, DuplicateProductError> Add(Product item, IDateTimeService dateTimeService)
     {
+        if (item is null)
+        {
+            throw new ArgumentNullException(nameof(item));
+        }
+
+        if (dateTimeService is null)
+        {
+            throw new ArgumentNullException(nameof(dateTimeService));
+        }
+
         if (_products.Contains(item))
         {
             return new DuplicateProductError(item);
@@ -35,6 +45,16 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
 
     public OneOf<Success, NotFound> Remove(Product item, IDateTimeService dateTimeService)
     {
+        if (item is null)
+        {
+            throw new ArgumentNullException(nameof(item));
+        }
+
+        if (dateTimeService is null)
+        {
+            throw new ArgumentNullException(nameof(dateTimeService));
+        }
+
         if (!_products.Contains(item))
         {
             return new NotFound();

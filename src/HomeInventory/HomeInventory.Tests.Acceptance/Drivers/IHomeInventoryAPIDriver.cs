@@ -1,12 +1,12 @@
 ﻿namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal interface IHomeInventoryAPIDriver : IApiDriver
+internal interface IHomeInventoryApiDriver : IApiDriver
 {
-    IAuthenticationAPIDriver Authentication { get; }
+    IAuthenticationApiDriver Authentication { get; }
 
-    IUserManagementAPIDriver UserManagement { get; }
+    IUserManagementApiDriver UserManagement { get; }
 
-    IAreaAPIDriver Area { get; }
+    IAreaApiDriver Area { get; }
 
     void SetToday(DateOnly today);
 }

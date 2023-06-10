@@ -41,7 +41,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
         static Task next(HttpContext ctx)
         {
             var source = new TaskCompletionSource();
-            var exception = new Exception();
+            var exception = new InvalidOperationException();
             source.SetException(exception);
             return source.Task;
         }
@@ -50,7 +50,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
 
         Func<Task> invocation = async () => await sut.InvokeAsync(_httpContext, next);
 
-        await invocation.Should().ThrowExactlyAsync<Exception>();
+        await invocation.Should().ThrowExactlyAsync<InvalidOperationException>();
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
         await sut.InvokeAsync(_httpContext, next);
 
         _httpResponseFeature.Received(1).OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>());
-        _httpResponseFeature.Headers[HeaderNames.CorrelationId].Should().BeEquivalentTo(new[] { _container.CorrelationId });
+        _httpResponseFeature.Headers[HeaderNames.CorrelationId].Should().BeEquivalentTo(_container.CorrelationId);
     }
 
     private CorrelationIdMiddleware CreateSut()

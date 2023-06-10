@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal sealed class UserManagementAPIDriver : ApiDriver, IUserManagementAPIDriver
+internal sealed class UserManagementApiDriver : ApiDriver, IUserManagementApiDriver
 {
-    public UserManagementAPIDriver(TestServer server)
+    public UserManagementApiDriver(TestServer server)
         : base(server, "/api/users/manage")
     {
     }

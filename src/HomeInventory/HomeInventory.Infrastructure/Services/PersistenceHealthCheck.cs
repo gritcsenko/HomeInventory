@@ -6,14 +6,15 @@ namespace HomeInventory.Infrastructure.Services;
 
 internal class PersistenceHealthCheck : BaseHealthCheck
 {
-    private readonly IDbContextFactory<DatabaseContext> _factory;
+    private readonly DatabaseContext _context;
 
-    public PersistenceHealthCheck(IDbContextFactory<DatabaseContext> contextFactory) => _factory = contextFactory;
+    public PersistenceHealthCheck(DatabaseContext context) => _context = context;
 
-    protected override async ValueTask<bool> IsHealthyAsync(CancellationToken cancellationToken)
-    {
-        await using var dbContext = await _factory.CreateDbContextAsync(cancellationToken);
-        return await dbContext.Database.CanConnectAsync(cancellationToken)
-            && !(await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).Any();
-    }
+    protected override async ValueTask<bool> IsHealthyAsync(CancellationToken cancellationToken) =>
+        await _context.Database.CanConnectAsync(cancellationToken)
+        && await CheckPendingMigrationsAsync(cancellationToken);
+
+    private async Task<bool> CheckPendingMigrationsAsync(CancellationToken cancellationToken) =>
+        _context.Database.IsRelational()
+        && !(await _context.Database.GetPendingMigrationsAsync(cancellationToken)).Any();
 }

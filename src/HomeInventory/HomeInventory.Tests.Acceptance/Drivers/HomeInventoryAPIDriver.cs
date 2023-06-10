@@ -7,14 +7,14 @@ using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal sealed class HomeInventoryAPIDriver : WebApplicationFactory<Program>, IHomeInventoryAPIDriver
+internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, IHomeInventoryApiDriver
 {
     private readonly ITestingConfiguration _configuration;
-    private readonly Lazy<IAuthenticationAPIDriver> _lazyAuthentication;
-    private readonly Lazy<IUserManagementAPIDriver> _lazyUserManagement;
-    private readonly Lazy<IAreaAPIDriver> _lazyArea;
+    private readonly Lazy<IAuthenticationApiDriver> _lazyAuthentication;
+    private readonly Lazy<IUserManagementApiDriver> _lazyUserManagement;
+    private readonly Lazy<IAreaApiDriver> _lazyArea;
 
-    public HomeInventoryAPIDriver(ITestingConfiguration configuration)
+    public HomeInventoryApiDriver(ITestingConfiguration configuration)
     {
         _configuration = configuration;
         _lazyAuthentication = new(CreateAuthentication, true);
@@ -22,11 +22,11 @@ internal sealed class HomeInventoryAPIDriver : WebApplicationFactory<Program>, I
         _lazyArea = new(CreateArea, true);
     }
 
-    public IAuthenticationAPIDriver Authentication => _lazyAuthentication.Value;
+    public IAuthenticationApiDriver Authentication => _lazyAuthentication.Value;
 
-    public IUserManagementAPIDriver UserManagement => _lazyUserManagement.Value;
+    public IUserManagementApiDriver UserManagement => _lazyUserManagement.Value;
 
-    public IAreaAPIDriver Area => _lazyArea.Value;
+    public IAreaApiDriver Area => _lazyArea.Value;
 
     public void SetToday(DateOnly today) =>
         Services.GetRequiredService<MutableDateTimeService>().UtcNow = today.ToDateTime(new TimeOnly(12, 0, 0));
@@ -51,11 +51,11 @@ internal sealed class HomeInventoryAPIDriver : WebApplicationFactory<Program>, I
         return base.CreateHost(builder);
     }
 
-    private AuthenticationAPIDriver CreateAuthentication() => new(Server);
+    private AuthenticationApiDriver CreateAuthentication() => new(Server);
 
-    private UserManagementAPIDriver CreateUserManagement() => new(Server);
+    private UserManagementApiDriver CreateUserManagement() => new(Server);
 
-    private AreaAPIDriver CreateArea() => new(Server);
+    private AreaApiDriver CreateArea() => new(Server);
 
     private sealed class MutableDateTimeService : IDateTimeService
     {

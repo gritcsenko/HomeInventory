@@ -18,10 +18,10 @@ internal class GetAreaStepDefinitions
     }
 
     private readonly ScenarioContext _context;
-    private readonly IHomeInventoryAPIDriver _apiDriver;
+    private readonly IHomeInventoryApiDriver _apiDriver;
 
     // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-    public GetAreaStepDefinitions(ScenarioContext context, IHomeInventoryAPIDriver apiDriver)
+    public GetAreaStepDefinitions(ScenarioContext context, IHomeInventoryApiDriver apiDriver)
     {
         // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata
         // To use the multiline text or the table argument of the scenario,

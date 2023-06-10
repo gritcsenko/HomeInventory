@@ -17,5 +17,5 @@ public class KeyedPool<TKey, T> : IKeyedPool<TKey, T>
             pool.Clear();
     }
 
-    public IPool<T> Get(TKey key) => _pools.GetOrAdd(key, _poolFactory);
+    public IPool<T> GetPool(TKey key) => _pools.GetOrAdd(key, _poolFactory);
 }

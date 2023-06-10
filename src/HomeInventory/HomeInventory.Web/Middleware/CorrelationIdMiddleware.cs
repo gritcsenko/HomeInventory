@@ -32,7 +32,7 @@ internal class CorrelationIdMiddleware : IMiddleware
         else
         {
             _container.GenerateNew();
-            _logger.LogInformation("New {CorrelationId} was generated", _container.CorrelationId);
+            _logger.CorrelationIdGenerated(_container.CorrelationId);
         }
     }
 
@@ -40,7 +40,7 @@ internal class CorrelationIdMiddleware : IMiddleware
     {
         response.OnStarting(() =>
         {
-            _logger.LogInformation("{CorrelationId} was returned to the caller", _container.CorrelationId);
+            _logger.CorrelationIdReturned(_container.CorrelationId);
             response.Headers[HeaderNames.CorrelationId] = new StringValues(_container.CorrelationId);
             return Task.CompletedTask;
         });
