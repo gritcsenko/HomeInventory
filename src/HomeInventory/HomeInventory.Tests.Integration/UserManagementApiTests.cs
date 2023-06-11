@@ -11,9 +11,8 @@ namespace HomeInventory.Tests.Integration;
 public class UserManagementApiTests : BaseIntegrationTest
 {
     private const string _registerRoute = "/api/users/manage/register";
-#pragma warning disable CA2213 // Disposable fields should be disposed
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
     private readonly JsonContent _content;
-#pragma warning restore CA2213 // Disposable fields should be disposed
 
     public UserManagementApiTests()
     {
