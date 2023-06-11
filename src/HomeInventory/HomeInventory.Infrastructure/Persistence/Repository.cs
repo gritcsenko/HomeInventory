@@ -2,13 +2,14 @@
 using AutoMapper;
 using DotNext;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
+internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggregateRoot>
     where TModel : class
-    where TEntity : class, Domain.Primitives.IEntity<TEntity>
+    where TAggregateRoot : class, Domain.Primitives.IEntity<TAggregateRoot>, IHasDomainEvents
 {
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
@@ -21,43 +22,56 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         _evaluator = evaluator;
     }
 
-    public ValueTask AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public ValueTask AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
 
         Set().Add(model);
 
+        SaveEvents(entity);
+
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public ValueTask AddRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
-        var models = entities.Select(ToModel);
+        var set = Set();
 
-        Set().AddRange(models);
+        foreach (var entity in entities)
+        {
+            var model = ToModel(entity);
+            set.Add(model);
+            SaveEvents(entity);
+        }
 
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public ValueTask UpdateAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
 
         Set().Update(model);
+        SaveEvents(entity);
 
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public ValueTask UpdateRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
-        var models = entities.Select(ToModel);
+        var set = Set();
 
-        Set().UpdateRange(models);
+        foreach (var entity in entities)
+        {
+            var model = ToModel(entity);
+            set.Update(model);
+            SaveEvents(entity);
+        }
 
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public ValueTask DeleteAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var model = ToModel(entity);
 
@@ -66,7 +80,7 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public ValueTask DeleteRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
         var models = entities.Select(ToModel);
 
@@ -81,19 +95,19 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     public async ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default) =>
         await Set().AnyAsync(cancellationToken);
 
-    public IAsyncEnumerable<TEntity> GetAllAsync(CancellationToken cancellationToken = default) =>
+    public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
         AsyncEnumerable.ToAsyncEnumerable(ToEntity(Set(), cancellationToken));
 
-    public async ValueTask<Optional<TEntity>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async ValueTask<Optional<TAggregateRoot>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query, cancellationToken);
-        if (await projected.FirstOrDefaultAsync(cancellationToken) is TEntity entity)
+        if (await projected.FirstOrDefaultAsync(cancellationToken) is TAggregateRoot entity)
         {
             return entity;
         }
 
-        return Optional.None<TEntity>();
+        return Optional.None<TAggregateRoot>();
     }
 
     public async ValueTask<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
@@ -124,10 +138,21 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
     protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TModel> set, ISpecification<TModel, TResult> specification) =>
         _evaluator.GetQuery(set, specification);
 
-    private TModel ToModel(TEntity entity) => _mapper.Map<TEntity, TModel>(entity);
+    private TModel ToModel(TAggregateRoot entity) => _mapper.Map<TAggregateRoot, TModel>(entity);
 
-    private IQueryable<TEntity> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
-        _mapper.ProjectTo<TEntity>(query, cancellationToken);
+    private IQueryable<TAggregateRoot> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
+        _mapper.ProjectTo<TAggregateRoot>(query, cancellationToken);
 
     private DbSet<TModel> Set() => _context.Set<TModel>();
+
+    private void SaveEvents(TAggregateRoot entity)
+    {
+        var events = entity.GetDomainEvents();
+        var messages = events.Select(CreateMessage);
+        _context.OutboxMessages.AddRange(messages);
+        entity.ClearDomainEvents();
+    }
+
+    private static OutboxMessage CreateMessage(IDomainEvent domainEvent) =>
+        new(domainEvent.Id, domainEvent.Created, domainEvent);
 }

@@ -2,6 +2,7 @@
 using HomeInventory.Application;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Infrastructure;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -14,6 +15,7 @@ public class InfrastructureDependencyInjectionTests : BaseDependencyInjectionTes
     {
         Services.AddSingleton(Substitute.For<IHostEnvironment>());
         Services.AddSingleton(Substitute.For<IMapper>());
+        Services.AddSingleton(Substitute.For<IPublisher>());
         AddDateTime();
     }
 

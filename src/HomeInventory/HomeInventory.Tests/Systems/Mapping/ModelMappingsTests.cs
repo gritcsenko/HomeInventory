@@ -38,7 +38,7 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var target = sut.Map<User>(instance);
 
-        target.Id.Id.Should().Be(instance.Id.Id);
+        target.Id.Value.Should().Be(instance.Id.Value);
         target.Email.Value.Should().Be(instance.Email);
         target.Password.Should().Be(instance.Password);
     }
