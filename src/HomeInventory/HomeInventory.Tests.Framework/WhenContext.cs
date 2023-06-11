@@ -60,28 +60,14 @@ public class WhenContext : BaseContext
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg, TResult>(IVariable<TSut> sut, IIndexedVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull
         where TArg : notnull
-        where TResult : notnull
-    {
-        if (sut is null)
-        {
-            throw new ArgumentNullException(nameof(sut));
-        }
-
-        return await InvokedAsync(sut.WithIndex(0), arg, invoke);
-    }
+        where TResult : notnull =>
+        await InvokedAsync(sut.WithIndex(0), arg, invoke);
 
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg, TResult>(IIndexedVariable<TSut> sut, IVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull
         where TArg : notnull
-        where TResult : notnull
-    {
-        if (arg is null)
-        {
-            throw new ArgumentNullException(nameof(arg));
-        }
-
-        return await InvokedAsync(sut, arg.WithIndex(0), invoke);
-    }
+        where TResult : notnull =>
+        await InvokedAsync(sut, arg.WithIndex(0), invoke);
 
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg, TResult>(IIndexedVariable<TSut> sut, IIndexedVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull

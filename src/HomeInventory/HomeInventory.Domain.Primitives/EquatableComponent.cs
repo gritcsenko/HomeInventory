@@ -19,13 +19,7 @@ public readonly struct EquatableComponent<T> : IEquatable<EquatableComponent<T>>
 
     public bool Equals(EquatableComponent<T> other) => _components.SequenceEqual(other._components);
 
-    public static bool operator ==(EquatableComponent<T> left, EquatableComponent<T> right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(EquatableComponent<T> left, EquatableComponent<T> right) => left.Equals(right);
 
-    public static bool operator !=(EquatableComponent<T> left, EquatableComponent<T> right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(EquatableComponent<T> left, EquatableComponent<T> right) => !(left == right);
 }

@@ -8,11 +8,6 @@ public abstract class BaseHealthCheck : IHealthCheck
 {
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        if (context is null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
-
         var (token, resources) = cancellationToken.WithTimeout(context.Registration.Timeout);
         try
         {
