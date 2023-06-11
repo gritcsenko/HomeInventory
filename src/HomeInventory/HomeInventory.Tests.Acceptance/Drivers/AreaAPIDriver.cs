@@ -11,7 +11,8 @@ internal class AreaApiDriver : ApiDriver, IAreaApiDriver
     }
 
     public IAsyncEnumerable<AreaResponse> GetAllAsync() =>
-        GetAsync<AreaResponse[]>()
+        CreateGetRequest("")
+            .SendAsync<AreaResponse[]>()
             .ToAsyncEnumerable()
             .SelectMany(x => x.ToAsyncEnumerable());
 }

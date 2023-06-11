@@ -4,5 +4,5 @@ namespace HomeInventory.Tests.Acceptance.Drivers;
 
 public interface IAuthenticationApiDriver
 {
-    Task<LoginResponse> LoginAsync(LoginRequest requestBody);
+    ValueTask<LoginResponse> LoginAsync(LoginRequest requestBody);
 }

@@ -6,9 +6,8 @@ namespace HomeInventory.Tests.Systems.Persistence;
 
 public abstract class BaseDatabaseContextTest : BaseTest
 {
-#pragma warning disable CA2213 // Disposable fields should be disposed
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
     private readonly DatabaseContext _context;
-#pragma warning restore CA2213 // Disposable fields should be disposed
 
     protected BaseDatabaseContextTest()
     {

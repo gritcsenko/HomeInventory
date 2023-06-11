@@ -10,8 +10,8 @@ internal class AuthenticationApiDriver : ApiDriver, IAuthenticationApiDriver
     {
     }
 
-    public async Task<LoginResponse> LoginAsync(LoginRequest requestBody)
-    {
-        return await PostAsync<LoginRequest, LoginResponse>("/login", requestBody);
-    }
+    public async ValueTask<LoginResponse> LoginAsync(LoginRequest requestBody)
+        => await CreatePostRequest("/login")
+            .WithJsonBody(requestBody)
+            .SendAsync<LoginResponse>();
 }
