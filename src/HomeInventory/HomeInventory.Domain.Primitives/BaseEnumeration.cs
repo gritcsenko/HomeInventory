@@ -17,14 +17,14 @@ public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<
 
     public string Name { get; }
 
-#pragma warning disable CA1000 // Do not declare static members on generic types
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static TSelf Parse(string text) =>
         TryParse(text)
             .OrThrow(() => throw new InvalidOperationException($"Failed to parse '{text}' to {typeof(TSelf).Name}"));
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static Optional<TSelf> TryParse(string text) =>
         _items.Value.FirstOrNone(text);
-#pragma warning restore CA1000 // Do not declare static members on generic types
 
     public override string ToString() => $"{Name} ({_key})";
 }

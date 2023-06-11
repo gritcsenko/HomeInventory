@@ -11,15 +11,8 @@ public class ThenCatchedContext : BaseContext
         _resultVariable = resultVariable;
 
     public void Exception<TException>(Action<ExceptionAssertions<TException>> assert)
-        where TException : Exception
-    {
-        if (assert is null)
-        {
-            throw new ArgumentNullException(nameof(assert));
-        }
-
+        where TException : Exception =>
         assert(GetException<TException>());
-    }
 
     private ExceptionAssertions<TException> GetException<TException>()
        where TException : Exception
