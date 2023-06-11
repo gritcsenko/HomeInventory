@@ -18,6 +18,8 @@ Inventory management for home
 [![GitHub open issues](https://img.shields.io/github/issues/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory/issues)
 [![Latest release](https://img.shields.io/github/release/gritcsenko/HomeInventory.svg?label=latest%20release&color=007edf)](https://github.com/gritcsenko/HomeInventory/releases/latest)
 
+[![Sparkline](https://stars.medv.io/gritcsenko/HomeInventory.svg)](https://stars.medv.io/gritcsenko/HomeInventory)
+
 ![Repobeats](https://repobeats.axiom.co/api/embed/a676f1d05c655d3151a703e5ecad09c8949dbdd6.svg "Repobeats analytics image")
 
 Used code coverage report generator from [@danielpalme](https://github.com/danielpalme) / [ReportGenerator](https://github.com/danielpalme/ReportGenerator)
