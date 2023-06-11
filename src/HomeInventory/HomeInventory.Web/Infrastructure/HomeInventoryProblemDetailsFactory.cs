@@ -44,11 +44,6 @@ internal class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         string? detail = null,
         string? instance = null)
     {
-        if (modelStateDictionary == null)
-        {
-            throw new ArgumentNullException(nameof(modelStateDictionary));
-        }
-
         var problemDetails = new ValidationProblemDetails(modelStateDictionary)
         {
             Status = statusCode ?? _errorMapping.GetError<ValidationError>(),

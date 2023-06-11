@@ -9,11 +9,6 @@ public sealed class VariablesContainer
     public bool TryAdd<T>(IVariable<T> variable, Func<T> createValueFunc)
         where T : notnull
     {
-        if (variable is null)
-        {
-            throw new ArgumentNullException(nameof(variable));
-        }
-
         var collection = GetAllValues(variable);
         return collection.TryAdd(createValueFunc);
     }
@@ -21,11 +16,6 @@ public sealed class VariablesContainer
     public async Task<bool> TryAddAsync<T>(IVariable<T> variable, Func<Task<T>> createValueFunc)
         where T : notnull
     {
-        if (variable is null)
-        {
-            throw new ArgumentNullException(nameof(variable));
-        }
-
         var collection = GetAllValues(variable);
         return await collection.TryAddAsync(createValueFunc);
     }
@@ -33,11 +23,6 @@ public sealed class VariablesContainer
     public Optional<T> TryGet<T>(IIndexedVariable<T> variable)
         where T : notnull
     {
-        if (variable is null)
-        {
-            throw new ArgumentNullException(nameof(variable));
-        }
-
         var collection = GetAllValues(variable);
         return collection.TryGet<T>(variable.Index);
     }
@@ -45,11 +30,6 @@ public sealed class VariablesContainer
     public bool TryUpdate<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
         where T : notnull
     {
-        if (variable is null)
-        {
-            throw new ArgumentNullException(nameof(variable));
-        }
-
         var collection = GetAllValues(variable);
         return collection.TrySet(variable.Index, createValueFunc);
     }

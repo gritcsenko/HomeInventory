@@ -13,7 +13,6 @@ public class ContractsMappingsTests : BaseMappingsTests
 {
     [Theory]
     [MemberData(nameof(Data))]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Test")]
     public void ShouldMap(object instance, Type destination)
     {
         var sut = CreateSut<ContractsMappings>();
