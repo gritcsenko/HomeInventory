@@ -29,7 +29,7 @@ public class UserManagementModuleTests : BaseApiModuleTests
             .OnQueryReturn(_userIdQuery, _userIdResult);
 
         var then = await When
-            .InvokedAsync(Given.Context, _registerRequest, UserManagementModule.RegisterAsync);
+            .InvokedAsync(_registerRequest, Given.Context, UserManagementModule.RegisterAsync);
 
         then
             .Result(_registerResponse, (actual, expected) =>
@@ -46,7 +46,7 @@ public class UserManagementModuleTests : BaseApiModuleTests
             .OnCommandReturnError(_registerCommand, _error);
 
         var then = await When
-            .InvokedAsync(Given.Context, _registerRequest, UserManagementModule.RegisterAsync);
+            .InvokedAsync(_registerRequest, Given.Context, UserManagementModule.RegisterAsync);
 
         then
             .Result(_error, (actual, error) =>

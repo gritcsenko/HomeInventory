@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <NoWarn>CA1707</NoWarn>
+    <NoWarn>CA1707;CA1062</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Api\HomeInventory.Api.csproj" />
+    <ProjectReference Include="..\HomeInventory.Tests.Framework\HomeInventory.Tests.Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

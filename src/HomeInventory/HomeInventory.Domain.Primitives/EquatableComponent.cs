@@ -13,19 +13,21 @@ public readonly struct EquatableComponent<T> : IEquatable<EquatableComponent<T>>
 
     public EquatableComponent(params object[] components) => _components = components;
 
-    public override int GetHashCode() => _components.Aggregate(new HashCode(), (h, o) => h.Combine(o)).ToHashCode();
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        foreach (var component in _components)
+        {
+            hash.Add(component);
+        }
+        return hash.ToHashCode();
+    }
 
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is EquatableComponent<T> component && Equals(component);
 
     public bool Equals(EquatableComponent<T> other) => _components.SequenceEqual(other._components);
 
-    public static bool operator ==(EquatableComponent<T> left, EquatableComponent<T> right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(EquatableComponent<T> left, EquatableComponent<T> right) => left.Equals(right);
 
-    public static bool operator !=(EquatableComponent<T> left, EquatableComponent<T> right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(EquatableComponent<T> left, EquatableComponent<T> right) => !(left == right);
 }

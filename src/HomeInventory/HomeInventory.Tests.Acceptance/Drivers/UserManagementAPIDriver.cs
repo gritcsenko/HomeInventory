@@ -11,5 +11,7 @@ internal sealed class UserManagementApiDriver : ApiDriver, IUserManagementApiDri
     }
 
     public async ValueTask<RegisterResponse> RegisterAsync(RegisterRequest requestBody) =>
-        await PostAsync<RegisterRequest, RegisterResponse>("/register", requestBody);
+        await CreatePostRequest("/register")
+            .WithJsonBody(requestBody)
+            .SendAsync<RegisterResponse>();
 }

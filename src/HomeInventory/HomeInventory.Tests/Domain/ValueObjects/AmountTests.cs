@@ -43,7 +43,6 @@ public class AmountTests : BaseTest
 
     [Theory]
     [MemberData(nameof(UnitsData))]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Test")]
     public void ToMetric_Should_ReturnMetricAmount(AmountUnit unit)
     {
         var sut = new Amount(Fixture.Create<decimal>(), unit);

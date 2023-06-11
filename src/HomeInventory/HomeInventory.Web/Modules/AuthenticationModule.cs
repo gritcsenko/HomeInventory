@@ -20,10 +20,10 @@ internal class AuthenticationModule : ApiModule
     {
         group.MapPost("login", LoginAsync)
             .AllowAnonymous()
-            .WithValidationOf<LoginRequest>();
+            .WithValidationOf<LoginRequest>(s => s.IncludeAllRuleSets());
     }
 
-    public static async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync(HttpContext context, [FromBody] LoginRequest body, CancellationToken cancellationToken = default)
+    public static async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, HttpContext context, CancellationToken cancellationToken = default)
     {
         var mapper = context.GetMapper();
 
