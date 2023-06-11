@@ -12,5 +12,5 @@ internal sealed class EventsCollection
 
     internal void Clear() => _events.Clear();
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _events;
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _events.AsReadOnly();
 }

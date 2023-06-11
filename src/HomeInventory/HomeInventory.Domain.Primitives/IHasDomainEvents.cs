@@ -1,7 +1,8 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public interface IAggregateRoot
+public interface IHasDomainEvents
 {
     IReadOnlyCollection<IDomainEvent> GetDomainEvents();
-    void OnEventsSaved();
+
+    void ClearDomainEvents();
 }

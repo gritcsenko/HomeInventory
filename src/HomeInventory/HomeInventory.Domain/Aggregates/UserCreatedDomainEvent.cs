@@ -1,13 +1,12 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿namespace HomeInventory.Domain.Aggregates;
 
-namespace HomeInventory.Domain.Aggregates;
-
-public sealed record UserCreatedDomainEvent(Guid Id, DateTimeOffset Created, User User) : IDomainEvent
+public sealed record UserCreatedDomainEvent : DomainEvent
 {
     public UserCreatedDomainEvent(DateTimeOffset created, User user)
-        : this(Guid.NewGuid(), created, user)
+        : base(Guid.NewGuid(), created)
     {
+        User = user;
     }
 
-    IAggregateRoot IDomainEvent.Source => User;
+    public User User { get; }
 }

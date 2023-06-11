@@ -2,5 +2,5 @@
 
 public interface IIntegrationEvent : IEvent, IHaveCreationAudit
 {
-    IAggregateRoot Source { get; }
+    IHasDomainEvents Source { get; }
 }

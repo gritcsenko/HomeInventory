@@ -29,12 +29,9 @@ internal class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessa
 
     private static IDomainEvent Deserialize(string json, JsonSerializerOptions settings) =>
         JsonSerializer.Deserialize<IDomainEvent>(json, settings)
-        ?? throw new InvalidOperationException("Not able to deserialize event");
+            ?? throw new InvalidOperationException("Not able to deserialize event");
 
-    private static string Serialize(IDomainEvent obj, JsonSerializerOptions settings)
-    {
-        var json = JsonSerializer.Serialize(obj, settings);
-        return json;
-    }
+    private static string Serialize(IDomainEvent obj, JsonSerializerOptions settings) =>
+        JsonSerializer.Serialize(obj, settings);
 }
 

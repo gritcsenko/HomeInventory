@@ -9,8 +9,8 @@ internal class UserCreatedDomainEventHandler : INotificationHandler<DomainEventN
     {
     }
 
-    public Task Handle(DomainEventNotification<UserCreatedDomainEvent> notification, CancellationToken cancellationToken)
+    public async Task Handle(DomainEventNotification<UserCreatedDomainEvent> notification, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await ValueTask.CompletedTask;
     }
 }
