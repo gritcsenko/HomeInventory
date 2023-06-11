@@ -13,7 +13,15 @@ public readonly struct EquatableComponent<T> : IEquatable<EquatableComponent<T>>
 
     public EquatableComponent(params object[] components) => _components = components;
 
-    public override int GetHashCode() => _components.Aggregate(new HashCode(), (h, o) => h.Combine(o)).ToHashCode();
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        foreach (var component in _components)
+        {
+            hash.Add(component);
+        }
+        return hash.ToHashCode();
+    }
 
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is EquatableComponent<T> component && Equals(component);
 
