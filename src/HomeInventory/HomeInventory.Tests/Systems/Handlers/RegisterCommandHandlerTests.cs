@@ -20,7 +20,7 @@ public class RegisterCommandHandlerTests : BaseTest
         Fixture.CustomizeEmail();
 
         _userId = Fixture.Create<UserId>();
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(_userId.Id));
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(_userId.Value));
 
         _command = Fixture.Create<RegisterCommand>();
     }

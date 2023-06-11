@@ -3,7 +3,6 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.Specification" />
     <PackageReference Include="DotNext" />
-    <PackageReference Include="MediatR.Contracts" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="OneOf" />
     <PackageReference Include="OneOf.SourceGenerator" />

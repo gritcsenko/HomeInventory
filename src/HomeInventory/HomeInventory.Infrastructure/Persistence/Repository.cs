@@ -2,6 +2,7 @@
 using AutoMapper;
 using DotNext;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
@@ -27,14 +28,21 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
 
         Set().Add(model);
 
+        SaveEvents(entity);
+
         return ValueTask.CompletedTask;
     }
 
     public ValueTask AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        var models = entities.Select(ToModel);
+        var set = Set();
 
-        Set().AddRange(models);
+        foreach (var entity in entities)
+        {
+            var model = ToModel(entity);
+            set.Add(model);
+            SaveEvents(entity);
+        }
 
         return ValueTask.CompletedTask;
     }
@@ -44,15 +52,21 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         var model = ToModel(entity);
 
         Set().Update(model);
+        SaveEvents(entity);
 
         return ValueTask.CompletedTask;
     }
 
     public ValueTask UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        var models = entities.Select(ToModel);
+        var set = Set();
 
-        Set().UpdateRange(models);
+        foreach (var entity in entities)
+        {
+            var model = ToModel(entity);
+            set.Update(model);
+            SaveEvents(entity);
+        }
 
         return ValueTask.CompletedTask;
     }
@@ -130,4 +144,15 @@ internal abstract class Repository<TModel, TEntity> : IRepository<TEntity>
         _mapper.ProjectTo<TEntity>(query, cancellationToken);
 
     private DbSet<TModel> Set() => _context.Set<TModel>();
+
+    private void SaveEvents(TEntity entity)
+    {
+        var events = entity.GetDomainEvents();
+        var messages = events.Select(CreateMessage);
+        _context.OutboxMessages.AddRange(messages);
+        entity.OnEventsSaved();
+    }
+
+    private static OutboxMessage CreateMessage(IDomainEvent domainEvent) =>
+        new(domainEvent.Id, domainEvent.Created, domainEvent);
 }

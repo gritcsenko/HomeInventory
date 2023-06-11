@@ -1,8 +1,6 @@
-﻿using MediatR;
+﻿namespace HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Domain.Primitives;
-
-public interface IEvent : INotification
+public interface IEvent
 {
     Guid Id { get; }
 }

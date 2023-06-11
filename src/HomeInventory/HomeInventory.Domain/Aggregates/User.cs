@@ -15,5 +15,5 @@ public class User : AggregateRoot<User, UserId>
     public required string Password { get; init; }
 
     public void OnUserCreated(IDateTimeService dateTimeService) =>
-        Raise(new UserCreatedDomainEvent(dateTimeService.UtcNow, this));
+        Publish(new UserCreatedDomainEvent(dateTimeService.UtcNow, this));
 }

@@ -11,7 +11,9 @@ public abstract class AggregateRoot<TSelf, TIdentity> : Entity<TSelf, TIdentity>
     {
     }
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _events.DomainEvents;
+    public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _events.DomainEvents;
 
-    protected void Raise(IDomainEvent @event) => _events.Push(@event);
+    public void OnEventsSaved() => _events.Clear();
+
+    protected void Publish(IDomainEvent @event) => _events.Push(@event);
 }

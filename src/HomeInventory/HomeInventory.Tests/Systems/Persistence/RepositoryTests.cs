@@ -72,7 +72,7 @@ public class RepositoryTests : BaseRepositoryTest
         var sut = CreateSut();
         await sut.AddAsync(entity, Cancellation.Token);
 
-        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Value), Cancellation.Token);
 
         actual.Should().HaveSomeValue();
     }
@@ -95,7 +95,7 @@ public class RepositoryTests : BaseRepositoryTest
         var sut = CreateSut();
         await sut.AddAsync(entity, Cancellation.Token);
 
-        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Value), Cancellation.Token);
 
         actual.Should().BeTrue();
     }
@@ -171,7 +171,12 @@ public class RepositoryTests : BaseRepositoryTest
     {
         public required FakeId Id { get; init; }
 
-        public IReadOnlyCollection<IDomainEvent> DomainEvents { get; } = Array.Empty<IDomainEvent>();
+        private readonly IReadOnlyCollection<IDomainEvent> domainEvents = Array.Empty<IDomainEvent>();
+
+        public IReadOnlyCollection<IDomainEvent> GetDomainEvents()
+        {
+            return domainEvents;
+        }
 
         public bool Equals(FakeEntity? other)
         {
