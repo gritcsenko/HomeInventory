@@ -1,5 +1,7 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -11,7 +13,7 @@ public abstract class BaseDatabaseContextTest : BaseTest
 
     protected BaseDatabaseContextTest()
     {
-        _context = ReflectionMethods.CreateInstance<DatabaseContext>(DateTime, GetDatabaseOptions())!;
+        _context = ReflectionMethods.CreateInstance<DatabaseContext>(GetDatabaseOptions(), new PublishDomainEventsInterceptor(Substitute.For<IPublisher>()), DateTime)!;
         AddDisposable(_context);
     }
 

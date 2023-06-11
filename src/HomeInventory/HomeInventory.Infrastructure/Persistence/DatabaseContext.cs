@@ -1,17 +1,20 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
+using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
 internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
 {
+    private readonly PublishDomainEventsInterceptor _interceptor;
     private readonly IDateTimeService _dateTimeService;
 
-    public DatabaseContext(IDateTimeService dateTimeService, DbContextOptions<DatabaseContext> options)
+    public DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService)
         : base(options)
     {
+        _interceptor = interceptor;
         _dateTimeService = dateTimeService;
     }
 
@@ -34,43 +37,38 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        ConvertDomainEventsToOutboxMessages();
         UpdateAuditableEntities();
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    private void ConvertDomainEventsToOutboxMessages()
-    {
-        var messages = base.ChangeTracker
-            .Entries<IAggregateRoot>()
-            .Select(x => x.Entity)
-            .SelectMany(root => root.GetAndClearEvents())
-            .Select(CreateMessage);
-
-        OutboxMessages.AddRange(messages);
-    }
-
-    private static OutboxMessage CreateMessage(IDomainEvent domainEvent)
-    {
-        return new OutboxMessage(domainEvent.Id, domainEvent.Created, domainEvent);
-    }
-
     private void UpdateAuditableEntities()
     {
         var now = _dateTimeService.UtcNow;
-        foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
+        foreach (var entry in ChangeTracker.Entries<ICreationAuditableEntity>())
         {
             switch (entry.State)
             {
                 case EntityState.Added:
                     entry.Property(x => x.CreatedOn).CurrentValue = now;
                     break;
+            }
+        }
 
+        foreach (var entry in ChangeTracker.Entries<IModificationAuditableEntity>())
+        {
+            switch (entry.State)
+            {
                 case EntityState.Modified:
                     entry.Property(x => x.ModifiedOn).CurrentValue = now;
                     break;
             }
         }
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(_interceptor);
+        base.OnConfiguring(optionsBuilder);
     }
 }

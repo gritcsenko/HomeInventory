@@ -21,7 +21,7 @@ public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestConte
             .Invoked(_sut, _id, (sut, id) => sut.TryConvert(id));
 
         then
-            .Result(_id, (oneOf, id) => oneOf.AsT0.Id.Should().Be(id));
+            .Result(_id, (oneOf, id) => oneOf.AsT0.Value.Should().Be(id));
     }
 
     [Fact]

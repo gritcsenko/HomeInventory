@@ -39,7 +39,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
         }
 
         _products.AddLast(item);
-        AddEvent(new ProductAddedEvent(Guid.NewGuid(), dateTimeService.UtcNow, this, item.Id));
+        AddDomainEvent(new ProductAddedEvent(dateTimeService.UtcNow, this, item));
         return new Success();
     }
 
@@ -61,7 +61,7 @@ public class StorageArea : AggregateRoot<StorageArea, StorageAreaId>
         }
 
         _products.Remove(item);
-        AddEvent(new ProductRemovedEvent(Guid.NewGuid(), dateTimeService.UtcNow, this, item.Id));
+        AddDomainEvent(new ProductRemovedEvent(dateTimeService.UtcNow, this, item));
         return new Success();
     }
 }

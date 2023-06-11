@@ -11,7 +11,7 @@ public sealed class GuidIdValueConverter<TId> : ValueConverter<TId, Guid>
 
     public GuidIdValueConverter()
         : base(
-            id => id.Id,
+            id => id.Value,
             value => _converter.Convert(value))
     {
     }

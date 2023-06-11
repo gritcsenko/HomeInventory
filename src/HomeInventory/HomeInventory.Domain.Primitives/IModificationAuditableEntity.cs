@@ -1,7 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public interface IAuditableEntity
+public interface IModificationAuditableEntity
 {
-    DateTimeOffset CreatedOn { get; set; }
     DateTimeOffset ModifiedOn { get; set; }
 }

@@ -23,11 +23,15 @@ internal class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessa
             .IsRequired();
 
         builder.Property(e => e.Content).HasConversion(
-            v => JsonSerializer.Serialize(v, settings),
+            v => Serialize(v, settings),
             json => Deserialize(json, settings));
     }
 
     private static IDomainEvent Deserialize(string json, JsonSerializerOptions settings) =>
         JsonSerializer.Deserialize<IDomainEvent>(json, settings)
-        ?? throw new InvalidOperationException("Not able to deserialize event");
+            ?? throw new InvalidOperationException("Not able to deserialize event");
+
+    private static string Serialize(IDomainEvent obj, JsonSerializerOptions settings) =>
+        JsonSerializer.Serialize(obj, settings);
 }
+

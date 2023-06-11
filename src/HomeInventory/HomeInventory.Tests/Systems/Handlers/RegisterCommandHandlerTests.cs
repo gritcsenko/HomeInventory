@@ -20,12 +20,12 @@ public class RegisterCommandHandlerTests : BaseTest
         Fixture.CustomizeEmail();
 
         _userId = Fixture.Create<UserId>();
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(_userId.Id));
+        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(_userId.Value));
 
         _command = Fixture.Create<RegisterCommand>();
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository);
+    private RegisterCommandHandler CreateSut() => new(_userRepository, DateTime);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

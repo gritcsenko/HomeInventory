@@ -1,7 +1,18 @@
-﻿using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Entities;
 
 namespace HomeInventory.Domain.Events;
 
-public record ProductRemovedEvent(Guid Id, DateTimeOffset Created, IAggregateRoot Source, ProductId ProductId) : IDomainEvent;
+public record ProductRemovedEvent : DomainEvent
+{
+    public ProductRemovedEvent(DateTimeOffset created, StorageArea area, Product product)
+        : base(Guid.NewGuid(), created)
+    {
+        Area = area;
+        Product = product;
+    }
 
+    public StorageArea Area { get; }
+
+    public Product Product { get; }
+}

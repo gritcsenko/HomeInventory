@@ -165,14 +165,20 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
 #pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
-    private class FakeEntity : IEntity<FakeEntity, FakeId>
+    private class FakeEntity : IEntity<FakeEntity, FakeId>, IHasDomainEvents
 #pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
     {
         public required FakeId Id { get; init; }
 
-        public bool Equals(FakeEntity? other)
+        private readonly IReadOnlyCollection<IDomainEvent> _domainEvents = Array.Empty<IDomainEvent>();
+
+        public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents;
+
+        public bool Equals(FakeEntity? other) => throw new NotImplementedException();
+
+        public void ClearDomainEvents()
         {
-            throw new NotImplementedException();
+            // Nothing to do here
         }
     }
 

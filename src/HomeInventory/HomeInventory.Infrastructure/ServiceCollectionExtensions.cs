@@ -6,6 +6,7 @@ using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
+using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddDatabase(this IServiceCollection services) =>
         services
+            .AddScoped<PublishDomainEventsInterceptor>()
             .AddDbContext<DatabaseContext>((sp, builder) =>
             {
                 var env = sp.GetRequiredService<IHostEnvironment>();

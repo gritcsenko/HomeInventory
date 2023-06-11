@@ -8,14 +8,14 @@ public abstract class GuidIdentifierObject<TSelf> : ValueObject<TSelf>, IGuidIde
     protected GuidIdentifierObject(Guid value)
         : base(value)
     {
-        Id = value;
+        Value = value;
     }
 
-    public Guid Id { get; }
+    public Guid Value { get; }
 
     [RequiresPreviewFeatures]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static GuidIdentifierObjectBuilder<TSelf> CreateBuilder() => new();
 
-    public override string ToString() => Id.ToString();
+    public override string ToString() => Value.ToString();
 }

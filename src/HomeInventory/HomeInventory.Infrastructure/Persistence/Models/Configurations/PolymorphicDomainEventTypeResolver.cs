@@ -6,7 +6,7 @@ using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-public class PolymorphicDomainEventTypeResolver : DefaultJsonTypeInfoResolver
+internal class PolymorphicDomainEventTypeResolver : DefaultJsonTypeInfoResolver
 {
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
@@ -22,6 +22,7 @@ public class PolymorphicDomainEventTypeResolver : DefaultJsonTypeInfoResolver
                 UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
                 DerivedTypes =
                 {
+                    new JsonDerivedType(typeof(UserCreatedDomainEvent), nameof(UserCreatedDomainEvent)),
                     new JsonDerivedType(typeof(ProductAddedEvent), nameof(ProductAddedEvent)),
                     new JsonDerivedType(typeof(ProductRemovedEvent), nameof(ProductRemovedEvent))
                 }
@@ -31,3 +32,4 @@ public class PolymorphicDomainEventTypeResolver : DefaultJsonTypeInfoResolver
         return jsonTypeInfo;
     }
 }
+
