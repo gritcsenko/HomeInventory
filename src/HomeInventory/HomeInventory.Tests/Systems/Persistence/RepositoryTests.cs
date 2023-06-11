@@ -171,16 +171,15 @@ public class RepositoryTests : BaseRepositoryTest
     {
         public required FakeId Id { get; init; }
 
-        private readonly IReadOnlyCollection<IDomainEvent> domainEvents = Array.Empty<IDomainEvent>();
+        private readonly IReadOnlyCollection<IDomainEvent> _domainEvents = Array.Empty<IDomainEvent>();
 
-        public IReadOnlyCollection<IDomainEvent> GetDomainEvents()
-        {
-            return domainEvents;
-        }
+        public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents;
 
-        public bool Equals(FakeEntity? other)
+        public bool Equals(FakeEntity? other) => throw new NotImplementedException();
+
+        public void OnEventsSaved()
         {
-            throw new NotImplementedException();
+            // Nothing to do here
         }
     }
 
