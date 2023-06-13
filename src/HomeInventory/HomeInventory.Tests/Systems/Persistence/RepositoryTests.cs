@@ -72,7 +72,7 @@ public class RepositoryTests : BaseRepositoryTest
         var sut = CreateSut();
         await sut.AddAsync(entity, Cancellation.Token);
 
-        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Value), Cancellation.Token);
 
         actual.Should().HaveSomeValue();
     }
@@ -95,7 +95,7 @@ public class RepositoryTests : BaseRepositoryTest
         var sut = CreateSut();
         await sut.AddAsync(entity, Cancellation.Token);
 
-        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Id), Cancellation.Token);
+        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Value), Cancellation.Token);
 
         actual.Should().BeTrue();
     }
@@ -166,14 +166,20 @@ public class RepositoryTests : BaseRepositoryTest
     }
 
 #pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
-    private class FakeEntity : IEntity<FakeEntity, FakeId>
+    private class FakeEntity : IEntity<FakeEntity, FakeId>, IHasDomainEvents
 #pragma warning restore CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
     {
         public required FakeId Id { get; init; }
 
-        public bool Equals(FakeEntity? other)
+        private readonly IReadOnlyCollection<IDomainEvent> _domainEvents = Array.Empty<IDomainEvent>();
+
+        public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents;
+
+        public bool Equals(FakeEntity? other) => throw new NotImplementedException();
+
+        public void ClearDomainEvents()
         {
-            throw new NotImplementedException();
+            // Nothing to do here
         }
     }
 

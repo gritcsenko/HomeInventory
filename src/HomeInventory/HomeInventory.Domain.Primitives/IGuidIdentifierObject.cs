@@ -5,5 +5,5 @@ namespace HomeInventory.Domain.Primitives;
 public interface IGuidIdentifierObject<TSelf> : IIdentifierObject<TSelf>, IBuildable<TSelf, GuidIdentifierObjectBuilder<TSelf>>
     where TSelf : class, IGuidIdentifierObject<TSelf>
 {
-    Guid Id { get; }
+    Guid Value { get; }
 }

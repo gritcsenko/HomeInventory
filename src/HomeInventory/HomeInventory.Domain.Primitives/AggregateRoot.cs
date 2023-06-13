@@ -1,22 +1,19 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class AggregateRoot<TSelf, TIdentity> : Entity<TSelf, TIdentity>, IAggregateRoot
+public abstract class AggregateRoot<TSelf, TIdentity> : Entity<TSelf, TIdentity>, IHasDomainEvents
     where TIdentity : IIdentifierObject<TIdentity>
     where TSelf : AggregateRoot<TSelf, TIdentity>
 {
-    private readonly List<IDomainEvent> _events = new();
+    private readonly EventsCollection _events = new();
 
     protected AggregateRoot(TIdentity id)
         : base(id)
     {
     }
 
-    public IReadOnlyCollection<IDomainEvent> GetAndClearEvents()
-    {
-        var events = _events.ToArray();
-        _events.Clear();
-        return events;
-    }
+    public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _events.DomainEvents;
 
-    protected void AddEvent(IDomainEvent @event) => _events.Add(@event);
+    public void ClearDomainEvents() => _events.Clear();
+
+    protected void AddDomainEvent(IDomainEvent @event) => _events.Push(@event);
 }

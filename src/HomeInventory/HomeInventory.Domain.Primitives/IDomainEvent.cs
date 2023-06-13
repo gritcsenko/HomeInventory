@@ -1,12 +1,5 @@
-﻿using MediatR;
+﻿namespace HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Domain.Primitives;
-
-public interface IDomainEvent : INotification
+public interface IDomainEvent : IEvent, IHaveCreationAudit
 {
-    Guid Id { get; }
-
-    DateTimeOffset Created { get; }
-
-    IAggregateRoot Source { get; }
 }

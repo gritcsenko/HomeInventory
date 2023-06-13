@@ -15,7 +15,7 @@ public abstract class MappingProfile : Profile
     {
         var converter = new GuidIdConverter<TId>();
         CreateMap<TId, Guid>()
-            .ConvertUsing(x => x.Id);
+            .ConvertUsing(x => x.Value);
         CreateMap<Guid, TId>()
             .ConvertUsing(id => converter.Convert(id));
     }
