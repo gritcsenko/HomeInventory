@@ -6,9 +6,8 @@ public sealed class PublicTestSubject
     {
     }
 
-#pragma warning disable IDE0060 // Remove unused parameter
     public PublicTestSubject(object arg)
-#pragma warning restore IDE0060 // Remove unused parameter
     {
+        _ = arg;
     }
 }
