@@ -79,6 +79,13 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v3
         with:
@@ -178,6 +185,13 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v3
         with:
@@ -209,6 +223,13 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v3
         with:

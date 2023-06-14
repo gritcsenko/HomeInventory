@@ -6,9 +6,8 @@ public sealed class InternalTestSubject
     {
     }
 
-#pragma warning disable IDE0060 // Remove unused parameter
     internal InternalTestSubject(object arg)
-#pragma warning restore IDE0060 // Remove unused parameter
     {
+        _ = arg;
     }
 }
