@@ -26,6 +26,10 @@ jobs:
   build:
     permissions:
       pull-requests: write
+      packages: write
+      checks: write
+      actions: write
+      statuses: write
     name: Build .NET
     runs-on: ubuntu-latest
 
