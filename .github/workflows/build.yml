@@ -111,7 +111,7 @@ jobs:
         if: success() || failure() # run this step even if previous step failed
         with:
           name: Unit tests # Name of the check run which will be created
-          path: "./coverage/*.trx" # Path to test results
+          path: "./src/HomeInventory/coverage/*.trx" # Path to test results
           reporter: dotnet-trx # Format of test results
       - name: Run Architecture Tests
         if: success() || failure() # run this step even if previous step failed
