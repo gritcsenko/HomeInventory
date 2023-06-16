@@ -118,9 +118,7 @@ jobs:
         if: always()
         with:
           files: |
-            ./src/HomeInventory/coverage/**/*.xml
             ./src/HomeInventory/coverage/**/*.trx
-            ./src/HomeInventory/coverage/**/*.json
       - name: Run Architecture Tests
         if: success() || failure()
         run: dotnet test HomeInventory.Tests --filter "Category=Architecture" -c Release -v minimal
