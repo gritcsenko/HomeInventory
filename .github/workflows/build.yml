@@ -111,14 +111,14 @@ jobs:
         if: success() || failure()
         with:
           name: unit-test-results
-          path: "./src/HomeInventory/coverage/*.trx"
-      # - name: Test Report
-      #   uses: dorny/test-reporter@v1.6.0
-      #   if: success() || failure() # run this step even if previous step failed
-      #   with:
-      #     name: Unit tests # Name of the check run which will be created
-      #     path: "./src/HomeInventory/coverage/*.trx" # Path to test results
-      #     reporter: dotnet-trx # Format of test results
+          path: "./src/HomeInventory/coverage"
+      - name: Test Report
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+          name: Unit tests # Name of the check run which will be created
+          path: "./src/HomeInventory/coverage/*.trx" # Path to test results
+          reporter: dotnet-trx # Format of test results
       - name: Run Architecture Tests
         if: success() || failure()
         run: dotnet test HomeInventory.Tests --filter "Category=Architecture" -c Release -v minimal
