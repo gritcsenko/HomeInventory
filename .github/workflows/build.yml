@@ -113,6 +113,14 @@ jobs:
           name: Unit tests # Name of the check run which will be created
           path: "./src/HomeInventory/coverage/*.trx" # Path to test results
           reporter: dotnet-trx # Format of test results
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            ./src/HomeInventory/coverage/**/*.xml
+            ./src/HomeInventory/coverage/**/*.trx
+            ./src/HomeInventory/coverage/**/*.json
       - name: Run Architecture Tests
         if: success() || failure()
         run: dotnet test HomeInventory.Tests --filter "Category=Architecture" -c Release -v minimal
