@@ -112,3 +112,10 @@ dotnet_style_prefer_compound_assignment = true:suggestion
 dotnet_style_prefer_simplified_interpolation = true:suggestion
 dotnet_style_namespace_match_folder = true:suggestion
 dotnet_diagnostic.CA2007.severity = silent
+
+[*]
+spelling_languages = en-us
+spelling_checkable_types = strings,identifiers,comments
+spelling_error_severity = information
+spelling_exclusion_path = .\exclusion.dic
+spelling_use_default_exclusion_dictionary = true
