@@ -188,6 +188,18 @@ jobs:
           path: coveragereport # A file, directory or wildcard pattern that describes what to upload
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+  report:
+    name: "Unit Test Report"
+    needs: unit-test
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/test-reporter@v1.6.0
+        with:
+          artifact: unit-test-results # artifact name
+          name: Unit tests # Name of the check run which will be created
+          path: "*.trx" # Path to test results (inside artifact .zip)
+          reporter: dotnet-trx # Format of test results
 
   intergration-test:
     name: "Integration Test .NET"
