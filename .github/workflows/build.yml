@@ -26,6 +26,10 @@ jobs:
   build:
     permissions:
       pull-requests: write
+      packages: write
+      checks: write
+      actions: write
+      statuses: write
     name: Build .NET
     runs-on: ubuntu-latest
 
@@ -100,9 +104,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Run Unit Tests
-        run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --results-directory ./coverage
+        run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
         working-directory: ./src/HomeInventory
+      - name: Test Report
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+          name: Unit tests # Name of the check run which will be created
+          path: "./src/HomeInventory/coverage/*.trx" # Path to test results
+          reporter: dotnet-trx # Format of test results
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            ./src/HomeInventory/coverage/**/*.trx
       - name: Run Architecture Tests
+        if: success() || failure()
         run: dotnet test HomeInventory.Tests --filter "Category=Architecture" -c Release -v minimal
         working-directory: ./src/HomeInventory
       - name: Collect Coverage
