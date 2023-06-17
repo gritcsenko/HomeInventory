@@ -103,7 +103,11 @@ jobs:
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
+      - name: Run Architecture Tests
+        run: dotnet test HomeInventory.Tests --filter "Category=Architecture" -c Release -v minimal
+        working-directory: ./src/HomeInventory
       - name: Run Unit Tests
+        if: success() || failure()
         run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
         working-directory: ./src/HomeInventory
       - name: Test Report
@@ -119,10 +123,6 @@ jobs:
         with:
           files: |
             ./src/HomeInventory/coverage/**/*.trx
-      - name: Run Architecture Tests
-        if: success() || failure()
-        run: dotnet test HomeInventory.Tests --filter "Category=Architecture" -c Release -v minimal
-        working-directory: ./src/HomeInventory
       - name: Collect Coverage
         run: cp coverage/**/coverage.cobertura.xml coverage.cobertura.xml
         working-directory: ./src/HomeInventory
@@ -143,9 +143,8 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
-          header: "Summary"
-          hide_and_recreate: true
-          hide_classify: "OUTDATED"
+          header: "Unit test coverage summary"
+          recreate: true
           path: code-coverage-results.md
       - name: Write coverage to Job Summary
         if: ${{ success() || steps.report.conclusion == 'failure' }}
@@ -174,8 +173,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Detailed"
-          hide_and_recreate: true
-          hide_classify: "OUTDATED"
+          recreate: true
           path: coveragereport/SummaryGithub.md
       - name: Write coverage to Job Summary 2
         if: ${{ success() || steps.report.conclusion == 'failure' }}
