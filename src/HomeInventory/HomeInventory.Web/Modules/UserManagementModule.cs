@@ -36,8 +36,6 @@ internal class UserManagementModule : ApiModule
                 var queryResult = await context.GetSender().Send(query, cancellationToken);
                 return context.MatchToOk(queryResult, mapper.Map<RegisterResponse>);
             },
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            async error => context.Problem(error));
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+            async error => await ValueTask.FromResult(context.Problem(error)));
     }
 }
