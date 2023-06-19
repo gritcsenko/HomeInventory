@@ -79,7 +79,7 @@ public class RepositoryTests : BaseRepositoryTest
     [Fact]
     public async ValueTask FindFirstOptionalAsync_ShouldNotFindNonExisting()
     {
-        var entityId = Fixture.Create<Guid>();
+        var entityId = Fixture.Create<Ulid>();
         var sut = CreateSut();
 
         var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, FakeId>(new FakeId(entityId)), Cancellation.Token);
@@ -182,9 +182,9 @@ public class RepositoryTests : BaseRepositoryTest
         }
     }
 
-    private class FakeId : GuidIdentifierObject<FakeId>
+    private class FakeId : UlidIdentifierObject<FakeId>
     {
-        public FakeId(Guid value)
+        public FakeId(Ulid value)
             : base(value)
         {
         }

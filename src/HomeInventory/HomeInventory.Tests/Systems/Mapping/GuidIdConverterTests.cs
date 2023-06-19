@@ -7,8 +7,8 @@ namespace HomeInventory.Tests.Systems.Mapping;
 [UnitTest]
 public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestContext>
 {
-    private static readonly Variable<GuidIdConverter<UserId>> _sut = new(nameof(_sut));
-    private static readonly Variable<Guid> _id = new(nameof(_id));
+    private static readonly Variable<UlidIdConverter<UserId>> _sut = new(nameof(_sut));
+    private static readonly Variable<Ulid> _id = new(nameof(_id));
 
     [Fact]
     public void TryConvert_Should_ReturnValue_When_IdIsNotEmpty()
@@ -36,7 +36,7 @@ public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestConte
 
         then
             .Result(oneOf => oneOf.AsT1
-                .Should().BeOfType<ObjectValidationError<Guid>>()
+                .Should().BeOfType<ObjectValidationError<Ulid>>()
                 .Which.Value.Should().BeEmpty());
     }
 
@@ -49,7 +49,7 @@ public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestConte
 
         When
             .Catched(_sut, _id, (sut, id) => sut.Convert(id))
-            .Exception<InvalidOperationException>(ex => ex.Which.Data.ShouldBeDictionaryAnd().Contain(nameof(ObjectValidationError<Guid>.Value), Guid.Empty));
+            .Exception<InvalidOperationException>(ex => ex.Which.Data.ShouldBeDictionaryAnd().Contain(nameof(ObjectValidationError<Ulid>.Value), Ulid.Empty));
     }
 
 
@@ -65,13 +65,13 @@ public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestConte
         {
         }
 
-        internal GivenTestContext Empty(Variable<Guid> idVariable)
+        internal GivenTestContext Empty(Variable<Ulid> idVariable)
         {
-            Add(idVariable, () => Guid.Empty);
+            Add(idVariable, () => Ulid.Empty);
             return This;
         }
 
-        internal GivenTestContext Sut(Variable<GuidIdConverter<UserId>> sutVariable)
+        internal GivenTestContext Sut(Variable<UlidIdConverter<UserId>> sutVariable)
         {
             Add(sutVariable, () => new());
             return This;

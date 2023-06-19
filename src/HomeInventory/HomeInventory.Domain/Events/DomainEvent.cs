@@ -2,4 +2,4 @@
 
 namespace HomeInventory.Domain.Events;
 
-public record DomainEvent(Guid Id, DateTimeOffset Created) : IDomainEvent;
+public record DomainEvent(Ulid Id, DateTimeOffset Created) : IDomainEvent;

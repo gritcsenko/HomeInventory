@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-public sealed class GuidIdValueConverter<TId> : ValueConverter<TId, Guid>
-    where TId : class, IGuidIdentifierObject<TId>
+public sealed class UlidIdValueConverter<TId> : ValueConverter<TId, Ulid>
+    where TId : class, IUlidIdentifierObject<TId>
 {
-    private static readonly GuidIdConverter<TId> _converter = new();
+    private static readonly UlidIdConverter<TId> _converter = new();
 
-    public GuidIdValueConverter()
+    public UlidIdValueConverter()
         : base(
             id => id.Value,
             value => _converter.Convert(value))

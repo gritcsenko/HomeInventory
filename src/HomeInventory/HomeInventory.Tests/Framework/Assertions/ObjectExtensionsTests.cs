@@ -6,8 +6,8 @@ public class ObjectExtensionsTests : BaseTest
     [Fact]
     public void GetComparer_ShouldReturnForValueType()
     {
-        var value = Fixture.Create<Guid>();
-        var actual = ObjectExtensions.GetComparer<Guid>();
+        var value = Fixture.Create<Ulid>();
+        var actual = ObjectExtensions.GetComparer<Ulid>();
 
         actual.Should().NotBeNull();
         actual(value, value).Should().BeTrue();

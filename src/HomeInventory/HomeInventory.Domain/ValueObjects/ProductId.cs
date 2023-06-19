@@ -1,9 +1,9 @@
 ﻿using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
-public sealed class ProductId : GuidIdentifierObject<ProductId>
+public sealed class ProductId : UlidIdentifierObject<ProductId>
 {
-    internal ProductId(Guid value)
+    internal ProductId(Ulid value)
         : base(value)
     {
     }

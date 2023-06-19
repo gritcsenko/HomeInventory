@@ -34,9 +34,9 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
 {
     protected BaseApiModuleTests()
     {
-        Fixture.CustomizeGuidId<UserId>();
+        Fixture.CustomizeUlidId<UserId>();
         Fixture.CustomizeEmail();
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(Guid.NewGuid()));
+        Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(Ulid.NewUlid()));
     }
 
 #pragma warning disable CA1034 // Nested types should not be visible

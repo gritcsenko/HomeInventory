@@ -20,7 +20,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
 
     public UnitOfWorkBehaviorTests()
     {
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(id => new ValueSupplier<Guid>(id));
+        Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(id => new ValueSupplier<Ulid>(id));
     }
 
     [Fact]

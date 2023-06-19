@@ -10,7 +10,7 @@ namespace HomeInventory.Web.Authorization.Dynamic;
 
 internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
 {
-    private static readonly GuidIdConverter<UserId> _idConverter = new();
+    private static readonly UlidIdConverter<UserId> _idConverter = new();
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DynamicPermissionRequirement requirement)
     {
@@ -32,7 +32,7 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
             return;
         }
 
-        if (!Guid.TryParse(idText, out var id))
+        if (!Ulid.TryParse(idText, out var id))
         {
             context.Fail(new AuthorizationFailureReason(this, $"User has no valid id '{idText}'"));
             return;

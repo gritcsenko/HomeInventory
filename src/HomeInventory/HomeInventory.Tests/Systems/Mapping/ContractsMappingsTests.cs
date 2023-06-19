@@ -26,13 +26,14 @@ public class ContractsMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> Data()
     {
         var fixture = new Fixture();
-        fixture.CustomizeGuidId<UserId>();
-        fixture.CustomizeGuidId<StorageAreaId>();
+        fixture.CustomizeUlid();
+        fixture.CustomizeUlidId<UserId>();
+        fixture.CustomizeUlidId<StorageAreaId>();
         fixture.CustomizeString(name => new StorageAreaName(name));
         fixture.CustomizeEmail();
         return new()
         {
-            { fixture.Create<UserId>(), typeof(Guid) },
+            { fixture.Create<UserId>(), typeof(Ulid) },
             { fixture.Create<Email>(), typeof(string) },
             { fixture.Create<RegisterRequest>(), typeof(RegisterCommand) },
             { fixture.Create<RegisterRequest>(), typeof(UserIdQuery) },
