@@ -10,5 +10,5 @@ internal class CorrelationIdContainer : ICorrelationIdContainer
 
     public void SetExisting(string id) => CorrelationId = id;
 
-    private static string CreateNewId() => Guid.NewGuid().ToString("N");
+    private static string CreateNewId() => Ulid.NewUlid().ToString();
 }

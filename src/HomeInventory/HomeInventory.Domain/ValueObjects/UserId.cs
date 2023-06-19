@@ -2,9 +2,9 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class UserId : GuidIdentifierObject<UserId>
+public sealed class UserId : UlidIdentifierObject<UserId>
 {
-    internal UserId(Guid value)
+    internal UserId(Ulid value)
         : base(value)
     {
     }

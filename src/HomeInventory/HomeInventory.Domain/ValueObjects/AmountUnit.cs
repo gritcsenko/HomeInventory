@@ -2,12 +2,12 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class AmountUnit : BaseEnumeration<AmountUnit, Guid>
+public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 {
     private readonly decimal _metricUnitScale = 1m;
 
     internal AmountUnit(string name, MeasurementType measurement)
-        : base(name, Guid.NewGuid())
+        : base(name, Ulid.NewUlid())
     {
         Measurement = measurement;
         MetricUnit = this;

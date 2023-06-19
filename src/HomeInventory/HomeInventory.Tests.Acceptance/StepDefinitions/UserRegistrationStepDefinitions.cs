@@ -51,7 +51,7 @@ internal sealed class UserRegistrationStepDefinitions
     [Then(@"User should get an ID as a confirmation of the successful registration")]
     public void ThenUserShouldGetAnId()
     {
-        var userId = _context.Get<Guid>(Keys.UserId);
+        var userId = _context.Get<Ulid>(Keys.UserId);
         userId.Should().NotBeEmpty();
     }
 

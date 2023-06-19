@@ -210,9 +210,9 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
     }
 
-    internal class TestEntityId : GuidIdentifierObject<TestEntityId>
+    internal class TestEntityId : UlidIdentifierObject<TestEntityId>
     {
-        public TestEntityId(Guid value)
+        public TestEntityId(Ulid value)
             : base(value)
         {
         }

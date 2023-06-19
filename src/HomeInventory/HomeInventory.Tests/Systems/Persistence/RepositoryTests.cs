@@ -71,7 +71,7 @@ public class RepositoryTests : BaseRepositoryTest
         var sut = CreateSut();
         await sut.AddAsync(entity, Cancellation.Token);
 
-        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Value), Cancellation.Token);
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Ulid>(entity.Id.Value), Cancellation.Token);
 
         actual.Should().HaveSomeValue();
     }
@@ -79,10 +79,10 @@ public class RepositoryTests : BaseRepositoryTest
     [Fact]
     public async ValueTask FindFirstOptionalAsync_ShouldNotFindNonExisting()
     {
-        var entityId = Fixture.Create<Guid>();
+        var entityId = Fixture.Create<Ulid>();
         var sut = CreateSut();
 
-        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Guid>(entityId), Cancellation.Token);
+        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<FakeModel, Ulid>(entityId), Cancellation.Token);
 
         actual.Should().HaveNoValue();
     }
@@ -94,7 +94,7 @@ public class RepositoryTests : BaseRepositoryTest
         var sut = CreateSut();
         await sut.AddAsync(entity, Cancellation.Token);
 
-        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Guid>(entity.Id.Value), Cancellation.Token);
+        var actual = await sut.HasAsync(new ByIdFilterSpecification<FakeModel, Ulid>(entity.Id.Value), Cancellation.Token);
 
         actual.Should().BeTrue();
     }
@@ -161,7 +161,7 @@ public class RepositoryTests : BaseRepositoryTest
 
     private class FakeModel : IPersistentModel
     {
-        public required Guid Id { get; init; }
+        public required Ulid Id { get; init; }
     }
 
 #pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>
@@ -182,9 +182,9 @@ public class RepositoryTests : BaseRepositoryTest
         }
     }
 
-    private class FakeId : GuidIdentifierObject<FakeId>
+    private class FakeId : UlidIdentifierObject<FakeId>
     {
-        public FakeId(Guid value)
+        public FakeId(Ulid value)
             : base(value)
         {
         }

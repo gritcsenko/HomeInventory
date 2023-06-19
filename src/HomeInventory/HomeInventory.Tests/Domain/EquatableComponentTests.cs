@@ -7,7 +7,7 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
 {
     private static readonly Variable<EquatableComponent<string>> _sut = new(nameof(_sut));
     private static readonly Variable<HashCode> _hash = new(nameof(_hash));
-    private static readonly Variable<Guid> _component = new(nameof(_component));
+    private static readonly Variable<Ulid> _component = new(nameof(_component));
 
     [Fact]
     public void GetHashCode_ShoudReturnZero_WhenNoComponents()

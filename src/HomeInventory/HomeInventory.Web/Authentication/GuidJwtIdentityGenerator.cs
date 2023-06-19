@@ -2,5 +2,5 @@
 
 public class GuidJwtIdentityGenerator : IJwtIdentityGenerator
 {
-    public string GenerateNew() => Guid.NewGuid().ToString("N");
+    public string GenerateNew() => Ulid.NewUlid().ToString();
 }
