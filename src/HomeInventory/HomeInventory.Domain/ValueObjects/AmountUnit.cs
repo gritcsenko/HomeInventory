@@ -53,4 +53,6 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Guid>
     public bool IsMetric { get; } = true;
 
     public decimal ToMetric(decimal value) => value * _metricUnitScale;
+
+    public override string ToString() => Name;
 }
