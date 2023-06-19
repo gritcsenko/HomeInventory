@@ -5,6 +5,7 @@
     <PackageReference Include="OneOf" />
     <PackageReference Include="OneOf.SourceGenerator" />
     <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>
