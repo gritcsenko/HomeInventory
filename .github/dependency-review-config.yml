@@ -11,9 +11,9 @@ allow-licenses:
 
 # ([String]). Block the pull request on these licenses (optional)
 # Possible values: Any  `spdx_id` value(s) from https://docs.github.com/en/rest/licenses
-deny-licenses:
-  - LGPL-2.0
-  - BSD-2-Clause
+#deny-licenses:
+#  - LGPL-2.0
+#  - BSD-2-Clause
 
 # ([String]). Skip these GitHub Advisory Database IDs during detection (optional)
 # Possible values: Any valid GitHub Advisory Database ID from https://github.com/advisories
