@@ -35,37 +35,6 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
         modelBuilder.ApplyConfiguration(new ProductAmountModelConfiguration());
     }
 
-    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
-    {
-        UpdateAuditableEntities();
-
-        return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    }
-
-    private void UpdateAuditableEntities()
-    {
-        var now = _dateTimeService.UtcNow;
-        foreach (var entry in ChangeTracker.Entries<ICreationAuditableEntity>())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    entry.Property(x => x.CreatedOn).CurrentValue = now;
-                    break;
-            }
-        }
-
-        foreach (var entry in ChangeTracker.Entries<IModificationAuditableEntity>())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Modified:
-                    entry.Property(x => x.ModifiedOn).CurrentValue = now;
-                    break;
-            }
-        }
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.AddInterceptors(_interceptor);
