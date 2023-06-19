@@ -1,0 +1,18 @@
+name: "Dependency Review"
+on: [pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          # ([String]). Representing a path to a configuration file local to the repository or in an external repository.
+          # Possible values: An absolute path to a local file or an external file.
+          config-file: "./.github/dependency-review-config.yml"
