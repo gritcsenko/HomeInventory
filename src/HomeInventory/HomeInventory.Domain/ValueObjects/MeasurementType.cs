@@ -2,10 +2,10 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class MeasurementType : BaseEnumeration<MeasurementType, Guid>
+public sealed class MeasurementType : BaseEnumeration<MeasurementType, Ulid>
 {
     internal MeasurementType(string name)
-        : base(name, Guid.NewGuid())
+        : base(name, Ulid.NewUlid())
     {
     }
 

@@ -32,7 +32,7 @@ public class ModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldMapUserModelToUser()
     {
-        Fixture.CustomizeGuidId<UserId>();
+        Fixture.CustomizeUlidId<UserId>();
         var sut = CreateSut<ModelMappings>();
         var instance = Fixture.Create<UserModel>();
 
@@ -46,7 +46,7 @@ public class ModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldProjectUserModelToUser()
     {
-        Fixture.CustomizeGuidId<UserId>();
+        Fixture.CustomizeUlidId<UserId>();
         var sut = CreateSut<ModelMappings>();
         var instance = Fixture.Create<UserModel>();
         var source = new[] { instance }.AsQueryable();
@@ -59,8 +59,9 @@ public class ModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
-        fixture.CustomizeGuidId<UserId>();
-        fixture.CustomizeGuidId<ProductId>();
+        fixture.CustomizeUlid();
+        fixture.CustomizeUlidId<UserId>();
+        fixture.CustomizeUlidId<ProductId>();
         fixture.CustomizeEmail();
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
@@ -72,8 +73,8 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var data = new TheoryData<object, Type>();
 
-        Add<UserId, Guid>(fixture, data);
-        Add<ProductId, Guid>(fixture, data);
+        Add<UserId, Ulid>(fixture, data);
+        Add<ProductId, Ulid>(fixture, data);
 
         Add<Email, string>(fixture, data);
 

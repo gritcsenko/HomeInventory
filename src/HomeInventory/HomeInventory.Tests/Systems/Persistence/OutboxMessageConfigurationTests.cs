@@ -11,7 +11,7 @@ public class OutboxMessageConfigurationTests : BaseTest
 {
     public OutboxMessageConfigurationTests()
     {
-        Fixture.CustomizeGuidId<UserId>();
+        Fixture.CustomizeUlidId<UserId>();
     }
 
     [Fact]

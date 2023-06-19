@@ -11,12 +11,12 @@ public abstract class MappingProfile : Profile
     }
 
     protected void CreateMapForId<TId>()
-        where TId : class, IGuidIdentifierObject<TId>
+        where TId : class, IUlidIdentifierObject<TId>
     {
-        var converter = new GuidIdConverter<TId>();
-        CreateMap<TId, Guid>()
+        var converter = new UlidIdConverter<TId>();
+        CreateMap<TId, Ulid>()
             .ConvertUsing(x => x.Value);
-        CreateMap<Guid, TId>()
+        CreateMap<Ulid, TId>()
             .ConvertUsing(id => converter.Convert(id));
     }
 

@@ -13,7 +13,7 @@ public class UserHasEmailSpecificationTests : BaseTest
 
     public UserHasEmailSpecificationTests()
     {
-        Fixture.CustomizeGuidId<UserId>();
+        Fixture.CustomizeUlidId<UserId>();
     }
 
     [Fact]

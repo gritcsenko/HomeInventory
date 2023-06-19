@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Infrastructure.Persistence.Models;
 
-internal interface IPersistentModel : IPersistentModel<Guid>
+internal interface IPersistentModel : IPersistentModel<Ulid>
 {
 }
 

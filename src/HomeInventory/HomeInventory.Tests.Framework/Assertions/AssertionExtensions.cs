@@ -9,6 +9,8 @@ namespace HomeInventory.Tests.Framework.Assertions;
 
 public static class AssertionExtensions
 {
+    public static UlidAssertions Should(this Ulid actualValue) => new(actualValue);
+
     public static ProblemDetailsAssertions Should(this ProblemDetails actualValue) => new(actualValue);
 
     public static JsonElementAssertions Should(this JsonElement actualValue) => new(actualValue);

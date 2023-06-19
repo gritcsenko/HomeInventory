@@ -16,11 +16,11 @@ public class RegisterCommandHandlerTests : BaseTest
 
     public RegisterCommandHandlerTests()
     {
-        Fixture.CustomizeGuidId<UserId>();
+        Fixture.CustomizeUlidId<UserId>();
         Fixture.CustomizeEmail();
 
         _userId = Fixture.Create<UserId>();
-        Fixture.CustomizeFromFactory<Guid, ISupplier<Guid>>(_ => new ValueSupplier<Guid>(_userId.Value));
+        Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(_userId.Value));
 
         _command = Fixture.Create<RegisterCommand>();
     }

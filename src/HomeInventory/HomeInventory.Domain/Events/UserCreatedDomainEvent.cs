@@ -5,7 +5,12 @@ namespace HomeInventory.Domain.Events;
 public sealed record UserCreatedDomainEvent : DomainEvent
 {
     public UserCreatedDomainEvent(DateTimeOffset created, User user)
-        : base(Guid.NewGuid(), created)
+        : this(Ulid.NewUlid(), created, user)
+    {
+    }
+
+    public UserCreatedDomainEvent(Ulid id, DateTimeOffset created, User user)
+        : base(id, created)
     {
         User = user;
     }

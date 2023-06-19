@@ -6,23 +6,23 @@ namespace HomeInventory.Tests.Domain.Primitives;
 public class DictionaryExtensionsTests : BaseTest
 {
     private readonly string _key;
-    private readonly Guid _value;
+    private readonly Ulid _value;
     private readonly string _invalidKey;
-    private readonly Guid _defaultValue;
-    private readonly IDictionary<string, Guid> _sut;
-    private readonly IReadOnlyDictionary<string, Guid> _sut2;
+    private readonly Ulid _defaultValue;
+    private readonly IDictionary<string, Ulid> _sut;
+    private readonly IReadOnlyDictionary<string, Ulid> _sut2;
 
     public DictionaryExtensionsTests()
     {
         _key = Fixture.Create<string>();
-        _value = Fixture.Create<Guid>();
+        _value = Fixture.Create<Ulid>();
         _invalidKey = Fixture.Create<string>();
-        _defaultValue = Fixture.Create<Guid>();
-        _sut = new Dictionary<string, Guid>
+        _defaultValue = Fixture.Create<Ulid>();
+        _sut = new Dictionary<string, Ulid>
         {
             [_key] = _value,
         };
-        _sut2 = new Dictionary<string, Guid>
+        _sut2 = new Dictionary<string, Ulid>
         {
             [_key] = _value,
         };
