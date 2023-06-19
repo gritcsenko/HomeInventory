@@ -11,7 +11,7 @@ public static class FixtureExtensions
         fixture.CustomizeFromFactory<Ulid, TId>(source => TId.CreateBuilder().WithValue(new ValueSupplier<Ulid>(source)).Invoke());
 #pragma warning restore CA2252 // This API requires opting into preview features
 
-    public static IFixture CustomizeEmail(this IFixture fixture) => fixture.CustomizeString(value => new Email(value));
+    public static IFixture CustomizeEmail(this IFixture fixture) => fixture.CustomizeFromFactory<Ulid, Email>(value => new Email(value.ToString()));
 
     public static IFixture CustomizeString<TValue>(this IFixture fixture, Func<string, TValue> createFunc) => fixture.CustomizeFromFactory((string value) => createFunc(value));
 
