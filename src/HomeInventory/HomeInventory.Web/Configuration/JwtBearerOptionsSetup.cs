@@ -32,5 +32,7 @@ internal class JwtBearerOptionsSetup : IConfigureOptions<JwtBearerOptions>
         IssuerSigningKey = _jwtOptions.SecurityKey,
 
         ValidAlgorithms = new[] { _jwtOptions.Algorithm },
+
+        ClockSkew = _jwtOptions.ClockSkew,
     };
 }
