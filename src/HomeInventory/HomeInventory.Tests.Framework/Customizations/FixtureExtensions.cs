@@ -20,4 +20,7 @@ public static class FixtureExtensions
 
     public static IFixture CustomizeRegisterRequest(this IFixture fixture) =>
         fixture.Customize(new RegisterRequestCustomization());
+
+    public static IFixture CustomizeUlid(this IFixture fixture) =>
+        fixture.Customize(new UlidCustomization());
 }

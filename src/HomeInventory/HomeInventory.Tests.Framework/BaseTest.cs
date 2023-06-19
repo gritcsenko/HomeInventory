@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Tests.Framework.Customizations;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -12,6 +13,7 @@ public abstract class BaseTest : CompositeDisposable
     protected BaseTest()
     {
         AddDisposable(_lazyCancellation);
+        Fixture.CustomizeUlid();
     }
 
     protected IFixture Fixture => _lazyFixture.Value;

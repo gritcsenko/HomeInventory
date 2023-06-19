@@ -59,6 +59,7 @@ public class ModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
+        fixture.CustomizeUlid();
         fixture.CustomizeUlidId<UserId>();
         fixture.CustomizeUlidId<ProductId>();
         fixture.CustomizeEmail();
