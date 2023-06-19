@@ -18,6 +18,8 @@ internal class JwtOptions
 
     public TimeSpan Expiry { get; init; } = TimeSpan.FromMinutes(10);
 
+    public TimeSpan ClockSkew { get; init; } = TimeSpan.FromSeconds(5);
+
     public SecurityKey SecurityKey => _securityKey ??= new SymmetricSecurityKey(Key);
 
     private byte[] Key => _key ??= Encoding.UTF8.GetBytes(Secret);
