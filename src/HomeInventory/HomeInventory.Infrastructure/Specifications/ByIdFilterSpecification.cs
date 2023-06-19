@@ -8,11 +8,12 @@ namespace HomeInventory.Infrastructure.Specifications;
 internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
     where TModel : class, IPersistentModel
 {
-    private static readonly Func<DbContext, Guid, CancellationToken, Task<TModel?>> _cachedQuery =
-        EF.CompileAsyncQuery((DbContext ctx, Guid id, CancellationToken t) => ctx.Set<TModel>().FirstOrDefaultAsync(x => x.Id == id, t).GetAwaiter().GetResult());
-    private readonly Guid _id;
+    private static readonly Func<DbContext, Ulid, CancellationToken, Task<TModel?>> _cachedQuery =
+        EF.CompileAsyncQuery((DbContext ctx, Ulid id, CancellationToken t) => ctx.Set<TModel>().FirstOrDefaultAsync(x => x.Id == id, t).GetAwaiter().GetResult());
 
-    public ByIdFilterSpecification(Guid id)
+    private readonly Ulid _id;
+
+    public ByIdFilterSpecification(Ulid id)
     {
         Query.Where(x => x.Id.Equals(id));
         _id = id;
@@ -23,7 +24,7 @@ internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleR
 
 internal class ByIdFilterSpecification<TModel, TId> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
     where TModel : class, IPersistentModel<TId>
-    where TId : GuidIdentifierObject<TId>
+    where TId : UlidIdentifierObject<TId>
 {
     private static readonly Func<DbContext, TId, CancellationToken, Task<TModel?>> _cachedQuery =
         EF.CompileAsyncQuery((DbContext ctx, TId id, CancellationToken t) => ctx.Set<TModel>().FirstOrDefaultAsync(x => x.Id == id, t).GetAwaiter().GetResult());

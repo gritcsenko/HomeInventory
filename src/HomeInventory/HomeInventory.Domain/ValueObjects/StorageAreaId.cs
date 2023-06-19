@@ -2,9 +2,9 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class StorageAreaId : GuidIdentifierObject<StorageAreaId>
+public sealed class StorageAreaId : UlidIdentifierObject<StorageAreaId>
 {
-    internal StorageAreaId(Guid value)
+    internal StorageAreaId(Ulid value)
         : base(value)
     {
     }

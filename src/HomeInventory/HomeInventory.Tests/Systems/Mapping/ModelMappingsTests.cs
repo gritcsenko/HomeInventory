@@ -60,7 +60,7 @@ public class ModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldProjectStorageAreaModelToStorageArea()
     {
-        Fixture.CustomizeGuidId<StorageAreaId>();
+        Fixture.CustomizeUlidId<StorageAreaId>();
         var sut = CreateSut<ModelMappings>();
         var instance = Fixture.Create<StorageAreaModel>();
         var source = new[] { instance }.AsQueryable();
