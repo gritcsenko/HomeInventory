@@ -13,7 +13,7 @@ public abstract class BaseDatabaseContextTest : BaseTest
 
     protected BaseDatabaseContextTest()
     {
-        _context = ReflectionMethods.CreateInstance<DatabaseContext>(GetDatabaseOptions(), new PublishDomainEventsInterceptor(Substitute.For<IPublisher>()))!;
+        _context = ReflectionMethods.CreateInstance<DatabaseContext>(GetDatabaseOptions(), new PublishDomainEventsInterceptor(Substitute.For<IPublisher>()), DateTime)!;
         AddDisposable(_context);
     }
 
