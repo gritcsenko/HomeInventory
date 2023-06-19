@@ -4,12 +4,13 @@ Inventory management for home
 
 ## Statuses
 
-[![License](https://img.shields.io/github/license/gritcsenko/HomeInventory)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gritcsenko/HomeInventory/blob/master/LICENSE)
 
-![.NET 7.0](https://img.shields.io/badge/Version-.NET%207.0-informational?logo=dotnet)
+![.NET 7.0](https://img.shields.io/badge/Version-7.0-informational?logo=dotnet)
 ![Built With Docker](https://img.shields.io/badge/Built_With-Docker-informational?logo=docker)
 [![Release strategy](https://img.shields.io/badge/Release%20strategy-GitHub_flow-informational.svg)](https://githubflow.github.io/)
 [![CI Build](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml)
+[![CodeQL](https://github.com/dotnet/dotNext/workflows/CodeQL/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions?query=workflow%3ACodeQL)
 
 [![GitHub repo stars](https://img.shields.io/github/stars/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory/stargazers)
 [![GitHub contributors](https://img.shields.io/github/contributors/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory/graphs/contributors)
