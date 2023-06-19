@@ -9,20 +9,25 @@ allow-licenses:
   - BSD-3-Clause
   - MIT
 
-  # ([String]). Block the pull request on these licenses (optional)
-  # Possible values: Any  `spdx_id` value(s) from https://docs.github.com/en/rest/licenses
+# ([String]). Block the pull request on these licenses (optional)
+# Possible values: Any  `spdx_id` value(s) from https://docs.github.com/en/rest/licenses
 deny-licenses:
   - LGPL-2.0
   - BSD-2-Clause
 
-  # ([String]). Skip these GitHub Advisory Database IDs during detection (optional)
-  # Possible values: Any valid GitHub Advisory Database ID from https://github.com/advisories
+# ([String]). Skip these GitHub Advisory Database IDs during detection (optional)
+# Possible values: Any valid GitHub Advisory Database ID from https://github.com/advisories
 allow-ghsas:
   - GHSA-abcd-1234-5679
   - GHSA-efgh-1234-5679
 
-  # ([String]). Block pull requests that introduce vulnerabilities in the scopes that match this list (optional)
-  # Possible values: "development", "runtime", "unknown"
+# ([String]). Block pull requests that introduce vulnerabilities in the scopes that match this list (optional)
+# Possible values: "development", "runtime", "unknown"
 fail-on-scopes:
   - development
   - runtime
+
+# Enable or disable reporting the review summary as a comment in the pull request.
+# If enabled, you must give the workflow or job permission pull-requests: write.
+# Possible values: "true", "false"
+comment-summary-in-pr: true
