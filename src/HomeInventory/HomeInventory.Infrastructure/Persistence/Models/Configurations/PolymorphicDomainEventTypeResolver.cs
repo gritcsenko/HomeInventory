@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;

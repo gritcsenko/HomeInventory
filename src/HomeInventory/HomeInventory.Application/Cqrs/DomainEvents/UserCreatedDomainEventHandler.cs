@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Domain.Events;
 using MediatR;
 
 namespace HomeInventory.Application.Cqrs.DomainEvents;

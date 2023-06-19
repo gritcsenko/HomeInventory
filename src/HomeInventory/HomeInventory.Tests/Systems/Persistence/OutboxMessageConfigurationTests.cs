@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Domain.Events;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
