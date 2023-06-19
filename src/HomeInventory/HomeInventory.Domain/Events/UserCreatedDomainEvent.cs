@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Domain.Aggregates;
+
+namespace HomeInventory.Domain.Events;
 
 public sealed record UserCreatedDomainEvent : DomainEvent
 {

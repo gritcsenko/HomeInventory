@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Events;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Aggregates;

@@ -6,5 +6,5 @@ internal interface IApiRequestBuilder
 
     IApiRequestBuilder WithBody(HttpContent content);
 
-    ValueTask<HttpResponseMessage> SendAsync();
+    Task<HttpResponseMessage> SendAsync();
 }

@@ -1,5 +1,4 @@
-﻿using Ardalis.Specification;
-using Ardalis.Specification.EntityFrameworkCore;
+﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
@@ -150,19 +149,19 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().Be(expectedCount);
     }
 
-    private FakeRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default);
+    private FakeRepository CreateSut() => new(Context, Mapper);
 
     private class FakeRepository : Repository<FakeModel, FakeEntity>
     {
-        public FakeRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
-            : base(context, mapper, evaluator)
+        public FakeRepository(IDatabaseContext context, IMapper mapper)
+            : base(context, mapper, SpecificationEvaluator.Default)
         {
         }
     }
 
     private class FakeModel : IPersistentModel
     {
-        public Guid Id { get; init; }
+        public required Guid Id { get; init; }
     }
 
 #pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>

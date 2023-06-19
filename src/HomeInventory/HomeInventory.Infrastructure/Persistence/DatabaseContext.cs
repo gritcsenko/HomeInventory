@@ -9,11 +9,13 @@ namespace HomeInventory.Infrastructure.Persistence;
 internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
 {
     private readonly PublishDomainEventsInterceptor _interceptor;
+    private readonly IDateTimeService _dateTimeService;
 
-    public DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor)
+    public DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService)
         : base(options)
     {
         _interceptor = interceptor;
+        _dateTimeService = dateTimeService;
     }
 
     public required DbSet<OutboxMessage> OutboxMessages { get; init; }
@@ -30,5 +32,36 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
     {
         optionsBuilder.AddInterceptors(_interceptor);
         base.OnConfiguring(optionsBuilder);
+    }
+
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        UpdateAuditableEntities();
+
+        return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void UpdateAuditableEntities()
+    {
+        var now = _dateTimeService.UtcNow;
+        foreach (var entry in ChangeTracker.Entries<ICreationAuditableModel>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Property(x => x.CreatedOn).CurrentValue = now;
+                    break;
+            }
+        }
+
+        foreach (var entry in ChangeTracker.Entries<IModificationAuditableModel>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Modified:
+                    entry.Property(x => x.ModifiedOn).CurrentValue = now;
+                    break;
+            }
+        }
     }
 }
