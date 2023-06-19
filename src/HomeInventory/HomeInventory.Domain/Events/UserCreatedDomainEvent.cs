@@ -1,16 +1,12 @@
 ﻿using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.Events;
 
 public sealed record UserCreatedDomainEvent : DomainEvent
 {
-    public UserCreatedDomainEvent(DateTimeOffset created, User user)
-        : this(Ulid.NewUlid(), created, user)
-    {
-    }
-
-    public UserCreatedDomainEvent(Ulid id, DateTimeOffset created, User user)
-        : base(id, created)
+    public UserCreatedDomainEvent(IDateTimeService dateTimeService, User user)
+        : base(dateTimeService)
     {
         User = user;
     }
