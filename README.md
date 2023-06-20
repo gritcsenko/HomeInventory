@@ -6,16 +6,22 @@ Inventory management for home
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gritcsenko/HomeInventory/blob/master/LICENSE)
 
+[![CI Build](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml)
+[![CodeQL](https://github.com/gritcsenko/HomeInventory/workflows/CodeQL/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions?query=workflow%3ACodeQL)
+
 ![.NET 7.0](https://img.shields.io/badge/Version-7.0-informational?logo=dotnet)
 ![Built With Docker](https://img.shields.io/badge/Built_With-Docker-informational?logo=docker)
 [![Release strategy](https://img.shields.io/badge/Release%20strategy-GitHub_flow-informational.svg)](https://githubflow.github.io/)
-[![CI Build](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml)
-[![CodeQL](https://github.com/dotnet/dotNext/workflows/CodeQL/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions?query=workflow%3ACodeQL)
+[![GitHub Release Date](https://img.shields.io/github/release-date/gritcsenko/HomeInventory?label=released)](https://github.com/gritcsenko/HomeInventory/releases)
+[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/gritcsenko/HomeInventory/latest?label=new+commits)](https://github.com/gritcsenko/HomeInventory/commits/master)
+![Size](https://img.shields.io/github/repo-size/gritcsenko/HomeInventory)
 
 [![GitHub repo stars](https://img.shields.io/github/stars/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory/stargazers)
 [![GitHub contributors](https://img.shields.io/github/contributors/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory/graphs/contributors)
 [![GitHub last commit](https://img.shields.io/github/last-commit/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory/graphs/commit-activity)
+![Activity](https://img.shields.io/github/commit-activity/w/gritcsenko/HomeInventory)
+![Activity](https://img.shields.io/github/commit-activity/m/gritcsenko/HomeInventory)
+![Activity](https://img.shields.io/github/commit-activity/y/gritcsenko/HomeInventory)
 [![GitHub open issues](https://img.shields.io/github/issues/gritcsenko/HomeInventory)](https://github.com/gritcsenko/HomeInventory/issues)
 [![Latest release](https://img.shields.io/github/release/gritcsenko/HomeInventory.svg?label=latest%20release&color=007edf)](https://github.com/gritcsenko/HomeInventory/releases/latest)
 
