@@ -6,10 +6,10 @@
     <!--Compile-time dependencies-->
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.20.0" />
-    <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.3" />
+    <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.5" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.7" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.16" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.3.0.71466" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.4.0.72892" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
   </ItemGroup>
   <ItemGroup>
@@ -53,7 +53,7 @@
     <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.3.1" />
-    <PackageVersion Include="Verify.Xunit" Version="20.3.2" />
+    <PackageVersion Include="Verify.Xunit" Version="20.4.0" />
     <PackageVersion Include="xunit" Version="2.4.2" />
     <PackageVersion Include="xunit.core" Version="2.4.2" />
   </ItemGroup>
@@ -72,7 +72,7 @@
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="FluentValidation" Version="11.5.2" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
-    <PackageVersion Include="Mediator.Abstractions" Version="2.1.3" />
+    <PackageVersion Include="Mediator.Abstractions" Version="2.1.5" />
     <PackageVersion Include="MediatR" Version="12.0.1" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <PackageVersion Include="OneOf" Version="3.0.243" />
