@@ -3,59 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <!--Compile-time dependencies-->
-    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
-    <PackageVersion Include="FluentAssertions.Analyzers" Version="0.20.0" />
-    <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.5" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.7" />
-    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.16" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.4.0.72892" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
-  </ItemGroup>
-  <ItemGroup>
-    <!--System packages-->
-    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <!--Microsoft packages-->
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="7.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.NET.Build.Containers" Version="7.0.304" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
-    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <!--Testing packages-->
-    <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
-    <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
-    <PackageVersion Include="AutoFixture" Version="4.18.0" />
-    <PackageVersion Include="FluentAssertions" Version="6.11.0" />
-    <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
-    <PackageVersion Include="NSubstitute" Version="5.0.0" />
-    <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
-    <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
-    <PackageVersion Include="Throw" Version="1.3.1" />
-    <PackageVersion Include="Verify.Xunit" Version="20.4.0" />
-    <PackageVersion Include="xunit" Version="2.4.2" />
-    <PackageVersion Include="xunit.core" Version="2.4.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <!--Misc packages-->
+    <!--Run-time packages-->
     <PackageVersion Include="Ardalis.Specification" Version="7.0.0" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="7.0.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0" />
@@ -64,6 +12,7 @@
     <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="6.0.5" />
     <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="Carter" Version="7.1.0" />
     <PackageVersion Include="DotNext" Version="4.12.4" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
@@ -75,12 +24,67 @@
     <PackageVersion Include="OneOf" Version="3.0.243" />
     <PackageVersion Include="OneOf.SourceGenerator" Version="3.0.243" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
+    <PackageVersion Include="Serilog" Version="3.0.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Demystifier" Version="1.0.2" />
+    <PackageVersion Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageVersion Include="Serilog.Formatting.Compact" Version="1.1.0" />
     <PackageVersion Include="Serilog.Settings.Configuration" Version="7.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="Ulid" Version="1.2.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--System packages-->
+    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Microsoft packages-->
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="7.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.NET.Build.Containers" Version="7.0.304" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Testing packages-->
+    <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
+    <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
+    <PackageVersion Include="AutoFixture" Version="4.18.0" />
+    <PackageVersion Include="FluentAssertions" Version="6.11.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+    <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
+    <PackageVersion Include="NSubstitute" Version="5.0.0" />
+    <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
+    <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
+    <PackageVersion Include="Throw" Version="1.3.1" />
+    <PackageVersion Include="Verify.Xunit" Version="20.4.0" />
+    <PackageVersion Include="xunit" Version="2.4.2" />
+    <PackageVersion Include="xunit.core" Version="2.4.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Compile-time dependencies-->
+    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="FluentAssertions.Analyzers" Version="0.20.0" />
+    <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.5" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.16" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.4.0.72892" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
   </ItemGroup>
 </Project>
