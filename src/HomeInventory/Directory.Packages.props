@@ -21,7 +21,7 @@
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.5" />
     <PackageVersion Include="MediatR" Version="12.0.1" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
-    <PackageVersion Include="OneOf" Version="3.0.243" />
+    <PackageVersion Include="OneOf" Version="3.0.255" />
     <PackageVersion Include="OneOf.SourceGenerator" Version="3.0.243" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
     <PackageVersion Include="Serilog" Version="3.0.0" />
