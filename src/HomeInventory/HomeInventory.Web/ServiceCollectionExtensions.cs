@@ -51,8 +51,6 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenApiDocs();
 
-        services.AddOptionsWithValidator<JwtOptions>();
-
         services.AddCarter(new DependencyContextAssemblyCatalog(Contracts.Validations.AssemblyReference.Assembly, AssemblyReference.Assembly));
 
         return services;
@@ -67,6 +65,7 @@ public static class ServiceCollectionExtensions
         services.ConfigureOptions<JwtBearerOptionsSetup>();
 
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
+        services.AddOptionsWithValidator<JwtOptions>();
         services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
     }
 
