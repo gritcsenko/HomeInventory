@@ -16,9 +16,8 @@ await Execute.AndCatchAsync(
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Host.UseSerilog(SerilogConfigurator.Configure);
-
         builder.Services
+            .AddSerilog(builder.Configuration)
             .AddMediatR(MediatRConfigurator.Configure)
             .AddDomain()
             .AddInfrastructure()

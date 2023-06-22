@@ -4,8 +4,9 @@ namespace HomeInventory.Api;
 
 internal static class SerilogConfigurator
 {
-    public static void Configure(HostBuilderContext context, IServiceProvider services, LoggerConfiguration configuration) =>
-        configuration
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services);
+    public static IServiceCollection AddSerilog(this IServiceCollection services, IConfiguration configuration) =>
+        services.AddSerilog((IServiceProvider provider, LoggerConfiguration loggerConfiguration) =>
+            loggerConfiguration
+                .ReadFrom.Configuration(configuration)
+                .ReadFrom.Services(provider));
 }
