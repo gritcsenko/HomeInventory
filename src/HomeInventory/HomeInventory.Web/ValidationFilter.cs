@@ -18,7 +18,7 @@ internal class ValidationFilter<T> : IEndpointFilter
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        var validationResult = await ValidateArgumentAsync(context, 0);
+        var validationResult = await ValidateArgumentAsync(context);
         if (!validationResult.IsValid)
         {
             return context.HttpContext.Problem(validationResult);
@@ -27,9 +27,9 @@ internal class ValidationFilter<T> : IEndpointFilter
         return await next(context);
     }
 
-    private async ValueTask<ValidationResult> ValidateArgumentAsync(EndpointFilterInvocationContext context, int index)
+    private async ValueTask<ValidationResult> ValidateArgumentAsync(EndpointFilterInvocationContext context)
     {
-        var argument = context.GetArgument<T>(index);
+        var argument = context.Arguments.OfType<T>().First();
         var validationContext = ValidationContext<T>.CreateWithOptions(argument, _options);
 
         var httpContext = context.HttpContext;
