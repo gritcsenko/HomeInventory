@@ -1,7 +1,5 @@
 ﻿using Asp.Versioning;
 using Carter;
-using FluentValidation;
-using FluentValidation.AspNetCore;
 using FluentValidation.Internal;
 using HealthChecks.UI.Client;
 using HomeInventory.Application;
@@ -10,7 +8,6 @@ using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
-using HomeInventory.Web.Configuration.Validation;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
 using HomeInventory.Web.OpenApi;
@@ -54,7 +51,7 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenApiDocs();
 
-        services.AddValidation();
+        services.AddOptionsWithValidator<JwtOptions>();
 
         services.AddCarter(new DependencyContextAssemblyCatalog(Contracts.Validations.AssemblyReference.Assembly, AssemblyReference.Assembly));
 
@@ -89,16 +86,6 @@ public static class ServiceCollectionExtensions
             options.AssumeDefaultVersionWhenUnspecified = true;
             options.ApiVersionReader = new QueryStringApiVersionReader();
         }).AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
-    }
-
-    private static void AddValidation(this IServiceCollection services)
-    {
-        services.AddFluentValidationAutoValidation(config => config.DisableDataAnnotationsValidation = true);
-        services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
-        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, filter: r => r.Is<IOptionsValidator>(), includeInternalTypes: true);
-        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Scoped, filter: r => !r.Is<IOptionsValidator>(), includeInternalTypes: true);
-
-        services.AddOptionsWithValidator<JwtOptions>();
     }
 
     public static TApp UseWeb<TApp>(this TApp app)
@@ -159,8 +146,6 @@ public static class ServiceCollectionExtensions
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
     }
-
-    private static bool Is<T>(this AssemblyScanner.AssemblyScanResult result) => result.ValidatorType.IsAssignableTo(typeof(T));
 
     private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, string? configSectionPath = null)
         where TOptions : class => services.AddOptions<TOptions>()
