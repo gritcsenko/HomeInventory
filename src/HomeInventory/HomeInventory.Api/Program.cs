@@ -1,4 +1,3 @@
-using System.Globalization;
 using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Core;
@@ -7,10 +6,7 @@ using HomeInventory.Infrastructure;
 using HomeInventory.Web;
 using Serilog;
 
-using var log = new LoggerConfiguration()
-    .Enrich.WithDemystifiedStackTraces()
-    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture, theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
-    .CreateLogger();
+using var log = SerilogConfigurator.CreateBootstrapLogger();
 
 await Execute.AndCatchAsync(
     async () =>
