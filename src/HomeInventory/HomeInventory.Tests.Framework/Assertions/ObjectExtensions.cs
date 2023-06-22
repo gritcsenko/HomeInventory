@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using HomeInventory.Core;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
@@ -45,22 +46,14 @@ internal static class ObjectExtensions
             && CanConvert(expected, actual, formatProvider);
     }
 
-    private static bool CanConvert(object source, object target, IFormatProvider formatProvider)
-    {
-        try
-        {
-            var convertedToTarget = source.ConvertTo(target.GetType(), formatProvider);
-            var convertedToSource = convertedToTarget.ConvertTo(source.GetType(), formatProvider);
-            return source.Equals(convertedToSource) && convertedToTarget.Equals(target);
-        }
-#pragma warning disable CA1031 // Do not catch general exception types
-        catch
-#pragma warning restore CA1031 // Do not catch general exception types
-        {
-            // ignored
-            return false;
-        }
-    }
+    private static bool CanConvert(object source, object target, IFormatProvider formatProvider) =>
+        Execute.AndCatch(() =>
+            {
+                var convertedToTarget = source.ConvertTo(target.GetType(), formatProvider);
+                var convertedToSource = convertedToTarget.ConvertTo(source.GetType(), formatProvider);
+                return source.Equals(convertedToSource) && convertedToTarget.Equals(target);
+            },
+            (Exception _) => false);
 
     private static object ConvertTo(this object source, Type targetType, IFormatProvider formatProvider) =>
         Convert.ChangeType(source, targetType, formatProvider);

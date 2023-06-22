@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using FluentAssertions.Execution;
 using HomeInventory.Core;
+using Execute = FluentAssertions.Execution.Execute;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
