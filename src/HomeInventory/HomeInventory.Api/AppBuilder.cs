@@ -9,9 +9,9 @@ internal class AppBuilder
 {
     private readonly WebApplicationBuilder _builder;
 
-    public AppBuilder(string[] args)
+    public AppBuilder()
     {
-        _builder = WebApplication.CreateBuilder(args);
+        _builder = WebApplication.CreateBuilder(Environment.GetCommandLineArgs());
     }
 
     public WebApplication Build()
