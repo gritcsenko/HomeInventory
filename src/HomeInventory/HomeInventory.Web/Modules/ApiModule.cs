@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-internal abstract class ApiModule : CarterModule
+public abstract class ApiModule : CarterModule
 {
     private readonly string _groupPrefix;
     private readonly PermissionType[] _permissions;

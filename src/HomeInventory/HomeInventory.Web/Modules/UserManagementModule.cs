@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-internal class UserManagementModule : ApiModule
+public class UserManagementModule : ApiModule
 {
     public UserManagementModule()
         : base("/api/users/manage")

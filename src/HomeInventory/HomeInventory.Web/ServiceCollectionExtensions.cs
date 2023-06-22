@@ -13,7 +13,6 @@ using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.Configuration.Validation;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Middleware;
-using HomeInventory.Web.Modules;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -57,10 +56,7 @@ public static class ServiceCollectionExtensions
 
         services.AddValidation();
 
-        services.AddCarter(configurator: config => config
-            .WithModule<UserManagementModule>()
-            .WithModule<AuthenticationModule>()
-            .WithModule<PermissionModule>());
+        services.AddCarter(new DependencyContextAssemblyCatalog(Contracts.Validations.AssemblyReference.Assembly, AssemblyReference.Assembly));
 
         return services;
     }
@@ -176,7 +172,7 @@ public static class ServiceCollectionExtensions
         where TOptions : class
     {
         var services = builder.Services;
-        services.AddSingleton<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidator<TOptions>>(), validationOptions));
+        services.AddSingleton<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidatorLocator>(), validationOptions));
         return builder;
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-internal class AuthenticationModule : ApiModule
+public class AuthenticationModule : ApiModule
 {
     public AuthenticationModule()
         : base("/api/authentication", PermissionType.AccessPermissions)

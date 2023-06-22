@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Carter;
+using FluentValidation;
 using FluentValidation.Internal;
 using Microsoft.Extensions.Options;
 
@@ -7,18 +8,17 @@ namespace HomeInventory.Web;
 internal sealed class FluentOptionsValidator<TOptions> : IValidateOptions<TOptions>
     where TOptions : class
 {
-    private readonly Action<ValidationStrategy<TOptions>>? _validationOptions;
+    private readonly Action<ValidationStrategy<TOptions>> _validationOptions;
+    private readonly IValidator _validator;
 
-    public FluentOptionsValidator(string? name, IValidator<TOptions> validator, Action<ValidationStrategy<TOptions>>? validationOptions)
+    public FluentOptionsValidator(string? name, IValidatorLocator validatorLocator, Action<ValidationStrategy<TOptions>>? validationOptions)
     {
         Name = name;
-        Validator = validator;
-        _validationOptions = validationOptions;
+        _validator = validatorLocator.GetValidator<TOptions>();
+        _validationOptions = validationOptions ?? (_ => { });
     }
 
     public string? Name { get; }
-
-    public IValidator<TOptions> Validator { get; }
 
     public ValidateOptionsResult Validate(string? name, TOptions options)
     {
@@ -34,15 +34,11 @@ internal sealed class FluentOptionsValidator<TOptions> : IValidateOptions<TOptio
 
     private ValidateOptionsResult ValidateCore(TOptions options)
     {
-        var result = _validationOptions is null
-            ? Validator.Validate(options)
-            : Validator.Validate(options, _validationOptions);
+        var context = ValidationContext<TOptions>.CreateWithOptions(options, _validationOptions);
+        var result = _validator.Validate(context);
 
-        if (result.IsValid)
-        {
-            return ValidateOptionsResult.Success;
-        }
-
-        return ValidateOptionsResult.Fail(result.ToString());
+        return result.IsValid
+            ? ValidateOptionsResult.Success
+            : ValidateOptionsResult.Fail(result.ToString());
     }
 }
