@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 
-namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Core;
 
 public static class TypeExtensions
 {
     private const BindingFlags _getFieldBindingAttr = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 
-    internal static IEnumerable<TFieldType> GetFieldsOfType<TFieldType>(this Type type)
+    public static IEnumerable<TFieldType> GetFieldsOfType<TFieldType>(this Type type)
     {
         var fieldType = typeof(TFieldType);
         return type.GetFields(_getFieldBindingAttr)

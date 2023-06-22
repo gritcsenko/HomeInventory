@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace HomeInventory.Application;
+﻿namespace HomeInventory.Application;
 
 internal static class LogEvents
 {

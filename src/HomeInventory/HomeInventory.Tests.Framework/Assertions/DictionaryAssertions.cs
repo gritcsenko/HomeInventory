@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using FluentAssertions.Execution;
-using HomeInventory.Domain.Primitives;
+using HomeInventory.Core;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 

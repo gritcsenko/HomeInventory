@@ -1,9 +1,9 @@
 ﻿using DotNext;
 
-namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Core;
 
-public interface IParseableValue<TSelf>
-    where TSelf : notnull, IParseableValue<TSelf>
+public interface IParseable<TSelf>
+    where TSelf : notnull, IParseable<TSelf>
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "By design")]
     abstract static TSelf Parse(string text);

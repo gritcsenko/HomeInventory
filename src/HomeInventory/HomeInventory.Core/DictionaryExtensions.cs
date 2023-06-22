@@ -1,6 +1,6 @@
 ﻿using DotNext;
 
-namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Core;
 
 public static class DictionaryExtensions
 {

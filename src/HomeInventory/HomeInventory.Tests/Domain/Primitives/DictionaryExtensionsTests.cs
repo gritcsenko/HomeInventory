@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-
-namespace HomeInventory.Tests.Domain.Primitives;
+﻿namespace HomeInventory.Tests.Domain.Primitives;
 
 [UnitTest]
 public class DictionaryExtensionsTests : BaseTest

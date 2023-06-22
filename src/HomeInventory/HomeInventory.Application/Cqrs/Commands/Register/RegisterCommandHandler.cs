@@ -4,8 +4,6 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
-using OneOf;
-using OneOf.Types;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 

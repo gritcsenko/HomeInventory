@@ -44,7 +44,7 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
     private void UpdateAuditableEntities()
     {
         var now = _dateTimeService.UtcNow;
-        foreach (var entry in ChangeTracker.Entries<ICreationAuditableModel>())
+        foreach (var entry in ChangeTracker.Entries<IHasCreationAudit>())
         {
             switch (entry.State)
             {
@@ -54,7 +54,7 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
             }
         }
 
-        foreach (var entry in ChangeTracker.Entries<IModificationAuditableModel>())
+        foreach (var entry in ChangeTracker.Entries<IHasModificationAudit>())
         {
             switch (entry.State)
             {

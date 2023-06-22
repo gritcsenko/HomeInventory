@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Application.Cqrs.Behaviors;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Application;

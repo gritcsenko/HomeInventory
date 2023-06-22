@@ -1,5 +1,4 @@
-﻿using DotNext;
-using HomeInventory.Application.Interfaces.Messaging;
+﻿using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;

@@ -1,9 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using OneOf;
-
-namespace HomeInventory.Application.Cqrs.Behaviors;
+﻿namespace HomeInventory.Application.Cqrs.Behaviors;
 
 internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
      where TRequest : notnull

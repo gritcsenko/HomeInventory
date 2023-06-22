@@ -154,5 +154,5 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
     }
 
     private static OutboxMessage CreateMessage(IDomainEvent domainEvent) =>
-        new(domainEvent.Id, domainEvent.Created, domainEvent);
+        new(domainEvent.Id, domainEvent.CreatedOn, domainEvent) { CreatedOn = domainEvent.CreatedOn };
 }

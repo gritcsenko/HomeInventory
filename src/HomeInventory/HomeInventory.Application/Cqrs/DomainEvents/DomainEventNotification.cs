@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Domain.Primitives;
-using MediatR;
 
 namespace HomeInventory.Application.Cqrs.DomainEvents;
 

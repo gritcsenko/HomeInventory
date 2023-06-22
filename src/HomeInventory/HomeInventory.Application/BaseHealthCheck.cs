@@ -1,6 +1,4 @@
-﻿using DotNext;
-using HomeInventory.Domain.Primitives;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HomeInventory.Application;
 
