@@ -8,7 +8,8 @@ using HomeInventory.Web;
 using Serilog;
 
 using var log = new LoggerConfiguration()
-    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture)
+    .Enrich.WithDemystifiedStackTraces()
+    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture, theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
     .CreateLogger();
 
 await Execute.AndCatchAsync(
