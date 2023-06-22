@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
-using FluentValidation.Internal;
 using FluentValidation.Results;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
@@ -16,12 +14,6 @@ internal static class HttpContextExtensions
 {
     public static Results<Ok<TResponse>, ProblemHttpResult> MatchToOk<T, TResponse>(this HttpContext context, OneOf<T, IError> errorOrResult, Func<T, TResponse> onValue) =>
         errorOrResult.Match<Results<Ok<TResponse>, ProblemHttpResult>>(value => TypedResults.Ok(onValue(value)), error => context.Problem(error));
-
-    public static Task<ValidationResult> ValidateAsync<T>(this HttpContext context, T instance, Action<ValidationStrategy<T>> options) =>
-        context.GetValidatorFor<T>().ValidateAsync(instance, options, context.RequestAborted);
-
-    public static IValidator<T> GetValidatorFor<T>(this HttpContext context) =>
-        context.GetService<IValidator<T>>();
 
     public static ISender GetSender(this HttpContext context) =>
         context.GetService<ISender>();

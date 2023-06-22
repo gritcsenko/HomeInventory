@@ -1,4 +1,6 @@
-﻿using FluentValidation.Internal;
+﻿using Carter;
+using FluentValidation;
+using FluentValidation.Internal;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 
@@ -28,7 +30,11 @@ internal class ValidationFilter<T> : IEndpointFilter
     private async ValueTask<ValidationResult> ValidateArgumentAsync(EndpointFilterInvocationContext context, int index)
     {
         var argument = context.GetArgument<T>(index);
+        var validationContext = ValidationContext<T>.CreateWithOptions(argument, _options);
+
         var httpContext = context.HttpContext;
-        return await httpContext.ValidateAsync(argument, _options);
+        var locator = httpContext.GetService<IValidatorLocator>();
+        var validator = locator.GetValidator<T>();
+        return await validator.ValidateAsync(validationContext);
     }
 }
