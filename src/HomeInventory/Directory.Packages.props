@@ -43,7 +43,7 @@
   <ItemGroup>
     <!--Microsoft packages-->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="7.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
