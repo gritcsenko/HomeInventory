@@ -12,9 +12,9 @@ internal class PersistenceHealthCheck : BaseHealthCheck
 
     protected override async ValueTask<bool> IsHealthyAsync(CancellationToken cancellationToken) =>
         await _context.Database.CanConnectAsync(cancellationToken)
-        && await CheckPendingMigrationsAsync(cancellationToken);
+        && await HasNoPendingMigrationsAsync(cancellationToken);
 
-    private async Task<bool> CheckPendingMigrationsAsync(CancellationToken cancellationToken) =>
-        _context.Database.IsRelational()
-        && !(await _context.Database.GetPendingMigrationsAsync(cancellationToken)).Any();
+    private async Task<bool> HasNoPendingMigrationsAsync(CancellationToken cancellationToken) =>
+        !_context.Database.IsRelational()
+        || !(await _context.Database.GetPendingMigrationsAsync(cancellationToken)).Any();
 }
