@@ -16,6 +16,8 @@ internal class AppBuilder
 
     public WebApplication Build()
     {
+        _builder.WebHost.CaptureStartupErrors(false);
+
         _builder.Services
           .AddSerilog(_builder.Configuration)
           .AddMediatR()
