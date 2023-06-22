@@ -18,7 +18,7 @@ await Execute.AndCatchAsync(
 
         builder.Services
             .AddSerilog(builder.Configuration)
-            .AddMediatR(MediatRConfigurator.Configure)
+            .AddMediatR()
             .AddDomain()
             .AddInfrastructure()
             .AddApplication()
