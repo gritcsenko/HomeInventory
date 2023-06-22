@@ -1,6 +1,4 @@
-﻿using DotNext;
-
-namespace HomeInventory.Core;
+﻿namespace HomeInventory.Core;
 
 public static class DictionaryExtensions
 {

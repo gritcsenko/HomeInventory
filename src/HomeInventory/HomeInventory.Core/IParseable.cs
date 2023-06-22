@@ -1,6 +1,4 @@
-﻿using DotNext;
-
-namespace HomeInventory.Core;
+﻿namespace HomeInventory.Core;
 
 public interface IParseable<TSelf>
     where TSelf : notnull, IParseable<TSelf>
