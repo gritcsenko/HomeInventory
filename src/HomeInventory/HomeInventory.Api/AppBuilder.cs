@@ -10,8 +10,13 @@ internal class AppBuilder
     private readonly WebApplicationBuilder _builder;
 
     public AppBuilder()
+        : this(Environment.GetCommandLineArgs())
     {
-        _builder = WebApplication.CreateBuilder(Environment.GetCommandLineArgs());
+    }
+
+    public AppBuilder(string[] args)
+    {
+        _builder = WebApplication.CreateBuilder(args);
     }
 
     public WebApplication Build()
