@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Versioning;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
@@ -8,18 +8,17 @@ namespace HomeInventory.Application.Cqrs.Commands.Register;
 internal static class RegisterCommandExtensions
 {
     [RequiresPreviewFeatures]
-    public static User CreateUser(this RegisterCommand command, IDateTimeService dateTimeService)
+    public static async ValueTask<User> CreateUserAsync(this RegisterCommand command, IPasswordHasher _hasher, CancellationToken cancellationToken = default)
     {
         var userId = UserId
             .CreateBuilder()
             .WithValue(command.UserIdSupplier)
             .Invoke();
-        var user = new User(userId)
+
+        return new(userId)
         {
             Email = command.Email,
-            Password = command.Password,
+            Password = await _hasher.HashAsync(command.Password, cancellationToken),
         };
-        user.OnUserCreated(dateTimeService);
-        return user;
     }
 }
