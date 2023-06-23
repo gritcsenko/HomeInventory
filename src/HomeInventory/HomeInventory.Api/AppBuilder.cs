@@ -14,25 +14,25 @@ internal class AppBuilder
     {
     }
 
-    public AppBuilder(string[] args)
-    {
+    public AppBuilder(string[] args) =>
         _builder = WebApplication.CreateBuilder(args);
-    }
 
     public WebApplication Build()
     {
         _builder.WebHost.CaptureStartupErrors(false);
 
-        _builder.Services
-          .AddSerilog(_builder.Configuration)
-          .AddMediatR()
-          .AddDomain()
-          .AddInfrastructure()
-          .AddApplication()
-          .AddWeb();
+        AddServices(_builder.Services, _builder.Configuration);
 
-        return _builder
-            .Build()
-            .UseWeb();
+        var app = _builder.Build();
+        return app.UseWeb();
     }
+
+    private static void AddServices(IServiceCollection services, IConfiguration configuration) =>
+        services
+            .AddSerilog(configuration)
+            .AddMediatR()
+            .AddDomain()
+            .AddInfrastructure()
+            .AddApplication()
+            .AddWeb();
 }
