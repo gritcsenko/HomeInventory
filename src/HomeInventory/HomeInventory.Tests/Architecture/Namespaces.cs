@@ -5,7 +5,9 @@ namespace HomeInventory.Tests.Architecture;
 internal static class Namespaces
 {
     private const string _prefix = "HomeInventory.";
+    public const string Core = _prefix + nameof(Core);
     public const string Domain = _prefix + nameof(Domain);
+    public const string DomainPrimitives = _prefix + nameof(Domain) + ".Primitives";
     public const string Application = _prefix + nameof(Application);
     public const string Infrastructure = _prefix + nameof(Infrastructure);
     public const string Api = _prefix + nameof(Api);
@@ -21,7 +23,9 @@ internal static class Namespaces
 public class ArchitectureTests
 {
     [Theory]
-    [InlineData(typeof(HomeInventory.Domain.AssemblyReference), new string[0])]
+    [InlineData(typeof(HomeInventory.Domain.AssemblyReference), new[] { Namespaces.DomainPrimitives })]
+    [InlineData(typeof(HomeInventory.Domain.Primitives.AssemblyReference), new[] { Namespaces.Core })]
+    [InlineData(typeof(HomeInventory.Core.AssemblyReference), new string[0])]
     [InlineData(typeof(Application.AssemblyReference), new[] { Namespaces.Domain })]
     [InlineData(typeof(Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
     [InlineData(typeof(Contracts.AssemblyReference), new string[0])]
