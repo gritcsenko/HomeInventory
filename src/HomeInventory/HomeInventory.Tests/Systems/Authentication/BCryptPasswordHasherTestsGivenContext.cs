@@ -15,6 +15,7 @@ public sealed class BCryptPasswordHasherTestsGivenContext : GivenContext<BCryptP
 
     internal BCryptPasswordHasherTestsGivenContext Hasher()
     {
+        Add(_sut, () => new BCryptPasswordHasher() { WorkFactor = 6 });
         return this;
     }
 }

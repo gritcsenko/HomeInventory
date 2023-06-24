@@ -7,15 +7,16 @@ namespace HomeInventory.Infrastructure.Services;
 internal class BCryptPasswordHasher : IPasswordHasher
 {
     private readonly HashType _hashType;
-    private readonly int _workFactor;
     private readonly bool _enhancedEntropy;
 
     public BCryptPasswordHasher()
     {
-        _workFactor = 13;
+        WorkFactor = 13;
         _enhancedEntropy = true;
         _hashType = HashType.SHA512;
     }
+
+    public int WorkFactor { get; init; }
 
     public ValueTask<string> HashAsync(string password, CancellationToken cancellationToken = default) =>
         ValueTask.FromResult(InternalHash(password));
@@ -25,7 +26,7 @@ internal class BCryptPasswordHasher : IPasswordHasher
 
     private string InternalHash(string password)
     {
-        var salt = GenerateSalt(_workFactor);
+        var salt = GenerateSalt(WorkFactor);
         return HashPassword(password, salt, _enhancedEntropy, _hashType);
     }
 
