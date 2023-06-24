@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Versioning;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
@@ -13,11 +14,13 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
 {
     private readonly IUserRepository _userRepository;
     private readonly IDateTimeService _dateTimeService;
+    private readonly IPasswordHasher _hasher;
 
-    public RegisterCommandHandler(IUserRepository userRepository, IDateTimeService dateTimeService)
+    public RegisterCommandHandler(IUserRepository userRepository, IDateTimeService dateTimeService, IPasswordHasher hasher)
     {
         _userRepository = userRepository;
         _dateTimeService = dateTimeService;
+        _hasher = hasher;
     }
 
     [RequiresPreviewFeatures]
@@ -28,7 +31,8 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
             return new DuplicateEmailError();
         }
 
-        var user = command.CreateUser(_dateTimeService);
+        var user = await command.CreateUserAsync(_hasher, cancellationToken);
+        user.OnUserCreated(_dateTimeService);
 
         await _userRepository.AddAsync(user, cancellationToken);
 
