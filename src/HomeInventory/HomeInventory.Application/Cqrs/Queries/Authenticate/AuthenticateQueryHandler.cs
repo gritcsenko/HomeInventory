@@ -13,11 +13,13 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator;
     private readonly IUserRepository _userRepository;
+    private readonly IPasswordHasher _hasher;
 
-    public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository)
+    public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IPasswordHasher hasher)
     {
         _tokenGenerator = tokenGenerator;
         _userRepository = userRepository;
+        _hasher = hasher;
     }
 
     protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
@@ -28,15 +30,8 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
             return new InvalidCredentialsError();
         }
 
-        return await HandleAsync(result.Value, query.Password, cancellationToken);
-    }
-
-    private ValueTask<Optional<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
-        _userRepository.FindFirstByEmailUserOptionalAsync(request.Email, cancellationToken);
-
-    private async ValueTask<OneOf<AuthenticateResult, IError>> HandleAsync(User user, string password, CancellationToken cancellationToken)
-    {
-        if (IsPasswordMatch(user, password))
+        var user = result.Value;
+        if (!await IsPasswordMatchAsync(user, query.Password, cancellationToken))
         {
             return new InvalidCredentialsError();
         }
@@ -45,6 +40,9 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
         return new AuthenticateResult(user.Id, token);
     }
 
-    private static bool IsPasswordMatch(User user, string password) =>
-        user.Password != password;
+    private ValueTask<Optional<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
+        _userRepository.FindFirstByEmailUserOptionalAsync(request.Email, cancellationToken);
+
+    private async ValueTask<bool> IsPasswordMatchAsync(User user, string password, CancellationToken cancellationToken) =>
+        await _hasher.VarifyHashAsync(password, user.Password, cancellationToken);
 }

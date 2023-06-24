@@ -26,7 +26,7 @@ public class WhenContext : BaseContext
         where TSut : notnull
     {
         var variable = _resultVariable.OfType<Action>();
-        Action action = () => invoke(Variables.Get(sut));
+        void action() => invoke(Variables.Get(sut));
         Variables.TryAdd(variable, () => action);
         return new(Variables, variable);
     }
@@ -74,6 +74,13 @@ public class WhenContext : BaseContext
         where TArg : notnull
         where TResult : notnull =>
         await InvokedAsync(sut, (s, t) => invoke(s, Variables.Get(arg), t));
+
+    public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg1, TArg2, TResult>(IIndexedVariable<TSut> sut, IIndexedVariable<TArg1> arg1, IIndexedVariable<TArg2> arg2, Func<TSut, TArg1, TArg2, CancellationToken, Task<TResult>> invoke)
+        where TSut : notnull
+        where TArg1 : notnull
+        where TArg2 : notnull
+        where TResult : notnull =>
+        await InvokedAsync(sut, (s, t) => invoke(s, Variables.Get(arg1), Variables.Get(arg2), t));
 
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TResult>(IIndexedVariable<TSut> sut, Func<TSut, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull

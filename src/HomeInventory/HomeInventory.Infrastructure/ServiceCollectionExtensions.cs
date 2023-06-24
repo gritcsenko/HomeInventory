@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Application;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
@@ -27,6 +28,8 @@ public static class ServiceCollectionExtensions
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
         services.AddSingleton<AmountObjectConverter>();
+
+        services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
 
         services.AddHealthChecks()
              .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
