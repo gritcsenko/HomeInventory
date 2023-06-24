@@ -1,4 +1,5 @@
 using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
@@ -11,6 +12,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
     private readonly RegisterCommand _command;
     private readonly UserId _userId;
 
@@ -25,7 +27,7 @@ public class RegisterCommandHandlerTests : BaseTest
         _command = Fixture.Create<RegisterCommand>();
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository, DateTime);
+    private RegisterCommandHandler CreateSut() => new(_userRepository, DateTime, _hasher);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

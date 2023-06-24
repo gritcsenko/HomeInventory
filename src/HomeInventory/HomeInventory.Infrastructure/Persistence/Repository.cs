@@ -4,6 +4,7 @@ using DotNext;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
@@ -24,11 +25,9 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
 
     public ValueTask AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
-        var model = ToModel(entity);
+        var set = Set();
 
-        Set().Add(model);
-
-        SaveEvents(entity);
+        _ = InternalAdd(set, entity);
 
         return ValueTask.CompletedTask;
     }
@@ -39,9 +38,7 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
 
         foreach (var entity in entities)
         {
-            var model = ToModel(entity);
-            set.Add(model);
-            SaveEvents(entity);
+            _ = InternalAdd(set, entity);
         }
 
         return ValueTask.CompletedTask;
@@ -49,10 +46,9 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
 
     public ValueTask UpdateAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
-        var model = ToModel(entity);
+        var set = Set();
 
-        Set().Update(model);
-        SaveEvents(entity);
+        _ = InternalUpdate(set, entity);
 
         return ValueTask.CompletedTask;
     }
@@ -63,9 +59,7 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
 
         foreach (var entity in entities)
         {
-            var model = ToModel(entity);
-            set.Update(model);
-            SaveEvents(entity);
+            _ = InternalUpdate(set, entity);
         }
 
         return ValueTask.CompletedTask;
@@ -73,18 +67,21 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
 
     public ValueTask DeleteAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
-        var model = ToModel(entity);
+        var set = Set();
 
-        Set().Remove(model);
+        _ = InternalDelete(set, entity);
 
         return ValueTask.CompletedTask;
     }
 
     public ValueTask DeleteRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
-        var models = entities.Select(ToModel);
+        var set = Set();
 
-        Set().RemoveRange(models);
+        foreach (var entity in entities)
+        {
+            _ = InternalDelete(set, entity);
+        }
 
         return ValueTask.CompletedTask;
     }
@@ -137,6 +134,20 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
     /// <returns>The filtered projected entities as an <see cref="IQueryable{T}"/>.</returns>
     protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TModel> set, ISpecification<TModel, TResult> specification) =>
         _evaluator.GetQuery(set, specification);
+
+    private EntityEntry<TModel> InternalAdd(DbSet<TModel> set, TAggregateRoot entity) => InternalModify(set, entity, (s, m) => s.Add(m));
+
+    private EntityEntry<TModel> InternalUpdate(DbSet<TModel> set, TAggregateRoot entity) => InternalModify(set, entity, (s, m) => s.Update(m));
+
+    private EntityEntry<TModel> InternalDelete(DbSet<TModel> set, TAggregateRoot entity) => InternalModify(set, entity, (s, m) => s.Remove(m));
+
+    private EntityEntry<TModel> InternalModify(DbSet<TModel> set, TAggregateRoot entity, Func<DbSet<TModel>, TModel, EntityEntry<TModel>> modifyAction)
+    {
+        var model = ToModel(entity);
+        var entry = modifyAction(set, model);
+        SaveEvents(entity);
+        return entry;
+    }
 
     private TModel ToModel(TAggregateRoot entity) => _mapper.Map<TAggregateRoot, TModel>(entity);
 

@@ -13,6 +13,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IAuthenticationTokenGenerator _tokenGenerator = Substitute.For<IAuthenticationTokenGenerator>();
+    private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
     private readonly User _user;
 
     public AuthenticateQueryHandlerTests()
@@ -22,7 +23,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         _user = Fixture.Create<User>();
     }
 
-    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository);
+    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository, _hasher);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -33,6 +34,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
         _tokenGenerator.GenerateTokenAsync(_user, Cancellation.Token).Returns(token);
+        _hasher.VarifyHashAsync(query.Password, _user.Password, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();
         // When
