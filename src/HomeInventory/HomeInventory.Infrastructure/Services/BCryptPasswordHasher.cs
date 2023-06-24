@@ -1,12 +1,12 @@
 ﻿using BCrypt.Net;
 using HomeInventory.Application.Interfaces.Authentication;
-using Crypt = BCrypt.Net.BCrypt;
+using static BCrypt.Net.BCrypt;
 
 namespace HomeInventory.Infrastructure.Services;
 
 internal class BCryptPasswordHasher : IPasswordHasher
 {
-    private readonly HashType _hashType = HashType.SHA512;
+    private readonly HashType _hashType;
     private readonly int _workFactor;
     private readonly bool _enhancedEntropy;
 
@@ -14,18 +14,21 @@ internal class BCryptPasswordHasher : IPasswordHasher
     {
         _workFactor = 13;
         _enhancedEntropy = true;
+        _hashType = HashType.SHA512;
     }
 
-    public ValueTask<string> HashAsync(string password, CancellationToken cancellationToken = default)
+    public ValueTask<string> HashAsync(string password, CancellationToken cancellationToken = default) =>
+        ValueTask.FromResult(InternalHash(password));
+
+    public ValueTask<bool> VarifyHashAsync(string password, string hash, CancellationToken cancellationToken = default) =>
+        ValueTask.FromResult(InternalVerify(password, hash));
+
+    private string InternalHash(string password)
     {
-        var salt = Crypt.GenerateSalt(_workFactor);
-        var hash = Crypt.HashPassword(password, salt, _enhancedEntropy, _hashType);
-        return ValueTask.FromResult(hash);
+        var salt = GenerateSalt(_workFactor);
+        return HashPassword(password, salt, _enhancedEntropy, _hashType);
     }
 
-    public ValueTask<bool> VarifyHashAsync(string password, string hash, CancellationToken cancellationToken = default)
-    {
-        var result = Crypt.Verify(password, hash, _enhancedEntropy, _hashType);
-        return ValueTask.FromResult(result);
-    }
+    private bool InternalVerify(string password, string hash) =>
+        Verify(password, hash, _enhancedEntropy, _hashType);
 }
