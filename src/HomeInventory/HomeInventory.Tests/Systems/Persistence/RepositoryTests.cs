@@ -11,9 +11,6 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class RepositoryTests : BaseRepositoryTest
 {
-    public RepositoryTests()
-    {
-    }
     [Fact]
     public async ValueTask AddAsync_ShouldAdd()
     {
