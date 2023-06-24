@@ -15,7 +15,7 @@ public static class Execute
         }
     }
 
-    public static async Task<TResult> AndCatchAsync<TResult, TException>(Func<Task<TResult>> asyncAction, Func<TException, TResult> exceptionHandler, Action finallyAction)
+    public static async Task<TResult> AndCatchAsync<TResult, TException>(Func<Task<TResult>> asyncAction, Func<TException, TResult> exceptionHandler)
         where TException : Exception
     {
         try
@@ -25,10 +25,6 @@ public static class Execute
         catch (TException ex)
         {
             return exceptionHandler(ex);
-        }
-        finally
-        {
-            finallyAction();
         }
     }
 

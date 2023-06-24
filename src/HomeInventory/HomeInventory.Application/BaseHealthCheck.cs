@@ -4,23 +4,19 @@ namespace HomeInventory.Application;
 
 public abstract class BaseHealthCheck : IHealthCheck
 {
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-    {
-        var (token, resources) = cancellationToken.WithTimeout(context.Registration.Timeout);
-        return await Execute.AndCatchAsync(
+    private static readonly IReadOnlyDictionary<string, object> _empty = new Dictionary<string, object>();
+
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default) =>
+        await Execute.AndCatchAsync(
             async () =>
             {
-                var isHealthy = await IsHealthyAsync(token);
-                if (isHealthy)
-                {
-                    return HealthCheckResult.Healthy();
-                }
-
-                return new HealthCheckResult(context.Registration.FailureStatus);
+                var status = await CheckHealthAsync(cancellationToken);
+                var healthStatus = status.IsFailed ? context.Registration.FailureStatus : HealthStatus.Healthy;
+                return new HealthCheckResult(healthStatus, status.Description, exception: null, status.Data);
             },
-            (Exception ex) => new HealthCheckResult(context.Registration.FailureStatus, exception: ex),
-            () => Disposable.Dispose(resources));
-    }
+            (Exception ex) => new HealthCheckResult(context.Registration.FailureStatus, "Failed to perform healthcheck", ex, ExceptionData));
 
-    protected abstract ValueTask<bool> IsHealthyAsync(CancellationToken cancellationToken);
+    protected abstract ValueTask<HealthCheckStatus> CheckHealthAsync(CancellationToken cancellationToken);
+
+    protected virtual IReadOnlyDictionary<string, object> ExceptionData => _empty;
 }

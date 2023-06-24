@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
+    <PackageReference Include="AspNetCore.HealthChecks.ApplicationStatus" />
     <PackageReference Include="AspNetCore.HealthChecks.System" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />

@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Carter;
 using FluentValidation.Internal;
+using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
@@ -30,7 +31,8 @@ public static class ServiceCollectionExtensions
     {
         // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/monitor-app-health
         // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-6.0
-        services.AddHealthChecks();
+        services.AddHealthChecks()
+            .AddApplicationStatus();
         services.AddHealthChecksUI()
             .AddInMemoryStorage();
 
