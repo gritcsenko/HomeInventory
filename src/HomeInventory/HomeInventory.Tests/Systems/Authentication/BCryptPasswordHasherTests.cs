@@ -1,12 +1,11 @@
-﻿using HomeInventory.Infrastructure.Services;
-
-namespace HomeInventory.Tests.Systems.Authentication;
+﻿namespace HomeInventory.Tests.Systems.Authentication;
 
 [UnitTest]
 public class BCryptPasswordHasherTests : BaseTest<BCryptPasswordHasherTestsGivenContext>
 {
     private static readonly Variable<string> _password = new(nameof(_password));
 
+    [Fact]
     public async Task HashAsync_ShouldReturnSomethingDifferentFromInput()
     {
         Given
@@ -21,6 +20,7 @@ public class BCryptPasswordHasherTests : BaseTest<BCryptPasswordHasherTestsGiven
                 actual.Should().NotBe(password));
     }
 
+    [Fact]
     public async Task HashAsync_ShouldReturnDifferentHashesForDifferentInputs()
     {
         Given
@@ -38,6 +38,7 @@ public class BCryptPasswordHasherTests : BaseTest<BCryptPasswordHasherTestsGiven
                 actual[0].Should().NotBe(actual[1]));
     }
 
+    [Fact]
     public async Task VerifyAsync_ShouldConfirmHashed()
     {
         Given
@@ -57,21 +58,4 @@ public class BCryptPasswordHasherTests : BaseTest<BCryptPasswordHasherTestsGiven
     }
 
     protected override BCryptPasswordHasherTestsGivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
-}
-
-public sealed class BCryptPasswordHasherTestsGivenContext : GivenContext<BCryptPasswordHasherTestsGivenContext>
-{
-    private readonly Variable<BCryptPasswordHasher> _sut = new(nameof(_sut));
-
-    public BCryptPasswordHasherTestsGivenContext(VariablesContainer variables, IFixture fixture)
-        : base(variables, fixture)
-    {
-    }
-
-    internal IIndexedVariable<BCryptPasswordHasher> Sut => _sut.WithIndex(0);
-
-    internal BCryptPasswordHasherTestsGivenContext Hasher()
-    {
-        return this;
-    }
 }
