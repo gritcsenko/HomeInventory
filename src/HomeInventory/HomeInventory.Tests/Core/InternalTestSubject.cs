@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Domain.Primitives;
+﻿namespace HomeInventory.Tests.Core;
 
 public sealed class InternalTestSubject
 {
