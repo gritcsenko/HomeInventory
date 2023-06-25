@@ -41,7 +41,8 @@ public static class ServiceCollectionExtensions
         where TRepositoryImplementation : class, TRepository =>
         services
             .AddScoped<TRepository, TRepositoryImplementation>()
-            .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>());
+            .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>())
+            .AddScoped<IReadOnlyRepository<TEntity>>(sp => sp.GetRequiredService<IRepository<TEntity>>());
 
     private static IServiceCollection AddDatabase(this IServiceCollection services) =>
         services
