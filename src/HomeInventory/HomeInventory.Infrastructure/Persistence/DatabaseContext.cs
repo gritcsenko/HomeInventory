@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using System.Linq.Expressions;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
@@ -36,31 +37,27 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        UpdateAuditableEntities();
+        var now = _dateTimeService.UtcNow;
+        UpdateAuditableEntities(now);
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    private void UpdateAuditableEntities()
+    private void UpdateAuditableEntities(DateTimeOffset now)
     {
-        var now = _dateTimeService.UtcNow;
-        foreach (var entry in ChangeTracker.Entries<IHasCreationAudit>())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    entry.Property(x => x.CreatedOn).CurrentValue = now;
-                    break;
-            }
-        }
+        UpdateTimeAuditEntities<IHasCreationAudit>(now, EntityState.Added, x => x.CreatedOn);
+        UpdateTimeAuditEntities<IHasModificationAudit>(now, EntityState.Modified, x => x.ModifiedOn);
+    }
 
-        foreach (var entry in ChangeTracker.Entries<IHasModificationAudit>())
+    private void UpdateTimeAuditEntities<TEntity>(DateTimeOffset now, EntityState state, Expression<Func<TEntity, DateTimeOffset>> propertyExpression)
+        where TEntity : class
+    {
+        foreach (var entry in ChangeTracker.Entries<TEntity>())
         {
-            switch (entry.State)
+            if (entry.State == state)
             {
-                case EntityState.Modified:
-                    entry.Property(x => x.ModifiedOn).CurrentValue = now;
-                    break;
+                var propertyEntry = entry.Property(propertyExpression);
+                propertyEntry.CurrentValue = now;
             }
         }
     }
