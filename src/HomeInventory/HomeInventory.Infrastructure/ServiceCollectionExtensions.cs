@@ -49,7 +49,7 @@ public static class ServiceCollectionExtensions
             .AddDbContext<DatabaseContext>((sp, builder) =>
             {
                 var env = sp.GetRequiredService<IHostEnvironment>();
-                builder.UseInMemoryDatabase("HomeInventory").UseApplicationServiceProvider(sp);
+                builder.UseInMemoryDatabase("HomeInventory");
                 builder.EnableDetailedErrors(!env.IsProduction());
                 builder.EnableSensitiveDataLogging(!env.IsProduction());
             })
