@@ -8,9 +8,10 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggregateRoot>
-    where TModel : class
-    where TAggregateRoot : class, Domain.Primitives.IEntity<TAggregateRoot>, IHasDomainEvents
+internal abstract class Repository<TModel, TAggregateRoot, TIdentifier> : IRepository<TAggregateRoot>
+    where TModel : class, IPersistentModel<TIdentifier>
+    where TAggregateRoot : AggregateRoot<TAggregateRoot, TIdentifier>
+    where TIdentifier : IIdentifierObject<TIdentifier>
 {
     private readonly IDatabaseContext _context;
     private readonly IMapper _mapper;
@@ -149,7 +150,9 @@ internal abstract class Repository<TModel, TAggregateRoot> : IRepository<TAggreg
         return entry;
     }
 
-    private TModel ToModel(TAggregateRoot entity) => _mapper.Map<TAggregateRoot, TModel>(entity);
+    private TModel ToModel(TAggregateRoot entity) =>
+        _context.FindTracked<TModel>(m => m.Id.Equals(entity.Id))
+            .OrInvoke(() => _mapper.Map<TAggregateRoot, TModel>(entity));
 
     private IQueryable<TAggregateRoot> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
         _mapper.ProjectTo<TAggregateRoot>(query, cancellationToken);

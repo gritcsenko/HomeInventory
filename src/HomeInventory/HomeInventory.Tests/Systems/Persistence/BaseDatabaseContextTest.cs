@@ -19,5 +19,8 @@ public abstract class BaseDatabaseContextTest : BaseTest
     protected private DatabaseContext Context => _context;
 
     private static DbContextOptions<DatabaseContext> GetDatabaseOptions() =>
-        new DbContextOptionsBuilder<DatabaseContext>().UseInMemoryDatabase(databaseName: "db").Options;
+        new DbContextOptionsBuilder<DatabaseContext>()
+            .UseInMemoryDatabase(databaseName: "db" + Ulid.NewUlid())
+            .EnableSensitiveDataLogging()
+            .Options;
 }

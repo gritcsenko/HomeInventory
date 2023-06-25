@@ -9,7 +9,7 @@ using HomeInventory.Infrastructure.Specifications;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class UserRepository : Repository<UserModel, User>, IUserRepository
+internal class UserRepository : Repository<UserModel, User, UserId>, IUserRepository
 {
     public UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator)
         : base(context, mapper, evaluator)

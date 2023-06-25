@@ -1,4 +1,6 @@
 ﻿using System.Linq.Expressions;
+using DotNext;
+using DotNext.Collections.Generic;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
@@ -41,6 +43,12 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
         UpdateAuditableEntities(now);
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    public Optional<TEntity> FindTracked<TEntity>(Predicate<TEntity> condition)
+        where TEntity : class
+    {
+        return ChangeTracker.Entries<TEntity>().Select(e => e.Entity).FirstOrNone(condition);
     }
 
     private void UpdateAuditableEntities(DateTimeOffset now)
