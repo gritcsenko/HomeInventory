@@ -163,12 +163,12 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().Be(expectedCount);
     }
 
-    private FakeRepository CreateSut() => new(Context, Mapper);
+    private FakeRepository CreateSut() => new(Context, Mapper, PersistenceService);
 
     private class FakeRepository : Repository<UserModel, User, UserId>
     {
-        public FakeRepository(IDatabaseContext context, IMapper mapper)
-            : base(context, mapper, SpecificationEvaluator.Default)
+        public FakeRepository(IDatabaseContext context, IMapper mapper, IEventsPersistenceService persistenceService)
+            : base(context, mapper, SpecificationEvaluator.Default, persistenceService)
         {
         }
     }

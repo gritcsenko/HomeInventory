@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,7 +18,10 @@ public abstract class BaseRepositoryTest : BaseDatabaseContextTest
         });
         var serviceProvider = factory.CreateServiceProvider(services);
         Mapper = new Mapper(config, serviceProvider.GetService);
+        PersistenceService = Substitute.For<IEventsPersistenceService>();
     }
 
     protected IMapper Mapper { get; }
+
+    protected IEventsPersistenceService PersistenceService { get; }
 }

@@ -14,11 +14,18 @@ internal class OutboxDatabaseConfigurationApplier : IDatabaseConfigurationApplie
 
     public void ApplyConfigurationTo(ModelBuilder modelBuilder)
     {
+        var configuration = CreateConfiguration();
+        modelBuilder.ApplyConfiguration(configuration);
+    }
+
+    internal OutboxMessageConfiguration CreateConfiguration()
+    {
         var settings = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
             TypeInfoResolver = _typeResolver,
         };
 
-        modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration(settings));
+        var configuration = new OutboxMessageConfiguration(settings);
+        return configuration;
     }
 }

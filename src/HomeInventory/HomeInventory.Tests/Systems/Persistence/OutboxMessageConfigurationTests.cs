@@ -3,6 +3,7 @@ using HomeInventory.Domain.Events;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
+using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -50,5 +51,5 @@ public class OutboxMessageConfigurationTests : BaseTest
         text.Should().NotBeNull();
     }
 
-    private static OutboxMessageConfiguration CreateSut() => new();
+    private static OutboxMessageConfiguration CreateSut() => new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo() })).CreateConfiguration();
 }

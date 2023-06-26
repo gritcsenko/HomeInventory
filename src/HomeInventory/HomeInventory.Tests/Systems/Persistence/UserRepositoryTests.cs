@@ -75,5 +75,5 @@ public class UserRepositoryTests : BaseRepositoryTest
         result.Should().BeTrue();
     }
 
-    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default);
+    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default, PersistenceService);
 }

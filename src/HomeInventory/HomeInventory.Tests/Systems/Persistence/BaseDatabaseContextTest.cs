@@ -1,5 +1,7 @@
 ﻿using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
+using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +14,12 @@ public abstract class BaseDatabaseContextTest : BaseTest
 
     protected BaseDatabaseContextTest()
     {
-        _context = ReflectionMethods.CreateInstance<DatabaseContext>(GetDatabaseOptions(), new PublishDomainEventsInterceptor(Substitute.For<IPublisher>()), DateTime)!;
+        var appliers = new IDatabaseConfigurationApplier[]
+        {
+            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[]{ new DomainEventJsonTypeInfo()})),
+            new UserModelDatabaseConfigurationApplier(),
+        };
+        _context = ReflectionMethods.CreateInstance<DatabaseContext>(GetDatabaseOptions(), new PublishDomainEventsInterceptor(Substitute.For<IPublisher>()), DateTime, appliers)!;
         AddDisposable(_context);
     }
 
