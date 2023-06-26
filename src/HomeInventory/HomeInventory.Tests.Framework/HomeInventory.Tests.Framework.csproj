@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Contracts.UserManagement\HomeInventory.Contracts.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
+    <ProjectReference Include="..\HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
   </ItemGroup>
 

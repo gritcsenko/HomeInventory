@@ -7,12 +7,15 @@ namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
 internal class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {
+    private readonly JsonSerializerOptions _settings;
+
+    public OutboxMessageConfiguration(JsonSerializerOptions settings)
+    {
+        _settings = settings;
+    }
+
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
-        var settings = new JsonSerializerOptions(JsonSerializerDefaults.Web)
-        {
-            TypeInfoResolver = new PolymorphicDomainEventTypeResolver(),
-        };
 
         builder.HasKey(x => x.Id);
 
@@ -23,8 +26,8 @@ internal class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessa
             .IsRequired();
 
         builder.Property(e => e.Content).HasConversion(
-            v => Serialize(v, settings),
-            json => Deserialize(json, settings));
+            v => Serialize(v, _settings),
+            json => Deserialize(json, _settings));
     }
 
     private static IDomainEvent Deserialize(string json, JsonSerializerOptions settings) =>

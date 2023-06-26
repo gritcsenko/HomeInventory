@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Application.UserManagement\HomeInventory.Application.UserManagement.csproj" />
+    <ProjectReference Include="..\HomeInventory.Contracts.UserManagement\HomeInventory.Contracts.UserManagement.csproj" />
+    <ProjectReference Include="..\HomeInventory.Web.Framework\HomeInventory.Web.Framework.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="Microsoft.AspNetCore.Mvc.ApiControllerAttribute" />
+  </ItemGroup>
+  
+</Project>

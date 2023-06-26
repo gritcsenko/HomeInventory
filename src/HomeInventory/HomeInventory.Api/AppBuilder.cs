@@ -1,7 +1,10 @@
 ﻿using HomeInventory.Application;
+using HomeInventory.Application.UserManagement;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
+using HomeInventory.Infrastructure.UserManagement;
 using HomeInventory.Web;
+using HomeInventory.Web.UserManagement;
 
 namespace HomeInventory.Api;
 
@@ -34,5 +37,8 @@ internal class AppBuilder
             .AddDomain()
             .AddInfrastructure()
             .AddApplication()
-            .AddWeb();
+            .AddWeb()
+            .AddUserManagementApplication()
+            .AddUserManagementWeb()
+            .AddUserManagementInfrastructure();
 }

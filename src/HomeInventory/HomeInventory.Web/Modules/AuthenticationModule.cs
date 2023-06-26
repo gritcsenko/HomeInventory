@@ -1,6 +1,5 @@
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
-using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -12,7 +11,7 @@ namespace HomeInventory.Web.Modules;
 public class AuthenticationModule : ApiModule
 {
     public AuthenticationModule()
-        : base("/api/authentication", PermissionType.AccessPermissions)
+        : base("/api/authentication")
     {
     }
 

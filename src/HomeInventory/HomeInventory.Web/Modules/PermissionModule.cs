@@ -10,7 +10,7 @@ namespace HomeInventory.Web.Modules;
 public class PermissionModule : ApiModule
 {
     public PermissionModule()
-        : base("/api/permissions", PermissionType.AccessPermissions)
+        : base("/api/permissions")
     {
     }
 

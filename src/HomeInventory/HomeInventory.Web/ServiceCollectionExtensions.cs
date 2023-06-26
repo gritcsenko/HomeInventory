@@ -9,7 +9,7 @@ using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.Framework;
 using HomeInventory.Web.Middleware;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -36,9 +35,8 @@ public static class ServiceCollectionExtensions
         services.AddHealthChecksUI()
             .AddInMemoryStorage();
 
-        services.AddSingleton<ErrorMapping>();
-        services.AddSingleton<HomeInventoryProblemDetailsFactory>();
-        services.AddSingleton<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddWebFramework();
+
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
 
@@ -53,7 +51,10 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenApiDocs();
 
-        services.AddCarter(new DependencyContextAssemblyCatalog(Contracts.Validations.AssemblyReference.Assembly, AssemblyReference.Assembly));
+        services.AddCarter(new DependencyContextAssemblyCatalog(
+            Contracts.Validations.AssemblyReference.Assembly,
+            Contracts.UserManagement.Validators.AssemblyReference.Assembly,
+            AssemblyReference.Assembly));
 
         return services;
     }
@@ -112,6 +113,9 @@ public static class ServiceCollectionExtensions
 
         return app;
     }
+
+    private static TFeature? GetFeature<TFeature>(this HttpContext context) =>
+      context.Features.Get<TFeature>();
 
     private static void ConfigureSwaggerUI(this IEndpointRouteBuilder builder, SwaggerUIOptions options)
     {

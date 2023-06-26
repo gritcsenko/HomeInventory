@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
     <PackageReference Include="AspNetCore.HealthChecks.ApplicationStatus" />
     <PackageReference Include="AspNetCore.HealthChecks.System" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" />
-    <PackageReference Include="Carter" />
     <PackageReference Include="FluentValidation.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
@@ -16,7 +14,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application\HomeInventory.Application.csproj" />
+    <ProjectReference Include="..\HomeInventory.Contracts.UserManagement.Validators\HomeInventory.Contracts.UserManagement.Validators.csproj" />
     <ProjectReference Include="..\HomeInventory.Contracts.Validations\HomeInventory.Contracts.Validations.csproj" />
+    <ProjectReference Include="..\HomeInventory.Web.Framework\HomeInventory.Web.Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>
