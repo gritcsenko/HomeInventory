@@ -4,9 +4,9 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.UserManagement.Mapping;
 
-internal class ModelMappings : ModelMappingsProfile
+internal class UserManagementModelMappings : ModelMappingsProfile
 {
-    public ModelMappings()
+    public UserManagementModelMappings()
     {
         CreateMap<User, UserModel>().ReverseMap();
     }

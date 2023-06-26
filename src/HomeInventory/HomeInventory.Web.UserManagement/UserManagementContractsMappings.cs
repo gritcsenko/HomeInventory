@@ -7,9 +7,9 @@ using HomeInventory.Web.Framework;
 
 namespace HomeInventory.Web.UserManagement;
 
-internal class ContractsMappings : ContractsMappingProfile
+internal class UserManagementContractsMappings : ContractsMappingProfile
 {
-    public ContractsMappings()
+    public UserManagementContractsMappings()
     {
         CreateMapForId<UserId>();
         CreateMapForString(x => new Email(x), x => x.Value);

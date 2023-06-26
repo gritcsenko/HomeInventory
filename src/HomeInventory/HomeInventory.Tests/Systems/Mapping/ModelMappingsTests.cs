@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Domain;
-using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
@@ -29,40 +28,11 @@ public class ModelMappingsTests : BaseMappingsTests
         target.Should().BeAssignableTo(destination);
     }
 
-    [Fact]
-    public void ShouldMapUserModelToUser()
-    {
-        Fixture.CustomizeUlidId<UserId>();
-        var sut = CreateSut<ModelMappings>();
-        var instance = Fixture.Create<UserModel>();
-
-        var target = sut.Map<User>(instance);
-
-        target.Id.Value.Should().Be(instance.Id.Value);
-        target.Email.Value.Should().Be(instance.Email);
-        target.Password.Should().Be(instance.Password);
-    }
-
-    [Fact]
-    public void ShouldProjectUserModelToUser()
-    {
-        Fixture.CustomizeUlidId<UserId>();
-        var sut = CreateSut<ModelMappings>();
-        var instance = Fixture.Create<UserModel>();
-        var source = new[] { instance }.AsQueryable();
-
-        var target = sut.ProjectTo<User>(source, Cancellation.Token).ToArray();
-
-        target.Should().HaveCount(1);
-    }
-
     public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
         fixture.CustomizeUlid();
-        fixture.CustomizeUlidId<UserId>();
         fixture.CustomizeUlidId<ProductId>();
-        fixture.CustomizeEmail();
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
         fixture.CustomizeFromFactory<int, AmountUnit>(i => items.ElementAt(i % items.Count));
@@ -73,12 +43,8 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var data = new TheoryData<object, Type>();
 
-        Add<UserId, Ulid>(fixture, data);
         Add<ProductId, Ulid>(fixture, data);
 
-        Add<Email, string>(fixture, data);
-
-        Add<User, UserModel>(fixture, data);
         Add<Amount, ProductAmountModel>(fixture, data);
 
         return data;
