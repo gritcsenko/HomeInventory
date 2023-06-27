@@ -21,7 +21,7 @@ public static class OptionalExtensions
     [RequiresPreviewFeatures]
     public static Optional<T> Tap<T>(this Optional<T> optional, Action<T> action)
     {
-        if (optional.TryGet(out var value) && value is not null)
+        if (optional.TryGet(out var value, out var isNull) && !isNull)
         {
             action(value);
         }
@@ -32,7 +32,7 @@ public static class OptionalExtensions
     [RequiresPreviewFeatures]
     public static async Task<Optional<T>> Tap<T>(this Optional<T> optional, Func<T, Task> asyncAction)
     {
-        if (optional.TryGet(out var value) && value is not null)
+        if (optional.TryGet(out var value, out var isNull) && !isNull)
         {
             await asyncAction(value);
         }
