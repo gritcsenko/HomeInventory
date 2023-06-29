@@ -9,6 +9,7 @@ allow-licenses:
   - BSD-3-Clause
   - MIT
   - Apache-2.0
+  - ISC
 
 # ([String]). Block the pull request on these licenses (optional)
 # Possible values: Any  `spdx_id` value(s) from https://docs.github.com/en/rest/licenses
