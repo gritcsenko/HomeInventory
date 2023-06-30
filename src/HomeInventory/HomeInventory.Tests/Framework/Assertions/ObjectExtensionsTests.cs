@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Tests.Framework.Assertions;
+﻿using FluentAssertions.Execution;
+
+namespace HomeInventory.Tests.Framework.Assertions;
 
 [UnitTest]
 public class ObjectExtensionsTests : BaseTest
@@ -9,6 +11,7 @@ public class ObjectExtensionsTests : BaseTest
         var value = Fixture.Create<Ulid>();
         var actual = ObjectExtensions.GetComparer<Ulid>();
 
+        using var scope = new AssertionScope();
         actual.Should().NotBeNull();
         actual(value, value).Should().BeTrue();
     }
@@ -19,6 +22,7 @@ public class ObjectExtensionsTests : BaseTest
         var value = Fixture.Create<string>();
         var actual = ObjectExtensions.GetComparer<string>();
 
+        using var scope = new AssertionScope();
         actual.Should().NotBeNull();
         actual(value, value).Should().BeTrue();
     }
@@ -29,6 +33,7 @@ public class ObjectExtensionsTests : BaseTest
         var value = Fixture.Create<int>();
         var actual = ObjectExtensions.GetComparer<object>();
 
+        using var scope = new AssertionScope();
         actual.Should().NotBeNull();
         actual(value, (long)value).Should().BeTrue();
     }
@@ -39,6 +44,7 @@ public class ObjectExtensionsTests : BaseTest
         var value = Fixture.Create<int>();
         var actual = ObjectExtensions.GetComparer<int>();
 
+        using var scope = new AssertionScope();
         actual.Should().NotBeNull();
         actual(value, value).Should().BeTrue();
     }

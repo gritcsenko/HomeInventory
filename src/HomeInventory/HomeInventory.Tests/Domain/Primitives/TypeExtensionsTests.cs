@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests.Domain.Primitives;
 
@@ -45,6 +46,7 @@ public class TypeExtensionsTests : BaseTest
 
         var actual = type.GetFieldsOfType<E>().ToArray();
 
+        using var scope = new AssertionScope();
         actual.Should().HaveCount(2);
         actual.Should().Contain(E.f1);
         actual.Should().Contain(E.f2);

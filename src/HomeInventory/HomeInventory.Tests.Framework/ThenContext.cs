@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Tests.Framework;
+﻿using FluentAssertions.Execution;
+
+namespace HomeInventory.Tests.Framework;
 
 public class ThenContext<TResult> : BaseContext
     where TResult : notnull
@@ -11,6 +13,7 @@ public class ThenContext<TResult> : BaseContext
 
     public ThenContext<TResult> Result(Action<TResult> assert)
     {
+        using var scope = new AssertionScope();
         assert(GetResult());
         return this;
     }
@@ -20,11 +23,8 @@ public class ThenContext<TResult> : BaseContext
         Result(arg.WithIndex(0), assert);
 
     public ThenContext<TResult> Result<TArg>(IndexedVariable<TArg> arg, Action<TResult, TArg> assert)
-        where TArg : notnull
-    {
-        assert(GetResult(), Variables.Get(arg));
-        return this;
-    }
+        where TArg : notnull =>
+        Result(r => assert(r, Variables.Get(arg)));
 
     private TResult GetResult()
     {

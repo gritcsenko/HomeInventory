@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
@@ -18,6 +19,7 @@ public class AmountUnitTests : BaseTest
     [MemberData(nameof(Data))]
     public void PropertiesShouldMatch(AmountUnit sut, string name, MeasurementType type, bool isMetric)
     {
+        using var scope = new AssertionScope();
         sut.Name.Should().Be(name);
         sut.Measurement.Should().Be(type);
         sut.IsMetric.Should().Be(isMetric);

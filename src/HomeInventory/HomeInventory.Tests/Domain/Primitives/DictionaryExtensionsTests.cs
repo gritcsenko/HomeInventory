@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests.Domain.Primitives;
 
@@ -33,6 +34,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetValueOrDefault(_sut, _key, _ => _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_defaultValue);
         result.Should().Be(_value);
     }
@@ -42,6 +44,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetValueOrDefault(_sut, _invalidKey, _ => _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_value);
         result.Should().Be(_defaultValue);
     }
@@ -51,6 +54,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetValueOrDefault(_sut2, _key, _ => _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_defaultValue);
         result.Should().Be(_value);
     }
@@ -60,6 +64,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetValueOrDefault(_sut2, _invalidKey, _ => _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_value);
         result.Should().Be(_defaultValue);
     }
@@ -101,6 +106,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetOrAdd(_sut, _key, _ => _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_defaultValue);
         result.Should().Be(_value);
     }
@@ -110,6 +116,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetOrAdd(_sut, _invalidKey, _ => _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_value);
         result.Should().Be(_defaultValue);
         _sut.Should().Contain(KeyValuePair.Create(_invalidKey, _defaultValue));
@@ -120,6 +127,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetOrAdd(_sut, _key, _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_defaultValue);
         result.Should().Be(_value);
     }
@@ -129,6 +137,7 @@ public class DictionaryExtensionsTests : BaseTest
     {
         var result = DictionaryExtensions.GetOrAdd(_sut, _invalidKey, _defaultValue);
 
+        using var scope = new AssertionScope();
         result.Should().NotBe(_value);
         result.Should().Be(_defaultValue);
         _sut.Should().Contain(KeyValuePair.Create(_invalidKey, _defaultValue));
