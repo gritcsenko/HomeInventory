@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using FluentAssertions.Execution;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Authentication;
@@ -38,6 +39,7 @@ public class JwtTokenGeneratorTests : BaseTest
 
         var actualTokenString = await sut.GenerateTokenAsync(_user, Cancellation.Token);
 
+        using var scope = new AssertionScope();
         actualTokenString.Should().NotBeNullOrEmpty();
         var actualToken = new JwtSecurityTokenHandler().ReadJwtToken(actualTokenString);
         actualToken.Header.Should().BeEquivalentTo(_expectedHeader);

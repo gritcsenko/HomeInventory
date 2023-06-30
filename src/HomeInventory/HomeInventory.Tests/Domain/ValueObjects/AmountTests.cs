@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
@@ -49,6 +50,7 @@ public class AmountTests : BaseTest
 
         var actual = sut.ToMetric();
 
+        using var scope = new AssertionScope();
         actual.Should().NotBeNull();
         actual.Unit.IsMetric.Should().BeTrue();
         if (unit.IsMetric)

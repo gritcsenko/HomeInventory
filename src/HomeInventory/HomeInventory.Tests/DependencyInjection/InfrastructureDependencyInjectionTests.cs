@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentAssertions.Execution;
 using HomeInventory.Application;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Infrastructure;
@@ -25,6 +26,7 @@ public class InfrastructureDependencyInjectionTests : BaseDependencyInjectionTes
         Services.AddInfrastructure();
         var provider = CreateProvider();
 
+        using var scope = new AssertionScope();
         Services.Should().ContainSingleScoped<IUserRepository>(provider);
         Services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
     }

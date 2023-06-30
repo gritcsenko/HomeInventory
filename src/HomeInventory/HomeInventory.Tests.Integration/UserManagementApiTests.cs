@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using FluentAssertions.Execution;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +26,7 @@ public class UserManagementApiTests : BaseIntegrationTest
     [Fact]
     public void VerifyEndpoints()
     {
+        using var scope = new AssertionScope();
         Endpoints.Should().ContainEndpoint(_registerRoute, HttpMethods.Post)
             .Which.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
     }
@@ -34,6 +36,7 @@ public class UserManagementApiTests : BaseIntegrationTest
     {
         var response = await PostAsync(_registerRoute, _content);
 
+        using var scope = new AssertionScope();
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<RegisterResponse>(options: null, Cancellation.Token);
@@ -47,6 +50,7 @@ public class UserManagementApiTests : BaseIntegrationTest
         _ = await PostAsync(_registerRoute, _content);
         var response = await PostAsync(_registerRoute, _content);
 
+        using var scope = new AssertionScope();
         response.StatusCode.Should().BeDefined()
             .And.Be(HttpStatusCode.Conflict);
         var body = await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, Cancellation.Token)!;

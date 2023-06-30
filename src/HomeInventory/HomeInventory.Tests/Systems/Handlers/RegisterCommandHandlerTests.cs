@@ -1,3 +1,4 @@
+using FluentAssertions.Execution;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
@@ -42,7 +43,7 @@ public class RegisterCommandHandlerTests : BaseTest
         // When
         var result = await sut.Handle(_command, Cancellation.Token);
         // Then
-        result.Should().NotBeNull();
+        using var scope = new AssertionScope();
         result.Index.Should().Be(0);
         result.Value.Should().NotBeNull();
     }
@@ -57,7 +58,7 @@ public class RegisterCommandHandlerTests : BaseTest
         // When
         var result = await sut.Handle(_command, Cancellation.Token);
         // Then
-        result.Should().NotBeNull();
+        using var scope = new AssertionScope();
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
             .Which.Should().BeOfType<DuplicateEmailError>();
