@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentAssertions.Execution;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web;
@@ -45,6 +46,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.AddWeb();
         var provider = CreateProvider();
 
+        using var scope = new AssertionScope();
         Services.Should().ContainConfigureOptions<JwtOptions>(provider);
         Services.Should().ContainConfigureOptions<JwtBearerOptions>(provider);
         Services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);

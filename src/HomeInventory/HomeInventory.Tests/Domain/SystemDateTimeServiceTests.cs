@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Domain;
 
 namespace HomeInventory.Tests.Domain;
 
@@ -13,6 +14,7 @@ public class SystemDateTimeServiceTests : BaseTest
 
         var actual = sut.UtcNow;
 
+        using var scope = new AssertionScope();
         actual.Should().BeCloseTo(expected, TimeSpan.FromSeconds(1));
         actual.Offset.Should().Be(TimeSpan.Zero);
     }

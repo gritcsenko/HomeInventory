@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Primitives;
@@ -39,6 +40,7 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var target = sut.Map<User>(instance);
 
+        using var scope = new AssertionScope();
         target.Id.Value.Should().Be(instance.Id.Value);
         target.Email.Value.Should().Be(instance.Email);
         target.Password.Should().Be(instance.Password);

@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.ValueObjects;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
 
@@ -14,6 +15,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, unknownUnit);
 
+        using var scope = new AssertionScope();
         result.IsT0.Should().BeTrue();
         var amount = result.AsT0;
         amount.Value.Should().Be(value);
@@ -29,6 +31,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, unknownUnit);
 
+        using var scope = new AssertionScope();
         result.IsT0.Should().BeTrue();
         var amount = result.AsT0;
         amount.Value.Should().Be(value);
@@ -67,6 +70,7 @@ public class AmountFactoryTests : BaseTest
 
         var result = sut.Create(value, unit);
 
+        using var scope = new AssertionScope();
         result.IsT0.Should().BeTrue();
         var amount = result.AsT0;
         amount.Value.Should().Be(value);

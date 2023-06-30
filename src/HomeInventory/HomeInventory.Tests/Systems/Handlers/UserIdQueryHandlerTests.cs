@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Cqrs.Queries.UserId;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
@@ -32,7 +33,7 @@ public class UserIdQueryHandlerTests : BaseTest
         // When
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
-        result.Should().NotBeNull();
+        using var scope = new AssertionScope();
         result.Index.Should().Be(0);
         var subject = result.Value
             .Should().BeOfType<UserIdResult>()
@@ -51,7 +52,7 @@ public class UserIdQueryHandlerTests : BaseTest
         // When
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
-        result.Should().NotBeNull();
+        using var scope = new AssertionScope();
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
            .Which.Should().BeOfType<NotFoundError>()
