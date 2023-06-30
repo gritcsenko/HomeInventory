@@ -1,5 +1,6 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
+using FluentAssertions.Execution;
 using HomeInventory.Application;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
@@ -32,6 +33,7 @@ public class InfrastructureDependencyInjectionTests : BaseDependencyInjectionTes
         Services.AddInfrastructure();
         var provider = CreateProvider();
 
+        using var scope = new AssertionScope();
         Services.Should().ContainSingleScoped<PublishDomainEventsInterceptor>(provider);
         Services.Should().ContainSingleScoped<IUnitOfWork>(provider);
         Services.Should().ContainSingleScoped<IDatabaseContext>(provider);

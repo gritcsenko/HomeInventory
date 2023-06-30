@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
@@ -40,7 +41,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // When
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
-        result.Should().NotBeNull();
+        using var scope = new AssertionScope();
         result.Index.Should().Be(0);
         var subject = result.Value
             .Should().BeOfType<AuthenticateResult>()
@@ -60,7 +61,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // When
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
-        result.Should().NotBeNull();
+        using var scope = new AssertionScope();
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
            .Which.Should().BeOfType<InvalidCredentialsError>();
@@ -80,7 +81,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         // When
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
-        result.Should().NotBeNull();
+        using var scope = new AssertionScope();
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
            .Which.Should().BeOfType<InvalidCredentialsError>();

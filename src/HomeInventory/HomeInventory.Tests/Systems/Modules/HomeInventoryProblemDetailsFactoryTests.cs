@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using FluentAssertions.Execution;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -50,7 +51,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
         var details = sut.CreateProblemDetails(_context, statusCode, _title, _type, _detail, _instance);
 
-        details.Should().NotBeNull();
+        using var scope = new AssertionScope();
         details.Status.Should().Be(statusCode);
         details.Title.Should().Be(_title);
         details.Type.Should().Be(_type);
@@ -67,7 +68,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
         var details = sut.CreateProblemDetails(_context, statusCode, title: null, type: null);
 
-        details.Should().NotBeNull();
+        using var scope = new AssertionScope();
         details.Status.Should().Be(statusCode);
         details.Title.Should().Be(_title);
         details.Type.Should().Be(_type);
@@ -84,7 +85,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var details = sut.CreateProblemDetails(_context);
         activity.Stop();
 
-        details.Should().NotBeNull();
+        using var scope = new AssertionScope();
         details.Extensions.Should().ContainKey("traceId")
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(id);
@@ -99,8 +100,8 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
         var details = sut.CreateProblemDetails(_context);
 
+        using var scope = new AssertionScope();
         Activity.Current.Should().BeNull();
-        details.Should().NotBeNull();
         details.Extensions.Should().ContainKey("traceId")
             .WhoseValue.Should().BeOfType<string>()
             .Which.Should().Be(id);
@@ -129,7 +130,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
 
         var details = sut.ConvertToProblem(_context, errors);
 
-        details.Should().NotBeNull();
+        using var scope = new AssertionScope();
         details.Status.Should().Be(expectedStatus);
         details.Title.Should().Be(expectedTitle);
         details.Type.Should().BeNull();

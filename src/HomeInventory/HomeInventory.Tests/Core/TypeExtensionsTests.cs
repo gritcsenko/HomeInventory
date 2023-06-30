@@ -1,3 +1,5 @@
+﻿using FluentAssertions.Execution;
+
 ﻿namespace HomeInventory.Tests.Core;
 
 [UnitTest]
@@ -43,6 +45,7 @@ public class TypeExtensionsTests : BaseTest
 
         var actual = type.GetFieldsOfType<E>().ToArray();
 
+        using var scope = new AssertionScope();
         actual.Should().HaveCount(2);
         actual.Should().Contain(E.f1);
         actual.Should().Contain(E.f2);

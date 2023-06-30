@@ -1,4 +1,5 @@
-﻿using HomeInventory.Web.Configuration;
+﻿using FluentAssertions.Execution;
+using HomeInventory.Web.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 
@@ -16,6 +17,7 @@ public class JwtBearerOptionsSetupTests : BaseTest
 
         sut.Configure(bearerOptions);
 
+        using var scope = new AssertionScope();
         var parameters = bearerOptions.TokenValidationParameters;
         parameters.Should().NotBeNull();
         parameters.ValidateLifetime.Should().BeTrue();
