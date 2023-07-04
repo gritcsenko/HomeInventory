@@ -51,5 +51,5 @@ public class OutboxMessageConfigurationTests : BaseTest
         text.Should().NotBeNull();
     }
 
-    private static OutboxMessageConfiguration CreateSut() => new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo() })).CreateConfiguration();
+    private static OutboxMessageConfiguration CreateSut() => new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)) })).CreateConfiguration();
 }
