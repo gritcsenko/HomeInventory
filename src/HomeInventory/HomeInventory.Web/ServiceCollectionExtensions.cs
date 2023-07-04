@@ -1,5 +1,7 @@
-﻿using Asp.Versioning;
+﻿using System.Reflection;
+using Asp.Versioning;
 using Carter;
+using DotNext;
 using FluentValidation.Internal;
 using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
@@ -26,7 +28,7 @@ namespace HomeInventory.Web;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddWeb(this IServiceCollection services)
+    public static IServiceCollection AddWeb(this IServiceCollection services, params Assembly[] moduleAssemblies)
     {
         // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/monitor-app-health
         // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-6.0
@@ -51,10 +53,12 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenApiDocs();
 
-        services.AddCarter(new DependencyContextAssemblyCatalog(
+        var coreAssemblies = new[]{
             Contracts.Validations.AssemblyReference.Assembly,
             Contracts.UserManagement.Validators.AssemblyReference.Assembly,
-            AssemblyReference.Assembly));
+            AssemblyReference.Assembly
+        };
+        services.AddCarter(new DependencyContextAssemblyCatalog(coreAssemblies.Concat(moduleAssemblies).ToArray()));
 
         return services;
     }

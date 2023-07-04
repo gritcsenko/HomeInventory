@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application;
+﻿using System.Reflection;
+using HomeInventory.Application;
 using MediatR;
 using MediatR.NotificationPublishers;
 using MediatR.Registration;
@@ -7,10 +8,10 @@ namespace HomeInventory.Api;
 
 internal static class MediatRConfigurator
 {
-    public static IServiceCollection AddMediatR(this IServiceCollection services)
+    public static IServiceCollection AddMediatR(this IServiceCollection services, params Assembly[] serviceAssemblies)
     {
         var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(Application.AssemblyReference.Assembly)
+            .RegisterServicesFromAssemblies(serviceAssemblies)
             .AddLoggingBehavior()
             .AddUnitOfWorkBehavior()
             .SetNotificationPublisher<TaskWhenAllPublisher>();

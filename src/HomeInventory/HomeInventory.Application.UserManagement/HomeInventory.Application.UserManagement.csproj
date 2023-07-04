@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\HomeInventory.Application.Framework\HomeInventory.Application.Framework.csproj" />
     <ProjectReference Include="..\HomeInventory.Application.UserManagement.Interfaces\HomeInventory.Application.UserManagement.Interfaces.csproj" />
-    <ProjectReference Include="..\HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj" />
   </ItemGroup>
 </Project>

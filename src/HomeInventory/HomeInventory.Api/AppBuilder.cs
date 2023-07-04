@@ -33,11 +33,15 @@ internal class AppBuilder
     private static void AddServices(IServiceCollection services, IConfiguration configuration) =>
         services
             .AddSerilog(configuration)
-            .AddMediatR()
+            .AddMediatR(
+                Application.AssemblyReference.Assembly,
+                Application.UserManagement.AssemblyReference.Assembly)
             .AddDomain()
             .AddInfrastructure()
             .AddApplication()
-            .AddWeb()
+            .AddWeb(
+                Web.UserManagement.AssemblyReference.Assembly,
+                Contracts.UserManagement.Validators.AssemblyReference.Assembly)
             .AddUserManagementApplication()
             .AddUserManagementWeb()
             .AddUserManagementInfrastructure();

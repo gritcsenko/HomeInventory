@@ -38,6 +38,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Application.UserManagement\HomeInventory.Application.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Infrastructure.UserManagement\HomeInventory.Infrastructure.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
     <ProjectReference Include="..\HomeInventory.Web.UserManagement\HomeInventory.Web.UserManagement.csproj" />

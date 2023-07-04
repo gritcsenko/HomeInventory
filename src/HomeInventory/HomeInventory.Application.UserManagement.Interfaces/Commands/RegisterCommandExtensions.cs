@@ -5,10 +5,10 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal static class RegisterCommandExtensions
+public static class RegisterCommandExtensions
 {
     [RequiresPreviewFeatures]
-    public static async ValueTask<User> CreateUserAsync(this RegisterCommand command, IPasswordHasher _hasher, CancellationToken cancellationToken = default)
+    public static async ValueTask<User> CreateUserAsync(this RegisterCommand command, IPasswordHasher hasher, CancellationToken cancellationToken = default)
     {
         var userId = UserId
             .CreateBuilder()
@@ -18,7 +18,7 @@ internal static class RegisterCommandExtensions
         return new(userId)
         {
             Email = command.Email,
-            Password = await _hasher.HashAsync(command.Password, cancellationToken),
+            Password = await hasher.HashAsync(command.Password, cancellationToken),
         };
     }
 }

@@ -30,7 +30,7 @@ public class ArchitectureTests
     [InlineData(typeof(Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
     [InlineData(typeof(Contracts.AssemblyReference), new string[0])]
     [InlineData(typeof(Contracts.Validations.AssemblyReference), new[] { Namespaces.Contracts })]
-    [InlineData(typeof(Web.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
+    [InlineData(typeof(Web.UserManagement.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
     [InlineData(typeof(Api.AssemblyReference), new[] { Namespaces.Web, Namespaces.Infrastructure })]
     public void Should_NotHaveBadDependencies(Type assemblyMarkerType, IEnumerable<string> allowed)
     {
@@ -78,7 +78,7 @@ public class ArchitectureTests
     [Fact]
     public void Controllers_Should_HaveDependencyOn_MediatR()
     {
-        var assembly = Web.AssemblyReference.Assembly;
+        var assembly = Web.UserManagement.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()
@@ -95,7 +95,7 @@ public class ArchitectureTests
     [Fact]
     public void Controllers_Should_HaveDependencyOn_Automapper()
     {
-        var assembly = Web.AssemblyReference.Assembly;
+        var assembly = Web.UserManagement.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()
