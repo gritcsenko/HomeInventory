@@ -13,6 +13,12 @@ public static class DbContextFactory
         where TContext : DbContext
     {
         var options = CreateInMemoryOptions<TContext>();
+        return CreateInMemory(dateTimeService, options, appliers);
+    }
+
+    public static TContext CreateInMemory<TContext>(IDateTimeService dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
+        where TContext : DbContext
+    {
         var interceptor = new PublishDomainEventsInterceptor(Substitute.For<IPublisher>());
         return ReflectionMethods.CreateInstance<TContext>(options, interceptor, dateTimeService, appliers)
             ?? throw new InvalidOperationException($"Failed to create {typeof(TContext).AssemblyQualifiedName}");
