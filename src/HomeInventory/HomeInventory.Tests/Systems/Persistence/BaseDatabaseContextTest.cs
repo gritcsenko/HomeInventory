@@ -1,7 +1,4 @@
-﻿using HomeInventory.Domain.Events;
-using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Persistence.Models.Configurations;
-using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
+﻿using HomeInventory.Infrastructure.Persistence;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -12,10 +9,7 @@ public abstract class BaseDatabaseContextTest : BaseTest
 
     protected BaseDatabaseContextTest()
     {
-        _context = DbContextFactory.CreateInMemory<DatabaseContext>(
-            DateTime,
-            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)) })),
-            new UserModelDatabaseConfigurationApplier());
+        _context = DbContextFactory.CreateInMemory<DatabaseContext>(DateTime);
 
         AddDisposable(_context);
     }

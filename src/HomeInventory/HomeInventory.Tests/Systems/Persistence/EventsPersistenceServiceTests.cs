@@ -1,9 +1,7 @@
 ﻿using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Services;
-using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -22,11 +20,7 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
     public EventsPersistenceServiceTests()
     {
         var options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
-        _context = DbContextFactory.CreateInMemory(
-            DateTime,
-            options,
-            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(DomainEvent)) })),
-            new UserModelDatabaseConfigurationApplier());
+        _context = DbContextFactory.CreateInMemory(DateTime, options);
 
         AddDisposable(_context);
     }
