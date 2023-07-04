@@ -29,6 +29,7 @@ public class ArchitectureTests
     [InlineData(typeof(Application.AssemblyReference), new[] { Namespaces.Domain })]
     [InlineData(typeof(Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
     [InlineData(typeof(Contracts.AssemblyReference), new string[0])]
+    [InlineData(typeof(Contracts.UserManagement.AssemblyReference), new string[0])]
     [InlineData(typeof(Contracts.Validations.AssemblyReference), new[] { Namespaces.Contracts })]
     [InlineData(typeof(Web.UserManagement.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
     [InlineData(typeof(Api.AssemblyReference), new[] { Namespaces.Web, Namespaces.Infrastructure })]

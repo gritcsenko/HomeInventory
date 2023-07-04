@@ -1,6 +1,7 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence;
@@ -19,7 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
-        services.AddSingleton<IDomainEventJsonTypeInfo, DomainEventJsonTypeInfo>();
+        services.AddSingleton<IDomainEventJsonTypeInfo>(_ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
 
         services.AddScoped<IDatabaseConfigurationApplier, UserModelDatabaseConfigurationApplier>();
 

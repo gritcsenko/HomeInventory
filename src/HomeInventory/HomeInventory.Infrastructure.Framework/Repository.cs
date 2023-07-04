@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
 using DotNext;
+using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
@@ -26,67 +27,55 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier> : IReposit
         _eventsPersistenceService = eventsPersistenceService;
     }
 
-    public ValueTask AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    public async ValueTask AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
-        _ = InternalAdd(set, entity);
-
-        return ValueTask.CompletedTask;
+        _ = await InternalAddAsync(set, entity, cancellationToken);
     }
 
-    public ValueTask AddRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    public async ValueTask AddRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
-        foreach (var entity in entities)
+        foreach (var entity in entities.WithCancellation(cancellationToken))
         {
-            _ = InternalAdd(set, entity);
+            _ = await InternalAddAsync(set, entity, cancellationToken);
         }
-
-        return ValueTask.CompletedTask;
     }
 
-    public ValueTask UpdateAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    public async ValueTask UpdateAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
-        _ = InternalUpdate(set, entity);
-
-        return ValueTask.CompletedTask;
+        _ = await InternalUpdateAsync(set, entity, cancellationToken);
     }
 
-    public ValueTask UpdateRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    public async ValueTask UpdateRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
-        foreach (var entity in entities)
+        foreach (var entity in entities.WithCancellation(cancellationToken))
         {
-            _ = InternalUpdate(set, entity);
+            _ = await InternalUpdateAsync(set, entity, cancellationToken);
         }
-
-        return ValueTask.CompletedTask;
     }
 
-    public ValueTask DeleteAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    public async ValueTask DeleteAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
-        _ = InternalDelete(set, entity);
-
-        return ValueTask.CompletedTask;
+        _ = await InternalDeleteAsync(set, entity, cancellationToken);
     }
 
-    public ValueTask DeleteRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    public async ValueTask DeleteRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
-        foreach (var entity in entities)
+        foreach (var entity in entities.WithCancellation(cancellationToken))
         {
-            _ = InternalDelete(set, entity);
+            _ = await InternalDeleteAsync(set, entity, cancellationToken);
         }
-
-        return ValueTask.CompletedTask;
     }
 
     public async ValueTask<int> CountAsync(CancellationToken cancellationToken = default) =>
@@ -138,17 +127,17 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier> : IReposit
     protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TModel> inputQuery, ISpecification<TModel, TResult> specification) =>
         _evaluator.GetQuery(inputQuery, specification);
 
-    private EntityEntry<TModel> InternalAdd(DbSet<TModel> set, TAggregateRoot entity) => InternalModify(set, entity, (s, m) => s.Add(m));
+    private async ValueTask<EntityEntry<TModel>> InternalAddAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Add(m), cancellationToken);
 
-    private EntityEntry<TModel> InternalUpdate(DbSet<TModel> set, TAggregateRoot entity) => InternalModify(set, entity, (s, m) => s.Update(m));
+    private async ValueTask<EntityEntry<TModel>> InternalUpdateAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Update(m), cancellationToken);
 
-    private EntityEntry<TModel> InternalDelete(DbSet<TModel> set, TAggregateRoot entity) => InternalModify(set, entity, (s, m) => s.Remove(m));
+    private async ValueTask<EntityEntry<TModel>> InternalDeleteAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Remove(m), cancellationToken);
 
-    private EntityEntry<TModel> InternalModify(DbSet<TModel> set, TAggregateRoot entity, Func<DbSet<TModel>, TModel, EntityEntry<TModel>> modifyAction)
+    private async ValueTask<EntityEntry<TModel>> InternalModifyAsync(DbSet<TModel> set, TAggregateRoot entity, Func<DbSet<TModel>, TModel, EntityEntry<TModel>> modifyAction, CancellationToken cancellationToken)
     {
         var model = ToModel(entity);
         var entry = modifyAction(set, model);
-        _eventsPersistenceService.SaveEvents(entity);
+        await _eventsPersistenceService.SaveEventsAsync(entity, cancellationToken);
         return entry;
     }
 
@@ -160,9 +149,4 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier> : IReposit
         _mapper.ProjectTo<TAggregateRoot>(query, cancellationToken);
 
     private DbSet<TModel> Set() => _context.GetDbSet<TModel>();
-}
-
-public interface IEventsPersistenceService
-{
-    void SaveEvents(IHasDomainEvents entity);
 }

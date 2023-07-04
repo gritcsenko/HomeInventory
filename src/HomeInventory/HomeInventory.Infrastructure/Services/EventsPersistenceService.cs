@@ -13,12 +13,13 @@ internal class EventsPersistenceService : IEventsPersistenceService
         _context = context;
     }
 
-    public void SaveEvents(IHasDomainEvents entity)
+    public ValueTask SaveEventsAsync(IHasDomainEvents entity, CancellationToken cancellationToken = default)
     {
         var events = entity.GetDomainEvents();
         var messages = events.Select(CreateMessage);
         _context.GetDbSet<OutboxMessage>().AddRange(messages);
         entity.ClearDomainEvents();
+        return ValueTask.CompletedTask;
     }
 
     private static OutboxMessage CreateMessage(IDomainEvent domainEvent) =>

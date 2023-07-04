@@ -17,6 +17,10 @@ public class GivenContext<TContext> : BaseContext
         where T : notnull =>
         Add(variable, Fixture.Create<T>);
 
+    public TContext New<T>(IVariable<T> variable, IIndexedVariable<int> countVariable)
+        where T : notnull =>
+        New(variable, Variables.Get(countVariable));
+
     public TContext New<T>(IVariable<T> variable, int count)
         where T : notnull
     {
@@ -42,6 +46,40 @@ public class GivenContext<TContext> : BaseContext
             }
             return value;
         });
+
+    public TContext SubstituteFor<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, params Action<T, VariablesContainer>[] setups)
+        where T : class
+    {
+        foreach (var _ in Enumerable.Range(0, Variables.Get(countVariable)))
+        {
+            Add(variable, () =>
+            {
+                var value = Substitute.For<T>();
+                foreach (var setup in setups)
+                {
+                    setup(value, Variables);
+                }
+                return value;
+            });
+        }
+
+        return This;
+    }
+
+    public TContext Add<T>(IVariable<T> variable, T value)
+        where T : notnull =>
+        Add(variable, () => value);
+
+    public TContext Add<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, Func<T> createValue)
+        where T : notnull
+    {
+        foreach (var _ in Enumerable.Range(0, Variables.Get(countVariable)))
+        {
+            Add(variable, createValue);
+        }
+
+        return This;
+    }
 
     protected TContext Add<T>(IVariable<T> variable, Func<T> createValue)
         where T : notnull =>

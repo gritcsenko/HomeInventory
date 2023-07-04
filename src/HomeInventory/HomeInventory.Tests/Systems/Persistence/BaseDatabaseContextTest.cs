@@ -1,9 +1,6 @@
 ﻿using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
-using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -14,20 +11,13 @@ public abstract class BaseDatabaseContextTest : BaseTest
 
     protected BaseDatabaseContextTest()
     {
-        var appliers = new IDatabaseConfigurationApplier[]
-        {
-            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[]{ new DomainEventJsonTypeInfo()})),
-            new UserModelDatabaseConfigurationApplier(),
-        };
-        _context = ReflectionMethods.CreateInstance<DatabaseContext>(GetDatabaseOptions(), new PublishDomainEventsInterceptor(Substitute.For<IPublisher>()), DateTime, appliers)!;
+        _context = DbContextFactory.CreateInMemory<DatabaseContext>(
+            DateTime,
+            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo() })),
+            new UserModelDatabaseConfigurationApplier());
+
         AddDisposable(_context);
     }
 
     protected private DatabaseContext Context => _context;
-
-    private static DbContextOptions<DatabaseContext> GetDatabaseOptions() =>
-        new DbContextOptionsBuilder<DatabaseContext>()
-            .UseInMemoryDatabase(databaseName: "db" + Ulid.NewUlid())
-            .EnableSensitiveDataLogging()
-            .Options;
 }
