@@ -130,7 +130,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
     {
         Given
             .New(_id)
-            .AddToHashCode(_hash, _id)
+            .AddAllToHashCode(_hash, _id)
             .TestEntity(_sut, _id);
 
         When

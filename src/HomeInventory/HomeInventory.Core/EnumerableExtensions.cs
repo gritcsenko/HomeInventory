@@ -10,5 +10,6 @@ public static class EnumerableExtensions
 
     public static IReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> source) => source as IReadOnlyCollection<T> ?? source.ToArray();
 
-    public static IEnumerable<T> WithCancellation<T>(this IEnumerable<T> source, CancellationToken cancellationToken) => source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
+    public static IEnumerable<T> WithCancellation<T>(this IEnumerable<T> source, CancellationToken cancellationToken) =>
+        source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
 }

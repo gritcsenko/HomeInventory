@@ -36,7 +36,7 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
             .SubstituteFor(_entity,
                 (e, v) => e
                 .GetDomainEvents()
-                .Returns(v.GetAll(_event).ToReadOnly()));
+                .Returns(v.GetMany(_event).ToReadOnly()));
 
         var then = await When
             .InvokedAsync(_sut.WithIndex(0), _entity.WithIndex(0), _dbContext.WithIndex(0), async (sut, entity, db, t) =>

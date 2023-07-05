@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
 using DotNext;
+using HomeInventory.Core;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
@@ -24,7 +25,8 @@ internal class UserRepository : Repository<UserModel, User, UserId>, IUserReposi
 
     public async ValueTask<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
-        var userResult = await FindFirstOptionalAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken);
-        return userResult.HasValue;
+        var userResult = await FindFirstOptionalAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken)
+            .Convert(x => true);
+        return userResult.Or(false);
     }
 }
