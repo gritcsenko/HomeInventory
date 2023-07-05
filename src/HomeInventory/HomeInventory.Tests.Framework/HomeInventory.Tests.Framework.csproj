@@ -11,8 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Contracts.UserManagement\HomeInventory.Contracts.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
+    <ProjectReference Include="..\HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
+    <ProjectReference Include="..\HomeInventory.Infrastructure.Framework\HomeInventory.Infrastructure.Framework.csproj" />
+    <ProjectReference Include="..\HomeInventory.Infrastructure.UserManagement\HomeInventory.Infrastructure.UserManagement.csproj" />
+    <ProjectReference Include="..\HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

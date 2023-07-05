@@ -4,8 +4,4 @@
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Ulid" />
-  </ItemGroup>
-
 </Project>

@@ -1,8 +1,9 @@
-﻿using Asp.Versioning;
+﻿using System.Reflection;
+using Asp.Versioning;
 using Carter;
-using FluentValidation;
-using FluentValidation.AspNetCore;
+using DotNext;
 using FluentValidation.Internal;
+using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
@@ -10,17 +11,14 @@ using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
-using HomeInventory.Web.Configuration.Validation;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.Framework;
 using HomeInventory.Web.Middleware;
-using HomeInventory.Web.Modules;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -30,17 +28,17 @@ namespace HomeInventory.Web;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddWeb(this IServiceCollection services)
+    public static IServiceCollection AddWeb(this IServiceCollection services, params Assembly[] moduleAssemblies)
     {
         // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/monitor-app-health
         // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-6.0
-        services.AddHealthChecks();
+        services.AddHealthChecks()
+            .AddApplicationStatus();
         services.AddHealthChecksUI()
             .AddInMemoryStorage();
 
-        services.AddSingleton<ErrorMapping>();
-        services.AddSingleton<HomeInventoryProblemDetailsFactory>();
-        services.AddSingleton<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddWebFramework();
+
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
 
@@ -55,7 +53,12 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenApiDocs();
 
-        services.AddValidation();
+        var coreAssemblies = new[]{
+            Contracts.Validations.AssemblyReference.Assembly,
+            Contracts.UserManagement.Validators.AssemblyReference.Assembly,
+            AssemblyReference.Assembly
+        };
+        services.AddCarter(new DependencyContextAssemblyCatalog(coreAssemblies.Concat(moduleAssemblies).ToArray()));
 
         services.AddCarter(configurator: config => config
             .WithModule<AreaModule>()
@@ -75,6 +78,7 @@ public static class ServiceCollectionExtensions
         services.ConfigureOptions<JwtBearerOptionsSetup>();
 
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
+        services.AddOptionsWithValidator<JwtOptions>();
         services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
     }
 
@@ -94,16 +98,6 @@ public static class ServiceCollectionExtensions
             options.AssumeDefaultVersionWhenUnspecified = true;
             options.ApiVersionReader = new QueryStringApiVersionReader();
         }).AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
-    }
-
-    private static void AddValidation(this IServiceCollection services)
-    {
-        services.AddFluentValidationAutoValidation(config => config.DisableDataAnnotationsValidation = true);
-        services.AddValidatorsFromAssembly(Contracts.Validations.AssemblyReference.Assembly, includeInternalTypes: true);
-        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Singleton, filter: r => r.Is<IOptionsValidator>(), includeInternalTypes: true);
-        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Scoped, filter: r => !r.Is<IOptionsValidator>(), includeInternalTypes: true);
-
-        services.AddOptionsWithValidator<JwtOptions>();
     }
 
     public static TApp UseWeb<TApp>(this TApp app)
@@ -129,6 +123,9 @@ public static class ServiceCollectionExtensions
 
         return app;
     }
+
+    private static TFeature? GetFeature<TFeature>(this HttpContext context) =>
+      context.Features.Get<TFeature>();
 
     private static void ConfigureSwaggerUI(this IEndpointRouteBuilder builder, SwaggerUIOptions options)
     {
@@ -165,8 +162,6 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static bool Is<T>(this AssemblyScanner.AssemblyScanResult result) => result.ValidatorType.IsAssignableTo(typeof(T));
-
     private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, string? configSectionPath = null)
         where TOptions : class => services.AddOptions<TOptions>()
             .BindConfiguration(configSectionPath ?? typeof(TOptions).Name)
@@ -177,7 +172,7 @@ public static class ServiceCollectionExtensions
         where TOptions : class
     {
         var services = builder.Services;
-        services.AddSingleton<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidator<TOptions>>(), validationOptions));
+        services.AddSingleton<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidatorLocator>(), validationOptions));
         return builder;
     }
 }

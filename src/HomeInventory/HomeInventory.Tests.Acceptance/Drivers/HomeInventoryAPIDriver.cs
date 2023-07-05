@@ -1,7 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -40,10 +39,7 @@ internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, I
         {
             var id = Ulid.NewUlid();
             // Replace real database with in-memory database for tests
-            services.ReplaceWithSingleton(sp => new DbContextOptionsBuilder<DatabaseContext>()
-                .UseApplicationServiceProvider(sp)
-                .UseInMemoryDatabase($"HomeInventory{id}")
-                .Options);
+            services.ReplaceWithSingleton(sp => DbContextFactory.CreateInMemoryOptions<DatabaseContext>("HomeInventory", id));
             services.AddSingleton<MutableDateTimeService>();
             services.ReplaceWithScoped<IDateTimeService>(sp => sp.GetRequiredService<MutableDateTimeService>());
         });

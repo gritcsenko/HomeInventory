@@ -1,7 +1,5 @@
-﻿using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Mapping;
@@ -33,11 +31,6 @@ public class ContractsMappingsTests : BaseMappingsTests
         fixture.CustomizeEmail();
         return new()
         {
-            { fixture.Create<UserId>(), typeof(Ulid) },
-            { fixture.Create<Email>(), typeof(string) },
-            { fixture.Create<RegisterRequest>(), typeof(RegisterCommand) },
-            { fixture.Create<RegisterRequest>(), typeof(UserIdQuery) },
-            { fixture.Create<UserIdResult>(), typeof(RegisterResponse) },
             { fixture.Create<LoginRequest>(), typeof(AuthenticateQuery) },
             { fixture.Create<AuthenticateResult>(), typeof(LoginResponse) },
             { fixture.Create<AreasResult>(), typeof(AreaResponse[]) },

@@ -23,9 +23,6 @@ public class UserRepositoryTests : BaseRepositoryTest
             .With(x => x.Email, _user.Email.Value)
             .With(x => x.Password, _user.Password)
             .Create();
-
-        Mapper.Map<User, UserModel>(_user).Returns(_userModel);
-        Mapper.Map<UserModel, User>(_userModel).Returns(_user);
     }
 
     [Fact]
@@ -56,30 +53,18 @@ public class UserRepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        Mapper.ProjectTo<User>(Arg.Any<IQueryable>(), Cancellation.Token).Returns(ci =>
-        {
-            var query = ci.Arg<IQueryable>();
-            var userModels = query.Cast<UserModel>();
-            return userModels.Select(x => _user);
-        });
         Context.Set<UserModel>().Add(_userModel);
         await Context.SaveChangesAsync();
         var sut = CreateSut();
 
         var result = await sut.FindFirstByEmailUserOptionalAsync(_user.Email, Cancellation.Token);
 
-        result.Should().HaveSameValueAs(_user);
+        result.Should().HaveValue(_user);
     }
 
     [Fact]
     public async Task HasPermissionAsync_Should_ReturnTreu_WhenUserAdded()
     {
-        Mapper.ProjectTo<User>(Arg.Any<IQueryable>(), Cancellation.Token).Returns(ci =>
-        {
-            var query = ci.Arg<IQueryable>();
-            var userModels = query.Cast<UserModel>();
-            return userModels.Select(x => _user);
-        });
         var permission = Fixture.Create<string>();
         Context.Set<UserModel>().Add(_userModel);
         await Context.SaveChangesAsync();
@@ -90,5 +75,5 @@ public class UserRepositoryTests : BaseRepositoryTest
         result.Should().BeTrue();
     }
 
-    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default);
+    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default, PersistenceService);
 }

@@ -1,35 +1,22 @@
-﻿using DotNext;
-using HomeInventory.Domain.Primitives;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HomeInventory.Application;
 
 public abstract class BaseHealthCheck : IHealthCheck
 {
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-    {
-        var (token, resources) = cancellationToken.WithTimeout(context.Registration.Timeout);
-        try
-        {
-            var isHealthy = await IsHealthyAsync(token);
-            if (isHealthy)
+    private static readonly IReadOnlyDictionary<string, object> _empty = new Dictionary<string, object>();
+
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default) =>
+        await Execute.AndCatchAsync(
+            async () =>
             {
-                return HealthCheckResult.Healthy();
-            }
+                var status = await CheckHealthAsync(cancellationToken);
+                var healthStatus = status.IsFailed ? context.Registration.FailureStatus : HealthStatus.Healthy;
+                return new HealthCheckResult(healthStatus, status.Description, exception: null, status.Data);
+            },
+            (Exception ex) => new HealthCheckResult(context.Registration.FailureStatus, "Failed to perform healthcheck", ex, ExceptionData));
 
-            return new HealthCheckResult(context.Registration.FailureStatus);
-        }
-#pragma warning disable CA1031 // Do not catch general exception types
-        catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
-        {
-            return new HealthCheckResult(context.Registration.FailureStatus, exception: ex);
-        }
-        finally
-        {
-            Disposable.Dispose(resources);
-        }
-    }
+    protected abstract ValueTask<HealthCheckStatus> CheckHealthAsync(CancellationToken cancellationToken);
 
-    protected abstract ValueTask<bool> IsHealthyAsync(CancellationToken cancellationToken);
+    protected virtual IReadOnlyDictionary<string, object> ExceptionData => _empty;
 }

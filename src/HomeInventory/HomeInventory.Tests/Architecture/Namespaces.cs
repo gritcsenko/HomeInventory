@@ -1,12 +1,13 @@
-﻿using HomeInventory.Domain.Primitives;
-using NetArchTest.Rules;
+﻿using NetArchTest.Rules;
 
 namespace HomeInventory.Tests.Architecture;
 
 internal static class Namespaces
 {
     private const string _prefix = "HomeInventory.";
+    public const string Core = _prefix + nameof(Core);
     public const string Domain = _prefix + nameof(Domain);
+    public const string DomainPrimitives = _prefix + nameof(Domain) + ".Primitives";
     public const string Application = _prefix + nameof(Application);
     public const string Infrastructure = _prefix + nameof(Infrastructure);
     public const string Api = _prefix + nameof(Api);
@@ -22,12 +23,15 @@ internal static class Namespaces
 public class ArchitectureTests
 {
     [Theory]
-    [InlineData(typeof(HomeInventory.Domain.AssemblyReference), new string[0])]
+    [InlineData(typeof(HomeInventory.Domain.AssemblyReference), new[] { Namespaces.DomainPrimitives })]
+    [InlineData(typeof(HomeInventory.Domain.Primitives.AssemblyReference), new[] { Namespaces.Core })]
+    [InlineData(typeof(HomeInventory.Core.AssemblyReference), new string[0])]
     [InlineData(typeof(Application.AssemblyReference), new[] { Namespaces.Domain })]
     [InlineData(typeof(Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
     [InlineData(typeof(Contracts.AssemblyReference), new string[0])]
+    [InlineData(typeof(Contracts.UserManagement.AssemblyReference), new string[0])]
     [InlineData(typeof(Contracts.Validations.AssemblyReference), new[] { Namespaces.Contracts })]
-    [InlineData(typeof(Web.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
+    [InlineData(typeof(Web.UserManagement.AssemblyReference), new[] { Namespaces.Application, Namespaces.ContractsValidation })]
     [InlineData(typeof(Api.AssemblyReference), new[] { Namespaces.Web, Namespaces.Infrastructure })]
     public void Should_NotHaveBadDependencies(Type assemblyMarkerType, IEnumerable<string> allowed)
     {
@@ -75,7 +79,7 @@ public class ArchitectureTests
     [Fact]
     public void Controllers_Should_HaveDependencyOn_MediatR()
     {
-        var assembly = Web.AssemblyReference.Assembly;
+        var assembly = Web.UserManagement.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()
@@ -92,7 +96,7 @@ public class ArchitectureTests
     [Fact]
     public void Controllers_Should_HaveDependencyOn_Automapper()
     {
-        var assembly = Web.AssemblyReference.Assembly;
+        var assembly = Web.UserManagement.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()

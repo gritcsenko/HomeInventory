@@ -57,6 +57,27 @@ public class WhenContext : BaseContext
         return new(Variables, variable);
     }
 
+    public ThenContext InvokedForSideEffects<TSut>(IVariable<TSut> sut, Action<TSut> invoke)
+        where TSut : notnull =>
+        InvokedForSideEffects(sut.WithIndex(0), invoke);
+
+    public ThenContext InvokedForSideEffects<TSut, TArg>(IVariable<TSut> sut, IVariable<TArg> arg, Action<TSut, TArg> invoke)
+        where TSut : notnull
+        where TArg : notnull =>
+        InvokedForSideEffects(sut.WithIndex(0), arg.WithIndex(0), invoke);
+
+    public ThenContext InvokedForSideEffects<TSut, TArg>(IIndexedVariable<TSut> sut, IIndexedVariable<TArg> arg, Action<TSut, TArg> invoke)
+        where TSut : notnull
+        where TArg : notnull =>
+        InvokedForSideEffects(sut.WithIndex(0), x => invoke(x, Variables.Get(arg)));
+
+    public ThenContext InvokedForSideEffects<TSut>(IIndexedVariable<TSut> sut, Action<TSut> invoke)
+        where TSut : notnull
+    {
+        invoke(Variables.Get(sut));
+        return new(Variables);
+    }
+
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg, TResult>(IVariable<TSut> sut, IIndexedVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull
         where TArg : notnull

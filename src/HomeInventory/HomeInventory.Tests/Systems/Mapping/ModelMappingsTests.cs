@@ -76,7 +76,6 @@ public class ModelMappingsTests : BaseMappingsTests
     {
         var fixture = new Fixture();
         fixture.CustomizeUlid();
-        fixture.CustomizeUlidId<UserId>();
         fixture.CustomizeUlidId<ProductId>();
         fixture.CustomizeUlidId<StorageAreaId>();
         fixture.CustomizeEmail();
@@ -91,7 +90,6 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var data = new TheoryData<object, Type>();
 
-        Add<UserId, Ulid>(fixture, data);
         Add<ProductId, Ulid>(fixture, data);
         Add<StorageAreaId, Ulid>(fixture, data);
 

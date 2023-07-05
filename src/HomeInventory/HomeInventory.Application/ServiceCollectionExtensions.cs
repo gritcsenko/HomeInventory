@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Application;
 
@@ -10,7 +9,4 @@ public static class ServiceCollectionExtensions
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
         return services;
     }
-
-    public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, Assembly assembly) =>
-        services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assembly));
 }

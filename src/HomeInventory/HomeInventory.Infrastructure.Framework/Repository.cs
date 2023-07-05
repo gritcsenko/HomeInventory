@@ -1,0 +1,152 @@
+﻿using Ardalis.Specification;
+using AutoMapper;
+using DotNext;
+using HomeInventory.Core;
+using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Persistence.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+
+namespace HomeInventory.Infrastructure.Persistence;
+
+public abstract class Repository<TModel, TAggregateRoot, TIdentifier> : IRepository<TAggregateRoot>
+    where TModel : class, IPersistentModel<TIdentifier>
+    where TAggregateRoot : AggregateRoot<TAggregateRoot, TIdentifier>
+    where TIdentifier : IIdentifierObject<TIdentifier>
+{
+    private readonly IDatabaseContext _context;
+    private readonly IMapper _mapper;
+    private readonly ISpecificationEvaluator _evaluator;
+    private readonly IEventsPersistenceService _eventsPersistenceService;
+
+    protected Repository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService)
+    {
+        _context = context;
+        _mapper = mapper;
+        _evaluator = evaluator;
+        _eventsPersistenceService = eventsPersistenceService;
+    }
+
+    public async ValueTask AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    {
+        var set = Set();
+
+        _ = await InternalAddAsync(set, entity, cancellationToken);
+    }
+
+    public async ValueTask AddRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    {
+        var set = Set();
+
+        foreach (var entity in entities.WithCancellation(cancellationToken))
+        {
+            _ = await InternalAddAsync(set, entity, cancellationToken);
+        }
+    }
+
+    public async ValueTask UpdateAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    {
+        var set = Set();
+
+        _ = await InternalUpdateAsync(set, entity, cancellationToken);
+    }
+
+    public async ValueTask UpdateRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    {
+        var set = Set();
+
+        foreach (var entity in entities.WithCancellation(cancellationToken))
+        {
+            _ = await InternalUpdateAsync(set, entity, cancellationToken);
+        }
+    }
+
+    public async ValueTask DeleteAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    {
+        var set = Set();
+
+        _ = await InternalDeleteAsync(set, entity, cancellationToken);
+    }
+
+    public async ValueTask DeleteRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    {
+        var set = Set();
+
+        foreach (var entity in entities.WithCancellation(cancellationToken))
+        {
+            _ = await InternalDeleteAsync(set, entity, cancellationToken);
+        }
+    }
+
+    public async ValueTask<int> CountAsync(CancellationToken cancellationToken = default) =>
+        await Set().CountAsync(cancellationToken);
+
+    public async ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default) =>
+        await Set().AnyAsync(cancellationToken);
+
+    public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
+        AsyncEnumerable.ToAsyncEnumerable(ToEntity(Set(), cancellationToken));
+
+    public async ValueTask<Optional<TAggregateRoot>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    {
+        var query = ApplySpecification(Set(), specification);
+        var projected = ToEntity(query, cancellationToken);
+        if (await projected.FirstOrDefaultAsync(cancellationToken) is TAggregateRoot entity)
+        {
+            return entity;
+        }
+
+        return Optional.None<TAggregateRoot>();
+    }
+
+    public async ValueTask<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    {
+        var query = ApplySpecification(Set(), specification, evaluateCriteriaOnly: true);
+        return await query.AnyAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Filters the entities  of <typeparamref name="T"/>, to those that match the encapsulated query logic of the
+    /// <paramref name="specification"/>.
+    /// </summary>
+    /// <param name="specification">The encapsulated query logic.</param>
+    /// <returns>The filtered entities as an <see cref="IQueryable{T}"/>.</returns>
+    protected virtual IQueryable<TModel> ApplySpecification(IQueryable<TModel> inputQuery, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false) =>
+        _evaluator.GetQuery(inputQuery, specification, evaluateCriteriaOnly);
+
+    /// <summary>
+    /// Filters all entities of <typeparamref name="T" />, that matches the encapsulated query logic of the
+    /// <paramref name="specification"/>, from the database.
+    /// <para>
+    /// Projects each entity into a new form, being <typeparamref name="TResult" />.
+    /// </para>
+    /// </summary>
+    /// <typeparam name="TResult">The type of the value returned by the projection.</typeparam>
+    /// <param name="specification">The encapsulated query logic.</param>
+    /// <returns>The filtered projected entities as an <see cref="IQueryable{T}"/>.</returns>
+    protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TModel> inputQuery, ISpecification<TModel, TResult> specification) =>
+        _evaluator.GetQuery(inputQuery, specification);
+
+    private async ValueTask<EntityEntry<TModel>> InternalAddAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Add(m), cancellationToken);
+
+    private async ValueTask<EntityEntry<TModel>> InternalUpdateAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Update(m), cancellationToken);
+
+    private async ValueTask<EntityEntry<TModel>> InternalDeleteAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Remove(m), cancellationToken);
+
+    private async ValueTask<EntityEntry<TModel>> InternalModifyAsync(DbSet<TModel> set, TAggregateRoot entity, Func<DbSet<TModel>, TModel, EntityEntry<TModel>> modifyAction, CancellationToken cancellationToken)
+    {
+        var model = ToModel(entity);
+        var entry = modifyAction(set, model);
+        await _eventsPersistenceService.SaveEventsAsync(entity, cancellationToken);
+        return entry;
+    }
+
+    private TModel ToModel(TAggregateRoot entity) =>
+        _context.FindTracked<TModel>(m => m.Id.Equals(entity.Id))
+            .OrInvoke(() => _mapper.Map<TAggregateRoot, TModel>(entity));
+
+    private IQueryable<TAggregateRoot> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
+        _mapper.ProjectTo<TAggregateRoot>(query, cancellationToken);
+
+    private DbSet<TModel> Set() => _context.GetDbSet<TModel>();
+}

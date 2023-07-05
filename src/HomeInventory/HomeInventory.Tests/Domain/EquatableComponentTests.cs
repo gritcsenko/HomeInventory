@@ -29,8 +29,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
     {
         Given
             .New(_component, count)
-            .AddToHashCode(_hash, _component, count)
-            .Component(_sut, _component, count);
+            .AddAllToHashCode(_hash, _component)
+            .Component(_sut, _component);
 
         When
             .Invoked(_sut, sut => sut.GetHashCode())
@@ -57,7 +57,7 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
     {
         Given
             .New(_component, count)
-            .Component(_sut, _component, count)
+            .Component(_sut, _component)
             .Component(_sut);
 
         When
@@ -73,8 +73,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
     {
         Given
             .New(_component, count)
-            .Component(_sut, _component, count)
-            .Component(_sut, _component, count);
+            .Component(_sut, _component)
+            .Component(_sut, _component);
 
         When
             .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
@@ -89,8 +89,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
     {
         Given
             .New(_component, count * 2)
-            .Component(_sut, _component, count)
-            .Component(_sut, _component, skip: count, count);
+            .Component(_sut, _component, ..count)
+            .Component(_sut, _component, count..);
 
         When
             .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
@@ -110,14 +110,14 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
         }
 
         public GivenTestContext Component(IVariable<EquatableComponent<string>> sut) =>
-            Add(sut, () => new EquatableComponent<string>());
+            Component(sut, new Variable<Ulid>(""));
 
-        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, int count)
+        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable)
             where T : notnull =>
-            Add(sut, () => new EquatableComponent<string>(Variables.Get(variable, count).Cast<object>().ToArray()));
+            Component(sut, variable, ..);
 
-        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, int skip, int count)
+        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, Range range)
             where T : notnull =>
-            Add(sut, () => new EquatableComponent<string>(Variables.Get(variable, skip + count).Skip(skip).Cast<object>().ToArray()));
+            Add(sut, () => new EquatableComponent<string>(Variables.GetMany(variable, range).Cast<object>().ToArray()));
     }
 }

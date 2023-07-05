@@ -2,10 +2,6 @@
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using OneOf;
-using OneOf.Types;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
