@@ -16,7 +16,7 @@ public class OptionalExtensionsTests : BaseTest
         var tapped = await optionalTask.Tap(x => actual = x);
 
         using var scope = new AssertionScope();
-        tapped.Should().HaveSameValueAs(expected.Value);
+        tapped.Should().HaveValue(expected.Value);
         actual.Should().Be(expected);
     }
 
@@ -31,7 +31,7 @@ public class OptionalExtensionsTests : BaseTest
         var tapped = await optionalTask.Tap(x => { actual = x; return Task.CompletedTask; });
 
         using var scope = new AssertionScope();
-        tapped.Should().HaveSameValueAs(expected.Value);
+        tapped.Should().HaveValue(expected.Value);
         actual.Should().Be(expected);
     }
 
@@ -46,7 +46,7 @@ public class OptionalExtensionsTests : BaseTest
         var tapped = await optionalTask.Tap(x => { actual = x; return ValueTask.CompletedTask; });
 
         using var scope = new AssertionScope();
-        tapped.Should().HaveSameValueAs(expected.Value);
+        tapped.Should().HaveValue(expected.Value);
         actual.Should().Be(expected);
     }
 }
