@@ -2,19 +2,22 @@
 using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Patterns;
 
 namespace HomeInventory.Web.Modules;
 
 public abstract class ApiModule : CarterModule
 {
-    private readonly string _groupPrefix;
+    private readonly RoutePattern _groupPrefix;
     private ApiVersion _version = new(1);
 
     protected ApiModule(string groupPrefix)
     {
         IncludeInOpenApi();
-        _groupPrefix = groupPrefix;
+        _groupPrefix = RoutePatternFactory.Parse(groupPrefix);
     }
+
+    public RoutePattern GroupPrefix => _groupPrefix;
 
     protected void MapToApiVersion(ApiVersion version) => _version = version;
 
