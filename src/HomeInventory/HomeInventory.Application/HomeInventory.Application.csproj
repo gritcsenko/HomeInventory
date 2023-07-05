@@ -13,7 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
+    <ProjectReference Include="..\HomeInventory.Application.Framework\HomeInventory.Application.Framework.csproj" />
+    <ProjectReference Include="..\HomeInventory.Application.UserManagement.Interfaces\HomeInventory.Application.UserManagement.Interfaces.csproj" />
+    <ProjectReference Include="..\HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj" />
   </ItemGroup>
 
 </Project>

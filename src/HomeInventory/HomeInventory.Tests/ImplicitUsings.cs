@@ -2,6 +2,7 @@ global using AutoFixture;
 global using DotNext;
 global using DotNext.Collections.Generic;
 global using FluentAssertions;
+global using HomeInventory.Core;
 global using HomeInventory.Tests.Framework;
 global using HomeInventory.Tests.Framework.Assertions;
 global using HomeInventory.Tests.Framework.Attributes;

@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="DotNext" />
-    <PackageReference Include="OneOf" />
     <PackageReference Include="OneOf.SourceGenerator" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="Ulid" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Core\HomeInventory.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,4 @@
-﻿using DotNext;
-
-namespace HomeInventory.Domain.Primitives;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public interface IValueObjectBuilder<TSelf, TObject, TValue> : ISupplier<TObject>, IResettable
     where TSelf : notnull, IValueObjectBuilder<TSelf, TObject, TValue>

@@ -17,6 +17,10 @@ public class GivenContext<TContext> : BaseContext
         where T : notnull =>
         Add(variable, Fixture.Create<T>);
 
+    public TContext New<T>(IVariable<T> variable, IIndexedVariable<int> countVariable)
+        where T : notnull =>
+        New(variable, Variables.Get(countVariable));
+
     public TContext New<T>(IVariable<T> variable, int count)
         where T : notnull
     {
@@ -43,23 +47,57 @@ public class GivenContext<TContext> : BaseContext
             return value;
         });
 
+    public TContext SubstituteFor<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, params Action<T, VariablesContainer>[] setups)
+        where T : class
+    {
+        foreach (var _ in Enumerable.Range(0, Variables.Get(countVariable)))
+        {
+            Add(variable, () =>
+            {
+                var value = Substitute.For<T>();
+                foreach (var setup in setups)
+                {
+                    setup(value, Variables);
+                }
+                return value;
+            });
+        }
+
+        return This;
+    }
+
+    public TContext Add<T>(IVariable<T> variable, T value)
+        where T : notnull =>
+        Add(variable, () => value);
+
+    public TContext Add<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, Func<T> createValue)
+        where T : notnull
+    {
+        foreach (var _ in Enumerable.Range(0, Variables.Get(countVariable)))
+        {
+            Add(variable, createValue);
+        }
+
+        return This;
+    }
+
     protected TContext Add<T>(IVariable<T> variable, Func<T> createValue)
         where T : notnull =>
         Variables.TryAdd(variable, createValue)
             ? This
             : throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
 
-    public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable)
+    public TContext AddAllToHashCode<T>(IVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull =>
-        AddToHashCode(hash, variable, 1);
+        AddAllToHashCode(hash.WithIndex(0), variable);
 
-    public TContext AddToHashCode<T>(IndexedVariable<HashCode> hash, IVariable<T> variable, int count)
+    public TContext AddAllToHashCode<T>(IIndexedVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull
     {
         var hashValue = Variables.TryGet(hash)
             .OrInvoke(() => AddNewHashCode(hash));
 
-        foreach (var value in Variables.Get(variable, count))
+        foreach (var value in Variables.GetMany(variable))
         {
             hashValue.Add(value);
         }
@@ -69,7 +107,7 @@ public class GivenContext<TContext> : BaseContext
             : throw new InvalidOperationException($"Failed to update variable '{hash.Name}'");
     }
 
-    private HashCode AddNewHashCode(IndexedVariable<HashCode> hash)
+    private HashCode AddNewHashCode(IIndexedVariable<HashCode> hash)
     {
         var value = new HashCode();
         Add(hash, () => value);

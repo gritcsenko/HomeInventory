@@ -1,6 +1,4 @@
-﻿using DotNext;
-
-namespace HomeInventory.Domain.Primitives;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<TSelf>
     where TSelf : BaseEnumeration<TSelf>

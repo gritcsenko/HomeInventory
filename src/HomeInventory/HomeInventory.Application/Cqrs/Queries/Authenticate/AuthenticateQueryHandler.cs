@@ -1,11 +1,9 @@
-﻿using DotNext;
-using HomeInventory.Application.Interfaces.Authentication;
+﻿using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
-using OneOf;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 
@@ -24,20 +22,16 @@ internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, Authen
 
     protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
     {
-        var result = await TryFindUserAsync(query, cancellationToken);
+        var result = await TryFindUserAsync(query, cancellationToken)
+            .IfAsync((user, t) => IsPasswordMatchAsync(user, query.Password, t), cancellationToken)
+            .ConvertAsync(async (user, t) => (token: await _tokenGenerator.GenerateTokenAsync(user, t), id: user.Id), cancellationToken);
+
         if (!result.HasValue)
         {
             return new InvalidCredentialsError();
         }
 
-        var user = result.Value;
-        if (!await IsPasswordMatchAsync(user, query.Password, cancellationToken))
-        {
-            return new InvalidCredentialsError();
-        }
-
-        var token = await _tokenGenerator.GenerateTokenAsync(user, cancellationToken);
-        return new AuthenticateResult(user.Id, token);
+        return new AuthenticateResult(result.Value.id, result.Value.token);
     }
 
     private ValueTask<Optional<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>

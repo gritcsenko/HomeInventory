@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Infrastructure.Persistence.Models;
 
-public record OutboxMessage(Ulid Id, DateTimeOffset OccurredOn, IDomainEvent Content) : IPersistentModel, ICreationAuditableModel
+public record OutboxMessage(Ulid Id, DateTimeOffset OccurredOn, IDomainEvent Content) : IPersistentModel, IHasCreationAudit
 {
-    public DateTimeOffset CreatedOn { get; set; }
+    public required DateTimeOffset CreatedOn { get; init; }
 };

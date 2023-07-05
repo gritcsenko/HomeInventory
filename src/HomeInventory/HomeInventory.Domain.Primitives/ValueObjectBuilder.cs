@@ -1,6 +1,4 @@
-﻿using DotNext;
-
-namespace HomeInventory.Domain.Primitives;
+﻿namespace HomeInventory.Domain.Primitives;
 
 public class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectBuilder<TSelf, TObject, TValue>
     where TSelf : ValueObjectBuilder<TSelf, TObject, TValue>
