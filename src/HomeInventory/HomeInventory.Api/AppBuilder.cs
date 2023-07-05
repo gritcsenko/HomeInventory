@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Application;
-using HomeInventory.Application.UserManagement;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.UserManagement;
@@ -42,7 +41,6 @@ internal class AppBuilder
             .AddWeb(
                 Web.UserManagement.AssemblyReference.Assembly,
                 Contracts.UserManagement.Validators.AssemblyReference.Assembly)
-            .AddUserManagementApplication()
             .AddUserManagementWeb()
             .AddUserManagementInfrastructure();
 }
