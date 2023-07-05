@@ -9,7 +9,7 @@ public abstract class BaseDatabaseContextTest : BaseTest
 
     protected BaseDatabaseContextTest()
     {
-        _context = DbContextFactory.CreateInMemory<DatabaseContext>(DateTime);
+        _context = DbContextFactory.Default.CreateInMemory<DatabaseContext>(DateTime);
 
         AddDisposable(_context);
     }

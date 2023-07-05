@@ -20,7 +20,7 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
     public EventsPersistenceServiceTests()
     {
         var options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
-        _context = DbContextFactory.CreateInMemory(DateTime, options);
+        _context = DbContextFactory.Default.CreateInMemory(DateTime, options);
 
         AddDisposable(_context);
     }

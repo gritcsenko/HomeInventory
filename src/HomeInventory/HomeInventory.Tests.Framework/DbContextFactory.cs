@@ -1,5 +1,4 @@
-﻿using HomeInventory.Core;
-using HomeInventory.Domain.Events;
+﻿using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
@@ -10,16 +9,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests;
 
-public static class DbContextFactory
+public class DbContextFactory
 {
-    public static TContext CreateInMemory<TContext>(IDateTimeService dateTimeService)
+    private readonly IDbContextFactory _factory;
+
+    internal DbContextFactory(IDbContextFactory factory)
+    {
+        _factory = factory;
+    }
+
+    public static DbContextFactory Default { get; } = new DbContextFactory(new ReflectionDbContextFactory());
+
+    public TContext CreateInMemory<TContext>(IDateTimeService dateTimeService)
         where TContext : DbContext
     {
         var options = CreateInMemoryOptions<TContext>();
         return CreateInMemory(dateTimeService, options);
     }
 
-    public static TContext CreateInMemory<TContext>(IDateTimeService dateTimeService, DbContextOptions<TContext> options)
+    public TContext CreateInMemory<TContext>(IDateTimeService dateTimeService, DbContextOptions<TContext> options)
         where TContext : DbContext =>
         CreateInMemory(
             dateTimeService,
@@ -27,12 +35,11 @@ public static class DbContextFactory
             new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent)) })),
             new UserModelDatabaseConfigurationApplier());
 
-    public static TContext CreateInMemory<TContext>(IDateTimeService dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
+    public TContext CreateInMemory<TContext>(IDateTimeService dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
         where TContext : DbContext
     {
         var interceptor = new PublishDomainEventsInterceptor(Substitute.For<IPublisher>());
-        return ReflectionMethods.CreateInstance<TContext>(options, interceptor, dateTimeService, appliers)
-            ?? throw new InvalidOperationException($"Failed to create {typeof(TContext).AssemblyQualifiedName}");
+        return _factory.Create(options, interceptor, dateTimeService, appliers);
     }
 
     public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Ulid? id = null)
