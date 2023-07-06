@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Specifications;
 
-internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
+public class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
     where TModel : class, IPersistentModel
 {
     private static readonly Func<DbContext, Ulid, CancellationToken, Task<TModel?>> _cachedQuery =
@@ -22,7 +22,7 @@ internal class ByIdFilterSpecification<TModel> : Specification<TModel>, ISingleR
     public Task<TModel?> ExecuteAsync(DbContext context, CancellationToken cancellationToken) => _cachedQuery(context, _id, cancellationToken);
 }
 
-internal class ByIdFilterSpecification<TModel, TId> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
+public class ByIdFilterSpecification<TModel, TId> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
     where TModel : class, IPersistentModel<TId>
     where TId : UlidIdentifierObject<TId>
 {

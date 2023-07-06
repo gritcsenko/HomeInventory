@@ -1,6 +1,5 @@
 ﻿using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Contracts;
-using HomeInventory.Web.Authorization.Dynamic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -10,7 +9,7 @@ namespace HomeInventory.Web.Modules;
 internal class AreaModule : ApiModule
 {
     public AreaModule()
-        : base("/api/areas", PermissionType.AccessAreas)
+        : base("/api/areas"/*, PermissionType.AccessAreas*/)
     {
     }
 

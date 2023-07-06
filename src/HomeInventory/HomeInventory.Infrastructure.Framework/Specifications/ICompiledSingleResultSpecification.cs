@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Infrastructure.Specifications;
 
-internal interface ICompiledSingleResultSpecification<T>
+public interface ICompiledSingleResultSpecification<T>
 {
     Task<T?> ExecuteAsync(DbContext context, CancellationToken cancellationToken);
 }

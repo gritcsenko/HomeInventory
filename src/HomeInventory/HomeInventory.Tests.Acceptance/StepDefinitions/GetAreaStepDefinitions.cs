@@ -1,5 +1,5 @@
 using HomeInventory.Contracts;
-using HomeInventory.Domain.Primitives;
+using HomeInventory.Core;
 using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
 using Humanizer;
@@ -53,10 +53,12 @@ internal class GetAreaStepDefinitions
     [Given(@"Registered users")]
     public async Task GivenRegisteredUsers(Table table)
     {
-        var requests = table.Rows
-            .Select(CreateGegisterRequest)
-            .DoAsync(RegisterAsync);
-        await _context.SetAllAsync(requests, Keys.RegisteredUsers);
+        var requests = table.Rows.Select(CreateGegisterRequest).ToReadOnly();
+        foreach (var request in requests)
+        {
+            await RegisterAsync(request);
+        }
+        _context.SetAll(requests, Keys.RegisteredUsers);
     }
 
     [Given(@$"User {Patterns.QuotedName}")]

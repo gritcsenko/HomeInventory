@@ -39,6 +39,7 @@ internal class AppBuilder
             .AddInfrastructure()
             .AddApplication()
             .AddWeb(
+                Web.AssemblyReference.Assembly,
                 Web.UserManagement.AssemblyReference.Assembly,
                 Contracts.UserManagement.Validators.AssemblyReference.Assembly)
             .AddUserManagementWeb()

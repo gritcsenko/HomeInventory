@@ -60,12 +60,6 @@ public static class ServiceCollectionExtensions
         };
         services.AddCarter(new DependencyContextAssemblyCatalog(coreAssemblies.Concat(moduleAssemblies).ToArray()));
 
-        services.AddCarter(configurator: config => config
-            .WithModule<AreaModule>()
-            .WithModule<UserManagementModule>()
-            .WithModule<AuthenticationModule>()
-            .WithModule<PermissionModule>());
-
         return services;
     }
 

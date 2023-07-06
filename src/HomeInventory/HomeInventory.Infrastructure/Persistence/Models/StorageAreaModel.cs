@@ -1,8 +1,10 @@
-﻿namespace HomeInventory.Infrastructure.Persistence.Models;
+﻿using HomeInventory.Domain.ValueObjects;
 
-internal class StorageAreaModel : IPersistentModel
+namespace HomeInventory.Infrastructure.Persistence.Models;
+
+internal class StorageAreaModel : IPersistentModel<StorageAreaId>
 {
-    public required Ulid Id { get; init; }
+    public required StorageAreaId Id { get; init; }
     public required string Name { get; init; }
     public required List<ProductModel> Products { get; init; }
 }
