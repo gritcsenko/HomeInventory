@@ -12,6 +12,7 @@ internal class ModelMappings : MappingProfile
     {
         CreateMapForId<StorageAreaId>();
         CreateMapForId<ProductId>();
+        CreateMapForId<MaterialId>();
 
         CreateMapForString(x => new StorageAreaName(x), x => x.Value);
 
