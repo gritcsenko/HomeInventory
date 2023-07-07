@@ -1,5 +1,4 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Domain;
+﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Primitives;
@@ -32,34 +31,6 @@ public class ModelMappingsTests : BaseMappingsTests
     }
 
     [Fact]
-    public void ShouldMapUserModelToUser()
-    {
-        Fixture.CustomizeUlidId<UserId>();
-        var sut = CreateSut<ModelMappings>();
-        var instance = Fixture.Create<UserModel>();
-
-        var target = sut.Map<User>(instance);
-
-        using var scope = new AssertionScope();
-        target.Id.Value.Should().Be(instance.Id.Value);
-        target.Email.Value.Should().Be(instance.Email);
-        target.Password.Should().Be(instance.Password);
-    }
-
-    [Fact]
-    public void ShouldProjectUserModelToUser()
-    {
-        Fixture.CustomizeUlidId<UserId>();
-        var sut = CreateSut<ModelMappings>();
-        var instance = Fixture.Create<UserModel>();
-        var source = new[] { instance }.AsQueryable();
-
-        var target = sut.ProjectTo<User>(source, Cancellation.Token).ToArray();
-
-        target.Should().HaveCount(1);
-    }
-
-    [Fact]
     public void ShouldProjectStorageAreaModelToStorageArea()
     {
         Fixture.CustomizeUlidId<StorageAreaId>();
@@ -78,7 +49,6 @@ public class ModelMappingsTests : BaseMappingsTests
         fixture.CustomizeUlid();
         fixture.CustomizeUlidId<ProductId>();
         fixture.CustomizeUlidId<StorageAreaId>();
-        fixture.CustomizeEmail();
         fixture.CustomizeFromFactory<string, StorageAreaName>(x => new StorageAreaName(x));
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
@@ -93,10 +63,8 @@ public class ModelMappingsTests : BaseMappingsTests
         Add<ProductId, Ulid>(fixture, data);
         Add<StorageAreaId, Ulid>(fixture, data);
 
-        Add<Email, string>(fixture, data);
         Add<StorageAreaName, string>(fixture, data);
 
-        Add<User, UserModel>(fixture, data);
         Add<Amount, ProductAmountModel>(fixture, data);
         Add<Product, ProductModel>(fixture, data);
         Add<StorageArea, StorageAreaModel>(fixture, data);
