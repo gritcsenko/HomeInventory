@@ -48,6 +48,7 @@ public class ModelMappingsTests : BaseMappingsTests
         var fixture = new Fixture();
         fixture.CustomizeUlid();
         fixture.CustomizeUlidId<ProductId>();
+        fixture.CustomizeUlidId<MaterialId>();
         fixture.CustomizeUlidId<StorageAreaId>();
         fixture.CustomizeFromFactory<string, StorageAreaName>(x => new StorageAreaName(x));
 
@@ -61,6 +62,7 @@ public class ModelMappingsTests : BaseMappingsTests
         var data = new TheoryData<object, Type>();
 
         Add<ProductId, Ulid>(fixture, data);
+        Add<MaterialId, Ulid>(fixture, data);
         Add<StorageAreaId, Ulid>(fixture, data);
 
         Add<StorageAreaName, string>(fixture, data);
