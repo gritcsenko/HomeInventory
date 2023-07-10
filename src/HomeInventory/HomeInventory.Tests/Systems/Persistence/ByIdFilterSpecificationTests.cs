@@ -45,7 +45,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
     }
 
     [Fact]
-    public async ValueTask ExecuteAsync_Should_SatisfyWithCorrectId()
+    public async Task ExecuteAsync_Should_SatisfyWithCorrectId()
     {
         var user = Fixture.Build<UserModel>()
             .With(m => m.Id, _id)
@@ -58,7 +58,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
     }
 
     [Fact]
-    public async ValueTask ExecuteAsync_Should_NotSatisfyWithWrongId()
+    public async Task ExecuteAsync_Should_NotSatisfyWithWrongId()
     {
         var user = Fixture.Create<UserModel>();
         var sut = CreateSut();
