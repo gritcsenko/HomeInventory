@@ -9,8 +9,8 @@ public class ByIdFilterSpecification<TModel, TId> : Specification<TModel>, ISing
     where TModel : class, IPersistentModel<TId>
     where TId : UlidIdentifierObject<TId>
 {
-    private static readonly Func<DbContext, TId, CancellationToken, Task<TModel?>> _cachedQuery =
-        EF.CompileAsyncQuery((DbContext ctx, TId id, CancellationToken t) => ctx.Set<TModel>().FirstOrDefaultAsync(x => x.Id == id, t).GetAwaiter().GetResult());
+    private static readonly Func<DbContext, TId, Task<TModel?>> _cachedQuery =
+        EF.CompileAsyncQuery((DbContext ctx, TId id) => ctx.Set<TModel>().FirstOrDefault(x => x.Id == id));
     private readonly TId _id;
 
     public ByIdFilterSpecification(TId id)
@@ -19,5 +19,5 @@ public class ByIdFilterSpecification<TModel, TId> : Specification<TModel>, ISing
         _id = id;
     }
 
-    public Task<TModel?> ExecuteAsync(DbContext context, CancellationToken cancellationToken) => _cachedQuery(context, _id, cancellationToken);
+    public Task<TModel?> ExecuteAsync(DbContext context, CancellationToken cancellationToken) => _cachedQuery(context, _id);
 }
