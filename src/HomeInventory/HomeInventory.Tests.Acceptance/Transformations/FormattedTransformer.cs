@@ -1,12 +1,13 @@
-﻿using HomeInventory.Tests.Acceptance.Support;
+﻿using System.Globalization;
+using HomeInventory.Tests.Acceptance.Support;
 
 namespace HomeInventory.Tests.Acceptance.Transformations;
 
 [Binding]
 public sealed class FormattedTransformer
 {
+    private readonly IFormatProvider _formatProvider = CultureInfo.CurrentCulture;
+
     [StepArgumentTransformation]
-#pragma warning disable CA1822 // Mark members as static
-    public DateOnly TransformDate(string dateText) => dateText.ParseDate();
-#pragma warning restore CA1822 // Mark members as static
+    public DateOnly TransformDate(string dateText) => dateText.ParseDate(formatProvider: _formatProvider);
 }
