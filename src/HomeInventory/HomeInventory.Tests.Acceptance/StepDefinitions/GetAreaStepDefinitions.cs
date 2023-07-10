@@ -1,3 +1,4 @@
+using System.Globalization;
 using HomeInventory.Contracts;
 using HomeInventory.Core;
 using HomeInventory.Tests.Acceptance.Drivers;
@@ -19,6 +20,7 @@ internal class GetAreaStepDefinitions
 
     private readonly ScenarioContext _context;
     private readonly IHomeInventoryApiDriver _apiDriver;
+    private readonly CultureInfo _culture = CultureInfo.CurrentCulture;
 
     // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
     public GetAreaStepDefinitions(ScenarioContext context, IHomeInventoryApiDriver apiDriver)
@@ -85,13 +87,13 @@ internal class GetAreaStepDefinitions
             .Should().BeEquivalentTo(names);
     }
 
-    private static AvailableProductData CreateAvailableProduct(TableRow row) =>
+    private AvailableProductData CreateAvailableProduct(TableRow row) =>
         new(
             storeName: row["Store"],
             productName: row["Product"],
-            price: row["Price"].ParseDecimal(),
-            date: row["Expiration"].ParseDate(),
-            volume: row["UnitVolume"].ParseDecimal());
+            price: row["Price"].ParseDecimal(_culture.NumberFormat),
+            date: row["Expiration"].ParseDate(formatProvider: _culture.DateTimeFormat),
+            volume: row["UnitVolume"].ParseDecimal(_culture.NumberFormat));
 
     private static RegisterRequest CreateGegisterRequest(TableRow row) =>
         new(
