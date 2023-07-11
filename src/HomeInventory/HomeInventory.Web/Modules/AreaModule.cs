@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-internal class AreaModule : ApiModule
+public class AreaModule : ApiModule
 {
     public AreaModule()
         : base("/api/areas"/*, PermissionType.AccessAreas*/)
