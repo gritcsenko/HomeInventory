@@ -31,6 +31,10 @@ public class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceC
         where T : class =>
         Contain<T>(provider, ServiceLifetime.Transient);
 
+    public AndConstraint<ServiceCollectionAssertions> ContainScoped<T>(IServiceProvider provider)
+        where T : class =>
+        Contain<T>(provider, ServiceLifetime.Scoped);
+
     private AndWhichConstraint<ObjectAssertions, T> ContainSingle<T>(IServiceProvider provider, ServiceLifetime lifetime)
         where T : class =>
         ContainSingle<T>(lifetime)
