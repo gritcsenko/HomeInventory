@@ -9,7 +9,7 @@ internal class ProductAmountModelConfiguration : IEntityTypeConfiguration<Produc
     {
         builder.ToTable("Products");
 
-        builder.Property<Guid>("Id");
+        builder.Property<Ulid>("Id");
         builder.HasKey("Id");
 
         builder.Property(x => x.Value)
