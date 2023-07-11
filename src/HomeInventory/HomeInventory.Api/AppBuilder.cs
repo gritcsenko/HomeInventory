@@ -4,6 +4,7 @@ using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.UserManagement;
 using HomeInventory.Web;
 using HomeInventory.Web.UserManagement;
+using Serilog;
 
 namespace HomeInventory.Api;
 
@@ -26,6 +27,7 @@ internal class AppBuilder
         AddServices(_builder.Services, _builder.Configuration);
 
         var app = _builder.Build();
+        app.UseSerilogRequestLogging(options => options.IncludeQueryInRequestPath = true);
         return app.UseWeb();
     }
 
