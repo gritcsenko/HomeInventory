@@ -23,7 +23,6 @@ internal class AppBuilder
     public WebApplication Build()
     {
         _builder.WebHost.CaptureStartupErrors(false);
-        _builder.Host.UseSerilog();
 
         AddServices(_builder.Services, _builder.Configuration);
 
