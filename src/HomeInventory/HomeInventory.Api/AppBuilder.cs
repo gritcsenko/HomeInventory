@@ -28,7 +28,7 @@ internal class AppBuilder
         AddServices(_builder.Services, _builder.Configuration);
 
         var app = _builder.Build();
-        app.UseSerilogRequestLogging();
+        app.UseSerilogRequestLogging(options => options.IncludeQueryInRequestPath = true);
         return app.UseWeb();
     }
 
