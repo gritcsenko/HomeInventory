@@ -28,6 +28,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<AmountObjectConverter>();
         services.AddScoped<IEventsPersistenceService, EventsPersistenceService>();
         services.AddScoped<IDatabaseConfigurationApplier, OutboxDatabaseConfigurationApplier>();
+        services.AddScoped<IDatabaseConfigurationApplier, ProductAmountModelConfigurationApplier>();
+        services.AddScoped<IDatabaseConfigurationApplier, ProductModelConfigurationApplier>();
+        services.AddScoped<IDatabaseConfigurationApplier, StorageAreaModelConfigurationApplier>();
         services.AddScoped<PolymorphicDomainEventTypeResolver>();
 
         services.AddHealthChecks()
