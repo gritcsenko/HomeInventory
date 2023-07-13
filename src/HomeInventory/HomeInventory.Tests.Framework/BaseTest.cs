@@ -22,24 +22,19 @@ public abstract class BaseTest : CompositeDisposable
 
     protected IDateTimeService DateTime => _lazyDateTime.Value;
 
-    private sealed class CancellationImplementation : Disposable, ICancellation
+    private sealed class CancellationImplementation : CompositeDisposable, ICancellation
     {
         private readonly CancellationTokenSource _source;
 
-        public CancellationImplementation(CancellationTokenSource? source = null) => _source = source ?? new CancellationTokenSource();
+        public CancellationImplementation(CancellationTokenSource? source = null)
+        {
+            _source = source ?? new CancellationTokenSource();
+            AddDisposable(_source);
+        }
 
         public CancellationToken Token => _source.Token;
 
         public void Cancel() => _source.Cancel();
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _source.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }
 

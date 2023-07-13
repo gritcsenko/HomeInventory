@@ -24,21 +24,16 @@ internal class UnitOfWorkBehavior<TRequest, TIgnored> : IPipelineBehavior<TReque
         using var scope = new TransactionScope();
 
         var result = await next();
-
-        await HandleResultAsync(result, cancellationToken);
-
-        scope.Complete();
+        if (result.IsT0)
+        {
+            await SaveChangesAsync(scope, cancellationToken);
+        }
 
         return result;
     }
 
-    private async Task HandleResultAsync(OneOf<Success, IError> result, CancellationToken cancellationToken)
+    private async Task SaveChangesAsync(TransactionScope scope, CancellationToken cancellationToken)
     {
-        if (result.IsT1)
-        {
-            return;
-        }
-
         var count = await _unitOfWork.SaveChangesAsync(cancellationToken);
         switch (count)
         {
@@ -49,5 +44,7 @@ internal class UnitOfWorkBehavior<TRequest, TIgnored> : IPipelineBehavior<TReque
                 _logger.HandleUnitOfWorkSaved(_requestName, count);
                 break;
         }
+
+        scope.Complete();
     }
 }

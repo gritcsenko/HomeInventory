@@ -18,6 +18,8 @@ internal static class LogEvents
 
     private static readonly Action<ILogger, string, Exception?> _loggingBehaviorError = LoggerMessage.Define<string>(LogLevel.Warning, _handleResponse, "{Error} was returned");
 
+    private static readonly Action<ILogger, string, Type, Exception?> _loggingBehaviorUnknown = LoggerMessage.Define<string, Type>(LogLevel.Error, _handleResponse, "{Response} of type {Type} was returned");
+
     public static void HandleUnitOfWorkNotSaved(this ILogger logger, string requestName) =>
         _handleUnitOfWorkNotSaved(logger, requestName, null);
 
@@ -36,4 +38,7 @@ internal static class LogEvents
 
     public static void ErrorReturned(this ILogger logger, object error) =>
         _loggingBehaviorError(logger, error.ToString() ?? string.Empty, null);
+
+    public static void UnknownReturned<TResponse>(this ILogger logger, TResponse response) =>
+        _loggingBehaviorUnknown(logger, response?.ToString() ?? string.Empty, typeof(TResponse), null);
 }

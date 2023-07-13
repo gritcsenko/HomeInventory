@@ -12,28 +12,4 @@ public static class EnumerableExtensions
 
     public static IEnumerable<T> WithCancellation<T>(this IEnumerable<T> source, CancellationToken cancellationToken) =>
         source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
-
-    public static IAsyncEnumerable<T> DoAsync<T>(this IEnumerable<T> source, Func<T, ValueTask> asyncAction)
-    {
-        if (source is null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        if (asyncAction is null)
-        {
-            throw new ArgumentNullException(nameof(asyncAction));
-        }
-
-        return source.DoAsyncInternal(asyncAction);
-    }
-
-    private static async IAsyncEnumerable<T> DoAsyncInternal<T>(this IEnumerable<T> source, Func<T, ValueTask> asyncAction)
-    {
-        foreach (var item in source)
-        {
-            await asyncAction(item);
-            yield return item;
-        }
-    }
 }

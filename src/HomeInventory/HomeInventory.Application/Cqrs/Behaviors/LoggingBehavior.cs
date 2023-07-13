@@ -16,24 +16,17 @@ internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
         _logger.SendingRequest(request);
         var response = await next();
 
-        HandleResponse(response);
+        var consumer = GetResponseHandler(response);
+        consumer.Invoke(_logger);
 
         return response;
     }
 
-    private void HandleResponse(TResponse? response)
-    {
-        if (response is IOneOf oneof)
+    private static Action<ILogger> GetResponseHandler(TResponse response) =>
+        response switch
         {
-            switch (oneof.Index)
-            {
-                case 0:
-                    _logger.ValueReturned(oneof.Value);
-                    break;
-                case 1:
-                    _logger.ErrorReturned(oneof.Value);
-                    break;
-            }
-        }
-    }
+            IOneOf oneOf when oneOf.Index == 0 => l => l.ValueReturned(oneOf.Value),
+            IOneOf oneOf when oneOf.Index == 1 => l => l.ErrorReturned(oneOf.Value),
+            var unknown => l => l.UnknownReturned(unknown),
+        };
 }
