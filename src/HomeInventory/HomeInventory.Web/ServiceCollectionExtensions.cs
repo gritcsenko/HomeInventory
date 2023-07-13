@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Asp.Versioning;
 using Carter;
-using DotNext;
 using FluentValidation.Internal;
 using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
@@ -53,12 +52,7 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenApiDocs();
 
-        var coreAssemblies = new[]{
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly,
-            AssemblyReference.Assembly
-        };
-        services.AddCarter(new DependencyContextAssemblyCatalog(coreAssemblies.Concat(moduleAssemblies).ToArray()));
+        services.AddCarter(new DependencyContextAssemblyCatalog(moduleAssemblies));
 
         return services;
     }

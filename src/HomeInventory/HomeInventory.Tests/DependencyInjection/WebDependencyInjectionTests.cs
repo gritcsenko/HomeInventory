@@ -43,7 +43,11 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public void ShouldRegister()
     {
-        Services.AddWeb();
+        Services.AddWeb(
+            Web.AssemblyReference.Assembly,
+            Web.UserManagement.AssemblyReference.Assembly,
+            Contracts.Validations.AssemblyReference.Assembly,
+            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
         var provider = CreateProvider();
 
         using var scope = new AssertionScope();
@@ -77,7 +81,11 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public void ShouldUse()
     {
-        Services.AddWeb();
+        Services.AddWeb(
+            Web.AssemblyReference.Assembly,
+            Web.UserManagement.AssemblyReference.Assembly,
+            Contracts.Validations.AssemblyReference.Assembly,
+            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
         var appBuilder = new TestAppBuilder(Services);
 
         Action action = () => appBuilder.UseWeb();
