@@ -41,10 +41,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
 
-        services.AddMappingAssemblySource(AssemblyReference.Assembly);
+        services.AddMappingAssemblySource(moduleAssemblies);
         services.AddAutoMapper((sp, configExpression) =>
         {
-            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().Select(s => s.GetAssembly()));
+            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(s => s.GetAssemblies()));
             configExpression.ConstructServicesUsing(sp.GetService);
         }, Type.EmptyTypes);
 

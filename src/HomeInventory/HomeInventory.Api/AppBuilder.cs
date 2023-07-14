@@ -3,7 +3,6 @@ using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.UserManagement;
 using HomeInventory.Web;
-using HomeInventory.Web.UserManagement;
 using Serilog;
 
 namespace HomeInventory.Api;
@@ -46,6 +45,5 @@ internal class AppBuilder
                 Web.UserManagement.AssemblyReference.Assembly,
                 Contracts.Validations.AssemblyReference.Assembly,
                 Contracts.UserManagement.Validators.AssemblyReference.Assembly)
-            .AddUserManagementWeb()
             .AddUserManagementInfrastructure();
 }

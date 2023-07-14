@@ -5,6 +5,6 @@ namespace HomeInventory.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, Assembly assembly) =>
-        services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assembly));
+    public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, params Assembly[] assemblies) =>
+        services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assemblies));
 }
