@@ -14,10 +14,7 @@ public class DictionaryExtensionsTests : BaseTest
         _key = Fixture.Create<string>();
         _value = Fixture.Create<Ulid>();
         _invalidKey = Fixture.Create<string>();
-        var dictionary = new Dictionary<string, Ulid>
-        {
-            [_key] = _value,
-        };
+        var dictionary = new Dictionary<string, Ulid> { [_key] = _value };
         _sut = dictionary;
         _roSut = dictionary;
     }
