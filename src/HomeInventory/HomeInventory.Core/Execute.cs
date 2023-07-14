@@ -28,12 +28,12 @@ public static class Execute
         }
     }
 
-    public static TResult AndCatch<TResult, TException>(Func<TResult> asyncAction, Func<TException, TResult> exceptionHandler)
+    public static TResult AndCatch<TResult, TException>(Func<TResult> func, Func<TException, TResult> exceptionHandler)
         where TException : Exception
     {
         try
         {
-            return asyncAction();
+            return func();
         }
         catch (TException ex)
         {
