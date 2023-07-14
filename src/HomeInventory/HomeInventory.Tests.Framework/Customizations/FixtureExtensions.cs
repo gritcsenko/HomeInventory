@@ -8,7 +8,7 @@ public static class FixtureExtensions
     public static IFixture CustomizeUlidId<TId>(this IFixture fixture)
         where TId : class, IUlidIdentifierObject<TId> =>
 #pragma warning disable CA2252 // This API requires opting into preview features
-        fixture.CustomizeFromFactory<Ulid, TId>(source => TId.CreateBuilder().WithValue(new ValueSupplier<Ulid>(source)).Invoke());
+        fixture.CustomizeFromFactory<Ulid, TId>(source => TId.CreateBuilder().WithValue(source).Invoke().Value);
 #pragma warning restore CA2252 // This API requires opting into preview features
 
     public static IFixture CustomizeEmail(this IFixture fixture) => fixture.CustomizeFromFactory<Ulid, Email>(value => new Email(value.ToString()));
