@@ -8,5 +8,5 @@ internal class MappingAssemblySource : IMappingAssemblySource
 
     public MappingAssemblySource(IReadOnlyCollection<Assembly> assemblies) => _assemblies = assemblies;
 
-    public IEnumerable<Assembly> GetAssembly() => _assemblies;
+    public IEnumerable<Assembly> GetAssemblies() => _assemblies;
 }

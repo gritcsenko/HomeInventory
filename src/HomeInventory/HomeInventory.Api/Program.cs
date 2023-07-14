@@ -9,7 +9,8 @@ await Execute.AndCatchAsync(
     {
         await using var app = builder.Build();
         await app.RunAsync();
-    }, (Exception ex) => log.Fatal(ex, "An unhandled exception occurred during bootstrapping"));
+    },
+    (Exception ex) => log.Fatal(ex, "An unhandled exception occurred during bootstrapping"));
 
 public partial class Program
 {
