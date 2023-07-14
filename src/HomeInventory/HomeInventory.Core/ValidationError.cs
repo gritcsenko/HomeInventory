@@ -3,7 +3,7 @@
 public record ValidationError(string Message, IReadOnlyDictionary<string, object?> Metadata) : BaseError(Message, Metadata)
 {
     public ValidationError(string Message)
-        : this(Message, new Dictionary<string, object?>())
+        : this(Message, Dictionary.Empty<string, object?>())
     {
     }
 }
