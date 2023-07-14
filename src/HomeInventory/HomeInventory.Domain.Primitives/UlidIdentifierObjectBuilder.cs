@@ -3,14 +3,11 @@
 public sealed class UlidIdentifierObjectBuilder<TObject> : ValueObjectBuilder<UlidIdentifierObjectBuilder<TObject>, TObject, Ulid>
     where TObject : class, IUlidIdentifierObject<TObject>
 {
-    public UlidIdentifierObjectBuilder()
-        : base(CreateInstance)
+    protected override bool IsValueValid(Ulid value) => value != Ulid.Empty;
+
+    protected override Optional<TObject> ToObject(Ulid value)
     {
+        var obj = ReflectionMethods.CreateInstance<TObject>(value);
+        return obj is null ? Optional<TObject>.None : Optional.Some(obj);
     }
-
-    private static TObject CreateInstance(Ulid value) =>
-        ReflectionMethods.CreateInstance<TObject>(value)
-            ?? throw new InvalidOperationException($"Got null instance during instance creation of {typeof(TObject).AssemblyQualifiedName}");
-
-    public override bool IsValueValid<TSupplier>(in TSupplier value) => value.Invoke() != Ulid.Empty;
 }

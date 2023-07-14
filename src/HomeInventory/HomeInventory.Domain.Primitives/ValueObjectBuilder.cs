@@ -1,43 +1,30 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectBuilder<TSelf, TObject, TValue>
+public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectBuilder<TSelf, TObject, TValue>
     where TSelf : ValueObjectBuilder<TSelf, TObject, TValue>
     where TObject : notnull, IValueObject<TObject>
     where TValue : notnull
 {
-    private Optional<ISupplier<TValue>> _value = Optional.None<ISupplier<TValue>>();
-    private readonly Func<TValue, TObject> _createFunc;
-
-    public ValueObjectBuilder(Func<TValue, TObject> createFunc) => _createFunc = createFunc;
+    private Optional<TValue> _value = Optional.None<TValue>();
 
     protected TSelf This => (TSelf)this;
 
-    public virtual bool IsValueValid<TSupplier>(in TSupplier value)
-        where TSupplier : ISupplier<TValue> =>
-        true;
-
-    public TSelf WithValue<TSupplier>(in TSupplier value)
-        where TSupplier : ISupplier<TValue>
+    public TSelf WithValue(TValue value)
     {
-        _value = Optional.Some<ISupplier<TValue>>(value);
-        return This;
+        _value = Optional.Some(value);
+        return (TSelf)this;
     }
 
-    public TObject Invoke() =>
+    public Optional<TObject> Invoke() =>
         _value
-            .Convert(supplier => _createFunc(supplier.Invoke()))
-            .OrThrow(() => new InvalidOperationException("value not provided"));
+            .If(IsValueValid)
+            .Convert(ToObject);
 
     public void Reset() =>
-        _value = Optional.None<ISupplier<TValue>>();
-}
+        _value = Optional.None<TValue>();
 
-public sealed class ValueObjectBuilder<TObject, TValue> : ValueObjectBuilder<ValueObjectBuilder<TObject, TValue>, TObject, TValue>
-    where TObject : IValueObject<TObject>
-    where TValue : notnull
-{
-    public ValueObjectBuilder(Func<TValue, TObject> createFunc)
-        : base(createFunc)
-    {
-    }
+    protected abstract Optional<TObject> ToObject(TValue value);
+
+    protected virtual bool IsValueValid(TValue value) =>
+        value is not null;
 }
