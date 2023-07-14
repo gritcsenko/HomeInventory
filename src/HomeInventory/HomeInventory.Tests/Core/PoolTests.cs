@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Domain.Primitives;
 
-[Trait("Category", "Unit")]
+[UnitTest]
 public class PoolTests : BaseTest
 {
     private readonly IPoolObjectActivator<object> _activator = Substitute.For<IPoolObjectActivator<object>>();
