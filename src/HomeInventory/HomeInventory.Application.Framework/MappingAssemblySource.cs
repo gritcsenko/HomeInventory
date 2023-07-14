@@ -4,13 +4,9 @@ namespace HomeInventory.Application;
 
 internal class MappingAssemblySource : IMappingAssemblySource
 {
-    private readonly Assembly _assembly;
+    private readonly IReadOnlyCollection<Assembly> _assemblies;
 
-    public MappingAssemblySource(Assembly assembly)
-    {
-        ArgumentNullException.ThrowIfNull(assembly);
-        _assembly = assembly;
-    }
+    public MappingAssemblySource(IReadOnlyCollection<Assembly> assemblies) => _assemblies = assemblies;
 
-    public Assembly GetAssembly() => _assembly;
+    public IEnumerable<Assembly> GetAssembly() => _assemblies;
 }
