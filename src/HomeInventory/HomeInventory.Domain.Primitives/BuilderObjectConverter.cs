@@ -6,20 +6,14 @@ namespace HomeInventory.Application.Mapping;
 public class BuilderObjectConverter<TBuilder, TObject, TValue> : ObjectConverter<TObject, TValue>
     where TValue : notnull
     where TBuilder : IValueObjectBuilder<TBuilder, TObject, TValue>
-    where TObject : class, IValueObject<TObject>, IBuildable<TObject, TBuilder>
+    where TObject : class, IValueObject<TObject>, IOptionalBuildable<TObject, TBuilder>
 {
     [RequiresPreviewFeatures]
-    protected sealed override OneOf<TObject, IError> TryConvertCore(TValue source)
-    {
-        var supplier = new ValueSupplier<TValue>(source);
-
-        var builder = TObject.CreateBuilder();
-        if (!builder.IsValueValid(supplier))
-        {
-            return new ObjectValidationError<TValue>(source);
-        }
-
-        builder.WithValue(supplier);
-        return builder.Invoke();
-    }
+    protected sealed override OneOf<TObject, IError> TryConvertCore(TValue source) =>
+        TObject
+            .CreateBuilder()
+            .WithValue(source)
+            .Invoke()
+            .Convert(obj => (OneOf<TObject, IError>)obj)
+            .OrInvoke(() => new ObjectValidationError<TValue>(source));
 }

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Versioning;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
@@ -30,10 +31,12 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
         }
 
         var user = await command.CreateUserAsync(_hasher, cancellationToken);
-        user.OnUserCreated(_dateTimeService);
+        var result = await user
+            .Tap(u => u.OnUserCreated(_dateTimeService))
+            .Tap(u => _userRepository.AddAsync(u, cancellationToken));
 
-        await _userRepository.AddAsync(user, cancellationToken);
-
-        return new Success();
+        return result
+            .Convert(_ => (OneOf<Success, IError>)new Success())
+            .OrInvoke(() => new ObjectValidationError<Ulid>(command.UserIdSupplier));
     }
 }

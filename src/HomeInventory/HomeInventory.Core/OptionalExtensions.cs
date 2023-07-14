@@ -57,6 +57,11 @@ public static class OptionalExtensions
     public static async ValueTask<Optional<TResult>> ConvertAsync<T, TResult>(this ValueTask<Optional<T>> optionalTask, Func<T, CancellationToken, ValueTask<TResult>> asyncConverter, CancellationToken cancellationToken = default)
     {
         var optional = await optionalTask;
+        return await optional.ConvertAsync(asyncConverter, cancellationToken);
+    }
+
+    public static async ValueTask<Optional<TResult>> ConvertAsync<T, TResult>(this Optional<T> optional, Func<T, CancellationToken, ValueTask<TResult>> asyncConverter, CancellationToken cancellationToken = default)
+    {
         if (optional.HasValue)
         {
             return await asyncConverter(optional.Value, cancellationToken);
