@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Asp.Versioning;
 using Carter;
-using DotNext;
 using FluentValidation.Internal;
 using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
@@ -42,10 +41,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
 
-        services.AddMappingAssemblySource(AssemblyReference.Assembly);
+        services.AddMappingAssemblySource(moduleAssemblies);
         services.AddAutoMapper((sp, configExpression) =>
         {
-            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().Select(s => s.GetAssembly()));
+            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(s => s.GetAssembly()));
             configExpression.ConstructServicesUsing(sp.GetService);
         }, Type.EmptyTypes);
 
@@ -53,12 +52,7 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenApiDocs();
 
-        var coreAssemblies = new[]{
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly,
-            AssemblyReference.Assembly
-        };
-        services.AddCarter(new DependencyContextAssemblyCatalog(coreAssemblies.Concat(moduleAssemblies).ToArray()));
+        services.AddCarter(new DependencyContextAssemblyCatalog(moduleAssemblies));
 
         return services;
     }

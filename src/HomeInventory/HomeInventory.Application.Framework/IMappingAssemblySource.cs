@@ -4,5 +4,5 @@ namespace HomeInventory.Application;
 
 public interface IMappingAssemblySource
 {
-    Assembly GetAssembly();
+    IEnumerable<Assembly> GetAssembly();
 }
