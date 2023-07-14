@@ -14,7 +14,7 @@ public class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectBuilder<TS
 
     public virtual bool IsValueValid<TSupplier>(in TSupplier value)
         where TSupplier : ISupplier<TValue> =>
-        true;
+        value is not null;
 
     public TSelf WithValue<TSupplier>(in TSupplier value)
         where TSupplier : ISupplier<TValue>
@@ -30,14 +30,4 @@ public class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectBuilder<TS
 
     public void Reset() =>
         _value = Optional.None<ISupplier<TValue>>();
-}
-
-public sealed class ValueObjectBuilder<TObject, TValue> : ValueObjectBuilder<ValueObjectBuilder<TObject, TValue>, TObject, TValue>
-    where TObject : IValueObject<TObject>
-    where TValue : notnull
-{
-    public ValueObjectBuilder(Func<TValue, TObject> createFunc)
-        : base(createFunc)
-    {
-    }
 }
