@@ -1,5 +1,4 @@
-﻿using System.Runtime.Versioning;
-using HomeInventory.Domain.Primitives.Errors;
+﻿using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Mapping;
 
@@ -8,7 +7,6 @@ public class BuilderObjectConverter<TBuilder, TObject, TValue> : ObjectConverter
     where TBuilder : IValueObjectBuilder<TBuilder, TObject, TValue>
     where TObject : class, IValueObject<TObject>, IOptionalBuildable<TObject, TBuilder>
 {
-    [RequiresPreviewFeatures]
     protected sealed override OneOf<TObject, IError> TryConvertCore(TValue source) =>
         TObject
             .CreateBuilder()

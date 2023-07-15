@@ -1,5 +1,4 @@
-﻿using System.Runtime.Versioning;
-using HomeInventory.Application.Interfaces.Authentication;
+﻿using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
@@ -22,7 +21,6 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
         _hasher = hasher;
     }
 
-    [RequiresPreviewFeatures]
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
         if (await _userRepository.IsUserHasEmailAsync(command.Email, cancellationToken))
@@ -36,7 +34,7 @@ internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
             .Tap(u => _userRepository.AddAsync(u, cancellationToken));
 
         return result
-            .Convert(_ => (OneOf<Success, IError>)new Success())
+            .Convert<OneOf<Success, IError>>(_ => new Success())
             .OrInvoke(() => new ObjectValidationError<Ulid>(command.UserIdSupplier));
     }
 }

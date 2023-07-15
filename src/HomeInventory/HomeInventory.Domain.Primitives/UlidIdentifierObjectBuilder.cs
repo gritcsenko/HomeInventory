@@ -3,10 +3,6 @@
 public sealed class UlidIdentifierObjectBuilder<TObject> : ValueObjectBuilder<UlidIdentifierObjectBuilder<TObject>, TObject, Ulid>
     where TObject : class, IUlidIdentifierObject<TObject>
 {
-    public UlidIdentifierObjectBuilder()
-    {
-    }
-
     protected override bool IsValueValid(Ulid value) => value != Ulid.Empty;
 
     protected override Optional<TObject> ToObject(Ulid value)
