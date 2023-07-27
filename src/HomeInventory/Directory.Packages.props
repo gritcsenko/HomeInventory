@@ -68,7 +68,7 @@
     <PackageVersion Include="AutoFixture.Idioms.FsCheck" Version="4.18.0" />
     <PackageVersion Include="Bogus" Version="34.0.2" />
     <PackageVersion Include="FluentAssertions" Version="6.11.0" />
-    <PackageVersion Include="FsCheck.Xunit" Version="2.16.5" />
+    <PackageVersion Include="FsCheck.Xunit" Version="2.16.6" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.9" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
