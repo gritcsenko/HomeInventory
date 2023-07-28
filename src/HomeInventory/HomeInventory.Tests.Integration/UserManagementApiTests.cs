@@ -2,10 +2,12 @@
 using System.Net.Http.Json;
 using FluentAssertions.Execution;
 using HomeInventory.Contracts;
+using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Xunit.Abstractions;
 
 namespace HomeInventory.Tests.Integration;
 
@@ -15,7 +17,8 @@ public class UserManagementApiTests : BaseIntegrationTest
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
     private readonly JsonContent _content;
 
-    public UserManagementApiTests()
+    public UserManagementApiTests(ITestOutputHelper testOutputHelper)
+        : base(testOutputHelper)
     {
         Fixture.CustomizeRegisterRequest();
         var request = Fixture.Create<RegisterRequest>();
@@ -24,14 +27,17 @@ public class UserManagementApiTests : BaseIntegrationTest
     }
 
     [Fact]
+    [TestPriority(1)]
     public void VerifyEndpoints()
     {
         using var scope = new AssertionScope();
-        Endpoints.Should().ContainEndpoint(_registerRoute, HttpMethods.Post)
+        var endpoints = GetEndpoints().ToReadOnly();
+        endpoints.Should().ContainEndpoint(_registerRoute, HttpMethods.Post)
             .Which.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
     }
 
     [Fact]
+    [TestPriority(2)]
     public async Task Register_ReturnsSuccess()
     {
         var response = await PostAsync(_registerRoute, _content);
@@ -45,6 +51,7 @@ public class UserManagementApiTests : BaseIntegrationTest
     }
 
     [Fact]
+    [TestPriority(3)]
     public async Task RegisterSameTwice_ReturnsFailure()
     {
         _ = await PostAsync(_registerRoute, _content);
