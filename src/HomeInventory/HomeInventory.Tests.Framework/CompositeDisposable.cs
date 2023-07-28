@@ -4,9 +4,12 @@ public class CompositeDisposable : Disposable
 {
     private readonly List<Action> _disposeActions = new();
 
-    public void AddDisposable<TDisposable>(TDisposable disposable)
-        where TDisposable : notnull, IDisposable =>
+    public TDisposable AddDisposable<TDisposable>(TDisposable disposable)
+        where TDisposable : notnull, IDisposable
+    {
         AddDisposable(disposable.Dispose);
+        return disposable;
+    }
 
     public void AddDisposable<TDisposable>(Lazy<TDisposable> lazyDisposable)
         where TDisposable : notnull, IDisposable =>

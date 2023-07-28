@@ -1,10 +1,13 @@
 ﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Tests.Framework.Attributes;
 using HomeInventory.Tests.Framework.Customizations;
 
 namespace HomeInventory.Tests.Framework;
 
-public abstract class BaseTest : CompositeDisposable
+[InvariantCulture]
+[TestCaseOrderer("HomeInventory.Tests.Framework.PriorityTestOrderer", "HomeInventory.Tests.Framework")]
+public abstract class BaseTest : CompositeDisposable, IAsyncLifetime
 {
     private readonly Lazy<CancellationImplementation> _lazyCancellation = new(() => new CancellationImplementation());
     private readonly Lazy<IFixture> _lazyFixture = new(() => new Fixture());
@@ -22,25 +25,9 @@ public abstract class BaseTest : CompositeDisposable
 
     protected IDateTimeService DateTime => _lazyDateTime.Value;
 
-    private sealed class CancellationImplementation : Disposable, ICancellation
-    {
-        private readonly CancellationTokenSource _source;
+    public Task InitializeAsync() => Task.CompletedTask;
 
-        public CancellationImplementation(CancellationTokenSource? source = null) => _source = source ?? new CancellationTokenSource();
-
-        public CancellationToken Token => _source.Token;
-
-        public void Cancel() => _source.Cancel();
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _source.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
+    async Task IAsyncLifetime.DisposeAsync() => await DisposeAsync();
 }
 
 public abstract class BaseTest<TGiven> : BaseTest
