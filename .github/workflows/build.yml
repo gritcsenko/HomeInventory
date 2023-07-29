@@ -57,9 +57,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore HomeInventory.sln -v minimal
         working-directory: ./src/HomeInventory
-      - name: Check formatting
-        run: dotnet format --no-restore --verify-no-changes --severity warn HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
-        working-directory: ./src/HomeInventory
       - name: Build Release
         run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
@@ -68,6 +65,41 @@ jobs:
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+
+  format-test:
+    name: "Formatting test"
+    needs: build
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3.5.3
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
+      - name: Cache build results
+        uses: actions/cache@v3
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+      - name: Download cached dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
+      - name: Check formatting
+        run: dotnet format --no-restore --verify-no-changes --severity warn HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
+        working-directory: ./src/HomeInventory
 
   unit-test:
     name: "Unit Test .NET"
