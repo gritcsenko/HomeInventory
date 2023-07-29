@@ -84,11 +84,6 @@ jobs:
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
-      - name: Cache build results
-        uses: actions/cache@v3
-        with:
-          path: ./src/HomeInventory
-          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
         uses: actions/cache@v3
         with:
@@ -98,7 +93,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Check formatting
-        run: dotnet format --no-restore --verify-no-changes --severity warn HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
+        run: dotnet format --verify-no-changes --severity warn HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
         working-directory: ./src/HomeInventory
 
   unit-test:
