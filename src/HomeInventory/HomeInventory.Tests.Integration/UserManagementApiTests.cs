@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions.Execution;
+using Flurl;
 using HomeInventory.Contracts;
 using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
@@ -13,7 +14,7 @@ namespace HomeInventory.Tests.Integration;
 
 public class UserManagementApiTests : BaseIntegrationTest
 {
-    private const string _registerRoute = "/api/users/manage/register";
+    private static readonly string _registerRoute = "/".AppendPathSegments("api", "users", "manage", "register");
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
     private readonly JsonContent _content;
 

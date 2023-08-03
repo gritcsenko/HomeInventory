@@ -21,6 +21,7 @@
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="FluentValidation" Version="11.6.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageVersion Include="Flurl" Version="3.0.7" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.5" />
     <PackageVersion Include="MediatR" Version="12.1.1" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />

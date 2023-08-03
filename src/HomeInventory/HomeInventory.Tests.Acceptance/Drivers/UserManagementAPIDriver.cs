@@ -1,4 +1,5 @@
-﻿using HomeInventory.Contracts;
+﻿using Flurl;
+using HomeInventory.Contracts;
 using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
@@ -6,12 +7,12 @@ namespace HomeInventory.Tests.Acceptance.Drivers;
 internal sealed class UserManagementApiDriver : ApiDriver, IUserManagementApiDriver
 {
     public UserManagementApiDriver(TestServer server)
-        : base(server, "/api/users/manage")
+        : base(server, string.Empty.AppendPathSegments("api", "users", "manage"))
     {
     }
 
     public async ValueTask<RegisterResponse> RegisterAsync(RegisterRequest requestBody) =>
-        await CreatePostRequest("/register")
+        await CreatePostRequest("register")
             .WithJsonBody(requestBody)
             .SendAsync<RegisterResponse>();
 }
