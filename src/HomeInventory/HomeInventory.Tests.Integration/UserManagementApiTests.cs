@@ -14,7 +14,7 @@ namespace HomeInventory.Tests.Integration;
 
 public class UserManagementApiTests : BaseIntegrationTest
 {
-    private static readonly string _registerRoute = string.Empty.AppendPathSegments("api", "users", "manage", "register");
+    private static readonly string _registerRoute = "/".AppendPathSegments("api", "users", "manage", "register");
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
     private readonly JsonContent _content;
 
