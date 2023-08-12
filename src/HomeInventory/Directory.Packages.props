@@ -19,7 +19,7 @@
     <PackageVersion Include="Carter" Version="7.1.0" />
     <PackageVersion Include="DotNext" Version="4.13.1" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
-    <PackageVersion Include="FluentValidation" Version="11.6.0" />
+    <PackageVersion Include="FluentValidation" Version="11.7.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Flurl" Version="3.0.7" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.5" />
