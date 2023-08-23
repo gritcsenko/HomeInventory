@@ -149,9 +149,6 @@ internal class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
         }
 
         var errorCodes = errors.Select(e => e.GetType().Name);
-        if (errorCodes != null)
-        {
-            problemDetails.Extensions["errorCodes"] = errorCodes;
-        }
+        problemDetails.Extensions["errorCodes"] = errorCodes;
     }
 }
