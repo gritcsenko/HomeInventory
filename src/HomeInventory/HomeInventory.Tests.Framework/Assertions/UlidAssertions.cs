@@ -33,7 +33,7 @@ public class UlidAssertions<TAssertions>
     public AndConstraint<TAssertions> NotBeEmpty(string because = "", params object[] becauseArgs)
     {
         Execute.Assertion
-            .ForCondition(Subject is Ulid value && value != Ulid.Empty)
+            .ForCondition(Subject != Ulid.Empty)
             .BecauseOf(because, becauseArgs)
             .FailWith("Did not expect {context:Ulid} to be empty{reason}.");
 
