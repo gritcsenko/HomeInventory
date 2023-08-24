@@ -59,7 +59,6 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.NET.Build.Containers" Version="7.0.400" />
   </ItemGroup>
   <ItemGroup>
     <!--Testing packages-->
