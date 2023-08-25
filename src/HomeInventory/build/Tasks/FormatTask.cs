@@ -15,7 +15,8 @@ public sealed class FormatTask : FrostingTask<BuildContext>
             {
                 VerifyNoChanges = true,
                 Severity = DotNetFormatSeverity.Error,
-                Verbosity = DotNetVerbosity.Diagnostic,
+                Verbosity = DotNetVerbosity.Detailed,
+                NoRestore = true,
             });
     }
 }
