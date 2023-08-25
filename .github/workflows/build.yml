@@ -65,6 +65,7 @@ jobs:
 
   format-test:
     name: "Formatting test"
+    needs: build
     if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
