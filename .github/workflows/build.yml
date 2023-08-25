@@ -54,6 +54,9 @@ jobs:
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
+      - name: Cake Frosting
+        run: ./build.sh
+        working-directory: ./src/HomeInventory
       - name: Restore dependencies
         run: dotnet restore HomeInventory.sln -v minimal
         working-directory: ./src/HomeInventory
