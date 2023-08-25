@@ -55,7 +55,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Cake Frosting
-        run: dotnet run --project ./build/Build.csproj
+        run: dotnet run --project ./build/Build.csproj --target Build --tree
         working-directory: ./src/HomeInventory
       - name: Restore dependencies
         run: dotnet restore HomeInventory.sln -v minimal
