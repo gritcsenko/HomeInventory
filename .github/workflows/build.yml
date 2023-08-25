@@ -80,6 +80,14 @@ jobs:
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
+      - name: Download cached dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
       - name: Cake Frosting
         run: dotnet run --project ./build/Build.csproj --target Format
         working-directory: ./src/HomeInventory
