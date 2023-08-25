@@ -65,7 +65,6 @@ jobs:
 
   format-test:
     name: "Formatting test"
-    needs: build
     if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
@@ -81,16 +80,8 @@ jobs:
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
-      - name: Download cached dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.nuget/packages
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-nuget-${{github.ref}}
-          restore-keys: |
-            ${{ runner.os }}-nuget-refs/heads/main
-      - name: Check formatting
-        run: dotnet format --verify-no-changes --severity error --verbosity diag HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
+      - name: Cake Frosting
+        run: dotnet run --project ./build/Build.csproj --target Format
         working-directory: ./src/HomeInventory
 
   unit-test:
