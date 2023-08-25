@@ -1,18 +1,18 @@
-﻿using Cake.Core;
+﻿using Cake.Common;
+using Cake.Core;
 using Cake.Frosting;
 
 namespace Build;
 
 public class BuildContext : FrostingContext
 {
-    public string Solution { get; } = "./HomeInventory.sln";
-    public string Release { get; } = "Release";
+    public string Solution { get; } = "../HomeInventory.sln";
 
-    public bool Delay { get; set; }
+    public string BuildConfiguration { get; }
 
     public BuildContext(ICakeContext context)
         : base(context)
     {
-        Delay = context.Arguments.HasArgument("delay");
+        BuildConfiguration = context.Argument("configuration", "Release");
     }
 }

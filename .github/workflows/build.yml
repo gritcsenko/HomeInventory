@@ -55,13 +55,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Cake Frosting
-        run: dotnet run --project ./build/Build.csproj --target Build --tree
-        working-directory: ./src/HomeInventory
-      - name: Restore dependencies
-        run: dotnet restore HomeInventory.sln -v minimal
-        working-directory: ./src/HomeInventory
-      - name: Build Release
-        run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        run: dotnet run --project ./build/Build.csproj --target Build
         working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v3
