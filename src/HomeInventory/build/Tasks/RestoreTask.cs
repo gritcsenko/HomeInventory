@@ -13,7 +13,7 @@ public sealed class RestoreTask : FrostingTask<BuildContext>
             context.Solution,
             new DotNetRestoreSettings
             {
-                Verbosity = DotNetVerbosity.Minimal,
+                Verbosity = context.Verbosity,
             });
     }
 }
