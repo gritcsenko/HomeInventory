@@ -74,7 +74,7 @@
     <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.4.0" />
-    <PackageVersion Include="Verify.Xunit" Version="21.2.0" />
+    <PackageVersion Include="Verify.Xunit" Version="21.3.0" />
     <PackageVersion Include="xunit" Version="2.5.1" />
     <PackageVersion Include="xunit.core" Version="2.5.1" />
   </ItemGroup>
