@@ -204,10 +204,14 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         {
         }
 
-        internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IndexedVariable<TestEntityId> id) =>
-            Add(entity, () => CreateTestEntity(id));
+        internal GivenTestContext New(IVariable<TestEntityId> variable) => Add(variable, CreateTestEntityId);
 
-        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
+        internal GivenTestContext TestEntity(IVariable<TestEntity> entityVariable, IndexedVariable<TestEntityId> idVariable) =>
+            Add(entityVariable, () => CreateTestEntity(idVariable));
+
+        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> idVariable) => new(Variables.Get(idVariable));
+
+        private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Fixture.Create<Ulid>()).Value;
     }
 
     internal class TestEntityId : UlidIdentifierObject<TestEntityId>, IUlidBuildable<TestEntityId>
