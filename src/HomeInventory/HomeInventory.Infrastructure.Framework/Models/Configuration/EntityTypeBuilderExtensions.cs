@@ -6,6 +6,6 @@ namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 public static class EntityTypeBuilderExtensions
 {
     public static PropertyBuilder<TId> HasIdConversion<TId>(this PropertyBuilder<TId> builder)
-        where TId : class, IUlidIdentifierObject<TId> =>
+        where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId> =>
         builder.HasConversion(new UlidIdValueConverter<TId>());
 }

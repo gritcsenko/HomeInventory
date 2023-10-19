@@ -1,7 +1,7 @@
-﻿using HomeInventory.Core;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
+using HomeInventory.Tests.Framework;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests;

@@ -7,7 +7,7 @@ namespace HomeInventory.Infrastructure.Specifications;
 
 public class ByIdFilterSpecification<TModel, TId> : Specification<TModel>, ISingleResultSpecification<TModel>, ICompiledSingleResultSpecification<TModel>
     where TModel : class, IPersistentModel<TId>
-    where TId : UlidIdentifierObject<TId>
+    where TId : UlidIdentifierObject<TId>, IUlidBuildable<TId>
 {
     private static readonly Func<DbContext, TId, Task<TModel?>> _cachedQuery =
         EF.CompileAsyncQuery((DbContext ctx, TId id) => ctx.Set<TModel>().FirstOrDefault(x => x.Id == id));

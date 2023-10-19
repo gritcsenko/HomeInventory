@@ -1,11 +1,14 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using DotNext;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class MaterialId : UlidIdentifierObject<MaterialId>
+public sealed class MaterialId : UlidIdentifierObject<MaterialId>, IUlidBuildable<MaterialId>
 {
-    internal MaterialId(Ulid value)
+    private MaterialId(Ulid value)
         : base(value)
     {
     }
+
+    public static Result<MaterialId> CreateFrom(Ulid value) => Result.FromValue(new MaterialId(value));
 }

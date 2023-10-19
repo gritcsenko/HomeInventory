@@ -40,7 +40,7 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var target = sut.ProjectTo<StorageArea>(source, Cancellation.Token).ToArray();
 
-        target.Should().HaveCount(1);
+        target.Should().ContainSingle();
     }
 
     public static TheoryData<object, Type> MapData()
