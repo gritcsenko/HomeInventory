@@ -28,7 +28,7 @@
     <PackageVersion Include="OneOf" Version="3.0.263" />
     <PackageVersion Include="OneOf.SourceGenerator" Version="3.0.263" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
-    <PackageVersion Include="Serilog" Version="3.1.0" />
+    <PackageVersion Include="Serilog" Version="3.1.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="7.0.0" />
     <PackageVersion Include="Serilog.Enrichers.Demystifier" Version="1.0.2" />
     <PackageVersion Include="Serilog.Enrichers.Thread" Version="3.1.0" />
