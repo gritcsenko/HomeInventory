@@ -293,7 +293,7 @@ jobs:
       - name: Install Living Documentation Tool
         run: dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
       - name: Generate Living Documentation Specification
-        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net8/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net8/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
