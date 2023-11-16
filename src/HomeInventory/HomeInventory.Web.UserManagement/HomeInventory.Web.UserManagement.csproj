@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);AD0001</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application.UserManagement.Interfaces\HomeInventory.Application.UserManagement.Interfaces.csproj" />
     <ProjectReference Include="..\HomeInventory.Contracts.UserManagement\HomeInventory.Contracts.UserManagement.csproj" />
