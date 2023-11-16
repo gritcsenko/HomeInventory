@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <NoWarn>$(NoWarn);AD0001</NoWarn>
+    <DisableImplicitAspNetCoreAnalyzers>true</DisableImplicitAspNetCoreAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
