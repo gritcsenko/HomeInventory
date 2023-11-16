@@ -1,5 +1,4 @@
-﻿using Ardalis.Specification;
-using Ardalis.Specification.EntityFrameworkCore;
+﻿using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
@@ -9,7 +8,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
 {
-    private readonly ISpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
+    private readonly SpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
     private readonly UserId _id;
 
     public ByIdFilterSpecificationTests()
