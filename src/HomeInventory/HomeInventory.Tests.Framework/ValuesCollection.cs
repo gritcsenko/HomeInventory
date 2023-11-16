@@ -63,7 +63,7 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
     }
 
     private bool IsAsignable<T>() =>
-        _valueType.IsAssignableFrom(typeof(T));
+        typeof(T).IsAssignableTo(_valueType);
 
     private void AddCore<T>(T value)
         where T : notnull =>
