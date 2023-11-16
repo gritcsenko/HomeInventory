@@ -4,7 +4,7 @@ namespace HomeInventory.Tests.Framework;
 
 public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
 {
-    private readonly List<ValueContainer> _values = new();
+    private readonly List<ValueContainer> _values = [];
     private readonly Type _valueType;
 
     public int Count => ((IReadOnlyCollection<ValueContainer>)_values).Count;
