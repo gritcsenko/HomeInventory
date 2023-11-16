@@ -63,7 +63,7 @@ public class UserManagementApiTests : BaseIntegrationTest
             .And.Be(HttpStatusCode.Conflict);
         var body = await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, Cancellation.Token)!;
         body!.Should().NotBeNull();
-        body!.Type.Should().Be("https://tools.ietf.org/html/rfc7231#section-6.5.8");
+        body!.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.10");
         body!.Status.Should().Be(StatusCodes.Status409Conflict);
         body!.Title.Should().Be(nameof(DuplicateEmailError));
         body!.Detail.Should().Be(DuplicateEmailError.DefaultMessage);

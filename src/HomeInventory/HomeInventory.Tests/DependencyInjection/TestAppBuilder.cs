@@ -8,7 +8,7 @@ namespace HomeInventory.Tests.DependencyInjection;
 
 public class TestAppBuilder : IApplicationBuilder, IEndpointRouteBuilder
 {
-    private readonly ICollection<Func<RequestDelegate, RequestDelegate>> _middlewares = new List<Func<RequestDelegate, RequestDelegate>>();
+    private readonly List<Func<RequestDelegate, RequestDelegate>> _middlewares = [];
 
     public TestAppBuilder(IServiceCollection collection)
     {

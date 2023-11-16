@@ -5,8 +5,8 @@ namespace HomeInventory.Tests.Systems.Mapping;
 
 public abstract class BaseMappingsTests : BaseTest
 {
-    private readonly IServiceCollection _services = new ServiceCollection();
-    private readonly IServiceProviderFactory<IServiceCollection> _factory = new DefaultServiceProviderFactory();
+    private readonly ServiceCollection _services = new();
+    private readonly DefaultServiceProviderFactory _factory = new();
 
     protected BaseMappingsTests()
     {

@@ -39,7 +39,7 @@ internal class PersistenceHealthCheck : BaseHealthCheck
         if (database.IsRelational())
         {
             var pendingMigrations = await database.GetPendingMigrationsAsync(cancellationToken).Convert(x => x.ToReadOnly());
-            if (pendingMigrations.Any())
+            if (pendingMigrations.Count != 0)
             {
                 return new HealthCheckStatus
                 {
