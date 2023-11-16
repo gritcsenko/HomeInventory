@@ -5,11 +5,7 @@ public static class PoolObjectActivatorExtensions
     public static IEnumerable<T> Pull<T>(this IPoolObjectActivator<T> activator, int count)
         where T : class
     {
-        if (activator is null)
-        {
-            throw new ArgumentNullException(nameof(activator));
-        }
-
+        ArgumentNullException.ThrowIfNull(activator);
         return activator.PullInternal(count);
     }
 
