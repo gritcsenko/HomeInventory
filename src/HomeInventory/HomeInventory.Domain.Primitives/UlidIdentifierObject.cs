@@ -6,10 +6,9 @@ public abstract class UlidIdentifierObject<TSelf> : ValueObject<TSelf>, IUlidIde
     protected UlidIdentifierObject(Ulid value)
         : base(value)
     {
-        Value = value;
     }
 
-    public Ulid Value { get; }
+    public Ulid Value => GetComponent<Ulid>(0);
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static UlidIdentifierObjectBuilder<TSelf> CreateBuilder() => new();
