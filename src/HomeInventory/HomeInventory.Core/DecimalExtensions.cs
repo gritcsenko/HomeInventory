@@ -12,12 +12,7 @@ public static class DecimalExtensions
             return true;
         }
 
-        if (value < 10)
-        {
-            return false;
-        }
-
-        while (value >= 10)
+        while (value > 1)
         {
             var (div, rem) = Int128.DivRem(value, 10);
             if (rem != 0)
