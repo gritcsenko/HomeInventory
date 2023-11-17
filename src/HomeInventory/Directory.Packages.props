@@ -29,11 +29,11 @@
     <PackageVersion Include="OneOf.SourceGenerator" Version="3.0.263" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
     <PackageVersion Include="Serilog" Version="3.1.1" />
-    <PackageVersion Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageVersion Include="Serilog.Enrichers.Demystifier" Version="1.0.2" />
     <PackageVersion Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageVersion Include="Serilog.Formatting.Compact" Version="2.0.0" />
-    <PackageVersion Include="Serilog.Settings.Configuration" Version="7.0.1" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="8.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="5.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -77,7 +77,7 @@
     <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.4.0" />
-    <PackageVersion Include="Verify.Xunit" Version="22.2.0" />
+    <PackageVersion Include="Verify.Xunit" Version="22.5.0" />
     <PackageVersion Include="xunit" Version="2.6.1" />
     <PackageVersion Include="xunit.core" Version="2.6.1" />
   </ItemGroup>
