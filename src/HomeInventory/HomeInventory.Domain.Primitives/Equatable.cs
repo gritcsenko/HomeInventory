@@ -18,5 +18,9 @@ public abstract class Equatable<TSelf> : IEquatable<TSelf>
 
     public sealed override int GetHashCode() => _component.GetHashCode();
 
+    protected T GetComponent<T>(int index) => (T)GetComponent(index);
+
+    protected object GetComponent(int index) => _component.GetComponent(index);
+
     private bool EqualsCore(TSelf other) => _component.Equals(other._component);
 }
