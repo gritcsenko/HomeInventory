@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace HomeInventory.Domain.Primitives;
+﻿namespace HomeInventory.Domain.Primitives;
 
 internal static class EnumerationItemsCollection
 {
@@ -12,7 +10,7 @@ internal static class EnumerationItemsCollection
     }
 }
 
-internal sealed class EnumerationItemsCollection<T> : IReadOnlyCollection<T>
+internal sealed class EnumerationItemsCollection<T>
     where T : IEnumeration<T>
 {
     private readonly ILookup<string, T> _items;
@@ -24,11 +22,7 @@ internal sealed class EnumerationItemsCollection<T> : IReadOnlyCollection<T>
         _flattened = new(() => _items.Flatten().ToReadOnly());
     }
 
-    public Optional<T> FirstOrNone(string name) => _items[name].FirstOrNone();
+    public ILookup<string, T> AsLookup() => _items;
 
-    public int Count => _flattened.Value.Count;
-
-    public IEnumerator<T> GetEnumerator() => _flattened.Value.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public IReadOnlyCollection<T> AsReadOnly() => _flattened.Value;
 }
