@@ -13,5 +13,14 @@ public sealed class Amount : ValueObject<Amount>
 
     public AmountUnit Unit => GetComponent<AmountUnit>(1);
 
-    public Amount ToMetric() => Unit.IsMetric ? this : new Amount(Unit.ToMetric(Value), Unit.MetricUnit);
+    public Amount ToMetric()
+    {
+        if (Unit.IsMetric)
+        {
+            return this;
+        }
+
+        var (value, unit) = Unit.ToMetric(Value);
+        return new Amount(value, unit);
+    }
 }
