@@ -22,7 +22,7 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
         Measurement = baseUnit.Measurement;
 
         _metricUnitScale = baseUnit._metricUnitScale * baseUnitScale;
-        IsMetric = baseUnit.IsMetric && baseUnitScale.IsPow10();
+        IsMetric = baseUnit.IsMetric && (baseUnitScale == 1 || baseUnitScale.IsPow10());
     }
 
     public static readonly AmountUnit Kelvin = new(MeasurementType.Temperature);
