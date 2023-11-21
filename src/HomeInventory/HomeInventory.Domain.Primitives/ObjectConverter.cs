@@ -12,7 +12,7 @@ public abstract class ObjectConverter<TObject, TValue>
 
     protected abstract OneOf<TObject, IError> TryConvertCore(TValue source);
 
-    private static Exception CreateException(IError error)
+    private static InvalidOperationException CreateException(IError error)
     {
         var exception = new InvalidOperationException($"Cannot convert '{typeof(TValue).FullName}' to '{typeof(TObject).FullName}'. Reason: '{error.Message}'");
         foreach (var (key, value) in error.Metadata)
