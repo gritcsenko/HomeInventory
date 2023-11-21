@@ -78,8 +78,8 @@
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.4.0" />
     <PackageVersion Include="Verify.Xunit" Version="22.5.0" />
-    <PackageVersion Include="xunit" Version="2.6.1" />
-    <PackageVersion Include="xunit.core" Version="2.6.1" />
+    <PackageVersion Include="xunit" Version="2.6.2" />
+    <PackageVersion Include="xunit.core" Version="2.6.2" />
   </ItemGroup>
   <ItemGroup>
     <!--Compile-time dependencies-->
@@ -91,6 +91,6 @@
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.16" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.12.0.78982" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.4" />
   </ItemGroup>
 </Project>
