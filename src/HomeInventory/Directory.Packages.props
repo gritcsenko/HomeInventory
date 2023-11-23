@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!--Run-time packages-->
-    <PackageVersion Include="Ardalis.Specification" Version="7.0.0" />
+    <PackageVersion Include="Ardalis.Specification" Version="8.0.0" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="7.0.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.ApplicationStatus" Version="7.0.0" />
