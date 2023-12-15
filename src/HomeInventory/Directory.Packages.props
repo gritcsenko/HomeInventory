@@ -8,7 +8,7 @@
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.ApplicationStatus" Version="7.0.0" />
-    <PackageVersion Include="AspNetCore.HealthChecks.System" Version="7.0.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.System" Version="8.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI" Version="7.0.2" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="7.1.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="7.0.0" />
