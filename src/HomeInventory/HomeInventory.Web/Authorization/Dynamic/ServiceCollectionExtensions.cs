@@ -14,14 +14,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<PermissionList>();
         services.AddTransient<IAuthorizationHandler, DynamicAuthorizationHandler>();
 
-        // Read https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-6.0
-        services.AddAuthorization(b =>
-        {
-            b.AddPolicy(AuthorizationPolicyNames.Dynamic, pb => pb
-                .RequireAuthenticatedUser()
-                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                .AddRequirements(new DynamicPermissionRequirement(ep => ep.GetPermissions())));
-        });
+        services.AddAuthorizationBuilder()
+            .AddPolicy(AuthorizationPolicyNames.Dynamic, pb => pb
+            .RequireAuthenticatedUser()
+            .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+            .AddRequirements(new DynamicPermissionRequirement(ep => ep.GetPermissions())));
 
         return services;
     }
