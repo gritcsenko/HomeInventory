@@ -53,7 +53,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 
         var target = sut.ProjectTo<User>(source, Cancellation.Token).ToArray();
 
-        target.Should().HaveCount(1);
+        target.Should().ContainSingle();
     }
 
     public static TheoryData<object, Type> MapData()

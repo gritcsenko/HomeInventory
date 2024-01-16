@@ -72,7 +72,7 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             {
                 var rnd = new Random();
                 var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
-                fixture.Customize<AmountUnit>(c => c.FromFactory(() => items.PeekRandom(rnd).Value));
+                fixture.Customize<AmountUnit>(c => c.FromFactory(() => rnd.Peek(items).Value));
             }
         }
 

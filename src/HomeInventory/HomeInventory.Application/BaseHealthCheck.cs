@@ -1,4 +1,4 @@
-﻿using DotNext.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HomeInventory.Application;
@@ -17,5 +17,5 @@ public abstract class BaseHealthCheck : IHealthCheck
 
     protected abstract ValueTask<HealthCheckStatus> CheckHealthAsync(CancellationToken cancellationToken);
 
-    protected virtual IReadOnlyDictionary<string, object> ExceptionData => Dictionary.Empty<string, object>();
+    protected virtual IReadOnlyDictionary<string, object> ExceptionData => ReadOnlyDictionary<string, object>.Empty;
 }
