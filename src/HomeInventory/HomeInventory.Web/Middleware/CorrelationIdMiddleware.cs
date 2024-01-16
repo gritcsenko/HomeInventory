@@ -5,16 +5,10 @@ using Microsoft.Extensions.Primitives;
 
 namespace HomeInventory.Web.Middleware;
 
-internal class CorrelationIdMiddleware : IMiddleware
+internal class CorrelationIdMiddleware(ICorrelationIdContainer container, ILogger<CorrelationIdMiddleware> logger) : IMiddleware
 {
-    private readonly ICorrelationIdContainer _container;
-    private readonly ILogger _logger;
-
-    public CorrelationIdMiddleware(ICorrelationIdContainer container, ILogger<CorrelationIdMiddleware> logger)
-    {
-        _container = container;
-        _logger = logger;
-    }
+    private readonly ICorrelationIdContainer _container = container;
+    private readonly ILogger _logger = logger;
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {

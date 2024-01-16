@@ -84,7 +84,7 @@ public class LoggingBehaviorTests : BaseTest
 
         _logger
             .Received(1)
-            .Log(LogLevel.Information, LogEvents._handleResponse, Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
+            .Log(LogLevel.Information, Arg.Any<EventId>(), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
 
         Task<OneOf<AuthenticateResult, IError>> Handler()
         {

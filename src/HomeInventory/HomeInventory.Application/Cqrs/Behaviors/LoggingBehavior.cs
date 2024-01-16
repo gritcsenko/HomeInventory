@@ -1,14 +1,12 @@
 ﻿namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-     where TRequest : notnull
+internal class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : notnull
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();
     private static readonly string _responseName = typeof(TResponse).GetFormattedName();
 
-    private readonly ILogger _logger;
-
-    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger) => _logger = logger;
+    private readonly ILogger _logger = logger;
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
