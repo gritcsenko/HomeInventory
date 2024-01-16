@@ -9,7 +9,7 @@ Inventory management for home
 [![CI Build](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml)
 [![CodeQL](https://github.com/gritcsenko/HomeInventory/workflows/CodeQL/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions?query=workflow%3ACodeQL)
 
-![.NET 7.0](https://img.shields.io/badge/Version-7.0-informational?logo=dotnet)
+![.NET 8.0](https://img.shields.io/badge/Version-8.0-informational?logo=dotnet)
 ![Built With Docker](https://img.shields.io/badge/Built_With-Docker-informational?logo=docker)
 [![Release strategy](https://img.shields.io/badge/Release%20strategy-GitHub_flow-informational.svg)](https://githubflow.github.io/)
 [![GitHub Release Date](https://img.shields.io/github/release-date/gritcsenko/HomeInventory?label=released)](https://github.com/gritcsenko/HomeInventory/releases)
