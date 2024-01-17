@@ -47,7 +47,7 @@ jobs:
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -61,7 +61,7 @@ jobs:
         run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
@@ -85,7 +85,7 @@ jobs:
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -118,12 +118,12 @@ jobs:
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -237,12 +237,12 @@ jobs:
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -275,12 +275,12 @@ jobs:
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
