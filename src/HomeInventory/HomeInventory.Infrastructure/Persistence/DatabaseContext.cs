@@ -1,29 +1,17 @@
 ﻿using System.Linq.Expressions;
 using DotNext;
-using DotNext.Collections.Generic;
+using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
+internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
 {
-    private readonly PublishDomainEventsInterceptor _interceptor;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly IEnumerable<IDatabaseConfigurationApplier> _configurationAppliers;
-
-    public DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers)
-        : base(options)
-    {
-        _interceptor = interceptor;
-        _dateTimeService = dateTimeService;
-        _configurationAppliers = configurationAppliers;
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var applier in _configurationAppliers)
+        foreach (var applier in configurationAppliers)
         {
             applier.ApplyConfigurationTo(modelBuilder);
         }
@@ -31,19 +19,19 @@ internal class DatabaseContext : DbContext, IDatabaseContext, IUnitOfWork
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.AddInterceptors(_interceptor);
+        optionsBuilder.AddInterceptors(interceptor);
 
         base.OnConfiguring(optionsBuilder);
     }
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        UpdateAuditableEntities(_dateTimeService.UtcNow);
+        UpdateAuditableEntities(dateTimeService.UtcNow);
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    public Optional<TEntity> FindTracked<TEntity>(Predicate<TEntity> condition)
+    public Optional<TEntity> FindTracked<TEntity>(Func<TEntity, bool> condition)
         where TEntity : class =>
         ChangeTracker.Entries<TEntity>().Select(e => e.Entity).FirstOrNone(condition);
 

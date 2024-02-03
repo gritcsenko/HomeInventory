@@ -40,14 +40,14 @@ jobs:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -61,7 +61,7 @@ jobs:
         run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
@@ -78,14 +78,14 @@ jobs:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -111,19 +111,19 @@ jobs:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -138,7 +138,7 @@ jobs:
         run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
         working-directory: ./src/HomeInventory
       - name: Test Report
-        uses: dorny/test-reporter@v1.7.0
+        uses: dorny/test-reporter@v1.8.0
         if: success() || failure()
         with:
           name: Unit tests # Name of the check run which will be created
@@ -207,7 +207,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       - name: Upload coverage report artifact
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.3.0
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           name: CoverageReport # Artifact name
@@ -230,19 +230,19 @@ jobs:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -268,19 +268,19 @@ jobs:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -297,7 +297,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.3.0
         with:
           name: "Specflow Test Results"
           path: ./Acceptance/AcceptanceTestResults.html
