@@ -10,7 +10,6 @@ namespace HomeInventory.Domain.Aggregates;
 
 public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageAreaId>(id)
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3604:Member initializer values should not be redundant", Justification = "False positive")]
     private readonly LinkedList<Product> _products = new();
 
     public IReadOnlyCollection<Product> Products => _products;
