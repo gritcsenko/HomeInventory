@@ -12,7 +12,7 @@ public readonly struct EquatableComponent<T> : IEquatable<EquatableComponent<T>>
     {
         _components = components;
         var hash = new HashCode();
-        for (int i = 0; i < Intrinsics.GetLength(components); i++)
+        for (nuint i = 0; i < Intrinsics.GetLength(components); i++)
         {
             var component = components[i];
             hash.Add(component);
