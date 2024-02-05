@@ -3,6 +3,7 @@ using AutoMapper;
 using DotNext;
 using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Framework.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -143,7 +144,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier> : IReposit
 
     private TModel ToModel(TAggregateRoot entity) =>
         _context.FindTracked<TModel>(m => m.Id.Equals(entity.Id))
-            .OrInvoke(() => _mapper.Map<TAggregateRoot, TModel>(entity));
+            .OrInvoke(() => _mapper.MapOrFail<TAggregateRoot, TModel>(entity));
 
     private IQueryable<TAggregateRoot> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
         _mapper.ProjectTo<TAggregateRoot>(query, cancellationToken);
