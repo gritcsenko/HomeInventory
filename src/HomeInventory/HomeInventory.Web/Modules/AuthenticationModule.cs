@@ -1,5 +1,6 @@
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
+using HomeInventory.Web.Framework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -26,8 +27,8 @@ public class AuthenticationModule : ApiModule
     {
         var mapper = context.GetMapper();
 
-        var query = mapper.Map<AuthenticateQuery>(body);
+        var query = mapper.MapOrFail<AuthenticateQuery>(body);
         var result = await context.GetSender().Send(query, cancellationToken);
-        return context.MatchToOk(result, mapper.Map<LoginResponse>);
+        return context.MatchToOk(result, mapper.MapOrFail<LoginResponse>);
     }
 }
