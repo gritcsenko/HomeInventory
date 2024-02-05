@@ -12,7 +12,7 @@ public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<
 
     public string Name => GetComponent<string>(0);
 
-    protected static IReadOnlyCollection<TSelf> Items => _lazyItems.Value.AsReadOnly();
+    protected static IReadOnlyCollection<TSelf> Items => _lazyItems.Value;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static TSelf Parse(string text) =>
@@ -20,8 +20,7 @@ public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<
             .OrThrow(() => throw new InvalidOperationException($"Failed to parse '{text}' to {typeof(TSelf).Name}"));
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
-    public static Optional<TSelf> TryParse(string text) =>
-        _lazyItems.Value.AsLookup()[text].FirstOrNone();
+    public static Optional<TSelf> TryParse(string text) => _lazyItems.Value[text];
 
     public override string ToString() => $"{Name} ({GetComponent(1)})";
 }
