@@ -22,18 +22,25 @@ public static class DecimalExtensions
     {
         while (value > 0)
         {
-            var (div, rem) = Int128.DivRem(value, power);
-            if (rem != 0)
+            (value, var divides) = value.DividesByCore(power);
+            if (divides.HasValue)
             {
-                return false;
+                return divides.Value;
             }
-            if (div == 1)
-            {
-                return true;
-            }
-            value = div;
         }
 
         return false;
+    }
+
+    private static (Int128 Quotient, Optional<bool> Divides) DividesByCore(this Int128 value, Int128 power)
+    {
+        var (quotient, reminder) = Int128.DivRem(value, power);
+
+        if (reminder == 0)
+        {
+            return (quotient, quotient == 1 ? Optional.Some(true) : Optional<bool>.None);
+        }
+
+        return (quotient, false);
     }
 }
