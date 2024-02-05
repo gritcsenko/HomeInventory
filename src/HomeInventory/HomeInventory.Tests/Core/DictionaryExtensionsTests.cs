@@ -6,7 +6,6 @@ public class DictionaryExtensionsTests : BaseTest
     private readonly string _key;
     private readonly Ulid _value;
     private readonly string _invalidKey;
-    private readonly IDictionary<string, Ulid> _sut;
     private readonly IReadOnlyDictionary<string, Ulid> _roSut;
 
     public DictionaryExtensionsTests()
@@ -15,24 +14,7 @@ public class DictionaryExtensionsTests : BaseTest
         _value = Fixture.Create<Ulid>();
         _invalidKey = Fixture.Create<string>();
         var dictionary = new Dictionary<string, Ulid> { [_key] = _value };
-        _sut = dictionary;
         _roSut = dictionary;
-    }
-
-    [Fact]
-    public void GetValueOptional_Should_ReturnValue_WhenKeyIsPresent()
-    {
-        var result = DictionaryExtensions.GetValueOptional(_sut, _key);
-
-        result.Should().HaveValue(_value);
-    }
-
-    [Fact]
-    public void GetValueOptional_Should_ReturnDefaultValue_WhenKeyIsNotPresent()
-    {
-        var result = DictionaryExtensions.GetValueOptional(_sut, _invalidKey);
-
-        result.Should().HaveNoValue();
     }
 
     [Fact]
