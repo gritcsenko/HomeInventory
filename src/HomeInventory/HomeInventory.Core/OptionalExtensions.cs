@@ -76,4 +76,6 @@ public static class OptionalExtensions
 
         return optional.Convert(converter);
     }
+
+    public static Optional<T> Coalesce<T>(this Optional<T> first, Func<Optional<T>> secondFunc) => first.HasValue ? first : secondFunc();
 }
