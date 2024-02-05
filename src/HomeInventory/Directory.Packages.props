@@ -42,7 +42,7 @@
   <ItemGroup>
     <!--System packages-->
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.3.0" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
@@ -65,8 +65,8 @@
     <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
-    <PackageVersion Include="AutoFixture.Idioms.FsCheck" Version="4.18.0" />
-    <PackageVersion Include="Bogus" Version="34.0.2" />
+    <PackageVersion Include="AutoFixture.Idioms.FsCheck" Version="4.18.1" />
+    <PackageVersion Include="Bogus" Version="35.4.0" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="FsCheck.Xunit" Version="2.16.6" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.1" />
@@ -77,7 +77,7 @@
     <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.4.0" />
-    <PackageVersion Include="Verify.Xunit" Version="23.0.1" />
+    <PackageVersion Include="Verify.Xunit" Version="23.1.0" />
     <PackageVersion Include="xunit" Version="2.6.6" />
     <PackageVersion Include="xunit.core" Version="2.6.6" />
   </ItemGroup>
