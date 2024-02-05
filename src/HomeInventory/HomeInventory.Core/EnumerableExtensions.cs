@@ -2,7 +2,7 @@
 
 public static class EnumerableExtensions
 {
-    public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item) => source.Concat(Enumerable.Repeat(item, 1));
+    public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item) => ConcatCore(source, item);
 
     public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source) => source.SelectMany(Func.Identity<IEnumerable<T>>());
 
@@ -35,5 +35,14 @@ public static class EnumerableExtensions
         }
 
         return Optional<T>.None;
+    }
+    private static IEnumerable<T> ConcatCore<T>(IEnumerable<T> source, T item)
+    {
+        foreach (var i in source)
+        {
+            yield return i;
+        }
+
+        yield return item;
     }
 }
