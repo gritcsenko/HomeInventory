@@ -15,7 +15,7 @@ internal class UserManagementContractsMappings : ContractsMappingProfile
         CreateMapForString(x => new Email(x), x => x.Value);
 
         CreateMap<RegisterRequest, RegisterCommand>()
-            .ConstructUsing((c, ctx) => new RegisterCommand(ctx.Mapper.Map<Email>(c.Email), c.Password, new DelegatingSupplier<Ulid>(Ulid.NewUlid)));
+            .ConstructUsing((c, ctx) => new RegisterCommand(ctx.Mapper.MapOrFail<Email>(c.Email), c.Password, new DelegatingSupplier<Ulid>(Ulid.NewUlid)));
 
         CreateMap<RegisterRequest, UserIdQuery>();
         CreateMap<UserIdResult, RegisterResponse>();

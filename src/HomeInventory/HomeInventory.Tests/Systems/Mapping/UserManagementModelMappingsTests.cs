@@ -36,8 +36,9 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
         var sut = CreateSut<UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
 
-        var target = sut.Map<User>(instance);
+        var target = sut.Map<User>(instance)!;
 
+        target.Should().NotBeNull();
         target.Id.Value.Should().Be(instance.Id.Value);
         target.Email.Value.Should().Be(instance.Email);
         target.Password.Should().Be(instance.Password);
