@@ -69,9 +69,10 @@ internal class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
 
     private ProblemDetails ConvertToProblem(IError error)
     {
+        var errorType = error.GetType();
         var result = CreateProblem<ProblemDetails>(
-            _errorMapping.GetError(error),
-            error.GetType().Name,
+            _errorMapping.GetError(errorType),
+            errorType.Name,
             type: null,
             error.Message,
             instance: null);

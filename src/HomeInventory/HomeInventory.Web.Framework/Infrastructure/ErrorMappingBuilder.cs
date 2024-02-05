@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Web.Infrastructure;
 
@@ -23,5 +25,13 @@ internal sealed class ErrorMappingBuilder
         return this;
     }
 
-    public ErrorMapping Build() => new ErrorMapping(_default, _mapping);
+    public ErrorMapping Build() => new(_default, _mapping);
+
+    public static ErrorMappingBuilder CreateDefault() =>
+        new ErrorMappingBuilder()
+        .SetDefault(HttpStatusCode.InternalServerError)
+        .Add<ConflictError>(HttpStatusCode.Conflict)
+        .Add<ValidationError>(HttpStatusCode.BadRequest)
+        .Add<NotFoundError>(HttpStatusCode.NotFound)
+        .Add<InvalidCredentialsError>(HttpStatusCode.Forbidden);
 }

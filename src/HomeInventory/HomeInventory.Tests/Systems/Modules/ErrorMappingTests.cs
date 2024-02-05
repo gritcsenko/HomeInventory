@@ -1,7 +1,7 @@
-﻿using HomeInventory.Domain.Errors;
+﻿using System.Net;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
-using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -18,18 +18,18 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
 
         When
             .Invoked(_sut, sut => sut.GetDefaultError())
-            .Result(actual => actual.Should().Be(StatusCodes.Status500InternalServerError));
+            .Result(actual => actual.Should().Be(HttpStatusCode.InternalServerError));
     }
 
     [Theory]
     [ClassData<ErrorInstancesData>]
-    public void GetError_Shoud_ReturnExpected_When_Error(IError error, int expected)
+    public void GetError_Shoud_ReturnExpected_When_Error(Type errorType, HttpStatusCode expected)
     {
         Given
             .Sut(_sut);
 
         When
-            .Invoked(_sut, sut => sut.GetError(error))
+            .Invoked(_sut, sut => sut.GetError(errorType))
             .Result(actual => actual.Should().Be(expected));
     }
 
@@ -40,8 +40,8 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Sut(_sut);
 
         When
-            .Invoked(_sut, sut => sut.GetError<ConflictError>())
-            .Result(actual => actual.Should().Be(StatusCodes.Status409Conflict));
+            .Invoked(_sut, sut => sut.GetError(typeof(ConflictError)))
+            .Result(actual => actual.Should().Be(HttpStatusCode.Conflict));
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Sut(_sut);
 
         When
-            .Invoked(_sut, sut => sut.GetError<DuplicateEmailError>())
-            .Result(actual => actual.Should().Be(StatusCodes.Status409Conflict));
+            .Invoked(_sut, sut => sut.GetError(typeof(DuplicateEmailError)))
+            .Result(actual => actual.Should().Be(HttpStatusCode.Conflict));
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Sut(_sut);
 
         When
-            .Invoked(_sut, sut => sut.GetError<InvalidCredentialsError>())
-            .Result(actual => actual.Should().Be(StatusCodes.Status403Forbidden));
+            .Invoked(_sut, sut => sut.GetError(typeof(InvalidCredentialsError)))
+            .Result(actual => actual.Should().Be(HttpStatusCode.Forbidden));
     }
 
     protected override GivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
@@ -77,6 +77,7 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
         {
         }
 
-        internal GivenContext Sut(IVariable<ErrorMapping> sut) => Add(sut, () => new());
+        internal GivenContext Sut(IVariable<ErrorMapping> sut) =>
+            Add(sut, () => ErrorMappingBuilder.CreateDefault().Build());
     }
 }

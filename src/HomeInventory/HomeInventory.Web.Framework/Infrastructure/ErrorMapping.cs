@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using DotNext;
 using HomeInventory.Core;
-using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Web.Infrastructure;
 
@@ -12,7 +11,7 @@ internal sealed class ErrorMapping(HttpStatusCode defaultError, IReadOnlyDiction
 
     public HttpStatusCode GetDefaultError() => _defaultError;
 
-    public HttpStatusCode GetError(IError error) => GetErrorCore(error.GetType()).Or(_defaultError);
+    public HttpStatusCode GetError(Type errorType) => GetErrorCore(errorType).Or(_defaultError);
 
     private Optional<HttpStatusCode> GetErrorCore(Type? type)
     {
