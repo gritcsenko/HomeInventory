@@ -52,11 +52,12 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             : base(variables, fixture)
         {
             _cancellation = cancellation;
+            var errorMapping = ErrorMappingBuilder.CreateDefault().Build();
 
             var collection = new ServiceCollection();
             collection.AddSingleton(_mediator);
             collection.AddSingleton(_mapper);
-            collection.AddSingleton(new HomeInventoryProblemDetailsFactory(new ErrorMapping(), Options.Create(new ApiBehaviorOptions())));
+            collection.AddSingleton(new HomeInventoryProblemDetailsFactory(errorMapping, Options.Create(new ApiBehaviorOptions())));
 
             Add(_context, () => new DefaultHttpContext
             {
