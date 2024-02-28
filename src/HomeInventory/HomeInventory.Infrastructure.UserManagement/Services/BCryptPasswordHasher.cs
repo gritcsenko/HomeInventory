@@ -4,19 +4,12 @@ using static BCrypt.Net.BCrypt;
 
 namespace HomeInventory.Infrastructure.Services;
 
-internal class BCryptPasswordHasher : IPasswordHasher
+internal sealed class BCryptPasswordHasher : IPasswordHasher
 {
-    private readonly HashType _hashType;
-    private readonly bool _enhancedEntropy;
+    private readonly HashType _hashType = HashType.SHA512;
+    private readonly bool _enhancedEntropy = true;
 
-    public BCryptPasswordHasher()
-    {
-        WorkFactor = 13;
-        _enhancedEntropy = true;
-        _hashType = HashType.SHA512;
-    }
-
-    public int WorkFactor { get; init; }
+    public int WorkFactor { get; } = 13;
 
     public ValueTask<string> HashAsync(string password, CancellationToken cancellationToken = default) =>
         ValueTask.FromResult(InternalHash(password));

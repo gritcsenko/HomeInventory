@@ -1,8 +1,6 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 

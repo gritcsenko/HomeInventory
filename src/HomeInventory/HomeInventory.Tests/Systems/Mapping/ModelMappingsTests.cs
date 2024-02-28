@@ -1,11 +1,8 @@
 ﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
-using HomeInventory.Infrastructure.Persistence.Mapping;
-using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 

@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Application;
-using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;

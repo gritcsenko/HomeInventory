@@ -1,8 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.Primitives.Errors;
+﻿using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Mapping;
-using HomeInventory.Infrastructure.Persistence.Models;
 using OneOf;
 
 namespace HomeInventory.Tests.Systems.Persistence;

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-internal class ProductAmountModelConfiguration : IEntityTypeConfiguration<ProductAmountModel>
+internal sealed class ProductAmountModelConfiguration : IEntityTypeConfiguration<ProductAmountModel>
 {
     public void Configure(EntityTypeBuilder<ProductAmountModel> builder)
     {

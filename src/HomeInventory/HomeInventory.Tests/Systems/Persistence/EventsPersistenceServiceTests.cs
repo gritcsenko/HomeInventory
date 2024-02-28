@@ -1,7 +1,5 @@
 ﻿using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Services;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 

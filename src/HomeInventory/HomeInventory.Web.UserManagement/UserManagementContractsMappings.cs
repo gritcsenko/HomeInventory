@@ -7,7 +7,7 @@ using HomeInventory.Web.Framework;
 
 namespace HomeInventory.Web.UserManagement;
 
-internal class UserManagementContractsMappings : ContractsMappingProfile
+internal sealed class UserManagementContractsMappings : ContractsMappingProfile
 {
     public UserManagementContractsMappings()
     {

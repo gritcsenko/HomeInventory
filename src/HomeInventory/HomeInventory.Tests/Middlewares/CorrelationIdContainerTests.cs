@@ -1,6 +1,4 @@
-﻿using HomeInventory.Web.Configuration;
-
-namespace HomeInventory.Tests.Middlewares;
+﻿namespace HomeInventory.Tests.Middlewares;
 
 [UnitTest]
 public class CorrelationIdContainerTests : BaseTest

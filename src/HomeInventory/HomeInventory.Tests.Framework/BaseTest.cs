@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Framework.Attributes;
 using HomeInventory.Tests.Framework.Customizations;
 

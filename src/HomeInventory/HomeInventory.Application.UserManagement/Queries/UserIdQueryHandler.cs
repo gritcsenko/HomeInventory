@@ -4,11 +4,9 @@ using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Queries.UserId;
 
-internal class UserIdQueryHandler : QueryHandler<UserIdQuery, UserIdResult>
+internal sealed class UserIdQueryHandler(IUserRepository userRepository) : QueryHandler<UserIdQuery, UserIdResult>
 {
-    private readonly IUserRepository _repository;
-
-    public UserIdQueryHandler(IUserRepository userRepository) => _repository = userRepository;
+    private readonly IUserRepository _repository = userRepository;
 
     protected override async Task<OneOf<UserIdResult, IError>> InternalHandle(UserIdQuery query, CancellationToken cancellationToken)
     {

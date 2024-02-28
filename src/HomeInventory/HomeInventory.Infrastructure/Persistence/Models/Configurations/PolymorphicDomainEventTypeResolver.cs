@@ -7,33 +7,30 @@ using HomeInventory.Infrastructure.Framework;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-internal class PolymorphicDomainEventTypeResolver : DefaultJsonTypeInfoResolver
+internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEventJsonTypeInfo> eventTypeInfoProviders) : DefaultJsonTypeInfoResolver
 {
-    private readonly IEnumerable<IDomainEventJsonTypeInfo> _eventTypeInfoProviders;
-
-    public PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEventJsonTypeInfo> eventTypeInfoProviders)
-    {
-        _eventTypeInfoProviders = eventTypeInfoProviders;
-    }
+    private readonly IReadOnlyCollection<IDomainEventJsonTypeInfo> _eventTypeInfoProviders = eventTypeInfoProviders.ToArray();
 
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        JsonTypeInfo jsonTypeInfo = base.GetTypeInfo(type, options);
-
-        Type baseType = typeof(IDomainEvent);
-        if (jsonTypeInfo.Type == baseType)
+        var jsonTypeInfo = base.GetTypeInfo(type, options);
+        if (jsonTypeInfo.Type == typeof(IDomainEvent))
         {
-            var polymorphismOptions = new JsonPolymorphismOptions
-            {
-                TypeDiscriminatorPropertyName = "$type",
-                IgnoreUnrecognizedTypeDiscriminators = true,
-                UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
-            };
-            polymorphismOptions.DerivedTypes.AddAll(_eventTypeInfoProviders.SelectMany(p => p.DomainEventTypes));
-            jsonTypeInfo.PolymorphismOptions = polymorphismOptions;
+            jsonTypeInfo.PolymorphismOptions = CreateOptions();
         }
 
         return jsonTypeInfo;
     }
-}
 
+    private JsonPolymorphismOptions CreateOptions()
+    {
+        var polymorphismOptions = new JsonPolymorphismOptions
+        {
+            TypeDiscriminatorPropertyName = "$type",
+            IgnoreUnrecognizedTypeDiscriminators = true,
+            UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
+        };
+        polymorphismOptions.DerivedTypes.AddAll(_eventTypeInfoProviders.SelectMany(p => p.DomainEventTypes));
+        return polymorphismOptions;
+    }
+}

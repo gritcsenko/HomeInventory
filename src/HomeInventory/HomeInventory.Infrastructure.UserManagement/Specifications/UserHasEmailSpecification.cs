@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Specifications;
 
-internal class UserHasEmailSpecification : Specification<UserModel>, ISingleResultSpecification<UserModel>, ICompiledSingleResultSpecification<UserModel>
+internal sealed class UserHasEmailSpecification : Specification<UserModel>, ISingleResultSpecification<UserModel>, ICompiledSingleResultSpecification<UserModel>
 {
     private static readonly Func<DbContext, string, CancellationToken, Task<UserModel?>> _cachedQuery =
         EF.CompileAsyncQuery((DbContext ctx, string email, CancellationToken _) => ctx.Set<UserModel>().FirstOrDefault(x => x.Email == email));

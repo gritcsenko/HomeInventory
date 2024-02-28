@@ -1,6 +1,5 @@
 ﻿using FluentValidation.TestHelper;
 using HomeInventory.Contracts;
-using HomeInventory.Contracts.Validations;
 
 namespace HomeInventory.Tests.Validation;
 

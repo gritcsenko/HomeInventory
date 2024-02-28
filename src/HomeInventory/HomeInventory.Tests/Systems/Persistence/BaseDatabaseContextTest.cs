@@ -1,6 +1,4 @@
-﻿using HomeInventory.Infrastructure.Persistence;
-
-namespace HomeInventory.Tests.Systems.Persistence;
+﻿namespace HomeInventory.Tests.Systems.Persistence;
 
 public abstract class BaseDatabaseContextTest : BaseTest
 {

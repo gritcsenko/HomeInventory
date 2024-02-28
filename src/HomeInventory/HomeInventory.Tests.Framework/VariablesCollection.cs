@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-
-namespace HomeInventory.Tests.Framework;
+﻿namespace HomeInventory.Tests.Framework;
 
 public sealed class VariablesContainer
 {

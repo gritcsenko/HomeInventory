@@ -1,5 +1,4 @@
 ﻿using FluentAssertions.Execution;
-using HomeInventory.Web.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 

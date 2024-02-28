@@ -6,15 +6,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web;
 
-internal class ValidationFilter<T> : IEndpointFilter
+internal sealed class ValidationFilter<T>(Action<ValidationStrategy<T>> options) : IEndpointFilter
 {
-    private readonly Action<ValidationStrategy<T>> _options;
+    private readonly Action<ValidationStrategy<T>> _options = options;
 
-    public ValidationFilter() =>
-        _options = _ => { };
-
-    public ValidationFilter(Action<ValidationStrategy<T>> options) =>
-        _options = options;
+    public ValidationFilter()
+        : this(_ => { })
+    {
+    }
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {

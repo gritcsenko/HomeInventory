@@ -9,19 +9,12 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web.Infrastructure;
 
-internal class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
+internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
 {
     private static readonly string? DefaultValidationTitle = new ValidationProblemDetails().Title;
-    private readonly ApiBehaviorOptions _options;
-    private readonly ErrorMapping _errorMapping;
-    private readonly int _defaultStatusCode;
-
-    public HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options)
-    {
-        _errorMapping = errorMapping;
-        _options = options.Value;
-        _defaultStatusCode = (int)_errorMapping.GetDefaultError();
-    }
+    private readonly ApiBehaviorOptions _options = options.Value;
+    private readonly ErrorMapping _errorMapping = errorMapping;
+    private readonly int _defaultStatusCode = (int)errorMapping.GetDefaultError();
 
     public override ProblemDetails CreateProblemDetails(
         HttpContext httpContext,

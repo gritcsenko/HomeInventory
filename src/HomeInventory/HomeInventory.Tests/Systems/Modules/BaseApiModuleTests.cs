@@ -2,7 +2,6 @@
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Web.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

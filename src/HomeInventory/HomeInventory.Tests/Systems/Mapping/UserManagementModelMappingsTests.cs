@@ -2,9 +2,6 @@
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
-using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.UserManagement.Mapping;
-using HomeInventory.Web.UserManagement;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 

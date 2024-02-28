@@ -5,7 +5,6 @@ using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
-using HomeInventory.Web.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;

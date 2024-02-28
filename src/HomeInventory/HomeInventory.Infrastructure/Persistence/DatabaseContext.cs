@@ -7,11 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
+internal sealed class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
 {
+    private readonly PublishDomainEventsInterceptor _interceptor = interceptor;
+    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = configurationAppliers.ToArray();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var applier in configurationAppliers)
+        foreach (var applier in _configurationAppliers)
         {
             applier.ApplyConfigurationTo(modelBuilder);
         }
@@ -19,14 +23,14 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.AddInterceptors(interceptor);
+        optionsBuilder.AddInterceptors(_interceptor);
 
         base.OnConfiguring(optionsBuilder);
     }
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        UpdateAuditableEntities(dateTimeService.UtcNow);
+        UpdateAuditableEntities(_dateTimeService.UtcNow);
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }

@@ -3,7 +3,9 @@ using HomeInventory.Infrastructure.Framework;
 
 namespace HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 
-internal class DomainEventJsonTypeInfo(params Type[] types) : IDomainEventJsonTypeInfo
+internal sealed class DomainEventJsonTypeInfo(params Type[] types) : IDomainEventJsonTypeInfo
 {
-    public IEnumerable<JsonDerivedType> DomainEventTypes => types.Select(t => new JsonDerivedType(t, t.FullName ?? t.Name));
+    private readonly Type[] _types = types;
+
+    public IEnumerable<JsonDerivedType> DomainEventTypes => _types.Select(t => new JsonDerivedType(t, t.FullName ?? t.Name));
 }

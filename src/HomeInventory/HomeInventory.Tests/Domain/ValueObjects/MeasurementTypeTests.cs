@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
 

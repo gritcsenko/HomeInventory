@@ -21,7 +21,7 @@ public class TestAppBuilder : IApplicationBuilder, IEndpointRouteBuilder
     public IFeatureCollection ServerFeatures { get; } = new FeatureCollection();
     public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
     public IServiceProvider ServiceProvider { get; }
-    public ICollection<EndpointDataSource> DataSources { get; } = new List<EndpointDataSource>();
+    public ICollection<EndpointDataSource> DataSources { get; } = [];
 
     public RequestDelegate Build()
     {
