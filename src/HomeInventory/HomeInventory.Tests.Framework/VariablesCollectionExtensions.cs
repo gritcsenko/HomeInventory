@@ -8,6 +8,10 @@ public static class VariablesCollectionExtensions
             .TryGet(variable)
             .OrThrow(() => new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}"));
 
+    public static T Get<T>(this VariablesContainer collection, IVariable<T> variable)
+        where T : notnull =>
+        collection.Get(variable[0]);
+
     public static IEnumerable<T> GetMany<T>(this VariablesContainer collection, IVariable<T> variable)
         where T : notnull =>
         collection.GetMany(variable, ..);

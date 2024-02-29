@@ -2,16 +2,11 @@
 
 namespace HomeInventory.Tests.Systems.Authentication;
 
-public sealed class BCryptPasswordHasherTestsGivenContext : GivenContext<BCryptPasswordHasherTestsGivenContext>
+public sealed class BCryptPasswordHasherTestsGivenContext(VariablesContainer variables, IFixture fixture) : GivenContext<BCryptPasswordHasherTestsGivenContext>(variables, fixture)
 {
     private readonly Variable<BCryptPasswordHasher> _sut = new(nameof(_sut));
 
-    public BCryptPasswordHasherTestsGivenContext(VariablesContainer variables, IFixture fixture)
-        : base(variables, fixture)
-    {
-    }
-
-    internal IIndexedVariable<BCryptPasswordHasher> Sut => _sut.WithIndex(0);
+    internal IVariable<BCryptPasswordHasher> Sut => _sut;
 
     internal BCryptPasswordHasherTestsGivenContext Hasher()
     {

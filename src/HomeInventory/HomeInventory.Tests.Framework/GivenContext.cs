@@ -1,21 +1,19 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public class GivenContext<TContext> : BaseContext
+public class GivenContext<TContext>(VariablesContainer variables, IFixture fixture) : BaseContext(variables)
     where TContext : GivenContext<TContext>
 {
-    public GivenContext(VariablesContainer variables, IFixture fixture)
-        : base(variables)
-    {
-        Fixture = fixture;
-    }
-
-    protected IFixture Fixture { get; }
+    protected IFixture Fixture { get; } = fixture;
 
     protected TContext This => (TContext)this;
 
     public TContext New<T>(IVariable<T> variable)
         where T : notnull =>
         Add(variable, Fixture.Create<T>);
+
+    public TContext New<T>(IVariable<T> variable, IVariable<int> countVariable)
+        where T : notnull =>
+        New(variable, countVariable[0]);
 
     public TContext New<T>(IVariable<T> variable, IIndexedVariable<int> countVariable)
         where T : notnull =>
@@ -47,6 +45,10 @@ public class GivenContext<TContext> : BaseContext
             return value;
         });
 
+    public TContext SubstituteFor<T>(IVariable<T> variable, IVariable<int> countVariable, params Action<T, VariablesContainer>[] setups)
+        where T : class =>
+        SubstituteFor(variable, countVariable[0], setups);
+
     public TContext SubstituteFor<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, params Action<T, VariablesContainer>[] setups)
         where T : class
     {
@@ -70,6 +72,10 @@ public class GivenContext<TContext> : BaseContext
         where T : notnull =>
         Add(variable, () => value);
 
+    public TContext Add<T>(IVariable<T> variable, IVariable<int> countVariable, Func<T> createValue)
+        where T : notnull =>
+        Add(variable, countVariable[0], createValue);
+
     public TContext Add<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, Func<T> createValue)
         where T : notnull
     {
@@ -89,7 +95,7 @@ public class GivenContext<TContext> : BaseContext
 
     public TContext AddAllToHashCode<T>(IVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull =>
-        AddAllToHashCode(hash.WithIndex(0), variable);
+        AddAllToHashCode(hash[0], variable);
 
     public TContext AddAllToHashCode<T>(IIndexedVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull

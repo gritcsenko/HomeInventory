@@ -6,6 +6,8 @@ public interface IFeatureFlag
 {
     string Name { get; }
 
+    IFeatureFlag<TContext> WithContext<TContext>(TContext context);
+
     Task<bool> IsEnabledAsync(IFeatureManager manager);
 }
 
