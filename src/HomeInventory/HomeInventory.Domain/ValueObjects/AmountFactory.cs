@@ -23,7 +23,7 @@ internal sealed class AmountFactory : IAmountFactory
             var validator = SelectValidator();
             if (!IsValid(validator, value))
             {
-                return Optional.Some(GetValidationError((value, _unit)));
+                return Optional.Some<IError>(GetValidationError((value, _unit)));
             }
 
             return Optional.None<IError>();
@@ -34,7 +34,7 @@ internal sealed class AmountFactory : IAmountFactory
             return validator(value);
         }
 
-        private static IError GetValidationError<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
+        private static ObjectValidationError<TValue> GetValidationError<TValue>(TValue value) => new ObjectValidationError<TValue>(value);
 
         private Func<decimal, bool> SelectValidator() => _unit switch
         {

@@ -35,19 +35,19 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -61,7 +61,7 @@ jobs:
         run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
@@ -73,19 +73,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -106,24 +106,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -138,7 +138,7 @@ jobs:
         run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
         working-directory: ./src/HomeInventory
       - name: Test Report
-        uses: dorny/test-reporter@v1.6.0
+        uses: dorny/test-reporter@v1.8.0
         if: success() || failure()
         with:
           name: Unit tests # Name of the check run which will be created
@@ -146,6 +146,7 @@ jobs:
           reporter: dotnet-trx # Format of test results
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
+        continue-on-error: true
         if: always()
         with:
           files: |
@@ -177,12 +178,12 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.24
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.2.2
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
           targetdir: "coveragereport" # REQUIRED # The directory where the generated report should be saved.
-          reporttypes: "MarkdownSummaryGithub;HtmlInline_AzurePipelines_Dark;Cobertura" # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, Html_Dark, Html_Light, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlInline_AzurePipelines_Light, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MarkdownSummary, MarkdownSummaryGithub, MarkdownDeltaSummary, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, TextDeltaSummary, Xml, XmlSummary
+          reporttypes: "MarkdownSummaryGithub;HtmlInline_AzurePipelines_Dark;Cobertura;CodeClimate" # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, Html_Dark, Html_Light, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlInline_AzurePipelines_Light, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MarkdownSummary, MarkdownSummaryGithub, MarkdownDeltaSummary, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, TextDeltaSummary, Xml, XmlSummary
           sourcedirs: "./src/HomeInventory" # Optional directories which contain the corresponding source code (separated by semicolon). The source directories are used if coverage report contains classes without path information.
           historydir: "" # Optional directory for storing persistent coverage information. Can be used in future reports to show coverage evolution.
           plugins: "" # Optional plugin files for custom reports or custom history storage (separated by semicolon).
@@ -206,7 +207,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       - name: Upload coverage report artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v4.3.1
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           name: CoverageReport # Artifact name
@@ -224,24 +225,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -262,24 +263,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -292,11 +293,11 @@ jobs:
       - name: Install Living Documentation Tool
         run: dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
       - name: Generate Living Documentation Specification
-        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net7/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net7/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net8/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net8/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: "Specflow Test Results"
           path: ./Acceptance/AcceptanceTestResults.html

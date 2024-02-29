@@ -8,6 +8,6 @@ public interface IDatabaseContext
     DbSet<TEntity> GetDbSet<TEntity>()
         where TEntity : class;
 
-    Optional<TEntity> FindTracked<TEntity>(Predicate<TEntity> condition)
+    Optional<TEntity> FindTracked<TEntity>(Func<TEntity, bool> condition)
         where TEntity : class;
 }

@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Dependency Review
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         with:
           # ([String]). Representing a path to a configuration file local to the repository or in an external repository.
           # Possible values: An absolute path to a local file or an external file.

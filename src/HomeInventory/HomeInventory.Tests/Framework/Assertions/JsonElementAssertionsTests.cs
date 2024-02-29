@@ -32,11 +32,12 @@ public class JsonElementAssertionsTests : BaseTest
     [Fact]
     public void BeArrayEqualTo_ShoudPass_WhenBothHasSameValue()
     {
+        var expected = new[] { "value" };
         using var document = JsonDocument.Parse("{\"key\":[\"value\"]}");
         var element = document.RootElement.GetProperty("key");
         var sut = new JsonElementAssertions(element);
 
-        Action action = () => sut.BeArrayEqualTo(new[] { "value" });
+        Action action = () => sut.BeArrayEqualTo(expected);
 
         action.Should().NotThrow();
     }

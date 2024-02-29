@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="AutoMapper" />
     <PackageReference Include="FastExpressionCompiler" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
