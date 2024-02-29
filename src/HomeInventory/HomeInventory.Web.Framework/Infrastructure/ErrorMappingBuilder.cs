@@ -6,12 +6,8 @@ namespace HomeInventory.Web.Infrastructure;
 
 internal sealed class ErrorMappingBuilder
 {
-    private readonly Dictionary<Type, HttpStatusCode> _mapping = new();
+    private readonly Dictionary<Type, HttpStatusCode> _mapping = [];
     private HttpStatusCode _default = HttpStatusCode.InternalServerError;
-
-    public ErrorMappingBuilder()
-    {
-    }
 
     public ErrorMappingBuilder Add<TError>(HttpStatusCode statusCode)
     {

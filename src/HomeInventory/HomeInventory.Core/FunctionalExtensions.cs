@@ -1,4 +1,6 @@
-﻿using OneOf;
+﻿#pragma warning disable S125 // Sections of code should not be commented out
+/*
+using OneOf;
 
 namespace HomeInventory.Core;
 
@@ -31,8 +33,6 @@ public static class FunctionalExtensions
     public static TResult Match<TValue, TResult>(this Optional<TValue> optional, Func<TValue, TResult> someFunc, Func<TResult> noneFunc) =>
         optional.Convert(someFunc.AsConverter()).OrInvoke(noneFunc);
 
-
-
     public static OneOf<TSomeResult, TNoneResult> Match<TValue, TSomeResult, TNoneResult>(this Optional<TValue> optional, Func<TValue, TSomeResult> someFunc, Func<TNoneResult> noneFunc)
     {
         if (optional.TryGet(out var value))
@@ -63,3 +63,4 @@ public static class FunctionalExtensions
     public static Optional<TResult> Chain<TValue, TResult>(this Optional<TValue> optional, Func<TValue, Optional<TResult>> convertFunc) =>
         optional.Convert(convertFunc.AsConverter());
 }
+*/

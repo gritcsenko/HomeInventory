@@ -11,7 +11,7 @@ namespace HomeInventory.Web.Infrastructure;
 
 internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
 {
-    private static readonly string? DefaultValidationTitle = new ValidationProblemDetails().Title;
+    private static readonly string? _defaultValidationTitle = new ValidationProblemDetails().Title;
     private readonly ApiBehaviorOptions _options = options.Value;
     private readonly ErrorMapping _errorMapping = errorMapping;
     private readonly int _defaultStatusCode = (int)errorMapping.GetDefaultError();
@@ -34,7 +34,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
         string? type = null,
         string? detail = null,
         string? instance = null) =>
-        CreateProblem<ValidationProblemDetails>(statusCode ?? _defaultStatusCode, title ?? DefaultValidationTitle, type, detail, instance)
+        CreateProblem<ValidationProblemDetails>(statusCode ?? _defaultStatusCode, title ?? _defaultValidationTitle, type, detail, instance)
             .ApplyErrors(modelStateDictionary)
             .AddProblemDetailsExtensions(httpContext);
 
