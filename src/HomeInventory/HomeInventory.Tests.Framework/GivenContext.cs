@@ -7,10 +7,6 @@ public class GivenContext<TContext>(VariablesContainer variables, IFixture fixtu
 
     protected TContext This => (TContext)this;
 
-    public TContext New<T>(IVariable<T> variable)
-        where T : notnull =>
-        Add(variable, Fixture.Create<T>);
-
     public TContext New<T>(IVariable<T> variable, IVariable<int> countVariable)
         where T : notnull =>
         New(variable, countVariable[0]);
@@ -19,7 +15,7 @@ public class GivenContext<TContext>(VariablesContainer variables, IFixture fixtu
         where T : notnull =>
         New(variable, Variables.Get(countVariable));
 
-    public TContext New<T>(IVariable<T> variable, int count)
+    public TContext New<T>(IVariable<T> variable, int count = 1)
         where T : notnull
     {
         foreach (var item in Fixture.CreateMany<T>(count))
@@ -45,21 +41,17 @@ public class GivenContext<TContext>(VariablesContainer variables, IFixture fixtu
             return value;
         });
 
-    public TContext SubstituteFor<T>(IVariable<T> variable, IVariable<int> countVariable, params Action<T, VariablesContainer>[] setups)
-        where T : class =>
-        SubstituteFor(variable, countVariable[0], setups);
-
-    public TContext SubstituteFor<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, params Action<T, VariablesContainer>[] setups)
+    public TContext SubstituteFor<T>(IVariable<T> variable, IVariable<int> countVariable, params Action<T, int, VariablesContainer>[] setups)
         where T : class
     {
-        foreach (var _ in Enumerable.Range(0, Variables.Get(countVariable)))
+        foreach (var index in Enumerable.Range(0, Variables.Get(countVariable)))
         {
             Add(variable, () =>
             {
                 var value = Substitute.For<T>();
                 foreach (var setup in setups)
                 {
-                    setup(value, Variables);
+                    setup(value, index, Variables);
                 }
                 return value;
             });

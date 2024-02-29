@@ -104,7 +104,7 @@ public sealed class FeatureFlagTests : BaseTest<FeatureFlagTests.GivenTestContex
             .Sut(_sutContext, _name, _context);
 
         var then = await When
-            .InvokedAsync(_sut, _manager, (sut, manager, _) => sut.IsEnabledAsync(manager));
+            .InvokedAsync(_sutContext, _manager, (sut, manager, _) => sut.IsEnabledAsync(manager));
 
         then
             .Result(flag => flag.Should().Be(expectedValue));

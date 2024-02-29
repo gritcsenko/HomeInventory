@@ -205,9 +205,12 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         }
 
         internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IVariable<TestEntityId> id) =>
+            TestEntity(entity, id[0]);
+
+        internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IIndexedVariable<TestEntityId> id) =>
             Add(entity, () => CreateTestEntity(id));
 
-        private TestEntity CreateTestEntity(IVariable<TestEntityId> id) => new(Variables.Get(id));
+        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
     }
 
     internal class TestEntityId : UlidIdentifierObject<TestEntityId>

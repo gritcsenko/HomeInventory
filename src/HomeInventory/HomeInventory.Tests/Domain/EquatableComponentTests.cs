@@ -113,6 +113,6 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
 
         public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, Range range)
             where T : notnull =>
-            Add(sut, () => new EquatableComponent<string>(Variables.GetMany(variable, range).Cast<object>().ToArray()));
+            Add(sut, () => new EquatableComponent<string>(Array.ConvertAll(Variables.GetMany(variable, range).ToArray(), x => (object)x)));
     }
 }
