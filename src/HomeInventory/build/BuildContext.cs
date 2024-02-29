@@ -5,19 +5,13 @@ using Cake.Frosting;
 
 namespace Build;
 
-public class BuildContext : FrostingContext
+public class BuildContext(ICakeContext context) : FrostingContext(context)
 {
     public string Solution { get; } = "../HomeInventory.sln";
 
     public string Tests { get; } = "../HomeInventory.Tests";
 
-    public string BuildConfiguration { get; }
+    public string BuildConfiguration { get; } = context.Argument("configuration", "Release");
 
     public DotNetVerbosity Verbosity { get; } = DotNetVerbosity.Normal;
-
-    public BuildContext(ICakeContext context)
-        : base(context)
-    {
-        BuildConfiguration = context.Argument("configuration", "Release");
-    }
 }
