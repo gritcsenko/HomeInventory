@@ -5,6 +5,7 @@
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="Carter" />
     <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

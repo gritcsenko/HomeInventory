@@ -28,16 +28,16 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
     {
         _ = Given
             .Add(_dbContext, _context)
-            .Sut(_sut, _dbContext.WithIndex(0))
+            .Sut(_sut, _dbContext)
             .Add(_eventsCount, 3)
-            .Add(_event, _eventsCount.WithIndex(0), () => new DomainEvent(DateTime))
+            .Add(_event, _eventsCount, () => new DomainEvent(DateTime))
             .SubstituteFor(_entity,
                 (e, v) => e
                 .GetDomainEvents()
                 .Returns(v.GetMany(_event).ToReadOnly()));
 
         var then = await When
-            .InvokedAsync(_sut.WithIndex(0), _entity.WithIndex(0), _dbContext.WithIndex(0), async (sut, entity, db, t) =>
+            .InvokedAsync(_sut, _entity, _dbContext, async (sut, entity, db, t) =>
             {
                 await sut.SaveEventsAsync(entity, Cancellation.Token);
                 return await db.SaveChangesAsync(t);
@@ -63,6 +63,6 @@ public class EventsPersistenceServiceTestsGivenContext : GivenContext<EventsPers
 
     }
 
-    internal EventsPersistenceServiceTestsGivenContext Sut(IVariable<EventsPersistenceService> sutVariable, IIndexedVariable<DatabaseContext> dbContextVariable) =>
+    internal EventsPersistenceServiceTestsGivenContext Sut(IVariable<EventsPersistenceService> sutVariable, IVariable<DatabaseContext> dbContextVariable) =>
         Add(sutVariable, () => new EventsPersistenceService(Variables.Get(dbContextVariable)));
 }

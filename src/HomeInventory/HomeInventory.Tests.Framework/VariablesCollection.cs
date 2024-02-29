@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
-
-namespace HomeInventory.Tests.Framework;
+﻿namespace HomeInventory.Tests.Framework;
 
 public sealed class VariablesContainer
 {
@@ -25,6 +23,18 @@ public sealed class VariablesContainer
     {
         var collection = GetAllValues(variable);
         return collection.TryGet<T>(variable.Index);
+    }
+
+    public IEnumerable<T> GetAll<T>(IVariable<T> variable)
+        where T : notnull
+    {
+        var collection = GetAllValues(variable);
+        if (!collection.IsAsignable<T>())
+        {
+            return [];
+        }
+
+        return collection.GetAll<T>();
     }
 
     public bool TryUpdate<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
