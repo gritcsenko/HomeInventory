@@ -6,5 +6,10 @@ public interface IFeatureFlag
 {
     string Name { get; }
 
-    Task<bool> IsEnabledAsync(IFeatureManager manager, CancellationToken cancellationToken = default);
+    Task<bool> IsEnabledAsync(IFeatureManager manager);
+}
+
+public interface IFeatureFlag<out TContext> : IFeatureFlag
+{
+    TContext Context { get; }
 }

@@ -2,39 +2,27 @@
 
 namespace HomeInventory.Application.Framework;
 
-public sealed class FeatureFlag : IFeatureFlag
+public class FeatureFlag : IFeatureFlag
 {
-    internal FeatureFlag(string name)
+    protected FeatureFlag(string name)
     {
         Name = name;
     }
 
     public string Name { get; }
 
-    public async Task<bool> IsEnabledAsync(IFeatureManager manager, CancellationToken cancellationToken = default)
-    {
-        return await manager.IsEnabledAsync(Name, cancellationToken);
-    }
+    public virtual async Task<bool> IsEnabledAsync(IFeatureManager manager) => await manager.IsEnabledAsync(Name);
+
+    public IFeatureFlag<TContext> WithContext<TContext>(TContext context) => Create(Name, context);
 
     public static IFeatureFlag Create(string name) => new FeatureFlag(name);
 
-    public static IFeatureFlag Create<TContext>(string name, TContext context) => new FeatureFlag<TContext>(name, context);
+    public static IFeatureFlag<TContext> Create<TContext>(string name, TContext context) => new FeatureFlag<TContext>(name, context);
 }
 
-public sealed class FeatureFlag<TContext> : IFeatureFlag
+internal sealed class FeatureFlag<TContext>(string name, TContext context) : FeatureFlag(name), IFeatureFlag<TContext>
 {
-    internal FeatureFlag(string name, TContext context)
-    {
-        Name = name;
-        Context = context;
-    }
+    public TContext Context { get; } = context;
 
-    public string Name { get; }
-
-    public TContext Context { get; }
-
-    public async Task<bool> IsEnabledAsync(IFeatureManager manager, CancellationToken cancellationToken = default)
-    {
-        return await manager.IsEnabledAsync(Name, Context, cancellationToken);
-    }
+    public override async Task<bool> IsEnabledAsync(IFeatureManager manager) => await manager.IsEnabledAsync(Name, Context);
 }
