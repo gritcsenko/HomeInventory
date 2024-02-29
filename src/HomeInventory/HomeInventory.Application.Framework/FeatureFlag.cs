@@ -4,10 +4,7 @@ namespace HomeInventory.Application.Framework;
 
 public class FeatureFlag : IFeatureFlag
 {
-    protected FeatureFlag(string name)
-    {
-        Name = name;
-    }
+    internal FeatureFlag(string name) => Name = name;
 
     public string Name { get; }
 
