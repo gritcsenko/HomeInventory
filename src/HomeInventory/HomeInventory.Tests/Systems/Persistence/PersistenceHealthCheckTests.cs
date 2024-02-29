@@ -1,4 +1,6 @@
 ﻿using FluentAssertions.Execution;
+using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NSubstitute.ExceptionExtensions;
@@ -22,7 +24,7 @@ public class PersistenceHealthCheckTests : BaseTest
         var sut = new PersistenceHealthCheck(context);
         var healthContext = new HealthCheckContext
         {
-            Registration = new HealthCheckRegistration(Fixture.Create<string>(), Substitute.For<IHealthCheck>(), HealthStatus.Degraded, Array.Empty<string>()),
+            Registration = new HealthCheckRegistration(Fixture.Create<string>(), Substitute.For<IHealthCheck>(), HealthStatus.Degraded, []),
         };
 
         var result = await sut.CheckHealthAsync(healthContext, Cancellation.Token);
@@ -47,7 +49,7 @@ public class PersistenceHealthCheckTests : BaseTest
         var sut = new PersistenceHealthCheck(context);
         var healthContext = new HealthCheckContext
         {
-            Registration = new HealthCheckRegistration(Fixture.Create<string>(), Substitute.For<IHealthCheck>(), failureStatus, Array.Empty<string>()),
+            Registration = new HealthCheckRegistration(Fixture.Create<string>(), Substitute.For<IHealthCheck>(), failureStatus, []),
         };
 
         var result = await sut.CheckHealthAsync(healthContext, Cancellation.Token);
@@ -72,7 +74,7 @@ public class PersistenceHealthCheckTests : BaseTest
         var sut = new PersistenceHealthCheck(context);
         var healthContext = new HealthCheckContext
         {
-            Registration = new HealthCheckRegistration(Fixture.Create<string>(), Substitute.For<IHealthCheck>(), failureStatus, Array.Empty<string>()),
+            Registration = new HealthCheckRegistration(Fixture.Create<string>(), Substitute.For<IHealthCheck>(), failureStatus, []),
         };
 
         var result = await sut.CheckHealthAsync(healthContext, Cancellation.Token);

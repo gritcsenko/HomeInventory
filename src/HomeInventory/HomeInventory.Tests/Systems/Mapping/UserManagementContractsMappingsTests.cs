@@ -2,6 +2,7 @@
 using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Web.UserManagement;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 

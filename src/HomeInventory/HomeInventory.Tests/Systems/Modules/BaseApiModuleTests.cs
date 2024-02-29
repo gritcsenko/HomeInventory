@@ -2,6 +2,7 @@
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Web.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,11 @@ public abstract class BaseApiModuleTests : BaseApiModuleTests<BaseApiModuleTests
         new(variables, Fixture, Cancellation);
 
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class ApiGivenTestContext : BaseApiGivenTestContext
+#pragma warning disable S2094 // Classes should not be empty
+    public sealed class ApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation) : BaseApiGivenTestContext(variables, fixture, cancellation)
+#pragma warning restore S2094 // Classes should not be empty
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public ApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation)
-            : base(variables, fixture, cancellation)
-        {
-        }
     }
 }
 
@@ -86,7 +85,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             where TError : notnull, IError =>
             OnRequestReturnError<TRequest, Success, TError>(request, result);
 
-        public TGiven Map<TSource, TDestination>(Variable<TSource> source, Variable<TDestination> destination)
+        internal TGiven Map<TSource, TDestination>(Variable<TSource> source, Variable<TDestination> destination)
             where TSource : notnull
             where TDestination : notnull
         {

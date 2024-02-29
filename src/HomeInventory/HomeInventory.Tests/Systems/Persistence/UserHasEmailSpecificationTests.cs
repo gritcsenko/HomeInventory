@@ -1,5 +1,7 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Specifications;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 

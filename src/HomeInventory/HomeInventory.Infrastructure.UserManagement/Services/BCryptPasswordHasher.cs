@@ -9,7 +9,7 @@ internal sealed class BCryptPasswordHasher : IPasswordHasher
     private readonly HashType _hashType = HashType.SHA512;
     private readonly bool _enhancedEntropy = true;
 
-    public int WorkFactor { get; } = 13;
+    public int WorkFactor { get; init; } = 13;
 
     public ValueTask<string> HashAsync(string password, CancellationToken cancellationToken = default) =>
         ValueTask.FromResult(InternalHash(password));

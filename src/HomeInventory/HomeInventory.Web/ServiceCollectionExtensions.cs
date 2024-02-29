@@ -150,9 +150,12 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, string? configSectionPath = null)
+    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services)
+        where TOptions : class, IOptions => services.AddOptionsWithValidator<TOptions>(TOptions.Section);
+
+    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, SectionPath configSectionPath)
         where TOptions : class => services.AddOptions<TOptions>()
-            .BindConfiguration(configSectionPath ?? typeof(TOptions).Name)
+            .BindConfiguration(configSectionPath)
             .ValidateWithValidator()
             .ValidateOnStart();
 

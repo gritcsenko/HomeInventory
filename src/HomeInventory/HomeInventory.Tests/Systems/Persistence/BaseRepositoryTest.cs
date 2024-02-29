@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence.Mapping;
+using HomeInventory.Infrastructure.UserManagement.Mapping;
+using HomeInventory.Web.UserManagement;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Persistence;

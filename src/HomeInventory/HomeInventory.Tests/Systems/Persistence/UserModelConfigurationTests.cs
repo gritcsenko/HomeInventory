@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Persistence.Models.Configurations;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 

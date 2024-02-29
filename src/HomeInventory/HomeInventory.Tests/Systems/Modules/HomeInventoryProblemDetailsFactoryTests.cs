@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using FluentAssertions.Execution;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

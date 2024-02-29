@@ -1,10 +1,13 @@
 ﻿using System.Text;
+using HomeInventory.Web.Framework;
 using Microsoft.IdentityModel.Tokens;
 
 namespace HomeInventory.Web.Configuration;
 
-internal class JwtOptions
+internal class JwtOptions : IOptions
 {
+    public static SectionPath Section { get; } = nameof(JwtOptions);
+
     private SecurityKey? _securityKey;
     private byte[]? _key;
 
