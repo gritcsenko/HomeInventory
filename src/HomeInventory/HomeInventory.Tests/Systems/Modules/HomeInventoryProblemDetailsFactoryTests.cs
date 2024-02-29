@@ -183,14 +183,14 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     }
 
     [Fact]
-    public void CreateValidationProblemDetails_Should_SetDefaultStatusTo400()
+    public void CreateValidationProblemDetails_Should_SetDefaultStatusToMappingDefault()
     {
         var sut = CreateSut();
 
         var details = sut.CreateValidationProblemDetails(_context, _state, statusCode: null);
 
         details.Should().NotBeNull();
-        details.Status.Should().Be(StatusCodes.Status400BadRequest);
+        details.Status.Should().Be((int)_errorMapping.GetDefaultError());
     }
 
     [Fact]
