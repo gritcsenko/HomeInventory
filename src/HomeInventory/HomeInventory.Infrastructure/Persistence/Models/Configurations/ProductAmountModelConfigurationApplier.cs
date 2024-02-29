@@ -1,11 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
-
-internal class ProductAmountModelConfigurationApplier : IDatabaseConfigurationApplier
+internal sealed class ProductAmountModelConfigurationApplier : BaseDatabaseConfigurationApplier<ProductAmountModelConfiguration, ProductAmountModel>
 {
-    public void ApplyConfigurationTo(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new ProductAmountModelConfiguration());
-    }
 }

@@ -1,11 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
-
-internal class StorageAreaModelConfigurationApplier : IDatabaseConfigurationApplier
+internal sealed class StorageAreaModelConfigurationApplier : BaseDatabaseConfigurationApplier<StorageAreaModelConfiguration, StorageAreaModel>
 {
-    public void ApplyConfigurationTo(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new StorageAreaModelConfiguration());
-    }
 }

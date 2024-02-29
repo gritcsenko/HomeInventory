@@ -9,7 +9,7 @@ namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
 internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEventJsonTypeInfo> eventTypeInfoProviders) : DefaultJsonTypeInfoResolver
 {
-    private readonly IReadOnlyCollection<IDomainEventJsonTypeInfo> _eventTypeInfoProviders = eventTypeInfoProviders.ToArray();
+    private readonly IReadOnlyCollection<JsonDerivedType> _derivedTypes = eventTypeInfoProviders.SelectMany(p => p.DomainEventTypes).ToArray();
 
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
@@ -30,7 +30,7 @@ internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEven
             IgnoreUnrecognizedTypeDiscriminators = true,
             UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
         };
-        polymorphismOptions.DerivedTypes.AddAll(_eventTypeInfoProviders.SelectMany(p => p.DomainEventTypes));
+        polymorphismOptions.DerivedTypes.AddAll(_derivedTypes);
         return polymorphismOptions;
     }
 }
