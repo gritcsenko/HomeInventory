@@ -25,6 +25,18 @@ public sealed class VariablesContainer
         return collection.TryGet<T>(variable.Index);
     }
 
+    public IEnumerable<T> GetAll<T>(IVariable<T> variable)
+        where T : notnull
+    {
+        var collection = GetAllValues(variable);
+        if (!collection.IsAsignable<T>())
+        {
+            return [];
+        }
+
+        return collection.GetAll<T>();
+    }
+
     public bool TryUpdate<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
         where T : notnull
     {

@@ -26,7 +26,7 @@ public class ArchitectureTests
     [InlineData(typeof(HomeInventory.Domain.AssemblyReference), new[] { Namespaces.DomainPrimitives })]
     [InlineData(typeof(HomeInventory.Domain.Primitives.AssemblyReference), new[] { Namespaces.Core })]
     [InlineData(typeof(HomeInventory.Core.AssemblyReference), new string[0])]
-    [InlineData(typeof(Application.AssemblyReference), new[] { Namespaces.Domain })]
+    [InlineData(typeof(HomeInventory.Application.AssemblyReference), new[] { Namespaces.Domain })]
     [InlineData(typeof(Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
     [InlineData(typeof(Contracts.AssemblyReference), new string[0])]
     [InlineData(typeof(Contracts.UserManagement.AssemblyReference), new string[0])]
@@ -49,7 +49,7 @@ public class ArchitectureTests
     [Fact]
     public void CommandHandlers_Should_HaveDependencyOn_Domain()
     {
-        var assembly = Application.AssemblyReference.Assembly;
+        var assembly = HomeInventory.Application.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()
@@ -64,7 +64,7 @@ public class ArchitectureTests
     [Fact]
     public void QueryHandlers_Should_HaveDependencyOn_Domain()
     {
-        var assembly = Application.AssemblyReference.Assembly;
+        var assembly = HomeInventory.Application.AssemblyReference.Assembly;
 
         var result = Types.InAssembly(assembly)
             .That()

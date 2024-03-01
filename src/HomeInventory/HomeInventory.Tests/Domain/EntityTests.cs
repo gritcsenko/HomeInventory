@@ -53,8 +53,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         Given
             .New(_id)
             .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id.WithIndex(1));
+            .TestEntity(_other, _id[0])
+            .TestEntity(_sut, _id[1]);
 
         When
             .Invoked(_sut, _other, (sut, other) => sut.Equals(other))
@@ -117,8 +117,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         Given
             .New(_id)
             .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id.WithIndex(1));
+            .TestEntity(_other, _id[0])
+            .TestEntity(_sut, _id[1]);
 
         When
             .Invoked(_sut, _other, (sut, other) => sut.Equals((object)other))
@@ -157,8 +157,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         Given
             .New(_id)
             .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id.WithIndex(1));
+            .TestEntity(_other, _id[0])
+            .TestEntity(_sut, _id[1]);
 
         When
             .Invoked(_sut, _other, (sut, other) => sut == other)
@@ -184,8 +184,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         Given
             .New(_id)
             .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id.WithIndex(1));
+            .TestEntity(_other, _id[0])
+            .TestEntity(_sut, _id[1]);
 
         When
             .Invoked(_sut, _other, (sut, other) => sut != other)
@@ -204,10 +204,13 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         {
         }
 
-        internal GivenTestContext New(IVariable<TestEntityId> variable) => Add(variable, CreateTestEntityId);
+        internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IVariable<TestEntityId> id) =>
+            TestEntity(entity, id[0]);
 
-        internal GivenTestContext TestEntity(IVariable<TestEntity> entityVariable, IndexedVariable<TestEntityId> idVariable) =>
-            Add(entityVariable, () => CreateTestEntity(idVariable));
+        internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IIndexedVariable<TestEntityId> id) =>
+            Add(entity, () => CreateTestEntity(id));
+
+        internal GivenTestContext New(IVariable<TestEntityId> variable) => Add(variable, CreateTestEntityId);
 
         private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> idVariable) => new(Variables.Get(idVariable));
 

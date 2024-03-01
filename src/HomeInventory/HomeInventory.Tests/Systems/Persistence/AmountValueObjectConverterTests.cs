@@ -24,12 +24,12 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             .SubstituteFor(_factory,
                 (f, v) => f
                     .Create(Arg.Any<decimal>(), Arg.Any<AmountUnit>())
-                    .Returns(OneOf<Amount, IError>.FromT0(v.Get(_amount.WithIndex(0)))))
+                    .Returns(OneOf<Amount, IError>.FromT0(v.Get(_amount))))
             .Sut(_sut, _factory);
 
         When
             .Invoked(_sut, _amountModel, (sut, amount) => sut.TryConvert(amount))
-            .Result(_amount.WithIndex(0), (r, a) =>
+            .Result(_amount, (r, a) =>
             {
                 r.IsT0.Should().BeTrue();
                 r.AsT0.Should().BeSameAs(a);
@@ -53,7 +53,7 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
 
         internal GivenTestContext Sut(IVariable<AmountObjectConverter> sut, IVariable<IAmountFactory> factoryVariable)
         {
-            var factory = Variables.Get(factoryVariable.WithIndex(0));
+            var factory = Variables.Get(factoryVariable);
             Add(sut, () => new(factory));
             return this;
         }

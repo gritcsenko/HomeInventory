@@ -10,4 +10,6 @@ public interface IVariable
 public interface IVariable<T> : IVariable
 {
     IIndexedVariable<T> WithIndex(int index = 0);
+
+    IIndexedVariable<T> this[int index] { get; }
 }

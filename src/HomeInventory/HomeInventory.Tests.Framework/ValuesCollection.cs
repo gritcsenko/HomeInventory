@@ -45,7 +45,7 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
 
         var container = _values[index];
         var value = createValueFunc();
-        container.Update(Optional.Some<object>(value));
+        container.Update(value);
         return true;
     }
 
@@ -58,16 +58,21 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
         }
 
         var container = _values[index];
-        var value = container.Value;
-        return value.Convert(x => (T)x);
+        return (T)container.Value;
     }
 
-    private bool IsAsignable<T>() =>
+    public IEnumerable<T> GetAll<T>()
+        where T : notnull
+    {
+        return _values.Select(x => x.Value).Cast<T>();
+    }
+
+    public bool IsAsignable<T>() =>
         typeof(T).IsAssignableTo(_valueType);
 
     private void AddCore<T>(T value)
         where T : notnull =>
-        _values.Add(new ValueContainer(Optional.Some<object>(value), _valueType));
+        _values.Add(new ValueContainer(value, _valueType));
 
     public IEnumerator<ValueContainer> GetEnumerator() =>
         ((IEnumerable<ValueContainer>)_values).GetEnumerator();

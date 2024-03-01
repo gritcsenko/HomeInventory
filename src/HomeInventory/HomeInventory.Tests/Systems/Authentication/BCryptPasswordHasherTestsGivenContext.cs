@@ -6,7 +6,7 @@ public sealed class BCryptPasswordHasherTestsGivenContext(VariablesContainer var
 {
     private readonly Variable<BCryptPasswordHasher> _sut = new(nameof(_sut));
 
-    internal IIndexedVariable<BCryptPasswordHasher> Sut => _sut.WithIndex(0);
+    internal IVariable<BCryptPasswordHasher> Sut => _sut;
 
     internal BCryptPasswordHasherTestsGivenContext Hasher()
     {
