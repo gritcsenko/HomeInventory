@@ -2,54 +2,40 @@
 
 namespace HomeInventory.Tests.Framework;
 
-public class ThenContext<TResult> : BaseContext
+public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResult> resultVariable) : BaseContext(variables)
     where TResult : notnull
 {
-    private readonly IVariable<TResult> _resultVariable;
-
-    public ThenContext(VariablesContainer variables, IVariable<TResult> resultVariable)
-        : base(variables) =>
-        _resultVariable = resultVariable;
+    private readonly IVariable<TResult> _resultVariable = resultVariable;
 
     public ThenContext<TResult> Result(Action<TResult> assert)
     {
         using var scope = new AssertionScope();
-        assert(GetResult());
+        var result = Variables.Get(_resultVariable);
+        assert(result);
         return this;
     }
 
     public ThenContext<TResult> Result<TArg>(Variable<TArg> arg, Action<TResult, TArg> assert)
         where TArg : notnull =>
-        Result(arg.WithIndex(0), assert);
+        Result(arg[0], assert);
 
-    public ThenContext<TResult> Result<TArg>(IndexedVariable<TArg> arg, Action<TResult, TArg> assert)
+    public ThenContext<TResult> Result<TArg>(IIndexedVariable<TArg> arg, Action<TResult, TArg> assert)
         where TArg : notnull =>
         Result(r => assert(r, Variables.Get(arg)));
 
     public ThenContext<TResult> Result<TArg1, TArg2>(Variable<TArg1> arg1, Variable<TArg2> arg2, Action<TResult, TArg1, TArg2> assert)
         where TArg1 : notnull
         where TArg2 : notnull =>
-        Result(arg1.WithIndex(0), arg2.WithIndex(0), assert);
+        Result(arg1[0], arg2[0], assert);
 
-    public ThenContext<TResult> Result<TArg1, TArg2>(IndexedVariable<TArg1> arg1, IndexedVariable<TArg2> arg2, Action<TResult, TArg1, TArg2> assert)
+    public ThenContext<TResult> Result<TArg1, TArg2>(IIndexedVariable<TArg1> arg1, IIndexedVariable<TArg2> arg2, Action<TResult, TArg1, TArg2> assert)
         where TArg1 : notnull
         where TArg2 : notnull =>
         Result(r => assert(r, Variables.Get(arg1), Variables.Get(arg2)));
-
-    private TResult GetResult()
-    {
-        var variable = _resultVariable.WithIndex(0);
-        return Variables.Get(variable);
-    }
 }
 
-public class ThenContext : BaseContext
+public class ThenContext(VariablesContainer variables) : BaseContext(variables)
 {
-    public ThenContext(VariablesContainer variables)
-        : base(variables)
-    {
-    }
-
     public ThenContext Ensure(Action assert)
     {
         using var scope = new AssertionScope();

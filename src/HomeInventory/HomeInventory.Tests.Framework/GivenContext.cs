@@ -1,27 +1,21 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public class GivenContext<TContext> : BaseContext
+public class GivenContext<TContext>(VariablesContainer variables, IFixture fixture) : BaseContext(variables)
     where TContext : GivenContext<TContext>
 {
-    public GivenContext(VariablesContainer variables, IFixture fixture)
-        : base(variables)
-    {
-        Fixture = fixture;
-    }
-
-    protected IFixture Fixture { get; }
+    protected IFixture Fixture { get; } = fixture;
 
     protected TContext This => (TContext)this;
 
-    public TContext New<T>(IVariable<T> variable)
+    public TContext New<T>(IVariable<T> variable, IVariable<int> countVariable)
         where T : notnull =>
-        Add(variable, Fixture.Create<T>);
+        New(variable, countVariable[0]);
 
     public TContext New<T>(IVariable<T> variable, IIndexedVariable<int> countVariable)
         where T : notnull =>
         New(variable, Variables.Get(countVariable));
 
-    public TContext New<T>(IVariable<T> variable, int count)
+    public TContext New<T>(IVariable<T> variable, int count = 1)
         where T : notnull
     {
         foreach (var item in Fixture.CreateMany<T>(count))
@@ -47,17 +41,17 @@ public class GivenContext<TContext> : BaseContext
             return value;
         });
 
-    public TContext SubstituteFor<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, params Action<T, VariablesContainer>[] setups)
+    public TContext SubstituteFor<T>(IVariable<T> variable, IVariable<int> countVariable, params Action<T, int, VariablesContainer>[] setups)
         where T : class
     {
-        foreach (var _ in Enumerable.Range(0, Variables.Get(countVariable)))
+        foreach (var index in Enumerable.Range(0, Variables.Get(countVariable)))
         {
             Add(variable, () =>
             {
                 var value = Substitute.For<T>();
                 foreach (var setup in setups)
                 {
-                    setup(value, Variables);
+                    setup(value, index, Variables);
                 }
                 return value;
             });
@@ -69,6 +63,10 @@ public class GivenContext<TContext> : BaseContext
     public TContext Add<T>(IVariable<T> variable, T value)
         where T : notnull =>
         Add(variable, () => value);
+
+    public TContext Add<T>(IVariable<T> variable, IVariable<int> countVariable, Func<T> createValue)
+        where T : notnull =>
+        Add(variable, countVariable[0], createValue);
 
     public TContext Add<T>(IVariable<T> variable, IIndexedVariable<int> countVariable, Func<T> createValue)
         where T : notnull
@@ -89,7 +87,7 @@ public class GivenContext<TContext> : BaseContext
 
     public TContext AddAllToHashCode<T>(IVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull =>
-        AddAllToHashCode(hash.WithIndex(0), variable);
+        AddAllToHashCode(hash[0], variable);
 
     public TContext AddAllToHashCode<T>(IIndexedVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull

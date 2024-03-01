@@ -1,19 +1,10 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public class ValueContainer
+public class ValueContainer(object value, Type type)
 {
-    private Optional<object> _value;
-    private readonly Type _type;
+    public object Value { get; private set; } = value;
 
-    public ValueContainer(Optional<object> value, Type type)
-    {
-        _value = value;
-        _type = type;
-    }
+    public Type Type { get; } = type;
 
-    public Optional<object> Value => _value;
-
-    public Type Type => _type;
-
-    public void Update(Optional<object> value) => _value = value;
+    public void Update(object value) => Value = value;
 }

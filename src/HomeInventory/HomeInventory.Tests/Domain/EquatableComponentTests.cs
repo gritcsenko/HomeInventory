@@ -45,7 +45,7 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -61,7 +61,7 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -77,7 +77,7 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut, _component);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -93,7 +93,7 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Component(_sut, _component, count..);
 
         When
-            .Invoked(_sut.WithIndex(0), _sut.WithIndex(1), (sut, other) => sut.Equals(other))
+            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -101,14 +101,9 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
         new(variables, Fixture);
 
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext : GivenContext<GivenTestContext>
+    public sealed class GivenTestContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenTestContext>(variables, fixture)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesContainer variables, IFixture fixture)
-            : base(variables, fixture)
-        {
-        }
-
         public GivenTestContext Component(IVariable<EquatableComponent<string>> sut) =>
             Component(sut, new Variable<Ulid>(""));
 
@@ -118,6 +113,6 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
 
         public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, Range range)
             where T : notnull =>
-            Add(sut, () => new EquatableComponent<string>(Variables.GetMany(variable, range).Cast<object>().ToArray()));
+            Add(sut, () => new EquatableComponent<string>(Array.ConvertAll(Variables.GetMany(variable, range).ToArray(), x => (object)x)));
     }
 }
