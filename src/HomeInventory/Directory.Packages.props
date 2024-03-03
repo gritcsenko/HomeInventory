@@ -83,7 +83,7 @@
   <ItemGroup>
     <!--Compile-time dependencies-->
     <PackageVersion Include="coverlet.collector" Version="6.0.1" />
-    <PackageVersion Include="FluentAssertions.Analyzers" Version="0.30.0" />
+    <PackageVersion Include="FluentAssertions.Analyzers" Version="0.31.0" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2" />
