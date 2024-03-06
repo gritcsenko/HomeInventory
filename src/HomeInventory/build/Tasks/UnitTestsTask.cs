@@ -5,7 +5,7 @@ namespace Build.Tasks;
 
 [TaskName("UnitTest")]
 [IsDependentOn(typeof(BuildTask))]
-public sealed class UnitTestsTask : FrostingTask<BuildContext>
+public sealed class UnitTestsTask : FrostingTask<Context>
 {
-    public override void Run(BuildContext context) => context.DotNetTest(context.Tests, context.ToDotNetTestSettings());
+    public override void Run(Context context) => context.DotNetTest(context.Tests, context.ToDotNetTestSettings());
 }

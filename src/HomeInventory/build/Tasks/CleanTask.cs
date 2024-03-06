@@ -4,9 +4,9 @@ using Cake.Frosting;
 namespace Build.Tasks;
 
 [TaskName("Clean")]
-public sealed class CleanTask : FrostingTask<BuildContext>
+public sealed class CleanTask : FrostingTask<Context>
 {
-    public override void Run(BuildContext context)
+    public override void Run(Context context)
     {
         context.DotNetClean(context.Solution);
     }

@@ -5,7 +5,7 @@ using Cake.Frosting;
 
 namespace Build;
 
-public class BuildContext(ICakeContext context) : FrostingContext(context)
+public class Context(ICakeContext context) : FrostingContext(context)
 {
     public string Solution { get; } = "../HomeInventory.sln";
 

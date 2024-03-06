@@ -9,7 +9,7 @@ namespace Build;
 
 public static class BuildContextExtensions
 {
-    public static DotNetBuildSettings ToDotNetBuildSettings(this BuildContext context) =>
+    public static DotNetBuildSettings ToDotNetBuildSettings(this Context context) =>
         new()
         {
             Verbosity = context.Verbosity,
@@ -21,7 +21,7 @@ public static class BuildContextExtensions
             }
         };
 
-    public static DotNetFormatSettings ToDotNetFormatSettings(this BuildContext context) =>
+    public static DotNetFormatSettings ToDotNetFormatSettings(this Context context) =>
         new()
         {
             Verbosity = context.Verbosity,
@@ -30,13 +30,13 @@ public static class BuildContextExtensions
             NoRestore = true,
         };
 
-    public static DotNetRestoreSettings ToDotNetRestoreSettings(this BuildContext context) =>
+    public static DotNetRestoreSettings ToDotNetRestoreSettings(this Context context) =>
         new()
         {
             Verbosity = context.Verbosity,
         };
 
-    public static DotNetTestSettings ToDotNetTestSettings(this BuildContext context) =>
+    public static DotNetTestSettings ToDotNetTestSettings(this Context context) =>
         new()
         {
             Verbosity = context.Verbosity,

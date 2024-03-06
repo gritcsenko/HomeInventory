@@ -5,7 +5,7 @@ namespace Build.Tasks;
 
 [TaskName("Format")]
 [IsDependentOn(typeof(RestoreTask))]
-public sealed class FormatTask : FrostingTask<BuildContext>
+public sealed class FormatTask : FrostingTask<Context>
 {
-    public override void Run(BuildContext context) => context.DotNetFormat(context.Solution, context.ToDotNetFormatSettings());
+    public override void Run(Context context) => context.DotNetFormat(context.Solution, context.ToDotNetFormatSettings());
 }
