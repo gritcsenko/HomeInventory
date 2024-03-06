@@ -21,7 +21,7 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 
         _metricUnitScale = baseUnit._metricUnitScale * baseUnitScale;
         var power = Math.Log10(decimal.ToDouble(_metricUnitScale));
-        IsMetric = double.IsFinite(power) && Math.Round(power) == power;
+        IsMetric = double.IsFinite(power) && Math.Abs(Math.Round(power) - power) < double.Epsilon;
     }
 
     public static readonly AmountUnit Kelvin = new(nameof(Kelvin), MeasurementType.Temperature);
