@@ -25,8 +25,8 @@
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
     <PackageVersion Include="MediatR" Version="12.2.0" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
-    <PackageVersion Include="Microsoft.FeatureManagement" Version="3.1.1" />
-    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="3.1.1" />
+    <PackageVersion Include="Microsoft.FeatureManagement" Version="3.2.0" />
+    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="3.2.0" />
     <PackageVersion Include="OneOf" Version="3.0.263" />
     <PackageVersion Include="OneOf.SourceGenerator" Version="3.0.263" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
@@ -84,13 +84,13 @@
     <!--Compile-time dependencies-->
     <PackageVersion Include="coverlet.collector" Version="6.0.1" />
     <PackageVersion Include="Cake.Frosting" Version="4.0.0" />
-    <PackageVersion Include="FluentAssertions.Analyzers" Version="0.30.0" />
+    <PackageVersion Include="FluentAssertions.Analyzers" Version="0.31.0" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.20.0.85982" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.21.0.86780" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
   </ItemGroup>
 </Project>
