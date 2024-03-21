@@ -89,7 +89,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.21.0.86780" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.22.0.87781" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
   </ItemGroup>
 </Project>
