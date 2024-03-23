@@ -2,12 +2,9 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class Email : ValueObject<Email>
+public sealed class Email(string value) : ValueObject<Email>(value)
 {
-    public Email(string value)
-        : base(value) => Value = value;
-
-    public string Value { get; }
+    public string Value { get; } = value;
 
     public override string ToString() => Value;
 }

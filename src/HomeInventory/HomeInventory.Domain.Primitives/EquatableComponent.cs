@@ -2,16 +2,14 @@
 
 namespace HomeInventory.Domain.Primitives;
 
-public readonly struct EquatableComponent<T> : IEquatable<EquatableComponent<T>>
+public readonly struct EquatableComponent<T>(params object[] components) : IEquatable<EquatableComponent<T>>
 {
-    private readonly IReadOnlyCollection<object> _components;
+    private readonly IReadOnlyCollection<object> _components = components;
 
     public EquatableComponent()
         : this(Array.Empty<object>())
     {
     }
-
-    public EquatableComponent(params object[] components) => _components = components;
 
     public override int GetHashCode()
     {

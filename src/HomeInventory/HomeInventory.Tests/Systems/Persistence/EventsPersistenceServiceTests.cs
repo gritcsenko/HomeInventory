@@ -54,15 +54,8 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
     protected override EventsPersistenceServiceTestsGivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
 }
 
-public class EventsPersistenceServiceTestsGivenContext : GivenContext<EventsPersistenceServiceTestsGivenContext>
+public class EventsPersistenceServiceTestsGivenContext(VariablesContainer variables, IFixture fixture) : GivenContext<EventsPersistenceServiceTestsGivenContext>(variables, fixture)
 {
-
-    public EventsPersistenceServiceTestsGivenContext(VariablesContainer variables, IFixture fixture)
-        : base(variables, fixture)
-    {
-
-    }
-
     internal EventsPersistenceServiceTestsGivenContext Sut(IVariable<EventsPersistenceService> sutVariable, IVariable<DatabaseContext> dbContextVariable) =>
         Add(sutVariable, () => new EventsPersistenceService(Variables.Get(dbContextVariable)));
 }

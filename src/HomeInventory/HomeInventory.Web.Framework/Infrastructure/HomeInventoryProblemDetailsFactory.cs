@@ -9,16 +9,10 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web.Infrastructure;
 
-internal class HomeInventoryProblemDetailsFactory : ProblemDetailsFactory
+internal class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
 {
-    private readonly ApiBehaviorOptions _options;
-    private readonly ErrorMapping _errorMapping;
-
-    public HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options)
-    {
-        _errorMapping = errorMapping;
-        _options = options.Value;
-    }
+    private readonly ApiBehaviorOptions _options = options.Value;
+    private readonly ErrorMapping _errorMapping = errorMapping;
 
     public override ProblemDetails CreateProblemDetails(
         HttpContext httpContext,

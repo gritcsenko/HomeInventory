@@ -8,18 +8,11 @@ using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal class RegisterCommandHandler : CommandHandler<RegisterCommand>
+internal class RegisterCommandHandler(IUserRepository userRepository, IDateTimeService dateTimeService, IPasswordHasher hasher) : CommandHandler<RegisterCommand>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IDateTimeService _dateTimeService;
-    private readonly IPasswordHasher _hasher;
-
-    public RegisterCommandHandler(IUserRepository userRepository, IDateTimeService dateTimeService, IPasswordHasher hasher)
-    {
-        _userRepository = userRepository;
-        _dateTimeService = dateTimeService;
-        _hasher = hasher;
-    }
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly IPasswordHasher _hasher = hasher;
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {

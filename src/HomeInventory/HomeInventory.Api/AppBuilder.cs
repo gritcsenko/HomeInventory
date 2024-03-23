@@ -7,17 +7,14 @@ using Serilog;
 
 namespace HomeInventory.Api;
 
-internal class AppBuilder
+internal class AppBuilder(string[] args)
 {
-    private readonly string[] _args;
+    private readonly string[] _args = args;
 
     public AppBuilder()
         : this(Environment.GetCommandLineArgs())
     {
     }
-
-    public AppBuilder(string[] args) =>
-        _args = args;
 
     public WebApplication Build()
     {

@@ -1,19 +1,12 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<TSelf>
+public abstract class BaseEnumeration<TSelf>(string name, object key) : ValueObject<TSelf>(name, key), IEnumeration<TSelf>
     where TSelf : BaseEnumeration<TSelf>
 {
     private static readonly Lazy<EnumerationItemsCollection<TSelf>> _items = new(EnumerationItemsCollection.CreateFor<TSelf>, LazyThreadSafetyMode.ExecutionAndPublication);
-    private readonly object _key;
+    private readonly object _key = key;
 
-    protected BaseEnumeration(string name, object key)
-        : base(name, key)
-    {
-        Name = name;
-        _key = key;
-    }
-
-    public string Name { get; }
+    public string Name { get; } = name;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static TSelf Parse(string text) =>
@@ -27,15 +20,9 @@ public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<
     public override string ToString() => $"{Name} ({_key})";
 }
 
-public abstract class BaseEnumeration<TSelf, TValue> : BaseEnumeration<TSelf>, IEnumeration<TSelf, TValue>
+public abstract class BaseEnumeration<TSelf, TValue>(string name, TValue value) : BaseEnumeration<TSelf>(name, value), IEnumeration<TSelf, TValue>
     where TSelf : BaseEnumeration<TSelf, TValue>
     where TValue : notnull, IEquatable<TValue>
 {
-    protected BaseEnumeration(string name, TValue value)
-        : base(name, value)
-    {
-        Value = value;
-    }
-
-    public TValue Value { get; }
+    public TValue Value { get; } = value;
 }

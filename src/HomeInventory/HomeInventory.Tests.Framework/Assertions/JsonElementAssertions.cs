@@ -4,13 +4,8 @@ using HomeInventory.Tests.Framework.Assertions;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class JsonElementAssertions : ObjectAssertions<JsonElement, JsonElementAssertions>
+public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonElement, JsonElementAssertions>(value)
 {
-    public JsonElementAssertions(JsonElement value)
-        : base(value)
-    {
-    }
-
     public void BeArrayEqualTo(IReadOnlyCollection<string>? items)
     {
         if (items is null)

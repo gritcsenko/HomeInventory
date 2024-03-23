@@ -5,19 +5,13 @@ using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal class UnitOfWorkBehavior<TRequest, TIgnored> : IPipelineBehavior<TRequest, OneOf<Success, IError>>
+internal class UnitOfWorkBehavior<TRequest, TIgnored>(IUnitOfWork unitOfWork, ILogger<UnitOfWorkBehavior<TRequest, TIgnored>> logger) : IPipelineBehavior<TRequest, OneOf<Success, IError>>
      where TRequest : ICommand
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();
 
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger _logger;
-
-    public UnitOfWorkBehavior(IUnitOfWork unitOfWork, ILogger<UnitOfWorkBehavior<TRequest, TIgnored>> logger)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ILogger _logger = logger;
 
     public async Task<OneOf<Success, IError>> Handle(TRequest request, RequestHandlerDelegate<OneOf<Success, IError>> next, CancellationToken cancellationToken)
     {

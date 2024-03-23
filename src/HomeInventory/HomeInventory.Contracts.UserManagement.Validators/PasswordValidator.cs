@@ -3,11 +3,9 @@ using FluentValidation.Validators;
 
 namespace HomeInventory.Contracts.Validations;
 
-internal class PasswordValidator<T> : PropertyValidator<T, string?>
+internal class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> requiredSets) : PropertyValidator<T, string?>
 {
-    private readonly IEnumerable<IPasswordCharacterSet> _requiredSets;
-
-    public PasswordValidator(IEnumerable<IPasswordCharacterSet> requiredSets) => _requiredSets = requiredSets.ToArray();
+    private readonly IEnumerable<IPasswordCharacterSet> _requiredSets = requiredSets.ToArray();
 
     public override string Name => "PasswordValidator";
 

@@ -7,14 +7,9 @@ using HomeInventory.Infrastructure.Framework;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-internal class PolymorphicDomainEventTypeResolver : DefaultJsonTypeInfoResolver
+internal class PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEventJsonTypeInfo> eventTypeInfoProviders) : DefaultJsonTypeInfoResolver
 {
-    private readonly IEnumerable<IDomainEventJsonTypeInfo> _eventTypeInfoProviders;
-
-    public PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEventJsonTypeInfo> eventTypeInfoProviders)
-    {
-        _eventTypeInfoProviders = eventTypeInfoProviders;
-    }
+    private readonly IEnumerable<IDomainEventJsonTypeInfo> _eventTypeInfoProviders = eventTypeInfoProviders;
 
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {

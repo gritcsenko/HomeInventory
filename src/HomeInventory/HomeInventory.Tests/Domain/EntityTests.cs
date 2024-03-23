@@ -196,14 +196,9 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         new(variables, Fixture);
 
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext : GivenContext<GivenTestContext>
+    public sealed class GivenTestContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenTestContext>(variables, fixture)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesContainer variables, IFixture fixture)
-            : base(variables, fixture)
-        {
-        }
-
         internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IVariable<TestEntityId> id) =>
             TestEntity(entity, id[0]);
 
@@ -213,19 +208,11 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
     }
 
-    internal class TestEntityId : UlidIdentifierObject<TestEntityId>
+    internal class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value)
     {
-        public TestEntityId(Ulid value)
-            : base(value)
-        {
-        }
     }
 
-    internal class TestEntity : Entity<TestEntity, TestEntityId>
+    internal class TestEntity(EntityTests.TestEntityId id) : Entity<TestEntity, TestEntityId>(id)
     {
-        public TestEntity(TestEntityId id)
-            : base(id)
-        {
-        }
     }
 }
