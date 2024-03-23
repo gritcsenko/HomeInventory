@@ -150,9 +150,14 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, string? configSectionPath = null)
-        where TOptions : class => services.AddOptions<TOptions>()
-            .BindConfiguration(configSectionPath ?? typeof(TOptions).Name)
+    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services)
+        where TOptions : class, IOptions =>
+        services.AddOptionsWithValidator<TOptions>(TOptions.Section);
+
+    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, SectionPath configSectionPath)
+        where TOptions : class =>
+        services.AddOptions<TOptions>()
+            .BindConfiguration(configSectionPath)
             .ValidateWithValidator()
             .ValidateOnStart();
 
@@ -160,7 +165,16 @@ public static class ServiceCollectionExtensions
         where TOptions : class
     {
         var services = builder.Services;
-        services.AddSingleton<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidatorLocator>(), validationOptions));
+        services.AddSingleton(sp => CreateFluentOptionsValidator(sp, builder.Name, validationOptions));
         return builder;
+    }
+
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+    private static IValidateOptions<TOptions> CreateFluentOptionsValidator<TOptions>(IServiceProvider serviceProvider, string name, Action<ValidationStrategy<TOptions>>? validationOptions)
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+        where TOptions : class
+    {
+        var locator = serviceProvider.GetRequiredService<IValidatorLocator>();
+        return new FluentOptionsValidator<TOptions>(name, locator, validationOptions);
     }
 }
