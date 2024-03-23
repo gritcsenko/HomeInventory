@@ -7,15 +7,13 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
 {
     private Optional<TValue> _value = Optional.None<TValue>();
 
-    protected TSelf This => (TSelf)this;
-
     public TSelf WithValue(TValue value)
     {
         _value = Optional.Some(value);
         return (TSelf)this;
     }
 
-    public Optional<TObject> Invoke() =>
+    public Optional<TObject> Build() =>
         _value
             .If(IsValueValid)
             .Convert(ToObject);

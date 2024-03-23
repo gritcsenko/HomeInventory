@@ -1,32 +1,25 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
+using HomeInventory.Core;
 
 namespace HomeInventory.Contracts.Validations;
 
-internal class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> requiredSets) : PropertyValidator<T, string?>
+internal sealed class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> requiredSets) : PropertyValidator<T, string?>
 {
     private readonly IEnumerable<IPasswordCharacterSet> _requiredSets = requiredSets.ToArray();
 
     public override string Name => "PasswordValidator";
 
-    public override bool IsValid(ValidationContext<T> context, string? value)
-    {
-        if (value == null)
-        {
-            return true;
-        }
-
-        foreach (var requiredSet in _requiredSets)
-        {
-            if (!requiredSet.ContainsAny(value))
+    public override bool IsValid(ValidationContext<T> context, string? value) =>
+        value == null
+        || _requiredSets
+            .FirstOrNone(set => !set.ContainsAny(value))
+            .Convert(set =>
             {
-                context.MessageFormatter.AppendArgument("Category", requiredSet.Name);
+                context.MessageFormatter.AppendArgument("Category", set.Name);
                 return false;
-            }
-        }
-
-        return true;
-    }
+            })
+            .Or(true);
 
     protected override string GetDefaultMessageTemplate(string errorCode) => "{PropertyName} must contain {Category} characters";
 }

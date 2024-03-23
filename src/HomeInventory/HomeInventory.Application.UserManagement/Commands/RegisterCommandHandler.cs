@@ -8,7 +8,7 @@ using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal class RegisterCommandHandler(IUserRepository userRepository, IDateTimeService dateTimeService, IPasswordHasher hasher) : CommandHandler<RegisterCommand>
+internal sealed class RegisterCommandHandler(IUserRepository userRepository, IDateTimeService dateTimeService, IPasswordHasher hasher) : CommandHandler<RegisterCommand>
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IDateTimeService _dateTimeService = dateTimeService;

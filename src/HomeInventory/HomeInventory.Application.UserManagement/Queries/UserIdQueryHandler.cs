@@ -4,7 +4,7 @@ using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Queries.UserId;
 
-internal class UserIdQueryHandler(IUserRepository userRepository) : QueryHandler<UserIdQuery, UserIdResult>
+internal sealed class UserIdQueryHandler(IUserRepository userRepository) : QueryHandler<UserIdQuery, UserIdResult>
 {
     private readonly IUserRepository _repository = userRepository;
 

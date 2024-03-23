@@ -7,7 +7,7 @@ using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 
-internal class AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IPasswordHasher hasher) : QueryHandler<AuthenticateQuery, AuthenticateResult>
+internal sealed class AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IPasswordHasher hasher) : QueryHandler<AuthenticateQuery, AuthenticateResult>
 {
     private readonly IAuthenticationTokenGenerator _tokenGenerator = tokenGenerator;
     private readonly IUserRepository _userRepository = userRepository;

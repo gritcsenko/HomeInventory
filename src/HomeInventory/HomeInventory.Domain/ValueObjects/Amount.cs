@@ -7,13 +7,20 @@ public sealed class Amount : ValueObject<Amount>
     internal Amount(decimal value, AmountUnit unit)
         : base(value, unit)
     {
-        Value = value;
-        Unit = unit;
     }
 
-    public decimal Value { get; }
+    public decimal Value => GetComponent<decimal>(0);
 
-    public AmountUnit Unit { get; }
+    public AmountUnit Unit => GetComponent<AmountUnit>(1);
 
-    public Amount ToMetric() => Unit.IsMetric ? this : new Amount(Unit.ToMetric(Value), Unit.MetricUnit);
+    public Amount ToMetric()
+    {
+        if (Unit.IsMetric)
+        {
+            return this;
+        }
+
+        var (value, unit) = Unit.ToMetric(Value);
+        return new Amount(value, unit);
+    }
 }

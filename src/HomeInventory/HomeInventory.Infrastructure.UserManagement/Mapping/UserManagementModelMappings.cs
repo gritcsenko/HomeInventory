@@ -4,7 +4,7 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.UserManagement.Mapping;
 
-internal class UserManagementModelMappings : ModelMappingsProfile
+internal sealed class UserManagementModelMappings : ModelMappingsProfile
 {
     public UserManagementModelMappings()
     {

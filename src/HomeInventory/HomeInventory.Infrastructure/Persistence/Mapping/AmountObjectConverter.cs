@@ -7,7 +7,7 @@ using OneOf;
 
 namespace HomeInventory.Infrastructure.Persistence.Mapping;
 
-internal class AmountObjectConverter(IAmountFactory factory) : ObjectConverter<Amount, ProductAmountModel>, ITypeConverter<ProductAmountModel, Amount>
+internal sealed class AmountObjectConverter(IAmountFactory factory) : ObjectConverter<Amount, ProductAmountModel>, ITypeConverter<ProductAmountModel, Amount>
 {
     private readonly IAmountFactory _factory = factory;
 

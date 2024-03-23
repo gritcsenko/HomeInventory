@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Infrastructure.Framework;
 
-public interface IDomainEventJsonTypeInfo
+public interface IJsonDerivedTypeInfo
 {
-    IEnumerable<JsonDerivedType> DomainEventTypes { get; }
+    IEnumerable<JsonDerivedType> DerivedTypes { get; }
 }

@@ -208,8 +208,9 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
     }
 
-    internal class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value)
+    internal class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
     {
+        public static Result<TestEntityId> CreateFrom(Ulid value) => DotNext.Result.FromValue(new TestEntityId(value));
     }
 
     internal class TestEntity(EntityTests.TestEntityId id) : Entity<TestEntity, TestEntityId>(id)

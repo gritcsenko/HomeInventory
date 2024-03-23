@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Application;
 
-internal class MappingAssemblySource(IReadOnlyCollection<Assembly> assemblies) : IMappingAssemblySource
+internal sealed class MappingAssemblySource(IReadOnlyCollection<Assembly> assemblies) : IMappingAssemblySource
 {
     private readonly IReadOnlyCollection<Assembly> _assemblies = assemblies;
 

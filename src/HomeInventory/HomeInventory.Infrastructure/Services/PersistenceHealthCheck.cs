@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Services;
 
-internal class PersistenceHealthCheck(DatabaseContext context) : BaseHealthCheck
+internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHealthCheck
 {
     private readonly DatabaseContext _context = context;
 
