@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 
-internal class PublishDomainEventsInterceptor : SaveChangesInterceptor
+internal class PublishDomainEventsInterceptor(IPublisher publisher) : SaveChangesInterceptor
 {
-    private readonly IPublisher _publisher;
-
-    public PublishDomainEventsInterceptor(IPublisher publisher)
-    {
-        _publisher = publisher;
-    }
+    private readonly IPublisher _publisher = publisher;
 
     public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result, CancellationToken cancellationToken = default)
     {

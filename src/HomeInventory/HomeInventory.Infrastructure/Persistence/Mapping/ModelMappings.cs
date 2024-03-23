@@ -4,7 +4,7 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.Persistence.Mapping;
 
-internal class ModelMappings : MappingProfile
+internal sealed class ModelMappings : MappingProfile
 {
     public ModelMappings()
     {

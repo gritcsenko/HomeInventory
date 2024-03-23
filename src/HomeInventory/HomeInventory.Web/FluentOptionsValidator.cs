@@ -5,20 +5,13 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web;
 
-internal sealed class FluentOptionsValidator<TOptions> : IValidateOptions<TOptions>
+internal sealed class FluentOptionsValidator<TOptions>(string? name, IValidatorLocator validatorLocator, Action<ValidationStrategy<TOptions>>? validationOptions) : IValidateOptions<TOptions>
     where TOptions : class
 {
-    private readonly Action<ValidationStrategy<TOptions>> _validationOptions;
-    private readonly IValidator _validator;
+    private readonly Action<ValidationStrategy<TOptions>> _validationOptions = validationOptions ?? (_ => { });
+    private readonly IValidator _validator = validatorLocator.GetValidator<TOptions>();
 
-    public FluentOptionsValidator(string? name, IValidatorLocator validatorLocator, Action<ValidationStrategy<TOptions>>? validationOptions)
-    {
-        Name = name;
-        _validator = validatorLocator.GetValidator<TOptions>();
-        _validationOptions = validationOptions ?? (_ => { });
-    }
-
-    public string? Name { get; }
+    public string? Name { get; } = name;
 
     public ValidateOptionsResult Validate(string? name, TOptions options)
     {

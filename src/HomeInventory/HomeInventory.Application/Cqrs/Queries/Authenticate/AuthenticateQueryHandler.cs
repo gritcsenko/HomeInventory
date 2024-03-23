@@ -7,18 +7,11 @@ using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 
-internal class AuthenticateQueryHandler : QueryHandler<AuthenticateQuery, AuthenticateResult>
+internal sealed class AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IPasswordHasher hasher) : QueryHandler<AuthenticateQuery, AuthenticateResult>
 {
-    private readonly IAuthenticationTokenGenerator _tokenGenerator;
-    private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher _hasher;
-
-    public AuthenticateQueryHandler(IAuthenticationTokenGenerator tokenGenerator, IUserRepository userRepository, IPasswordHasher hasher)
-    {
-        _tokenGenerator = tokenGenerator;
-        _userRepository = userRepository;
-        _hasher = hasher;
-    }
+    private readonly IAuthenticationTokenGenerator _tokenGenerator = tokenGenerator;
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly IPasswordHasher _hasher = hasher;
 
     protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
     {

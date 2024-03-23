@@ -2,11 +2,12 @@
 
 namespace HomeInventory.Domain;
 
-internal class FixedDateTimeService : IDateTimeService
+internal sealed class FixedDateTimeService(DateTimeOffset time) : IDateTimeService
 {
-    public FixedDateTimeService(DateTimeOffset time) => UtcNow = time.ToUniversalTime();
+    public FixedDateTimeService(IDateTimeService source)
+        : this(source.UtcNow)
+    {
+    }
 
-    public FixedDateTimeService(IDateTimeService source) => UtcNow = source.UtcNow;
-
-    public DateTimeOffset UtcNow { get; }
+    public DateTimeOffset UtcNow { get; } = time.ToUniversalTime();
 }

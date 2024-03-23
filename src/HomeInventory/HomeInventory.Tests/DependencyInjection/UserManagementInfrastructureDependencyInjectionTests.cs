@@ -33,7 +33,7 @@ public class UserManagementInfrastructureDependencyInjectionTests : BaseDependen
         Services.Should().ContainSingleScoped<IUserRepository>(provider);
         Services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
         Services.Should().ContainSingleSingleton<IPasswordHasher>(provider);
-        Services.Should().ContainSingleSingleton<IDomainEventJsonTypeInfo>(provider);
+        Services.Should().ContainSingleSingleton<IJsonDerivedTypeInfo>(provider);
         Services.Should().ContainSingleScoped<IDatabaseConfigurationApplier>(provider);
     }
 }

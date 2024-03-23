@@ -69,14 +69,9 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
     protected override GivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
 
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenContext : GivenContext<GivenContext>
+    public sealed class GivenContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenContext>(variables, fixture)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenContext(VariablesContainer variables, IFixture fixture)
-             : base(variables, fixture)
-        {
-        }
-
         internal GivenContext Sut(IVariable<ErrorMapping> sut) => Add(sut, () => new());
     }
 }

@@ -3,7 +3,7 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Infrastructure.Persistence.Models;
 
-internal class UserModel : IPersistentModel<UserId>, IHasCreationAudit, IHasModificationAudit
+internal sealed class UserModel : IPersistentModel<UserId>, IHasCreationAudit, IHasModificationAudit
 {
     public required UserId Id { get; init; }
     public required string Email { get; init; }

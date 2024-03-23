@@ -4,7 +4,7 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.Specifications;
 
-internal class UserHasEmailSpecification : Specification<UserModel>, ISingleResultSpecification<UserModel>
+internal sealed class UserHasEmailSpecification : Specification<UserModel>, ISingleResultSpecification<UserModel>
 {
     public UserHasEmailSpecification(Email email)
     {

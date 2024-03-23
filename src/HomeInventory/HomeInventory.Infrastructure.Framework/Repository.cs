@@ -10,23 +10,15 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-public abstract class Repository<TModel, TAggregateRoot, TIdentifier> : IRepository<TAggregateRoot>
+public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService) : IRepository<TAggregateRoot>
     where TModel : class, IPersistentModel<TIdentifier>
     where TAggregateRoot : AggregateRoot<TAggregateRoot, TIdentifier>
     where TIdentifier : IIdentifierObject<TIdentifier>
 {
-    private readonly IDatabaseContext _context;
-    private readonly IMapper _mapper;
-    private readonly ISpecificationEvaluator _evaluator;
-    private readonly IEventsPersistenceService _eventsPersistenceService;
-
-    protected Repository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService)
-    {
-        _context = context;
-        _mapper = mapper;
-        _evaluator = evaluator;
-        _eventsPersistenceService = eventsPersistenceService;
-    }
+    private readonly IDatabaseContext _context = context;
+    private readonly IMapper _mapper = mapper;
+    private readonly ISpecificationEvaluator _evaluator = evaluator;
+    private readonly IEventsPersistenceService _eventsPersistenceService = eventsPersistenceService;
 
     public async ValueTask AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {

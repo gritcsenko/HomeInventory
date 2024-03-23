@@ -12,7 +12,7 @@ public static class RegisterCommandExtensions
         await UserId
             .CreateBuilder()
             .WithValue(command.UserIdSupplier.Invoke())
-            .Invoke()
+            .Build()
             .ConvertAsync(async (id, t) =>
             {
                 var password = await hasher.HashAsync(command.Password, t);

@@ -19,13 +19,11 @@ public abstract class BaseApiModuleTests : BaseApiModuleTests<BaseApiModuleTests
         new(variables, Fixture, Cancellation);
 
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class ApiGivenTestContext : BaseApiGivenTestContext
+#pragma warning disable S2094 // Classes should not be empty
+    public sealed class ApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation) : BaseApiGivenTestContext(variables, fixture, cancellation)
+#pragma warning restore S2094 // Classes should not be empty
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public ApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation)
-            : base(variables, fixture, cancellation)
-        {
-        }
     }
 }
 

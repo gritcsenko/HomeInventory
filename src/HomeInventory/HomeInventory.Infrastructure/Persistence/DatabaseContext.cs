@@ -9,24 +9,13 @@ namespace HomeInventory.Infrastructure.Persistence;
 
 internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
 {
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        foreach (var applier in configurationAppliers)
-        {
-            applier.ApplyConfigurationTo(modelBuilder);
-        }
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.AddInterceptors(interceptor);
-
-        base.OnConfiguring(optionsBuilder);
-    }
+    private readonly PublishDomainEventsInterceptor _interceptor = interceptor;
+    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = configurationAppliers.ToArray();
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        UpdateAuditableEntities(dateTimeService.UtcNow);
+        UpdateAuditableEntities(_dateTimeService.UtcNow);
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
@@ -39,6 +28,21 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
         where TEntity : class =>
         Set<TEntity>();
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        foreach (var applier in _configurationAppliers)
+        {
+            applier.ApplyConfigurationTo(modelBuilder);
+        }
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(_interceptor);
+
+        base.OnConfiguring(optionsBuilder);
+    }
+
     private void UpdateAuditableEntities(DateTimeOffset now)
     {
         UpdateTimeAuditEntities<IHasCreationAudit>(now, EntityState.Added, x => x.CreatedOn);
@@ -48,13 +52,13 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
     private void UpdateTimeAuditEntities<TEntity>(DateTimeOffset now, EntityState state, Expression<Func<TEntity, DateTimeOffset>> propertyExpression)
         where TEntity : class
     {
-        foreach (var entry in ChangeTracker.Entries<TEntity>())
+        var properties = ChangeTracker
+            .Entries<TEntity>()
+            .Where(e => e.State == state)
+            .Select(e => e.Property(propertyExpression));
+        foreach (var property in properties)
         {
-            if (entry.State == state)
-            {
-                var propertyEntry = entry.Property(propertyExpression);
-                propertyEntry.CurrentValue = now;
-            }
+            property.CurrentValue = now;
         }
     }
 }

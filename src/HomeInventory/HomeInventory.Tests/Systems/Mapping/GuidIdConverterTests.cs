@@ -57,14 +57,9 @@ public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestConte
         new(variables, Fixture);
 
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext : GivenContext<GivenTestContext>
+    public sealed class GivenTestContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenTestContext>(variables, fixture)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesContainer variables, IFixture fixture)
-            : base(variables, fixture)
-        {
-        }
-
         internal GivenTestContext Empty(Variable<Ulid> idVariable)
         {
             Add(idVariable, () => Ulid.Empty);

@@ -3,14 +3,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HomeInventory.Web.OpenApi;
 
-internal class SwaggerDefaultValues : IOperationFilter
+internal class SwaggerDefaultValues(IEnumerable<ISwaggerOperationFilter> childFilters) : IOperationFilter
 {
-    private readonly IReadOnlyCollection<ISwaggerOperationFilter> _childFilters;
-
-    public SwaggerDefaultValues(IEnumerable<ISwaggerOperationFilter> childFilters)
-    {
-        _childFilters = childFilters.ToArray();
-    }
+    private readonly IReadOnlyCollection<ISwaggerOperationFilter> _childFilters = childFilters.ToArray();
 
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {

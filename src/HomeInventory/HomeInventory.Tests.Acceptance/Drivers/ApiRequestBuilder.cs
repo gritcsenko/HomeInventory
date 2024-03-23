@@ -2,16 +2,10 @@
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal class ApiRequestBuilder : IApiRequestBuilder
+internal class ApiRequestBuilder(RequestBuilder requestBuilder, HttpMethod httpMethod) : IApiRequestBuilder
 {
-    private readonly HttpMethod _httpMethod;
-    private readonly RequestBuilder _requestBuilder;
-
-    public ApiRequestBuilder(RequestBuilder requestBuilder, HttpMethod httpMethod)
-    {
-        _httpMethod = httpMethod;
-        _requestBuilder = requestBuilder;
-    }
+    private readonly HttpMethod _httpMethod = httpMethod;
+    private readonly RequestBuilder _requestBuilder = requestBuilder;
 
     public IApiRequestBuilder WithRequestHeader(string name, string value)
     {

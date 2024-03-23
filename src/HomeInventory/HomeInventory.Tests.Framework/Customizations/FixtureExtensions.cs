@@ -6,8 +6,8 @@ namespace HomeInventory.Tests.Framework.Customizations;
 public static class FixtureExtensions
 {
     public static IFixture CustomizeUlidId<TId>(this IFixture fixture)
-        where TId : class, IUlidIdentifierObject<TId> =>
-        fixture.CustomizeFromFactory<Ulid, TId>(source => TId.CreateBuilder().WithValue(source).Invoke().Value);
+        where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId> =>
+        fixture.CustomizeFromFactory<Ulid, TId>(source => TId.CreateBuilder().WithValue(source).Build().Value);
 
     public static IFixture CustomizeEmail(this IFixture fixture) => fixture.CustomizeFromFactory<Ulid, Email>(value => new Email(value.ToString()));
 
