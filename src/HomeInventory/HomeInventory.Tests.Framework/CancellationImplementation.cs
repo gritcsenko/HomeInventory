@@ -1,10 +1,8 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-internal sealed class CancellationImplementation : Disposable, ICancellation
+internal sealed class CancellationImplementation(CancellationTokenSource? source = null) : Disposable, ICancellation
 {
-    private readonly CancellationTokenSource _source;
-
-    public CancellationImplementation(CancellationTokenSource? source = null) => _source = source ?? new CancellationTokenSource();
+    private readonly CancellationTokenSource _source = source ?? new CancellationTokenSource();
 
     public CancellationToken Token => _source.Token;
 

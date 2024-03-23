@@ -8,7 +8,7 @@ using Humanizer;
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 
 [Binding]
-internal class GetAreaStepDefinitions
+internal class GetAreaStepDefinitions(ScenarioContext context, IHomeInventoryApiDriver apiDriver)
 {
     private static class Keys
     {
@@ -18,20 +18,9 @@ internal class GetAreaStepDefinitions
         public const string Login = nameof(Login);
     }
 
-    private readonly ScenarioContext _context;
-    private readonly IHomeInventoryApiDriver _apiDriver;
+    private readonly ScenarioContext _context = context;
+    private readonly IHomeInventoryApiDriver _apiDriver = apiDriver;
     private readonly CultureInfo _culture = CultureInfo.CurrentCulture;
-
-    // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-    public GetAreaStepDefinitions(ScenarioContext context, IHomeInventoryApiDriver apiDriver)
-    {
-        // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata
-        // To use the multiline text or the table argument of the scenario,
-        // additional string/Table parameters can be defined on the step definition
-        // method.
-        _context = context;
-        _apiDriver = apiDriver;
-    }
 
     [Given(@"Following environment")]
     public void GivenFollowingEnvironment(Table table)

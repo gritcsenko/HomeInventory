@@ -1,15 +1,10 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class AggregateRoot<TSelf, TIdentity> : Entity<TSelf, TIdentity>, IHasDomainEvents
+public abstract class AggregateRoot<TSelf, TIdentity>(TIdentity id) : Entity<TSelf, TIdentity>(id), IHasDomainEvents
     where TIdentity : IIdentifierObject<TIdentity>
     where TSelf : AggregateRoot<TSelf, TIdentity>
 {
     private readonly EventsCollection _events = new();
-
-    protected AggregateRoot(TIdentity id)
-        : base(id)
-    {
-    }
 
     public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _events.DomainEvents;
 

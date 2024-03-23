@@ -1,10 +1,6 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class ValueObject<TSelf> : Equatable<TSelf>, IValueObject<TSelf>
+public abstract class ValueObject<TSelf>(params object[] components) : Equatable<TSelf>(components), IValueObject<TSelf>
     where TSelf : ValueObject<TSelf>
 {
-    protected ValueObject(params object[] components)
-        : base(components)
-    {
-    }
 }

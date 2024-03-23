@@ -8,14 +8,9 @@ namespace HomeInventory.Web.OpenApi;
 /// <summary>
 /// REF: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/412
 /// </summary>
-internal sealed class ParametersSwaggerOperationFilter : ISwaggerOperationFilter
+internal sealed class ParametersSwaggerOperationFilter(IOpenApiValueConverter converter) : ISwaggerOperationFilter
 {
-    private readonly IOpenApiValueConverter _converter;
-
-    public ParametersSwaggerOperationFilter(IOpenApiValueConverter converter)
-    {
-        _converter = converter;
-    }
+    private readonly IOpenApiValueConverter _converter = converter;
 
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {

@@ -6,36 +6,21 @@ public static class EnumerableExtensions
 
     public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source) => source.SelectMany(Func.Identity<IEnumerable<T>>());
 
-    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? source) => source ?? Enumerable.Empty<T>();
+    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? source) => source ?? [];
 
     public static IReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> source) => source as IReadOnlyCollection<T> ?? source.ToArray();
 
     public static IEnumerable<T> WithCancellation<T>(this IEnumerable<T> source, CancellationToken cancellationToken) =>
         source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
 
+    public static Optional<T> FirstOrNone<T>(this IEnumerable<T> source, Func<T, bool> filter) => source.Where(filter).FirstOrNone();
+
     public static Optional<T> FirstOrNone<T>(this IEnumerable<T> source)
     {
-        foreach (var item in source)
-        {
-#pragma warning disable S1751 // Loops with at most one iteration should be refactored
-            return item;
-#pragma warning restore S1751 // Loops with at most one iteration should be refactored
-        }
-
-        return Optional<T>.None;
+        using var enumerator = source.GetEnumerator();
+        return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
     }
 
-    public static Optional<T> FirstOrNone<T>(this IEnumerable<T> source, Func<T, bool> filter)
-    {
-        foreach (var item in source.Where(item => filter(item)))
-        {
-#pragma warning disable S1751 // Loops with at most one iteration should be refactored
-            return item;
-#pragma warning restore S1751 // Loops with at most one iteration should be refactored
-        }
-
-        return Optional<T>.None;
-    }
     private static IEnumerable<T> ConcatCore<T>(IEnumerable<T> source, T item)
     {
         foreach (var i in source)

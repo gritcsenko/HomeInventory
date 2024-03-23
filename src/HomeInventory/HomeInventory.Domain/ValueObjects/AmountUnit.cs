@@ -3,7 +3,6 @@ using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.ValueObjects;
-
 public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 {
     private readonly decimal _metricUnitScale = 1m;

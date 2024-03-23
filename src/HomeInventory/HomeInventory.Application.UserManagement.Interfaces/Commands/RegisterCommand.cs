@@ -4,7 +4,7 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-public record class RegisterCommand(
+public sealed record class RegisterCommand(
     Email Email,
     string Password,
     ISupplier<Ulid> UserIdSupplier) : ICommand;

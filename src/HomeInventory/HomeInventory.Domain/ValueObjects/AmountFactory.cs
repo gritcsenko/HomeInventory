@@ -12,11 +12,9 @@ internal sealed class AmountFactory : IAmountFactory
             .Convert(OneOf<Amount, IError>.FromT1)
             .OrInvoke(() => new Amount(value, unit));
 
-    private readonly ref struct UnitValidator
+    private readonly ref struct UnitValidator(AmountUnit unit)
     {
-        private readonly AmountUnit _unit;
-
-        public UnitValidator(AmountUnit unit) => _unit = unit;
+        private readonly AmountUnit _unit = unit;
 
         public Optional<IError> Validate(decimal value)
         {

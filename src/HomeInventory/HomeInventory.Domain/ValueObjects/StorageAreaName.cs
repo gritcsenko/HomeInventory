@@ -2,13 +2,7 @@
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class StorageAreaName : ValueObject<StorageAreaName>
+public sealed class StorageAreaName(string value) : ValueObject<StorageAreaName>(value)
 {
-    public StorageAreaName(string value)
-        : base(value)
-    {
-        Value = value;
-    }
-
-    public string Value { get; }
+    public string Value { get; } = value;
 }

@@ -1,17 +1,14 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public sealed class UlidIdentifierObjectBuilder<TObject> : ValueObjectBuilder<UlidIdentifierObjectBuilder<TObject>, TObject, Ulid>
+public sealed class UlidIdentifierObjectBuilder<TObject>(Func<Ulid, Result<TObject>> objectFactoryFunc) : ValueObjectBuilder<UlidIdentifierObjectBuilder<TObject>, TObject, Ulid>
     where TObject : class, IUlidBuildable<TObject>, IUlidIdentifierObject<TObject>
 {
-    private readonly Func<Ulid, Result<TObject>> _objectFactoryFunc;
+    private readonly Func<Ulid, Result<TObject>> _objectFactoryFunc = objectFactoryFunc;
 
     public UlidIdentifierObjectBuilder()
         : this(TObject.CreateFrom)
     {
     }
-
-    public UlidIdentifierObjectBuilder(Func<Ulid, Result<TObject>> objectFactoryFunc) =>
-        _objectFactoryFunc = objectFactoryFunc;
 
     protected override bool IsValueValid(Ulid value) => value != Ulid.Empty;
 

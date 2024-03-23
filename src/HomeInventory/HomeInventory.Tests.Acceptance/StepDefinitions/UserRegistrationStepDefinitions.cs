@@ -5,7 +5,7 @@ using HomeInventory.Tests.Acceptance.Support;
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;
 
 [Binding]
-internal sealed class UserRegistrationStepDefinitions
+internal sealed class UserRegistrationStepDefinitions(ScenarioContext context, IHomeInventoryApiDriver apiDriver)
 {
     private static class Keys
     {
@@ -14,19 +14,8 @@ internal sealed class UserRegistrationStepDefinitions
         public const string UserId = nameof(UserId);
     }
 
-    private readonly ScenarioContext _context;
-    private readonly IHomeInventoryApiDriver _apiDriver;
-
-    // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-    public UserRegistrationStepDefinitions(ScenarioContext context, IHomeInventoryApiDriver apiDriver)
-    {
-        // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata
-        // To use the multiline text or the table argument of the scenario,
-        // additional string/Table parameters can be defined on the step definition
-        // method.
-        _context = context;
-        _apiDriver = apiDriver;
-    }
+    private readonly ScenarioContext _context = context;
+    private readonly IHomeInventoryApiDriver _apiDriver = apiDriver;
 
     [Given(@$"User e-mail {Patterns.QuotedName}")]
     public void GivenUserEmail(string email)

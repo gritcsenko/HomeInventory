@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal class AuthenticationApiDriver : ApiDriver, IAuthenticationApiDriver
+internal class AuthenticationApiDriver(TestServer server) : ApiDriver(server, "/api/Authentication"), IAuthenticationApiDriver
 {
-    public AuthenticationApiDriver(TestServer server)
-        : base(server, "/api/Authentication")
-    {
-    }
-
     public async ValueTask<LoginResponse> LoginAsync(LoginRequest requestBody)
         => await CreatePostRequest("/login")
             .WithJsonBody(requestBody)

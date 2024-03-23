@@ -7,22 +7,22 @@ using HomeInventory.Infrastructure.Framework;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEventJsonTypeInfo> eventTypeInfoProviders) : DefaultJsonTypeInfoResolver
+internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IJsonDerivedTypeInfo> eventTypeInfoProviders) : DefaultJsonTypeInfoResolver
 {
-    private readonly IReadOnlyCollection<JsonDerivedType> _derivedTypes = eventTypeInfoProviders.SelectMany(p => p.DomainEventTypes).ToArray();
+    private readonly IReadOnlyCollection<JsonDerivedType> _derivedTypes = eventTypeInfoProviders.SelectMany(p => p.DerivedTypes).ToArray();
 
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
         var jsonTypeInfo = base.GetTypeInfo(type, options);
         if (jsonTypeInfo.Type == typeof(IDomainEvent))
         {
-            jsonTypeInfo.PolymorphismOptions = CreateOptions();
+            jsonTypeInfo.PolymorphismOptions = CreateOptions(_derivedTypes);
         }
 
         return jsonTypeInfo;
     }
 
-    private JsonPolymorphismOptions CreateOptions()
+    private static JsonPolymorphismOptions CreateOptions(IEnumerable<JsonDerivedType> derivedTypes)
     {
         var polymorphismOptions = new JsonPolymorphismOptions
         {
@@ -30,7 +30,8 @@ internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IDomainEven
             IgnoreUnrecognizedTypeDiscriminators = true,
             UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
         };
-        polymorphismOptions.DerivedTypes.AddAll(_derivedTypes);
+        polymorphismOptions.DerivedTypes.AddAll(derivedTypes);
         return polymorphismOptions;
     }
 }
+

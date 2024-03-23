@@ -7,10 +7,6 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class StorageAreaRepository : Repository<StorageAreaModel, StorageArea, StorageAreaId>, IStorageAreaRepository
+internal class StorageAreaRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService) : Repository<StorageAreaModel, StorageArea, StorageAreaId>(context, mapper, evaluator, eventsPersistenceService), IStorageAreaRepository
 {
-    public StorageAreaRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService)
-        : base(context, mapper, evaluator, eventsPersistenceService)
-    {
-    }
 }

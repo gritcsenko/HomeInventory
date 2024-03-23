@@ -3,16 +3,10 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal abstract class ApiDriver
+internal abstract class ApiDriver(TestServer server, string basePath)
 {
-    private readonly TestServer _server;
-    private readonly string _basePath;
-
-    protected ApiDriver(TestServer server, string basePath)
-    {
-        _server = server;
-        _basePath = basePath;
-    }
+    private readonly TestServer _server = server;
+    private readonly string _basePath = basePath;
 
     protected IApiRequestBuilder CreateGetRequest(string path) =>
         CreateRequest(HttpMethod.Get, path);

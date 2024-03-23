@@ -1,12 +1,8 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class Entity<TSelf, TIdentity> : Equatable<TSelf>, IEntity<TSelf, TIdentity>
+public abstract class Entity<TSelf, TIdentity>(TIdentity id) : Equatable<TSelf>(id), IEntity<TSelf, TIdentity>
     where TIdentity : notnull, IIdentifierObject<TIdentity>
     where TSelf : notnull, Entity<TSelf, TIdentity>
 {
-    protected Entity(TIdentity id)
-        : base(id) =>
-        Id = id;
-
-    public TIdentity Id { get; }
+    public TIdentity Id { get; } = id;
 }

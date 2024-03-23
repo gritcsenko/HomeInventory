@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class OkResultAssertions<TValue> : ObjectAssertions<Ok<TValue>, OkResultAssertions<TValue>>
+public class OkResultAssertions<TValue>(Ok<TValue> value) : ObjectAssertions<Ok<TValue>, OkResultAssertions<TValue>>(value)
 {
-    public OkResultAssertions(Ok<TValue> value)
-        : base(value)
-    {
-    }
-
     public AndWhichConstraint<OkResultAssertions<TValue>, TValue> HaveValue(TValue expectedValue)
     {
         Subject.Value.Should().Be(expectedValue);

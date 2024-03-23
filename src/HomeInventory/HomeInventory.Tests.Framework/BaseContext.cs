@@ -1,13 +1,8 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public class BaseContext
+public class BaseContext(VariablesContainer variables)
 {
-    private readonly VariablesContainer _variables;
-
-    public BaseContext(VariablesContainer variables)
-    {
-        _variables = variables;
-    }
+    private readonly VariablesContainer _variables = variables;
 
     protected VariablesContainer Variables => _variables;
 }

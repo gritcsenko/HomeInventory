@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal class AreaApiDriver : ApiDriver, IAreaApiDriver
+internal class AreaApiDriver(TestServer server) : ApiDriver(server, "/api/areas"), IAreaApiDriver
 {
-    public AreaApiDriver(TestServer server)
-        : base(server, "/api/areas")
-    {
-    }
-
     public IAsyncEnumerable<AreaResponse> GetAllAsync() =>
         CreateGetRequest("")
             .SendAsync<AreaResponse[]>()

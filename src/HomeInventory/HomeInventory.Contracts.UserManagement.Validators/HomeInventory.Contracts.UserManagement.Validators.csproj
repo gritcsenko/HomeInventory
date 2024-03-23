@@ -3,9 +3,10 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Contracts.UserManagement\HomeInventory.Contracts.UserManagement.csproj" />
+    <ProjectReference Include="..\HomeInventory.Core\HomeInventory.Core.csproj" />
   </ItemGroup>
 
 </Project>
