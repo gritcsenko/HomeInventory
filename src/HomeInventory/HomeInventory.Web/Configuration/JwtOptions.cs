@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HomeInventory.Web.Configuration;
 
-internal class JwtOptions : IOptions
+internal sealed class JwtOptions : IOptions
 {
     public static SectionPath Section { get; } = nameof(JwtOptions);
 

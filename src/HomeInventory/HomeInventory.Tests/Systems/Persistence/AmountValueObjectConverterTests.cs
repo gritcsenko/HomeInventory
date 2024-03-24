@@ -8,7 +8,7 @@ using OneOf;
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
-public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConverterTests.GivenTestContext>
+public class AmountValueObjectConverterTests() : BaseTest<AmountValueObjectConverterTests.GivenTestContext>(t => new(t))
 {
     private static readonly Variable<AmountObjectConverter> _sut = new(nameof(_sut));
     private static readonly Variable<IAmountFactory> _factory = new(nameof(_factory));
@@ -21,10 +21,10 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
         Given
             .New(_amount)
             .New(_amountModel)
-            .SubstituteFor(_factory,
-                (f, v) => f
+            .SubstituteFor(_factory, _amount,
+                (factory, amount) => factory
                     .Create(Arg.Any<decimal>(), Arg.Any<AmountUnit>())
-                    .Returns(OneOf<Amount, IError>.FromT0(v.Get(_amount))))
+                    .Returns(OneOf<Amount, IError>.FromT0(amount)))
             .Sut(_sut, _factory);
 
         When
@@ -36,24 +36,21 @@ public class AmountValueObjectConverterTests : BaseTest<AmountValueObjectConvert
             });
     }
 
-    protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
-        new(variables, Fixture);
-
 #pragma warning disable CA1034 // Nested types should not be visible
     public sealed class GivenTestContext : GivenContext<GivenTestContext>
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesContainer variables, IFixture fixture)
-            : base(variables, fixture)
+        public GivenTestContext(BaseTest test)
+            : base(test)
         {
-            Fixture.Customize(new AmountUnitCustomization());
-            Fixture.Customize(new ProductAmountModelCustomization());
-            Fixture.Customize(new AmountCustomization());
+            Customize(new AmountUnitCustomization());
+            Customize(new ProductAmountModelCustomization());
+            Customize(new AmountCustomization());
         }
 
         internal GivenTestContext Sut(IVariable<AmountObjectConverter> sut, IVariable<IAmountFactory> factoryVariable)
         {
-            var factory = Variables.Get(factoryVariable);
+            var factory = GetValue(factoryVariable);
             Add(sut, () => new(factory));
             return this;
         }

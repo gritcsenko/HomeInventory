@@ -23,7 +23,7 @@ public abstract class TestingLogger<T> : ILogger<T>
             var current = _currentScope.Value;
 
             var disposable = new CompositeDisposable();
-            disposable.AddDisposable(() => _currentScope.Value = current);
+            disposable.AddDisposable(new DisposableAction(() => _currentScope.Value = current));
 
             return _currentScope.Value = disposable;
         }

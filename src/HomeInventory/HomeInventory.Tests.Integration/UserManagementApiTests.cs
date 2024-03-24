@@ -15,7 +15,6 @@ namespace HomeInventory.Tests.Integration;
 public class UserManagementApiTests : BaseIntegrationTest
 {
     private static readonly string _registerRoute = "/".AppendPathSegments("api", "users", "manage", "register");
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
     private readonly JsonContent _content;
 
     public UserManagementApiTests(ITestOutputHelper testOutputHelper)
@@ -23,8 +22,7 @@ public class UserManagementApiTests : BaseIntegrationTest
     {
         Fixture.CustomizeRegisterRequest();
         var request = Fixture.Create<RegisterRequest>();
-        _content = JsonContent.Create(request);
-        AddDisposable(_content);
+        AddDisposable(() => JsonContent.Create(request), out _content);
     }
 
     [Fact]
@@ -73,6 +71,6 @@ public class UserManagementApiTests : BaseIntegrationTest
             .Which.GetString().Should().NotBeNullOrEmpty();
         body!.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeJsonElement()
-            .Which.Should().BeArrayEqualTo(new[] { nameof(DuplicateEmailError) });
+            .Which.Should().BeArrayEqualTo([nameof(DuplicateEmailError)]);
     }
 }

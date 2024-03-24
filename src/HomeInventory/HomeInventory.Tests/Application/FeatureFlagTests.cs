@@ -4,7 +4,7 @@ using Microsoft.FeatureManagement;
 namespace HomeInventory.Tests.Application;
 
 [UnitTest]
-public sealed class FeatureFlagTests : BaseTest<FeatureFlagTests.GivenTestContext>
+public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestContext>(t => new(t))
 {
     private static readonly Variable<IFeatureFlag> _sut = new(nameof(_sut));
     private static readonly Variable<IFeatureFlag<Guid>> _sutContext = new(nameof(_sutContext));
@@ -63,8 +63,8 @@ public sealed class FeatureFlagTests : BaseTest<FeatureFlagTests.GivenTestContex
     {
         Given
             .New(_name)
-            .SubstituteFor(_manager,
-                (manager, container) => manager.IsEnabledAsync(container.Get(_name)).Returns(expectedValue))
+            .SubstituteFor(_manager, _name,
+                (manager, name) => manager.IsEnabledAsync(name).Returns(expectedValue))
             .Sut(_sut, _name);
 
         var then = await When
@@ -99,8 +99,8 @@ public sealed class FeatureFlagTests : BaseTest<FeatureFlagTests.GivenTestContex
         Given
             .New(_name)
             .New(_context)
-            .SubstituteFor(_manager,
-                (manager, container) => manager.IsEnabledAsync(container.Get(_name), container.Get(_context)).Returns(expectedValue))
+            .SubstituteFor(_manager, _name, _context,
+                (manager, name, context) => manager.IsEnabledAsync(name, context).Returns(expectedValue))
             .Sut(_sutContext, _name, _context);
 
         var then = await When
@@ -110,11 +110,8 @@ public sealed class FeatureFlagTests : BaseTest<FeatureFlagTests.GivenTestContex
             .Result(flag => flag.Should().Be(expectedValue));
     }
 
-    protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
-        new(variables, Fixture);
-
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenTestContext>(variables, fixture)
+    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
         internal GivenTestContext Sut(IVariable<IFeatureFlag> sutVariable, IVariable<string> nameVariable) =>
@@ -125,10 +122,10 @@ public sealed class FeatureFlagTests : BaseTest<FeatureFlagTests.GivenTestContex
             Add(sutVariable, () => Create(nameVariable, contextVariable));
 
         private IFeatureFlag Create(IVariable<string> nameVariable) =>
-            FeatureFlag.Create(Variables.Get(nameVariable));
+            FeatureFlag.Create(GetValue(nameVariable));
 
         private IFeatureFlag<TContext> Create<TContext>(IVariable<string> nameVariable, IVariable<TContext> contextVariable)
             where TContext : notnull =>
-            FeatureFlag.Create(Variables.Get(nameVariable), Variables.Get(contextVariable));
+            FeatureFlag.Create(GetValue(nameVariable), GetValue(contextVariable));
     }
 }
