@@ -3,7 +3,7 @@
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTestContext>
+public class EquatableComponentTests() : BaseTest<EquatableComponentTests.GivenTestContext>(t => new(t))
 {
     private static readonly Variable<EquatableComponent<string>> _sut = new(nameof(_sut));
     private static readonly Variable<HashCode> _hash = new(nameof(_hash));
@@ -97,11 +97,8 @@ public class EquatableComponentTests : BaseTest<EquatableComponentTests.GivenTes
             .Result(actual => actual.Should().BeFalse());
     }
 
-    protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
-        new(variables, Fixture);
-
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenTestContext>(variables, fixture)
+    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
         public GivenTestContext Component(IVariable<EquatableComponent<string>> sut) =>

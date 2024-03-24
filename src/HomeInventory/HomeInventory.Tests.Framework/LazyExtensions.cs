@@ -2,7 +2,7 @@
 
 public static class LazyExtensions
 {
-    public static void TryDispose<T>(this Lazy<T> lazy)
+    public static void DisposeIfCreated<T>(this Lazy<T> lazy)
         where T : IDisposable
     {
         if (lazy.IsValueCreated)

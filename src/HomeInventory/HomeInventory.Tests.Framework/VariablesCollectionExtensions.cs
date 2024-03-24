@@ -2,10 +2,6 @@
 
 public static class VariablesCollectionExtensions
 {
-    public static T Get<T>(this VariablesContainer collection, IVariable<T> variable)
-        where T : notnull =>
-        collection.Get(variable[0]);
-
     public static T Get<T>(this VariablesContainer collection, IIndexedVariable<T> variable)
         where T : notnull =>
         collection

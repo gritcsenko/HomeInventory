@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
+public class ErrorMappingTests() : BaseTest<ErrorMappingTests.GivenContext>(t => new(t))
 {
     private static readonly Variable<ErrorMapping> _sut = new(nameof(_sut));
 
@@ -66,10 +66,8 @@ public class ErrorMappingTests : BaseTest<ErrorMappingTests.GivenContext>
             .Result(actual => actual.Should().Be(StatusCodes.Status403Forbidden));
     }
 
-    protected override GivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
-
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenContext>(variables, fixture)
+    public sealed class GivenContext(BaseTest test) : GivenContext<GivenContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
         internal GivenContext Sut(IVariable<ErrorMapping> sut) => Add(sut, () => new());
