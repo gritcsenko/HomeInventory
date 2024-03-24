@@ -7,20 +7,16 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OneOf;
 using OneOf.Types;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
-public abstract class BaseApiModuleTests : BaseApiModuleTests<BaseApiModuleTests.ApiGivenTestContext>
+public abstract class BaseApiModuleTests() : BaseApiModuleTests<BaseApiModuleTests.ApiGivenTestContext>(t => new(t))
 {
-    protected override ApiGivenTestContext CreateGiven(VariablesContainer variables) =>
-        new(variables, Fixture, Cancellation);
-
 #pragma warning disable CA1034 // Nested types should not be visible
 #pragma warning disable S2094 // Classes should not be empty
-    public sealed class ApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation) : BaseApiGivenTestContext(variables, fixture, cancellation)
+    public sealed class ApiGivenTestContext(BaseTest test) : BaseApiGivenTestContext(test)
 #pragma warning restore S2094 // Classes should not be empty
 #pragma warning restore CA1034 // Nested types should not be visible
     {
@@ -30,11 +26,13 @@ public abstract class BaseApiModuleTests : BaseApiModuleTests<BaseApiModuleTests
 public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
     where TGiven : BaseApiModuleTests<TGiven>.BaseApiGivenTestContext
 {
-    protected BaseApiModuleTests()
+    protected BaseApiModuleTests(Func<BaseTest, TGiven> createGiven)
+        : base(createGiven)
     {
-        Fixture.CustomizeUlidId<UserId>();
-        Fixture.CustomizeEmail();
-        Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(Ulid.NewUlid()));
+        Fixture
+            .CustomizeUlidId<UserId>()
+            .CustomizeEmail()
+            .CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(Ulid.NewUlid()));
     }
 
 #pragma warning disable CA1034 // Nested types should not be visible
@@ -42,19 +40,21 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
 #pragma warning restore CA1034 // Nested types should not be visible
     {
         private readonly Variable<HttpContext> _context = new(nameof(_context));
-        private readonly ISender _mediator = Substitute.For<ISender>();
-        private readonly IMapper _mapper = Substitute.For<IMapper>();
+        private readonly ISender _mediator;
+        private readonly IMapper _mapper;
         private readonly ICancellation _cancellation;
 
-        public BaseApiGivenTestContext(VariablesContainer variables, IFixture fixture, ICancellation cancellation)
-            : base(variables, fixture)
+        public BaseApiGivenTestContext(BaseTest test)
+            : base(test)
         {
-            _cancellation = cancellation;
+            _cancellation = test.Cancellation;
 
-            var collection = new ServiceCollection();
-            collection.AddSingleton(_mediator);
-            collection.AddSingleton(_mapper);
-            collection.AddSingleton(new HomeInventoryProblemDetailsFactory(new ErrorMapping(), Options.Create(new ApiBehaviorOptions())));
+            var collection = new ServiceCollection()
+                .AddSubstitute(out _mediator)
+                .AddSubstitute(out _mapper)
+                .AddSingleton<ErrorMapping>()
+                .AddOptions(new ApiBehaviorOptions())
+                .AddSingleton<HomeInventoryProblemDetailsFactory>();
 
             Add(_context, () => new DefaultHttpContext
             {
@@ -90,8 +90,8 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
         {
             New(source);
             New(destination);
-            var sourceValue = Variables.Get(source);
-            var destinationValue = Variables.Get(destination);
+            var sourceValue = GetValue(source);
+            var destinationValue = GetValue(destination);
             _mapper.Map<TDestination>(sourceValue).Returns(destinationValue);
             return This;
         }
@@ -101,8 +101,8 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             where TResult : notnull
             where TError : IError
         {
-            var requestValue = Variables.Get(request);
-            var resultValue = Variables.Get(result);
+            var requestValue = GetValue(request);
+            var resultValue = GetValue(result);
             _mediator.Send(requestValue, _cancellation.Token).Returns(OneOf<TResult, IError>.FromT1(resultValue));
             return This;
         }
@@ -110,13 +110,13 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
         private TGiven OnRequestReturnResult<TRequest, TResult>(Variable<TRequest> request, Variable<TResult> result)
             where TRequest : IRequest<OneOf<TResult, IError>>
             where TResult : notnull =>
-            OnRequestReturnResult(request, Variables.Get(result));
+            OnRequestReturnResult(request, GetValue(result));
 
         private TGiven OnRequestReturnResult<TRequest, TResult>(Variable<TRequest> request, TResult resultValue)
             where TRequest : IRequest<OneOf<TResult, IError>>
             where TResult : notnull
         {
-            var requestValue = Variables.Get(request);
+            var requestValue = GetValue(request);
             _mediator.Send(requestValue, _cancellation.Token).Returns(OneOf<TResult, IError>.FromT0(resultValue));
             return This;
         }

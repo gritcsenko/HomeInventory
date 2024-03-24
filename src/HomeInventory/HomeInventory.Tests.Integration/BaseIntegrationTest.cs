@@ -9,16 +9,14 @@ namespace HomeInventory.Tests.Integration;
 [IntegrationTest]
 public abstract class BaseIntegrationTest : BaseTest
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
-    private readonly WebApplicationFactory<Program> _appFactory = new();
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
+    private readonly WebApplicationFactory<Program> _appFactory;
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _testOutputHelper;
 
     protected BaseIntegrationTest(ITestOutputHelper testOutputHelper)
     {
-        AddDisposable(_appFactory);
-        _client = AddDisposable(_appFactory.CreateClient());
+        AddDisposable(out _appFactory);
+        AddDisposable(_appFactory.CreateClient(), out _client);
         _testOutputHelper = testOutputHelper;
     }
 

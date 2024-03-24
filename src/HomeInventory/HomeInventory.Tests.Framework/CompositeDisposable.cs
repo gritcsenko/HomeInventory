@@ -2,30 +2,39 @@
 
 public class CompositeDisposable : Disposable
 {
-    private readonly List<Action> _disposeActions = new();
+    private readonly List<IDisposable> _disposables = [];
 
-    public TDisposable AddDisposable<TDisposable>(TDisposable disposable)
+    public void AddDisposable<TDisposable>(TDisposable disposable, out TDisposable result)
+        where TDisposable : notnull, IDisposable =>
+        AddDisposable(() => disposable, out result);
+
+    public void AddDisposable<TDisposable>(out TDisposable result)
+        where TDisposable : notnull, IDisposable, new() =>
+        AddDisposable(() => new(), out result);
+
+    public void AddDisposable<TDisposable>(Func<TDisposable> disposableFunc, out TDisposable result)
         where TDisposable : notnull, IDisposable
     {
-        AddDisposable(disposable.Dispose);
-        return disposable;
+        result = disposableFunc();
+        AddDisposable(result);
     }
 
     public void AddDisposable<TDisposable>(Lazy<TDisposable> lazyDisposable)
         where TDisposable : notnull, IDisposable =>
-        AddDisposable(() => lazyDisposable.TryDispose());
+        AddDisposable(new DisposableAction(lazyDisposable.DisposeIfCreated));
 
-    public void AddDisposable(Action action) =>
-        _disposeActions.Add(action);
+    public void AddDisposable(IDisposable disposable) =>
+        _disposables.Add(disposable);
 
     protected sealed override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            foreach (var action in _disposeActions)
+            foreach (var disposable in _disposables)
             {
-                action();
+                disposable.Dispose();
             }
+            _disposables.Clear();
         }
 
         base.Dispose(disposing);

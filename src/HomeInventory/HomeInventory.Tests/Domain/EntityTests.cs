@@ -3,7 +3,7 @@
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EntityTests : BaseTest<EntityTests.GivenTestContext>
+public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => new(t))
 {
     private static readonly Variable<TestEntityId> _id = new(nameof(_id));
     private static readonly Variable<TestEntity> _other = new(nameof(_other));
@@ -192,11 +192,8 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
             .Result(actual => actual.Should().BeTrue());
     }
 
-    protected sealed override GivenTestContext CreateGiven(VariablesContainer variables) =>
-        new(variables, Fixture);
-
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(VariablesContainer variables, IFixture fixture) : GivenContext<GivenTestContext>(variables, fixture)
+    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
         internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IVariable<TestEntityId> id) =>
@@ -213,7 +210,7 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
         public static Result<TestEntityId> CreateFrom(Ulid value) => DotNext.Result.FromValue(new TestEntityId(value));
     }
 
-    internal class TestEntity(EntityTests.TestEntityId id) : Entity<TestEntity, TestEntityId>(id)
+    internal class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)
     {
     }
 }
