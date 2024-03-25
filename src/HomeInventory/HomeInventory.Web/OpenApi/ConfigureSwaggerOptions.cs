@@ -37,7 +37,7 @@ internal class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) 
                     Type = ReferenceType.SecurityScheme,
                     Id = JwtBearerDefaults.AuthenticationScheme,
                 }
-            }] = Array.Empty<string>(),
+            }] = [],
         });
     }
 

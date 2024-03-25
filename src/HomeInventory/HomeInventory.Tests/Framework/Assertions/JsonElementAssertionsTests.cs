@@ -24,7 +24,7 @@ public class JsonElementAssertionsTests : BaseTest
         var element = document.RootElement.GetProperty("key");
         var sut = new JsonElementAssertions(element);
 
-        Action action = () => sut.BeArrayEqualTo(Array.Empty<string>());
+        Action action = () => sut.BeArrayEqualTo([]);
 
         action.Should().NotThrow();
     }

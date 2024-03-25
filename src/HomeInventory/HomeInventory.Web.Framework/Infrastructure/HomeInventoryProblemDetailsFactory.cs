@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System.Net;
 using HomeInventory.Core;
 using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
@@ -9,10 +9,13 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web.Infrastructure;
 
-internal class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
+internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
 {
+    private static readonly string? _defaultValidationTitle = new ValidationProblemDetails().Title;
     private readonly ApiBehaviorOptions _options = options.Value;
     private readonly ErrorMapping _errorMapping = errorMapping;
+    private readonly int _defaultStatusCode = (int)errorMapping.GetDefaultError();
+    private readonly int _defaultValidationStatusCode = (int)errorMapping.GetDefaultValidationError();
 
     public override ProblemDetails CreateProblemDetails(
         HttpContext httpContext,
@@ -20,14 +23,9 @@ internal class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOp
         string? title = null,
         string? type = null,
         string? detail = null,
-        string? instance = null)
-    {
-        var problemDetails = CreateProblem(statusCode, title, type, detail, instance);
-
-        AddProblemDetailsExtensions(httpContext, problemDetails, Array.Empty<IError>());
-
-        return problemDetails;
-    }
+        string? instance = null) =>
+        CreateProblem<ProblemDetails>(statusCode ?? _defaultStatusCode, title, type, detail, instance)
+            .AddProblemDetailsExtensions(httpContext);
 
     public override ValidationProblemDetails CreateValidationProblemDetails(
         HttpContext httpContext,
@@ -36,88 +34,42 @@ internal class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOp
         string? title = null,
         string? type = null,
         string? detail = null,
-        string? instance = null)
-    {
-        var problemDetails = new ValidationProblemDetails(modelStateDictionary)
-        {
-            Status = statusCode ?? _errorMapping.GetError<ValidationError>(),
-            Type = type,
-            Detail = detail,
-            Instance = instance,
-        };
+        string? instance = null) =>
+        CreateProblem<ValidationProblemDetails>(statusCode ?? _defaultValidationStatusCode, title ?? _defaultValidationTitle, type, detail, instance)
+            .ApplyErrors(modelStateDictionary)
+            .AddProblemDetailsExtensions(httpContext);
 
-        if (title != null)
-        {
-            // For validation problem details, don't overwrite the default title with null.
-            problemDetails.Title = title;
-        }
-
-        ApplyProblemDetailsDefaults(problemDetails);
-
-        AddProblemDetailsExtensions(httpContext, problemDetails, Array.Empty<IError>());
-
-        return problemDetails;
-    }
-
-    private ProblemDetails CreateProblem(int? statusCode, string? title, string? type, string? detail, string? instance)
-    {
-        var problemDetails = new ProblemDetails
-        {
-            Status = statusCode ?? _errorMapping.GetDefaultError(),
-            Title = title,
-            Type = type,
-            Detail = detail,
-            Instance = instance,
-        };
-
-        ApplyProblemDetailsDefaults(problemDetails);
-        return problemDetails;
-    }
-
-    public ProblemDetails ConvertToProblem(HttpContext httpContext, IEnumerable<IError> errors)
-    {
-        var problemDetails = ConvertToProblem(errors);
-
-        AddProblemDetailsExtensions(httpContext, problemDetails, errors);
-
-        return problemDetails;
-    }
+    public ProblemDetails ConvertToProblem(HttpContext httpContext, IEnumerable<IError> errors) =>
+        ConvertToProblem(errors).AddProblemDetailsExtensions(httpContext, errors);
 
     private ProblemDetails ConvertToProblem(IEnumerable<IError> errors)
     {
-        var problemsAndStatuses = errors.Select(error => (Problem: ConvertToProblem(error), Status: _errorMapping.GetError(error))).ToReadOnly();
-        if (problemsAndStatuses.Count == 0)
+        var problems = errors.Select(ConvertToProblem).ToReadOnly();
+        if (problems.Count <= 1)
         {
-            throw new InvalidOperationException("Has to be at least one error provided");
+            return problems.FirstOrDefault() ?? throw new InvalidOperationException("Has to be at least one error provided");
         }
 
-        if (problemsAndStatuses.Count == 1)
-        {
-            return problemsAndStatuses.First().Problem;
-        }
-
-        var statuses = problemsAndStatuses.Select(x => x.Status).ToHashSet();
-        var status = statuses.Count == 1 ? statuses.First() : _errorMapping.GetDefaultError();
-        var problemDetails = CreateProblem(
+        var statuses = problems.Select(x => x.Status).ToHashSet();
+        var status = (statuses.Count == 1 ? statuses.First() : default) ?? _defaultStatusCode;
+        return CreateProblem<ProblemDetails>(
             status,
             "Multiple Problems",
             type: null,
             "There were multiple problems that have occurred.",
-            instance: null);
-        problemDetails.Extensions["problems"] = problemsAndStatuses.Select(x => x.Problem).ToArray();
-
-        return problemDetails;
+            instance: null)
+            .AddProblemsAndStatuses(problems);
     }
 
     private ProblemDetails ConvertToProblem(IError error)
     {
-        var result = CreateProblem(
-            _errorMapping.GetError(error),
-            error.GetType().Name,
+        var errorType = error.GetType();
+        var result = CreateProblem<ProblemDetails>(
+            _errorMapping.GetError(errorType),
+            errorType.Name,
             type: null,
             error.Message,
             instance: null);
-
         foreach (var pair in error.Metadata)
         {
             result.Extensions[pair.Key] = pair.Value;
@@ -125,24 +77,19 @@ internal class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOp
         return result;
     }
 
-    private void ApplyProblemDetailsDefaults(ProblemDetails problemDetails)
-    {
-        if (_options.ClientErrorMapping.TryGetValue(problemDetails.Status.GetValueOrDefault(), out var clientErrorData))
-        {
-            problemDetails.Title ??= clientErrorData.Title;
-            problemDetails.Type ??= clientErrorData.Link;
-        }
-    }
+    private TProblem CreateProblem<TProblem>(HttpStatusCode? statusCode, string? title, string? type, string? detail, string? instance)
+        where TProblem : ProblemDetails, new() =>
+        CreateProblem<TProblem>((int?)statusCode ?? _defaultStatusCode, title, type, detail, instance);
 
-    private static void AddProblemDetailsExtensions(HttpContext httpContext, ProblemDetails problemDetails, IEnumerable<IError> errors)
-    {
-        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
-        if (traceId != null)
+    private TProblem CreateProblem<TProblem>(int statusCode, string? title, string? type, string? detail, string? instance)
+        where TProblem : ProblemDetails, new() =>
+        new TProblem
         {
-            problemDetails.Extensions["traceId"] = traceId;
+            Status = statusCode,
+            Title = title,
+            Type = type,
+            Detail = detail,
+            Instance = instance,
         }
-
-        var errorCodes = errors.Select(e => e.GetType().Name);
-        problemDetails.Extensions["errorCodes"] = errorCodes;
-    }
+            .ApplyProblemDetailsDefaults(_options.ClientErrorMapping);
 }
