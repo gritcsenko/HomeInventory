@@ -5,6 +5,10 @@ namespace HomeInventory.Tests.Framework;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddSubstitute<T>(this IServiceCollection services)
+        where T : class =>
+        services.AddSubstitute<T>(out var _);
+
     public static IServiceCollection AddSubstitute<T>(this IServiceCollection services, out T substutute)
         where T : class
     {

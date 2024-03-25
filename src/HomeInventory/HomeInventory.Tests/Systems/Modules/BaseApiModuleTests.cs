@@ -52,7 +52,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             var collection = new ServiceCollection()
                 .AddSubstitute(out _mediator)
                 .AddSubstitute(out _mapper)
-                .AddSingleton<ErrorMapping>()
+                .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
                 .AddOptions(new ApiBehaviorOptions())
                 .AddSingleton<HomeInventoryProblemDetailsFactory>();
 

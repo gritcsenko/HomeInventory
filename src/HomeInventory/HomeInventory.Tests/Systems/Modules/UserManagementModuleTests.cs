@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Carter;
 using FluentAssertions.Execution;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -28,10 +28,12 @@ public class UserManagementModuleTests : BaseApiModuleTests
     public void AddRoutes_ShouldRegister()
     {
         var dataSources = new List<EndpointDataSource>();
-        var services = new ServiceCollection();
-        services.AddSingleton(_ => Options.Create(new ApiVersioningOptions()));
-        services.AddSingleton(_ => Substitute.For<IReportApiVersions>());
-        services.AddSingleton(_ => Substitute.For<IApiVersionParameterSource>());
+        var services = new ServiceCollection()
+            .AddOptions(new ApiVersioningOptions())
+            .AddSubstitute<IReportApiVersions>()
+            .AddSubstitute<IApiVersionParameterSource>()
+            .AddSubstitute<IValidatorLocator>();
+
         var provider = services.BuildServiceProvider();
         var builder = Substitute.For<IEndpointRouteBuilder>();
         builder.ServiceProvider.Returns(provider);

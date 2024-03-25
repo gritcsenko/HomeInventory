@@ -4,12 +4,15 @@ using HomeInventory.Core;
 
 namespace HomeInventory.Web.Infrastructure;
 
-internal sealed class ErrorMapping(HttpStatusCode defaultError, IReadOnlyDictionary<Type, HttpStatusCode> errorMapping)
+internal sealed class ErrorMapping(HttpStatusCode defaultError, HttpStatusCode defaultValidationError, IReadOnlyDictionary<Type, HttpStatusCode> errorMapping)
 {
     private readonly HttpStatusCode _defaultError = defaultError;
+    private readonly HttpStatusCode _defaultValidationError = defaultValidationError;
     private readonly IReadOnlyDictionary<Type, HttpStatusCode> _errorMapping = errorMapping;
 
     public HttpStatusCode GetDefaultError() => _defaultError;
+
+    public HttpStatusCode GetDefaultValidationError() => _defaultValidationError;
 
     public HttpStatusCode GetError(Type? errorType) => GetErrorCore(errorType).Or(_defaultError);
 
