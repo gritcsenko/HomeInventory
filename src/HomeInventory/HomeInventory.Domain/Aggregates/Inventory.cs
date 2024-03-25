@@ -4,6 +4,6 @@ namespace HomeInventory.Domain.Aggregates;
 
 public class Inventory : Stock
 {
-    public IReadOnlyCollection<Material> Materials { get; init; } = Array.Empty<Material>();
+    public IReadOnlyCollection<Material> Materials { get; init; } = [];
 }
 

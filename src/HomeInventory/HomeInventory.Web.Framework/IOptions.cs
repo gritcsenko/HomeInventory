@@ -1,6 +1,4 @@
-﻿using HomeInventory.Web.Framework;
-
-namespace HomeInventory.Web;
+﻿namespace HomeInventory.Web.Framework;
 
 public interface IOptions
 {

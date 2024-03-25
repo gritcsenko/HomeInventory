@@ -10,7 +10,7 @@ internal static class ProblemDetailsExtensions
 {
     public static ValidationProblemDetails ApplyErrors(this ValidationProblemDetails problemDetails, ModelStateDictionary modelStateDictionary)
     {
-        problemDetails.Errors = CreateErrorDictionary(modelStateDictionary);
+        problemDetails.Errors = modelStateDictionary.ToErrorDictionary();
         return problemDetails;
     }
 
@@ -25,9 +25,10 @@ internal static class ProblemDetailsExtensions
 
         return problemDetails;
     }
+
     public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, HttpContext httpContext)
         where TProblem : ProblemDetails =>
-        problemDetails.AddProblemDetailsExtensions(httpContext, Array.Empty<IError>());
+        problemDetails.AddProblemDetailsExtensions(httpContext, []);
 
     public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, HttpContext httpContext, IEnumerable<IError> errors)
         where TProblem : ProblemDetails
@@ -49,35 +50,19 @@ internal static class ProblemDetailsExtensions
         return problemDetails;
     }
 
-    private static Dictionary<string, string[]> CreateErrorDictionary(ModelStateDictionary modelState)
-    {
-        var errorDictionary = new Dictionary<string, string[]>(StringComparer.Ordinal);
+    private static Dictionary<string, string[]> ToErrorDictionary(this ModelStateDictionary modelState) =>
+        modelState
+            .Select(p => (p.Key, Messages: p.Value?.Errors.GetErrorMessages() ?? []))
+            .Where(x => x.Messages.Length > 0)
+            .ToDictionary(x => x.Key, x => x.Messages);
 
-        foreach (var (key, value) in modelState)
+    private static string[] GetErrorMessages(this ModelErrorCollection collection) =>
+        collection switch
         {
-            switch (value.Errors)
-            {
-                case null:
-                case { Count: 0 }:
-                    break;
-                case { Count: 1 } errors:
-                    errorDictionary.Add(key, [errors[0].GetErrorMessage()]);
-                    break;
-                case { } errors:
-                    var errorMessages = new string[errors.Count];
-                    for (var i = 0; i < errors.Count; i++)
-                    {
-                        errorMessages[i] = errors[i].GetErrorMessage();
-                    }
-
-                    errorDictionary.Add(key, errorMessages);
-                    break;
-            }
-        }
-
-        return errorDictionary;
-
-    }
+            { Count: 1 } errors => [errors[0].GetErrorMessage()],
+            { } errors => errors.Select(e => e.GetErrorMessage()).ToArray(),
+            _ => [],
+        };
 
     private static string GetErrorMessage(this ModelError error) =>
         string.IsNullOrEmpty(error.ErrorMessage)

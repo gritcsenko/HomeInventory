@@ -1,4 +1,5 @@
-﻿using DotNext;
+﻿using AutoMapper;
+using DotNext;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
@@ -15,9 +16,17 @@ internal sealed class UserManagementContractsMappings : ContractsMappingProfile
         CreateMapForString(x => new Email(x), x => x.Value);
 
         CreateMap<RegisterRequest, RegisterCommand>()
-            .ConstructUsing((c, ctx) => new RegisterCommand(ctx.Mapper.MapOrFail<Email>(c.Email), c.Password, new DelegatingSupplier<Ulid>(Ulid.NewUlid)));
+            .ConstructUsing(CreateRegisterCommand);
 
         CreateMap<RegisterRequest, UserIdQuery>();
         CreateMap<UserIdResult, RegisterResponse>();
+    }
+
+    private static RegisterCommand CreateRegisterCommand(RegisterRequest c, ResolutionContext ctx)
+    {
+        var email = ctx.Mapper.MapOrFail<Email>(c.Email);
+        var password = c.Password;
+        var userIdSupplier = new DelegatingSupplier<Ulid>(Ulid.NewUlid);
+        return new RegisterCommand(email, password, userIdSupplier);
     }
 }
