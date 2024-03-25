@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Asp.Versioning;
 using Carter;
-using FluentValidation.Internal;
 using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
 using HomeInventory.Application;
@@ -20,7 +19,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace HomeInventory.Web;
@@ -148,33 +146,5 @@ public static class ServiceCollectionExtensions
             Predicate = _ => false,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
-    }
-
-    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services)
-        where TOptions : class, IOptions =>
-        services.AddOptionsWithValidator<TOptions>(TOptions.Section);
-
-    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, SectionPath configSectionPath)
-        where TOptions : class =>
-        services.AddOptions<TOptions>()
-            .BindConfiguration(configSectionPath)
-            .ValidateWithValidator()
-            .ValidateOnStart();
-
-    private static OptionsBuilder<TOptions> ValidateWithValidator<TOptions>(this OptionsBuilder<TOptions> builder, Action<ValidationStrategy<TOptions>>? validationOptions = null)
-        where TOptions : class
-    {
-        var services = builder.Services;
-        services.AddSingleton(sp => CreateFluentOptionsValidator(sp, builder.Name, validationOptions));
-        return builder;
-    }
-
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
-    private static IValidateOptions<TOptions> CreateFluentOptionsValidator<TOptions>(IServiceProvider serviceProvider, string name, Action<ValidationStrategy<TOptions>>? validationOptions)
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
-        where TOptions : class
-    {
-        var locator = serviceProvider.GetRequiredService<IValidatorLocator>();
-        return new FluentOptionsValidator<TOptions>(name, locator, validationOptions);
     }
 }

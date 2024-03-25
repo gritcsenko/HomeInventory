@@ -1,7 +1,5 @@
-﻿using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Primitives.Errors;
+﻿using System.Net;
 using HomeInventory.Web.Infrastructure;
-using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -18,12 +16,12 @@ public class ErrorMappingTests() : BaseTest<ErrorMappingTests.GivenContext>(t =>
 
         When
             .Invoked(_sut, sut => sut.GetDefaultError())
-            .Result(actual => actual.Should().Be(StatusCodes.Status500InternalServerError));
+            .Result(actual => actual.Should().Be(HttpStatusCode.InternalServerError));
     }
 
     [Theory]
     [ClassData<ErrorInstancesData>]
-    public void GetError_Shoud_ReturnExpected_When_Error(IError error, int expected)
+    public void GetError_Shoud_ReturnExpected_When_Error(Type? error, HttpStatusCode expected)
     {
         Given
             .Sut(_sut);
@@ -33,43 +31,10 @@ public class ErrorMappingTests() : BaseTest<ErrorMappingTests.GivenContext>(t =>
             .Result(actual => actual.Should().Be(expected));
     }
 
-    [Fact]
-    public void GetErrorT_Shoud_Return409_When_ConflictError()
-    {
-        Given
-            .Sut(_sut);
-
-        When
-            .Invoked(_sut, sut => sut.GetError<ConflictError>())
-            .Result(actual => actual.Should().Be(StatusCodes.Status409Conflict));
-    }
-
-    [Fact]
-    public void GetErrorT_Shoud_Return409_When_DerivedFromConflictError()
-    {
-        Given
-            .Sut(_sut);
-
-        When
-            .Invoked(_sut, sut => sut.GetError<DuplicateEmailError>())
-            .Result(actual => actual.Should().Be(StatusCodes.Status409Conflict));
-    }
-
-    [Fact]
-    public void GetErrorT_Shoud_Return403_When_InvalidCredentialsError()
-    {
-        Given
-            .Sut(_sut);
-
-        When
-            .Invoked(_sut, sut => sut.GetError<InvalidCredentialsError>())
-            .Result(actual => actual.Should().Be(StatusCodes.Status403Forbidden));
-    }
-
 #pragma warning disable CA1034 // Nested types should not be visible
     public sealed class GivenContext(BaseTest test) : GivenContext<GivenContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        internal GivenContext Sut(IVariable<ErrorMapping> sut) => Add(sut, () => new());
+        internal GivenContext Sut(IVariable<ErrorMapping> sut) => Add(sut, ErrorMappingBuilder.CreateDefault().Build);
     }
 }
