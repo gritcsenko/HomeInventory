@@ -21,22 +21,13 @@ public class TestAppBuilder : IApplicationBuilder, IEndpointRouteBuilder
     public IFeatureCollection ServerFeatures { get; } = new FeatureCollection();
     public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
     public IServiceProvider ServiceProvider { get; }
-    public ICollection<EndpointDataSource> DataSources { get; } = new List<EndpointDataSource>();
+    public ICollection<EndpointDataSource> DataSources { get; } = [];
 
-    public RequestDelegate Build()
-    {
-        return (HttpContext ctx) => Task.CompletedTask;
-    }
+    public RequestDelegate Build() => (HttpContext ctx) => Task.CompletedTask;
 
-    public IApplicationBuilder CreateApplicationBuilder()
-    {
-        return this;
-    }
+    public IApplicationBuilder CreateApplicationBuilder() => this;
 
-    public IApplicationBuilder New()
-    {
-        return this;
-    }
+    public IApplicationBuilder New() => this;
 
     public IApplicationBuilder Use(Func<RequestDelegate, RequestDelegate> middleware)
     {

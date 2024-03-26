@@ -11,7 +11,6 @@ internal sealed class OutboxMessageConfiguration(JsonSerializerOptions settings)
 
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
-
         builder.HasKey(x => x.Id); // IsClustered(false)
 
         builder.Property(x => x.OccurredOn)
@@ -32,4 +31,3 @@ internal sealed class OutboxMessageConfiguration(JsonSerializerOptions settings)
     private static string Serialize(IDomainEvent obj, JsonSerializerOptions settings) =>
         JsonSerializer.Serialize(obj, settings);
 }
-

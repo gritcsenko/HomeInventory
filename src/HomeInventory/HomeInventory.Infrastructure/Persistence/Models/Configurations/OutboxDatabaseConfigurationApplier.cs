@@ -1,19 +1,11 @@
 ﻿using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-internal sealed class OutboxDatabaseConfigurationApplier(PolymorphicDomainEventTypeResolver typeResolver) : IDatabaseConfigurationApplier
+internal sealed class OutboxDatabaseConfigurationApplier(PolymorphicDomainEventTypeResolver typeResolver)
+    : BaseDatabaseConfigurationApplier<OutboxMessageConfiguration, OutboxMessage>(() => CreateConfiguration(typeResolver))
 {
-    private readonly PolymorphicDomainEventTypeResolver _typeResolver = typeResolver;
-
-    public void ApplyConfigurationTo(ModelBuilder modelBuilder)
-    {
-        var configuration = CreateConfiguration();
-        modelBuilder.ApplyConfiguration(configuration);
-    }
-
-    internal OutboxMessageConfiguration CreateConfiguration() => new(CreateOptions(_typeResolver));
+    private static OutboxMessageConfiguration CreateConfiguration(PolymorphicDomainEventTypeResolver typeResolver) => new(CreateOptions(typeResolver));
 
     internal static JsonSerializerOptions CreateOptions(PolymorphicDomainEventTypeResolver typeResolver) =>
         new(JsonSerializerDefaults.Web)

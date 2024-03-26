@@ -10,6 +10,5 @@ public sealed class ProductId : UlidIdentifierObject<ProductId>, IUlidBuildable<
     {
     }
 
-
     public static Result<ProductId> CreateFrom(Ulid value) => Result.FromValue(new ProductId(value));
 }

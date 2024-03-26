@@ -2,7 +2,7 @@
 
 internal sealed class EventsCollection
 {
-    private readonly List<IDomainEvent> _events = new();
+    private readonly List<IDomainEvent> _events = [];
 
     public EventsCollection()
     {

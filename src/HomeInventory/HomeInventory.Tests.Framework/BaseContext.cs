@@ -8,5 +8,9 @@ public abstract class BaseContext(VariablesContainer variables)
 
     protected T GetValue<T>(IVariable<T> variable)
         where T : notnull =>
-        _variables.Get(variable[0]);
+        GetValue(variable[0]);
+
+    protected T GetValue<T>(IIndexedVariable<T> variable)
+        where T : notnull =>
+        _variables.Get(variable);
 }

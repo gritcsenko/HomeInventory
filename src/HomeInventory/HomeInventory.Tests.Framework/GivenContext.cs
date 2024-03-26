@@ -129,6 +129,8 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
             : throw new InvalidOperationException($"Failed to update variable '{hash.Name}'");
     }
 
+    protected T Create<T>() => _fixture.Create<T>();
+
     private HashCode AddNewHashCode(IIndexedVariable<HashCode> hash)
     {
         var value = new HashCode();

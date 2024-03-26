@@ -41,7 +41,7 @@ public class InfrastructureDependencyInjectionTests : BaseDependencyInjectionTes
         Services.Should().ContainSingleSingleton<ISpecificationEvaluator>(provider);
         Services.Should().ContainSingleSingleton<AmountObjectConverter>(provider);
         Services.Should().ContainSingleScoped<IEventsPersistenceService>(provider);
-        Services.Should().ContainSingleScoped<IDatabaseConfigurationApplier>(provider);
+        Services.Should().ContainScoped<IDatabaseConfigurationApplier>(provider);
         Services.Should().ContainSingleScoped<PolymorphicDomainEventTypeResolver>(provider);
     }
 }

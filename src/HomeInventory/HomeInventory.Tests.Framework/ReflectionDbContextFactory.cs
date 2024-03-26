@@ -1,10 +1,9 @@
-﻿using HomeInventory.Core;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Tests;
+namespace HomeInventory.Tests.Framework;
 
 internal sealed class ReflectionDbContextFactory : IDbContextFactory
 {
