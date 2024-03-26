@@ -84,7 +84,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
             where TError : notnull, IError =>
             OnRequestReturnError<TRequest, Success, TError>(request, result);
 
-        public TGiven Map<TSource, TDestination>(Variable<TSource> source, Variable<TDestination> destination)
+        internal TGiven Map<TSource, TDestination>(Variable<TSource> source, Variable<TDestination> destination)
             where TSource : notnull
             where TDestination : notnull
         {

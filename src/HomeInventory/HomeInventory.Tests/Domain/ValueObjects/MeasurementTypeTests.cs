@@ -43,13 +43,5 @@ public class MeasurementTypeTests : BaseTest
             { MeasurementType.Temperature, nameof(MeasurementType.Temperature) },
         };
 
-    public static TheoryData<MeasurementType> Keys()
-    {
-        var data = new TheoryData<MeasurementType>();
-        foreach (var item in _items)
-        {
-            data.Add(item);
-        }
-        return data;
-    }
+    public static TheoryData<MeasurementType> Keys() => new(_items);
 }

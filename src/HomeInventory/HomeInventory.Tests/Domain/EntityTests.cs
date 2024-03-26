@@ -202,12 +202,16 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
         internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IIndexedVariable<TestEntityId> id) =>
             Add(entity, () => CreateTestEntity(id));
 
-        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
+        internal GivenTestContext New(IVariable<TestEntityId> variable) => Add(variable, CreateTestEntityId);
+
+        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> idVariable) => new(GetValue(idVariable));
+
+        private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
     }
 
     internal class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
     {
-        public static Result<TestEntityId> CreateFrom(Ulid value) => DotNext.Result.FromValue(new TestEntityId(value));
+        public static Result<TestEntityId> CreateFrom(Ulid value) => Result.FromValue(new TestEntityId(value));
     }
 
     internal class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)

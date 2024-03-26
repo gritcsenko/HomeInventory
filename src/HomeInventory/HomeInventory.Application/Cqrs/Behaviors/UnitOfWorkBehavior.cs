@@ -6,7 +6,7 @@ using HomeInventory.Domain.Primitives.Errors;
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
 internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IUnitOfWork unitOfWork, ILogger<UnitOfWorkBehavior<TRequest, TIgnored>> logger) : IPipelineBehavior<TRequest, OneOf<Success, IError>>
-     where TRequest : ICommand
+    where TRequest : ICommand
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();
 

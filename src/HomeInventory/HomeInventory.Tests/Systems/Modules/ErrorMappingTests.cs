@@ -21,13 +21,13 @@ public class ErrorMappingTests() : BaseTest<ErrorMappingTests.GivenContext>(t =>
 
     [Theory]
     [ClassData<ErrorInstancesData>]
-    public void GetError_Shoud_ReturnExpected_When_Error(Type? error, HttpStatusCode expected)
+    public void GetError_Shoud_ReturnExpected_When_Error(Type? errorType, HttpStatusCode expected)
     {
         Given
             .Sut(_sut);
 
         When
-            .Invoked(_sut, sut => sut.GetError(error))
+            .Invoked(_sut, sut => sut.GetError(errorType))
             .Result(actual => actual.Should().Be(expected));
     }
 

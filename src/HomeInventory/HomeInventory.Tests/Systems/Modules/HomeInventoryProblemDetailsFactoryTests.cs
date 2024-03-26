@@ -30,7 +30,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         _detail = Fixture.Create<string>();
         _instance = Fixture.Create<string>();
         _state = Fixture.Create<ModelStateDictionary>();
-
     }
 
     [Fact]

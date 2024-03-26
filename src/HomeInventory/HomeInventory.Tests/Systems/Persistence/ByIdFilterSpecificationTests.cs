@@ -43,5 +43,33 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
         actual.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task ExecuteAsync_Should_SatisfyWithCorrectId()
+    {
+        var user = Fixture.Build<UserModel>()
+            .With(m => m.Id, _id)
+            .Create();
+        Context.Set<UserModel>().Add(user);
+        await Context.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var actual = await sut.ExecuteAsync(Context, Cancellation.Token);
+
+        actual.Should().BeSameAs(user);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Should_NotSatisfyWithWrongId()
+    {
+        var user = Fixture.Create<UserModel>();
+        Context.Set<UserModel>().Add(user);
+        await Context.SaveChangesAsync();
+        var sut = CreateSut();
+
+        var actual = await sut.ExecuteAsync(Context, Cancellation.Token);
+
+        actual.Should().NotBeSameAs(user);
+    }
+
     private ByIdFilterSpecification<UserModel, UserId> CreateSut() => new(_id);
 }

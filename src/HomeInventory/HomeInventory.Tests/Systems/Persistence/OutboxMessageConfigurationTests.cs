@@ -11,6 +11,8 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class OutboxMessageConfigurationTests : BaseTest
 {
+    private static readonly PolymorphicDomainEventTypeResolver _typeResolver = new(new[] { new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)) });
+
     public OutboxMessageConfigurationTests()
     {
         Fixture.CustomizeUlidId<UserId>();
@@ -51,5 +53,5 @@ public class OutboxMessageConfigurationTests : BaseTest
         text.Should().NotBeNull();
     }
 
-    private static OutboxMessageConfiguration CreateSut() => new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)) })).CreateConfiguration();
+    private static OutboxMessageConfiguration CreateSut() => new(OutboxDatabaseConfigurationApplier.CreateOptions(_typeResolver));
 }
