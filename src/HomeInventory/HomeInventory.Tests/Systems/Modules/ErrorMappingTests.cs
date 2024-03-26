@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 
 namespace HomeInventory.Tests.Systems.Modules;

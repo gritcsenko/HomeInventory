@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Core;
+﻿namespace HomeInventory.Tests.Framework;
 
 [UnitTest]
 public class ReflectionMethodsTests : BaseTest

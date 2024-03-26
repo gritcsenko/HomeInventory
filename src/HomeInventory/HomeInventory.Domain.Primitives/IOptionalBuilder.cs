@@ -5,3 +5,4 @@ public interface IOptionalBuilder<TObject>
 {
     Optional<TObject> Build();
 }
+
