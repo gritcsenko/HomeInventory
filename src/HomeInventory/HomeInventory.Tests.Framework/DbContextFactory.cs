@@ -7,7 +7,7 @@ using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Tests;
+namespace HomeInventory.Tests.Framework;
 
 public class DbContextFactory
 {

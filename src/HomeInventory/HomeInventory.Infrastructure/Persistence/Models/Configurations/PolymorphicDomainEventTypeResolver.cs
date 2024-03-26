@@ -34,4 +34,3 @@ internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IJsonDerive
         return polymorphismOptions;
     }
 }
-
