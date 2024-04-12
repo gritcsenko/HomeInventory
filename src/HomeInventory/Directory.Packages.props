@@ -78,7 +78,7 @@
     <PackageVersion Include="Throw" Version="1.4.0" />
     <PackageVersion Include="Verify.Xunit" Version="23.7.2" />
     <PackageVersion Include="xunit" Version="2.7.0" />
-    <PackageVersion Include="xunit.core" Version="2.7.0" />
+    <PackageVersion Include="xunit.core" Version="2.7.1" />
   </ItemGroup>
   <ItemGroup>
     <!--Compile-time dependencies-->
