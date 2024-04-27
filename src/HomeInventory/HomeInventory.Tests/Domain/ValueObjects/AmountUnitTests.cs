@@ -43,13 +43,5 @@ public class AmountUnitTests : BaseTest
             { AmountUnit.Gallon, nameof(AmountUnit.Gallon), MeasurementType.Volume, false },
         };
 
-    public static TheoryData<AmountUnit> Keys()
-    {
-        var data = new TheoryData<AmountUnit>();
-        foreach (var item in _items)
-        {
-            data.Add(item);
-        }
-        return data;
-    }
+    public static TheoryData<AmountUnit> Keys() => new(_items);
 }

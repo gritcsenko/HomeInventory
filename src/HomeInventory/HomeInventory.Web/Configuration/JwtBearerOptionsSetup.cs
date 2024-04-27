@@ -4,14 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HomeInventory.Web.Configuration;
 
-internal class JwtBearerOptionsSetup : IConfigureOptions<JwtBearerOptions>
+internal class JwtBearerOptionsSetup(IOptions<JwtOptions> optionsAccessor) : IConfigureOptions<JwtBearerOptions>
 {
-    private readonly JwtOptions _jwtOptions;
-
-    public JwtBearerOptionsSetup(IOptions<JwtOptions> optionsAccessor)
-    {
-        _jwtOptions = optionsAccessor.Value;
-    }
+    private readonly JwtOptions _jwtOptions = optionsAccessor.Value;
 
     public void Configure(JwtBearerOptions options)
     {

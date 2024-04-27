@@ -18,6 +18,7 @@ public class JwtBearerOptionsSetupTests : BaseTest
         sut.Configure(bearerOptions);
 
         using var scope = new AssertionScope();
+        JwtOptions.Section.ToString().Should().Be(nameof(JwtOptions));
         var parameters = bearerOptions.TokenValidationParameters;
         parameters.Should().NotBeNull();
         parameters.ValidateLifetime.Should().BeTrue();

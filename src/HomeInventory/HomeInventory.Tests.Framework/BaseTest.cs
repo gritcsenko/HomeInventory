@@ -19,11 +19,11 @@ public abstract class BaseTest : CompositeDisposable, IAsyncLifetime
         Fixture.CustomizeUlid();
     }
 
-    protected IFixture Fixture => _lazyFixture.Value;
+    protected internal IFixture Fixture => _lazyFixture.Value;
 
-    protected ICancellation Cancellation => _lazyCancellation.Value;
+    protected internal ICancellation Cancellation => _lazyCancellation.Value;
 
-    protected IDateTimeService DateTime => _lazyDateTime.Value;
+    protected internal IDateTimeService DateTime => _lazyDateTime.Value;
 
     public Task InitializeAsync() => Task.CompletedTask;
 
@@ -33,22 +33,16 @@ public abstract class BaseTest : CompositeDisposable, IAsyncLifetime
 public abstract class BaseTest<TGiven> : BaseTest
     where TGiven : GivenContext<TGiven>
 {
-    private readonly VariablesContainer _variables = new();
-    private TGiven? _given;
-
-    protected BaseTest()
+    protected BaseTest(Func<BaseTest, TGiven> createGiven)
     {
-        When = CreateWhen(_variables);
+        Given = createGiven(this);
+        When = CreateWhen(Given.Variables);
     }
 
-    public TGiven Given => _given ??= CreateGiven(_variables);
+    public TGiven Given { get; }
 
     public WhenContext When { get; }
 
-    protected IVariable Result { get; } = new Variable(nameof(Result));
-
-    protected abstract TGiven CreateGiven(VariablesContainer variables);
-
     private WhenContext CreateWhen(VariablesContainer variables) =>
-        new(variables, Result, Cancellation);
+        new(variables, Cancellation);
 }

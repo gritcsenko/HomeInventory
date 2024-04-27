@@ -4,4 +4,8 @@
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj" />
+  </ItemGroup>
+
 </Project>

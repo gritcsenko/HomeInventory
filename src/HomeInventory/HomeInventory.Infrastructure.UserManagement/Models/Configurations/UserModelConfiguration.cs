@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-internal class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
+internal sealed class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
 {
     public void Configure(EntityTypeBuilder<UserModel> builder)
     {

@@ -14,13 +14,13 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
     private static readonly Variable<IHasDomainEvents> _entity = new(nameof(_entity));
     private static readonly Variable<IDomainEvent> _event = new(nameof(_event));
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Used in AddDisposable")]
     private readonly DatabaseContext _context;
 
     public EventsPersistenceServiceTests()
+        : base(t => new(t))
     {
         var options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
-        _context = AddDisposable(DbContextFactory.Default.CreateInMemory(DateTime, options));
+        AddDisposable(DbContextFactory.Default.CreateInMemory(DateTime, options), out _context);
     }
 
     [Fact]
@@ -50,19 +50,10 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
                 entity.Received().ClearDomainEvents();
             });
     }
-
-    protected override EventsPersistenceServiceTestsGivenContext CreateGiven(VariablesContainer variables) => new(variables, Fixture);
 }
 
-public class EventsPersistenceServiceTestsGivenContext : GivenContext<EventsPersistenceServiceTestsGivenContext>
+public class EventsPersistenceServiceTestsGivenContext(BaseTest test) : GivenContext<EventsPersistenceServiceTestsGivenContext>(test)
 {
-
-    public EventsPersistenceServiceTestsGivenContext(VariablesContainer variables, IFixture fixture)
-        : base(variables, fixture)
-    {
-
-    }
-
     internal EventsPersistenceServiceTestsGivenContext Sut(IVariable<EventsPersistenceService> sutVariable, IVariable<DatabaseContext> dbContextVariable) =>
-        Add(sutVariable, () => new EventsPersistenceService(Variables.Get(dbContextVariable)));
+        Add(sutVariable, () => new EventsPersistenceService(GetValue(dbContextVariable)));
 }

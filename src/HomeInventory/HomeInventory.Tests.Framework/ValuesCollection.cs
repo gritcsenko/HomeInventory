@@ -2,14 +2,12 @@
 
 namespace HomeInventory.Tests.Framework;
 
-public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
+public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<ValueContainer>
 {
     private readonly List<ValueContainer> _values = [];
-    private readonly Type _valueType;
+    private readonly Type _valueType = valueType;
 
     public int Count => ((IReadOnlyCollection<ValueContainer>)_values).Count;
-
-    public ValuesCollection(Type valueType) => _valueType = valueType;
 
     public bool TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
@@ -68,7 +66,7 @@ public sealed class ValuesCollection : IReadOnlyCollection<ValueContainer>
     }
 
     public bool IsAsignable<T>() =>
-        _valueType.IsAssignableFrom(typeof(T));
+        typeof(T).IsAssignableTo(_valueType);
 
     private void AddCore<T>(T value)
         where T : notnull =>

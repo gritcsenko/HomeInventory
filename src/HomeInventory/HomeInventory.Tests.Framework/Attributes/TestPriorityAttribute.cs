@@ -1,12 +1,7 @@
 ﻿namespace HomeInventory.Tests.Framework.Attributes;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-public sealed class TestPriorityAttribute : Attribute
+public sealed class TestPriorityAttribute(int priority) : Attribute
 {
-    public TestPriorityAttribute(int priority)
-    {
-        Priority = priority;
-    }
-
-    public int Priority { get; }
+    public int Priority { get; } = priority;
 }

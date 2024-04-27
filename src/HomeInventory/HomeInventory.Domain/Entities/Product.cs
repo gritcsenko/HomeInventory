@@ -3,13 +3,8 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Domain.Entities;
 
-public class Product : Entity<Product, ProductId>
+public class Product(ProductId id) : Entity<Product, ProductId>(id)
 {
-    public Product(ProductId id)
-        : base(id)
-    {
-    }
-
     public required string Name { get; init; }
 
     public required Amount Amount { get; init; }

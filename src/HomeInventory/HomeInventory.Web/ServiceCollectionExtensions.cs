@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Asp.Versioning;
 using Carter;
-using FluentValidation.Internal;
 using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
 using HomeInventory.Application;
@@ -20,7 +19,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace HomeInventory.Web;
@@ -148,19 +146,5 @@ public static class ServiceCollectionExtensions
             Predicate = _ => false,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
-    }
-
-    private static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, string? configSectionPath = null)
-        where TOptions : class => services.AddOptions<TOptions>()
-            .BindConfiguration(configSectionPath ?? typeof(TOptions).Name)
-            .ValidateWithValidator()
-            .ValidateOnStart();
-
-    private static OptionsBuilder<TOptions> ValidateWithValidator<TOptions>(this OptionsBuilder<TOptions> builder, Action<ValidationStrategy<TOptions>>? validationOptions = null)
-        where TOptions : class
-    {
-        var services = builder.Services;
-        services.AddSingleton<IValidateOptions<TOptions>>(sp => new FluentOptionsValidator<TOptions>(builder.Name, sp.GetRequiredService<IValidatorLocator>(), validationOptions));
-        return builder;
     }
 }

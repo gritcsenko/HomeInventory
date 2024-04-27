@@ -52,8 +52,9 @@ public class PasswordValidatorTests : BaseTest
         public string? Password { get; set; }
     }
 
-    private static InlineValidator<Container> CreateSut() => new()
-    {
-        v => v.RuleFor(x => x.Password).Password()
-    };
+    private static InlineValidator<Container> CreateSut() =>
+        new()
+        {
+            v => v.RuleFor(x => x.Password).Password()
+        };
 }

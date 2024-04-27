@@ -10,7 +10,7 @@ using HomeInventory.Infrastructure.Specifications;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService)
+internal sealed class UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService)
     : Repository<UserModel, User, UserId>(context, mapper, evaluator, eventsPersistenceService), IUserRepository
 {
     public ValueTask<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default) =>

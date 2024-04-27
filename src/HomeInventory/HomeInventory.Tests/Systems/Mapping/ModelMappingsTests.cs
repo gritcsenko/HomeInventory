@@ -1,5 +1,4 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Domain;
+﻿using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;

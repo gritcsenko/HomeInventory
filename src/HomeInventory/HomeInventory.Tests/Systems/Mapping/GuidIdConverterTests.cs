@@ -5,7 +5,7 @@ using HomeInventory.Domain.ValueObjects;
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
-public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestContext>
+public class GuidIdConverterTests() : BaseTest<GuidIdConverterTests.GivenTestContext>(t => new(t))
 {
     private static readonly Variable<UlidIdConverter<UserId>> _sut = new(nameof(_sut));
     private static readonly Variable<Ulid> _id = new(nameof(_id));
@@ -52,29 +52,12 @@ public class GuidIdConverterTests : BaseTest<GuidIdConverterTests.GivenTestConte
             .Exception<InvalidOperationException>(ex => ex.Which.Data.ShouldBeDictionaryAnd().Contain(nameof(ObjectValidationError<Ulid>.Value), Ulid.Empty));
     }
 
-
-    protected override GivenTestContext CreateGiven(VariablesContainer variables) =>
-        new(variables, Fixture);
-
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext : GivenContext<GivenTestContext>
+    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesContainer variables, IFixture fixture)
-            : base(variables, fixture)
-        {
-        }
+        internal GivenTestContext Empty(Variable<Ulid> idVariable) => Add(idVariable, () => Ulid.Empty);
 
-        internal GivenTestContext Empty(Variable<Ulid> idVariable)
-        {
-            Add(idVariable, () => Ulid.Empty);
-            return This;
-        }
-
-        internal GivenTestContext Sut(Variable<UlidIdConverter<UserId>> sutVariable)
-        {
-            Add(sutVariable, () => new());
-            return This;
-        }
+        internal GivenTestContext Sut(Variable<UlidIdConverter<UserId>> sutVariable) => Add(sutVariable, () => new());
     }
 }

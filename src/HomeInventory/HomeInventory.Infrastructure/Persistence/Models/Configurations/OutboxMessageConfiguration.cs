@@ -5,19 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
-internal class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
+internal sealed class OutboxMessageConfiguration(JsonSerializerOptions settings) : IEntityTypeConfiguration<OutboxMessage>
 {
-    private readonly JsonSerializerOptions _settings;
-
-    public OutboxMessageConfiguration(JsonSerializerOptions settings)
-    {
-        _settings = settings;
-    }
+    private readonly JsonSerializerOptions _settings = settings;
 
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
-
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => x.Id); // IsClustered(false)
 
         builder.Property(x => x.OccurredOn)
             .IsRequired();
@@ -37,4 +31,3 @@ internal class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessa
     private static string Serialize(IDomainEvent obj, JsonSerializerOptions settings) =>
         JsonSerializer.Serialize(obj, settings);
 }
-

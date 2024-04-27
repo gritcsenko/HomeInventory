@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse>
+internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();

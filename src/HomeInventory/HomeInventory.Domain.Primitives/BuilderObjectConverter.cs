@@ -11,7 +11,7 @@ public class BuilderObjectConverter<TBuilder, TObject, TValue> : ObjectConverter
         TObject
             .CreateBuilder()
             .WithValue(source)
-            .Invoke()
+            .Build()
             .Convert(obj => (OneOf<TObject, IError>)obj)
             .OrInvoke(() => new ObjectValidationError<TValue>(source));
 }

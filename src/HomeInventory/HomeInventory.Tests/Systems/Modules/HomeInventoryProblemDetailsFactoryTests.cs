@@ -19,6 +19,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     private readonly string _detail;
     private readonly string _instance;
     private readonly ModelStateDictionary _state;
+    private readonly ErrorMapping _mapping = ErrorMappingBuilder.CreateDefault().Build();
 
     public HomeInventoryProblemDetailsFactoryTests()
     {
@@ -29,7 +30,6 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         _detail = Fixture.Create<string>();
         _instance = Fixture.Create<string>();
         _state = Fixture.Create<ModelStateDictionary>();
-
     }
 
     [Fact]
@@ -124,9 +124,11 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var expectedDetail = Fixture.Create<string>();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
-        var errors = new[] { new ValidationError(expectedDetail, metadata) }.ToReadOnly();
-        var expectedStatus = new ErrorMapping().GetError(errors.First());
-        var expectedTitle = errors.First().GetType().Name;
+        var error = new ValidationError(expectedDetail, metadata);
+        var errors = new[] { error }.ToReadOnly();
+        var errorType = error.GetType();
+        var expectedStatus = (int)_mapping.GetError(errorType);
+        var expectedTitle = errorType.Name;
 
         var details = sut.ConvertToProblem(_context, errors);
 
@@ -150,7 +152,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var messages = Fixture.CreateMany<string>(2).ToArray();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
         var errors = new IError[] { new ValidationError(messages[0], metadata), new ConflictError(messages[1]) };
-        var expectedStatus = new ErrorMapping().GetDefaultError();
+        var expectedStatus = (int)_mapping.GetDefaultError();
 
         var details = sut.ConvertToProblem(_context, errors);
 
@@ -172,7 +174,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var messages = Fixture.CreateMany<string>(2).ToArray();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
         var errors = new IError[] { new ValidationError(messages[0], metadata), new ObjectValidationError<string>(messages[1]) }.ToReadOnly();
-        var expectedStatus = new ErrorMapping().GetError(errors.First());
+        var expectedStatus = (int)_mapping.GetError(errors.First().GetType());
 
         var details = sut.ConvertToProblem(_context, errors);
 
@@ -261,5 +263,5 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
             .Which.Should().Be(id);
     }
 
-    private HomeInventoryProblemDetailsFactory CreateSut() => new(new ErrorMapping(), Options.Create(_options));
+    private HomeInventoryProblemDetailsFactory CreateSut() => new(_mapping, Options.Create(_options));
 }
