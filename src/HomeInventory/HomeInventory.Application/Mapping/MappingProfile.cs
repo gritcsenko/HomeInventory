@@ -11,7 +11,7 @@ public abstract class MappingProfile : Profile
     }
 
     protected void CreateMapForId<TId>()
-        where TId : class, IUlidIdentifierObject<TId>
+        where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>
     {
         var converter = new UlidIdConverter<TId>();
         CreateMap<TId, Ulid>()

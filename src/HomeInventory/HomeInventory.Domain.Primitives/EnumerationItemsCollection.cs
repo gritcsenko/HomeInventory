@@ -24,7 +24,7 @@ internal sealed class EnumerationItemsCollection<T> : IReadOnlyCollection<T>
         _flattened = new(() => _items.Flatten().ToReadOnly());
     }
 
-    public Optional<T> FirstOrNone(string name) => _items[name].FirstOrNone();
+    public Optional<T> this[string name] => _items[name].FirstOrNone();
 
     public int Count => _flattened.Value.Count;
 

@@ -4,14 +4,9 @@ using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.Services;
 
-internal class EventsPersistenceService : IEventsPersistenceService
+internal class EventsPersistenceService(IDatabaseContext context) : IEventsPersistenceService
 {
-    private readonly IDatabaseContext _context;
-
-    public EventsPersistenceService(IDatabaseContext context)
-    {
-        _context = context;
-    }
+    private readonly IDatabaseContext _context = context;
 
     public ValueTask SaveEventsAsync(IHasDomainEvents entity, CancellationToken cancellationToken = default)
     {

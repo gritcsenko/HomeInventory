@@ -4,13 +4,8 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>
+public class ServiceCollectionAssertions(IServiceCollection value) : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>(value)
 {
-    public ServiceCollectionAssertions(IServiceCollection value)
-        : base(value)
-    {
-    }
-
     public AndWhichConstraint<ObjectAssertions, IConfigureOptions<TOptions>> ContainConfigureOptions<TOptions>(IServiceProvider provider)
         where TOptions : class =>
         ContainSingleTransient<IConfigureOptions<TOptions>>(provider);
@@ -30,6 +25,10 @@ public class ServiceCollectionAssertions : GenericCollectionAssertions<IServiceC
     public AndConstraint<ServiceCollectionAssertions> ContainTransient<T>(IServiceProvider provider)
         where T : class =>
         Contain<T>(provider, ServiceLifetime.Transient);
+
+    public AndConstraint<ServiceCollectionAssertions> ContainScoped<T>(IServiceProvider provider)
+        where T : class =>
+        Contain<T>(provider, ServiceLifetime.Scoped);
 
     private AndWhichConstraint<ObjectAssertions, T> ContainSingle<T>(IServiceProvider provider, ServiceLifetime lifetime)
         where T : class =>

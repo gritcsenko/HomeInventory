@@ -2,23 +2,14 @@
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class UlidAssertions : UlidAssertions<UlidAssertions>
+public class UlidAssertions(Ulid actualValue) : UlidAssertions<UlidAssertions>(actualValue)
 {
-    public UlidAssertions(Ulid actualValue)
-        : base(actualValue)
-    {
-    }
 }
 
-public class UlidAssertions<TAssertions>
+public class UlidAssertions<TAssertions>(Ulid actualValue)
     where TAssertions : UlidAssertions<TAssertions>
 {
-    public UlidAssertions(Ulid actualValue)
-    {
-        Subject = actualValue;
-    }
-
-    public Ulid Subject { get; }
+    public Ulid Subject { get; } = actualValue;
 
     public AndConstraint<TAssertions> BeEmpty(string because = "", params object[] becauseArgs)
     {

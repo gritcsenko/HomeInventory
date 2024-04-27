@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddMappingAssemblySource(AssemblyReference.Assembly);
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
-        services.AddSingleton<IDomainEventJsonTypeInfo>(_ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
+        services.AddSingleton<IJsonDerivedTypeInfo>(_ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
 
         services.AddScoped<IDatabaseConfigurationApplier, UserModelDatabaseConfigurationApplier>();
 

@@ -46,12 +46,9 @@ public static class OptionalExtensions
     public static async ValueTask<Optional<T>> IfAsync<T>(this ValueTask<Optional<T>> optionalTask, Func<T, CancellationToken, ValueTask<bool>> asyncCondition, CancellationToken cancellationToken = default)
     {
         var optional = await optionalTask;
-        if (optional.HasValue && await asyncCondition(optional.Value, cancellationToken))
-        {
-            return optional;
-        }
-
-        return Optional<T>.None;
+        return optional.HasValue && await asyncCondition(optional.Value, cancellationToken)
+            ? optional
+            : Optional<T>.None;
     }
 
     public static async ValueTask<Optional<TResult>> ConvertAsync<T, TResult>(this ValueTask<Optional<T>> optionalTask, Func<T, CancellationToken, ValueTask<TResult>> asyncConverter, CancellationToken cancellationToken = default)
@@ -60,20 +57,18 @@ public static class OptionalExtensions
         return await optional.ConvertAsync(asyncConverter, cancellationToken);
     }
 
-    public static async ValueTask<Optional<TResult>> ConvertAsync<T, TResult>(this Optional<T> optional, Func<T, CancellationToken, ValueTask<TResult>> asyncConverter, CancellationToken cancellationToken = default)
-    {
-        if (optional.HasValue)
-        {
-            return await asyncConverter(optional.Value, cancellationToken);
-        }
-
-        return Optional<TResult>.None;
-    }
+    public static async ValueTask<Optional<TResult>> ConvertAsync<T, TResult>(this Optional<T> optional, Func<T, CancellationToken, ValueTask<TResult>> asyncConverter, CancellationToken cancellationToken = default) =>
+        optional.HasValue
+            ? (Optional<TResult>)await asyncConverter(optional.Value, cancellationToken)
+            : Optional<TResult>.None;
 
     public static async ValueTask<Optional<TResult>> Convert<T, TResult>(this ValueTask<Optional<T>> optionalTask, Converter<T, TResult> converter)
     {
         var optional = await optionalTask;
-
         return optional.Convert(converter);
     }
+
+    public static Optional<T> Coalesce<T>(this Optional<T> first, Func<Optional<T>> secondFunc) => first.HasValue ? first : secondFunc();
+
+    public static Optional<T> NoneIfNull<T>(this T? value) where T : class => value is null ? Optional<T>.None : Optional.Some(value);
 }

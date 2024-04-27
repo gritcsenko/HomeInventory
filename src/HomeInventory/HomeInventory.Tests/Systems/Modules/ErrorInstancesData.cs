@@ -1,17 +1,18 @@
-﻿using HomeInventory.Domain.Errors;
+﻿using System.Net;
+using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
-using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
-public sealed class ErrorInstancesData : TheoryData<IError, int>
+public sealed class ErrorInstancesData : TheoryData<Type?, HttpStatusCode>
 {
     public ErrorInstancesData()
     {
-        Add(new ConflictError(""), StatusCodes.Status409Conflict);
-        Add(new DuplicateEmailError(), StatusCodes.Status409Conflict);
-        Add(new ValidationError(""), StatusCodes.Status400BadRequest);
-        Add(new ObjectValidationError<string>(""), StatusCodes.Status400BadRequest);
-        Add(new NotFoundError(""), StatusCodes.Status404NotFound);
+        Add(null, HttpStatusCode.InternalServerError);
+        Add(typeof(ConflictError), HttpStatusCode.Conflict);
+        Add(typeof(DuplicateEmailError), HttpStatusCode.Conflict);
+        Add(typeof(ValidationError), HttpStatusCode.BadRequest);
+        Add(typeof(ObjectValidationError<string>), HttpStatusCode.BadRequest);
+        Add(typeof(NotFoundError), HttpStatusCode.NotFound);
     }
 }

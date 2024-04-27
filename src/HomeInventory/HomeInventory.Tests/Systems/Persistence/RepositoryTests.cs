@@ -165,11 +165,7 @@ public class RepositoryTests : BaseRepositoryTest
 
     private FakeRepository CreateSut() => new(Context, Mapper, PersistenceService);
 
-    private class FakeRepository : Repository<UserModel, User, UserId>
+    private class FakeRepository(IDatabaseContext context, IMapper mapper, IEventsPersistenceService persistenceService) : Repository<UserModel, User, UserId>(context, mapper, SpecificationEvaluator.Default, persistenceService)
     {
-        public FakeRepository(IDatabaseContext context, IMapper mapper, IEventsPersistenceService persistenceService)
-            : base(context, mapper, SpecificationEvaluator.Default, persistenceService)
-        {
-        }
     }
 }

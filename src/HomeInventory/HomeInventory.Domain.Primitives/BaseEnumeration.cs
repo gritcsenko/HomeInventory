@@ -1,19 +1,13 @@
 ﻿namespace HomeInventory.Domain.Primitives;
 
-public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<TSelf>
+public abstract class BaseEnumeration<TSelf>(string name, object key) : ValueObject<TSelf>(name, key), IEnumeration<TSelf>
     where TSelf : BaseEnumeration<TSelf>
 {
-    private static readonly Lazy<EnumerationItemsCollection<TSelf>> _items = new(EnumerationItemsCollection.CreateFor<TSelf>, LazyThreadSafetyMode.ExecutionAndPublication);
-    private readonly object _key;
+    private static readonly Lazy<EnumerationItemsCollection<TSelf>> _lazyItems = new(EnumerationItemsCollection.CreateFor<TSelf>, LazyThreadSafetyMode.ExecutionAndPublication);
 
-    protected BaseEnumeration(string name, object key)
-        : base(name, key)
-    {
-        Name = name;
-        _key = key;
-    }
+    public string Name => GetComponent<string>(0);
 
-    public string Name { get; }
+    protected static IReadOnlyCollection<TSelf> Items => _lazyItems.Value;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static TSelf Parse(string text) =>
@@ -21,21 +15,14 @@ public abstract class BaseEnumeration<TSelf> : ValueObject<TSelf>, IEnumeration<
             .OrThrow(() => throw new InvalidOperationException($"Failed to parse '{text}' to {typeof(TSelf).Name}"));
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
-    public static Optional<TSelf> TryParse(string text) =>
-        _items.Value.FirstOrNone(text);
+    public static Optional<TSelf> TryParse(string text) => _lazyItems.Value[text];
 
-    public override string ToString() => $"{Name} ({_key})";
+    public override string ToString() => $"{GetComponent(0)} ({GetComponent(1)})";
 }
 
-public abstract class BaseEnumeration<TSelf, TValue> : BaseEnumeration<TSelf>, IEnumeration<TSelf, TValue>
+public abstract class BaseEnumeration<TSelf, TValue>(string name, TValue value) : BaseEnumeration<TSelf>(name, value), IEnumeration<TSelf, TValue>
     where TSelf : BaseEnumeration<TSelf, TValue>
     where TValue : notnull, IEquatable<TValue>
 {
-    protected BaseEnumeration(string name, TValue value)
-        : base(name, value)
-    {
-        Value = value;
-    }
-
-    public TValue Value { get; }
+    public TValue Value => GetComponent<TValue>(1);
 }

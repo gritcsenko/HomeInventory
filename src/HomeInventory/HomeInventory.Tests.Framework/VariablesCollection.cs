@@ -2,7 +2,7 @@
 
 public sealed class VariablesContainer
 {
-    private readonly Dictionary<string, ValuesCollection> _variables = new();
+    private readonly Dictionary<string, ValuesCollection> _variables = [];
 
     public bool TryAdd<T>(IVariable<T> variable, Func<T> createValueFunc)
         where T : notnull

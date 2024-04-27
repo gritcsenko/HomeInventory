@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Domain;
 
-internal class SystemDateTimeService : IDateTimeService
+internal sealed class SystemDateTimeService : IDateTimeService
 {
     public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
 }

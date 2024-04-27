@@ -6,10 +6,8 @@ namespace HomeInventory.Domain.Events;
 public sealed record UserCreatedDomainEvent : DomainEvent
 {
     public UserCreatedDomainEvent(IDateTimeService dateTimeService, User user)
-        : base(dateTimeService)
-    {
+        : base(dateTimeService) =>
         User = user;
-    }
 
     public User User { get; }
 }

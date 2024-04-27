@@ -3,7 +3,7 @@
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EntityTests : BaseTest<EntityTests.GivenTestContext>
+public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => new(t))
 {
     private static readonly Variable<TestEntityId> _id = new(nameof(_id));
     private static readonly Variable<TestEntity> _other = new(nameof(_other));
@@ -192,40 +192,29 @@ public class EntityTests : BaseTest<EntityTests.GivenTestContext>
             .Result(actual => actual.Should().BeTrue());
     }
 
-    protected sealed override GivenTestContext CreateGiven(VariablesContainer variables) =>
-        new(variables, Fixture);
-
 #pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext : GivenContext<GivenTestContext>
+    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        public GivenTestContext(VariablesContainer variables, IFixture fixture)
-            : base(variables, fixture)
-        {
-        }
-
         internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IVariable<TestEntityId> id) =>
             TestEntity(entity, id[0]);
 
         internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IIndexedVariable<TestEntityId> id) =>
             Add(entity, () => CreateTestEntity(id));
 
-        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> id) => new(Variables.Get(id));
+        internal GivenTestContext New(IVariable<TestEntityId> variable) => Add(variable, CreateTestEntityId);
+
+        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> idVariable) => new(GetValue(idVariable));
+
+        private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
     }
 
-    internal class TestEntityId : UlidIdentifierObject<TestEntityId>
+    internal class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
     {
-        public TestEntityId(Ulid value)
-            : base(value)
-        {
-        }
+        public static Result<TestEntityId> CreateFrom(Ulid value) => Result.FromValue(new TestEntityId(value));
     }
 
-    internal class TestEntity : Entity<TestEntity, TestEntityId>
+    internal class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)
     {
-        public TestEntity(TestEntityId id)
-            : base(id)
-        {
-        }
     }
 }

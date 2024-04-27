@@ -8,13 +8,8 @@ public static class DomainEventNotification
         (INotification)Activator.CreateInstance(typeof(DomainEventNotification<>).MakeGenericType(domainEvent.GetType()), domainEvent)!;
 }
 
-public class DomainEventNotification<TEvent> : INotification
+public class DomainEventNotification<TEvent>(TEvent domainEvent) : INotification
     where TEvent : IDomainEvent
 {
-    public DomainEventNotification(TEvent domainEvent)
-    {
-        DomainEvent = domainEvent;
-    }
-
-    public TEvent DomainEvent { get; }
+    public TEvent DomainEvent { get; } = domainEvent;
 }

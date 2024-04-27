@@ -2,10 +2,6 @@
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class ProblemDetailsAssertions : ObjectAssertions<ProblemDetails, ProblemDetailsAssertions>
+public class ProblemDetailsAssertions(ProblemDetails value) : ObjectAssertions<ProblemDetails, ProblemDetailsAssertions>(value)
 {
-    public ProblemDetailsAssertions(ProblemDetails value)
-        : base(value)
-    {
-    }
 }

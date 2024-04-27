@@ -6,11 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Services;
 
-internal class PersistenceHealthCheck : BaseHealthCheck
+internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHealthCheck
 {
-    private readonly DatabaseContext _context;
-
-    public PersistenceHealthCheck(DatabaseContext context) => _context = context;
+    private readonly DatabaseContext _context = context;
 
     protected override IReadOnlyDictionary<string, object> ExceptionData => new Dictionary<string, object>
     {

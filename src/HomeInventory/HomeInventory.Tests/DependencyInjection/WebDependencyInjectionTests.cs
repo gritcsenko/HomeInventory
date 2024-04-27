@@ -28,9 +28,9 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     {
         AddConfiguration(new Dictionary<string, string?>
         {
-            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Secret)}"] = "Some Secret",
-            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Issuer)}"] = "HomeInventory",
-            [$"{nameof(JwtOptions)}:{nameof(JwtOptions.Audience)}"] = "HomeInventory",
+            [JwtOptions.Section / nameof(JwtOptions.Secret)] = "Some Secret",
+            [JwtOptions.Section / nameof(JwtOptions.Issuer)] = "HomeInventory",
+            [JwtOptions.Section / nameof(JwtOptions.Audience)] = "HomeInventory",
         });
         AddDateTime();
 
