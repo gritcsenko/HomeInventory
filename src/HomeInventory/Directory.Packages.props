@@ -18,7 +18,7 @@
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="Carter" Version="8.0.0" />
     <PackageVersion Include="DotNext" Version="5.3.1" />
-    <PackageVersion Include="FastExpressionCompiler" Version="4.1.0" />
+    <PackageVersion Include="FastExpressionCompiler" Version="4.2.0" />
     <PackageVersion Include="FluentValidation" Version="11.9.1" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
