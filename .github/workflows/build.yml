@@ -54,11 +54,8 @@ jobs:
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
-      - name: Restore dependencies
-        run: dotnet restore HomeInventory.sln -v minimal
-        working-directory: ./src/HomeInventory
-      - name: Build Release
-        run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+      - name: Cake Frosting
+        run: dotnet run --project ./build/Build.csproj --target Build
         working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v4
@@ -92,8 +89,8 @@ jobs:
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
-      - name: Check formatting
-        run: dotnet format --verify-no-changes --severity error --verbosity diag HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
+      - name: Cake Frosting
+        run: dotnet run --project ./build/Build.csproj --target Format
         working-directory: ./src/HomeInventory
 
   unit-test:
@@ -135,6 +132,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Run Unit Tests
         if: success() || failure()
+        run: dotnet run --project ./build/Build.csproj --target UnitTest
         run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
         working-directory: ./src/HomeInventory
       - name: Test Report
