@@ -41,7 +41,7 @@ public class UserRepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task HasAsync_Should_ReturnTrue_WhenUserAdded()
     {
-        Context.Set<UserModel>().Add(_userModel);
+        await Context.Set<UserModel>().AddAsync(_userModel, Cancellation.Token);
         await Context.SaveChangesAsync();
         var sut = CreateSut();
 
@@ -53,7 +53,7 @@ public class UserRepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task FindFirstOrNotFoundAsync_Should_ReturnCorrectUser_WhenUserAdded()
     {
-        Context.Set<UserModel>().Add(_userModel);
+        await Context.Set<UserModel>().AddAsync(_userModel, Cancellation.Token);
         await Context.SaveChangesAsync();
         var sut = CreateSut();
 
@@ -66,7 +66,7 @@ public class UserRepositoryTests : BaseRepositoryTest
     public async Task HasPermissionAsync_Should_ReturnTreu_WhenUserAdded()
     {
         var permission = Fixture.Create<string>();
-        Context.Set<UserModel>().Add(_userModel);
+        await Context.Set<UserModel>().AddAsync(_userModel, Cancellation.Token);
         await Context.SaveChangesAsync();
         var sut = CreateSut();
 
