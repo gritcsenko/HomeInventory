@@ -1,24 +1,23 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using Bogus.DataSets;
+using HomeInventory.Domain.Primitives;
+using HomeInventory.Tests.Framework;
+using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EquatableComponentTests() : BaseTest<EquatableComponentTests.GivenTestContext>(t => new(t))
+public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenContext>(t => new(t))
 {
-    private static readonly Variable<EquatableComponent<string>> _sut = new(nameof(_sut));
-    private static readonly Variable<HashCode> _hash = new(nameof(_hash));
-    private static readonly Variable<Ulid> _component = new(nameof(_component));
-
     [Fact]
     public void GetHashCode_ShoudReturnZero_WhenNoComponents()
     {
         Given
-            .Component(_sut)
-            .EmptyHashCode(_hash);
+            .Sut(out var sut)
+            .EmptyHashCode(out var hash);
 
         When
-            .Invoked(_sut, sut => sut.GetHashCode())
-            .Result(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sut, sut => sut.GetHashCode())
+            .Result(hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Theory]
@@ -28,24 +27,23 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTests.GivenT
     public void GetHashCode_ShoudReturnCombinedComponentsHash_WhenManyComponents(int count)
     {
         Given
-            .New(_component, count)
-            .AddAllToHashCode(_hash, _component)
-            .Component(_sut, _component);
+            .New<Ulid>(out var component, count)
+            .AddAllToHashCode(out var hash, component)
+            .Sut(out var sut, component);
 
         When
-            .Invoked(_sut, sut => sut.GetHashCode())
-            .Result(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sut, sut => sut.GetHashCode())
+            .Result(hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
     public void Equals_ShoudBeEqualToEmpty_WhenNoComponents()
     {
         Given
-            .Component(_sut)
-            .Component(_sut);
+            .Sut(out var sut, 2);
 
         When
-            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
+            .Invoked(sut[0], sut[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -56,12 +54,12 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTests.GivenT
     public void Equals_ShoudNotBeEqualToEmpty_WhenManyComponents(int count)
     {
         Given
-            .New(_component, count)
-            .Component(_sut, _component)
-            .Component(_sut);
+            .New<Ulid>(out var component, count)
+            .Sut(out var sut1, component)
+            .Sut(out var sut2);
 
         When
-            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
+            .Invoked(sut1, sut2, (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -72,12 +70,11 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTests.GivenT
     public void Equals_ShoudBeEqualToComponentWithSameItems_WhenManyComponents(int count)
     {
         Given
-            .New(_component, count)
-            .Component(_sut, _component)
-            .Component(_sut, _component);
+            .New<Ulid>(out var component, count)
+            .Sut(out var sut, component, 2);
 
         When
-            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
+            .Invoked(sut[0], sut[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -88,28 +85,31 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTests.GivenT
     public void Equals_ShoudNotBeEqualToComponentWithDifferentItems_WhenManyComponents(int count)
     {
         Given
-            .New(_component, count * 2)
-            .Component(_sut, _component, ..count)
-            .Component(_sut, _component, count..);
+            .New<Ulid>(out var component, count * 2)
+            .Sut(out var sut, component, ..count, count..);
 
         When
-            .Invoked(_sut[0], _sut[1], (sut, other) => sut.Equals(other))
+            .Invoked(sut[0], sut[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
+}
 
-#pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
-#pragma warning restore CA1034 // Nested types should not be visible
-    {
-        public GivenTestContext Component(IVariable<EquatableComponent<string>> sut) =>
-            Component(sut, new Variable<Ulid>(""));
+public sealed class EquatableComponentTestsGivenContext(BaseTest test) : GivenContext<EquatableComponentTestsGivenContext, EquatableComponent<string>>(test)
+{
+    public new EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        Sut(out sut, new Variable<Ulid>("none"), count, name);
 
-        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable)
-            where T : notnull =>
-            Component(sut, variable, ..);
+    public EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        Sut(out sut, variable, name ?? "sut", Enumerable.Repeat(.., count).ToArray());
 
-        public GivenTestContext Component<T>(IVariable<EquatableComponent<string>> sut, IVariable<T> variable, Range range)
-            where T : notnull =>
-            Add(sut, () => new EquatableComponent<string>(Array.ConvertAll(Variables.GetMany(variable, range).ToArray(), x => (object)x)));
-    }
+    public EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, params Range[] ranges) =>
+        Sut(out sut, variable, "sut", ranges);
+
+    protected override EquatableComponent<string> CreateSut() => throw new NotImplementedException();
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3236:Caller information arguments should not be provided explicitly", Justification = "By design")]
+    private EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, string name, params Range[] ranges) =>
+        New(out sut, i => CreateSut(variable, ranges[i]), ranges.Length, name);
+
+    private EquatableComponent<string> CreateSut(IVariable<Ulid> variable, Range range) => new(Array.ConvertAll(Variables.GetMany(variable, range).ToArray(), x => (object)x));
 }

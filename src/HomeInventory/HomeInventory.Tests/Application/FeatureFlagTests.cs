@@ -6,54 +6,50 @@ namespace HomeInventory.Tests.Application;
 [UnitTest]
 public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestContext>(t => new(t))
 {
-    private static readonly Variable<IFeatureFlag> _sut = new(nameof(_sut));
-    private static readonly Variable<IFeatureFlag<Guid>> _sutContext = new(nameof(_sutContext));
-    private static readonly Variable<string> _name = new(nameof(_name));
     private static readonly Variable<IFeatureManager> _manager = new(nameof(_manager));
-    private static readonly Variable<Guid> _context = new(nameof(_context));
 
     [Fact]
     public void ConstructorShouldPreserveName()
     {
         Given
-            .New(_name)
-            .Sut(_sut, _name);
+            .New<string>(out var name)
+            .Sut(out var sut, name);
 
         var then = When
-            .Invoked(_sut, sut => sut.Name);
+            .Invoked(sut, sut => sut.Name);
 
         then
-            .Result(_name, (actual, expected) => actual.Should().Be(expected));
+            .Result(name, (actual, expected) => actual.Should().Be(expected));
     }
 
     [Fact]
     public void CreateShouldPreserveName()
     {
         Given
-            .New(_name);
+            .New<string>(out var name);
 
         var then = When
-            .Invoked(_name, FeatureFlag.Create);
+            .Invoked(name, FeatureFlag.Create);
 
         then
             .Result(flag => flag.Should().NotBeNull())
-            .Result(_name, (actual, expected) => actual.Name.Should().Be(expected));
+            .Result(name, (actual, expected) => actual.Name.Should().Be(expected));
     }
 
     [Fact]
     public void CreateWithContextShouldPreserveName()
     {
         Given
-            .New(_name)
-            .New(_context);
+            .New<string>(out var name)
+            .New<Guid>(out var context);
 
         var then = When
-            .Invoked(_name, _context, FeatureFlag.Create);
+            .Invoked(name, context, FeatureFlag.Create);
 
         then
             .Result(flag => flag.Should().NotBeNull())
-            .Result(_name, (actual, expected) => actual.Name.Should().Be(expected))
-            .Result(_context, (actual, expected) => actual.Context.Should().Be(expected));
+            .Result(name, (actual, expected) => actual.Name.Should().Be(expected))
+            .Result(context, (actual, expected) => actual.Context.Should().Be(expected));
     }
 
     [Theory]
@@ -62,13 +58,13 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
     public async Task IsEnabledShouldReturnManagerValue(bool expectedValue)
     {
         Given
-            .New(_name)
-            .SubstituteFor(_manager, _name,
+            .New<string>(out var name)
+            .SubstituteFor(out IVariable<IFeatureManager> manager, name,
                 (manager, name) => manager.IsEnabledAsync(name).Returns(expectedValue))
-            .Sut(_sut, _name);
+            .Sut(out var sut, name);
 
         var then = await When
-            .InvokedAsync(_sut, _manager, (sut, manager, _) => sut.IsEnabledAsync(manager));
+            .InvokedAsync(sut, manager, (sut, manager, _) => sut.IsEnabledAsync(manager));
 
         then
             .Result(flag => flag.Should().Be(expectedValue));
@@ -78,17 +74,17 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
     public void WithContextShouldReturn()
     {
         Given
-            .New(_name)
-            .New(_context)
-            .Sut(_sut, _name);
+            .New<string>(out var name)
+            .New<Guid>(out var context)
+            .Sut(out var sut, name);
 
         var then = When
-            .Invoked(_sut, _context, (sut, context) => sut.WithContext(context));
+            .Invoked(sut, context, (sut, context) => sut.WithContext(context));
 
         then
             .Result(flag => flag.Should().NotBeNull())
-            .Result(_name, (actual, expected) => actual.Name.Should().Be(expected))
-            .Result(_context, (actual, expected) => actual.Context.Should().Be(expected));
+            .Result(name, (actual, expected) => actual.Name.Should().Be(expected))
+            .Result(context, (actual, expected) => actual.Context.Should().Be(expected));
     }
 
     [Theory]
@@ -97,14 +93,14 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
     public async Task IsEnabledContextShouldReturnManagerValue(bool expectedValue)
     {
         Given
-            .New(_name)
-            .New(_context)
-            .SubstituteFor(_manager, _name, _context,
+            .New<string>(out var name)
+            .New<Guid>(out var context)
+            .SubstituteFor(out IVariable<IFeatureManager> manager, name, context,
                 (manager, name, context) => manager.IsEnabledAsync(name, context).Returns(expectedValue))
-            .Sut(_sutContext, _name, _context);
+            .Sut(out var sutContext, name, context);
 
         var then = await When
-            .InvokedAsync(_sutContext, _manager, (sut, manager, _) => sut.IsEnabledAsync(manager));
+            .InvokedAsync(sutContext, manager, (sut, manager, _) => sut.IsEnabledAsync(manager));
 
         then
             .Result(flag => flag.Should().Be(expectedValue));
@@ -114,12 +110,20 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
     public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
 #pragma warning restore CA1034 // Nested types should not be visible
     {
-        internal GivenTestContext Sut(IVariable<IFeatureFlag> sutVariable, IVariable<string> nameVariable) =>
-            Add(sutVariable, () => Create(nameVariable));
+        private static readonly Variable<IFeatureFlag> _sut = new(nameof(_sut));
+        private static readonly Variable<IFeatureFlag<Guid>> _sutContext = new(nameof(_sutContext));
 
-        internal GivenTestContext Sut<TContext>(IVariable<IFeatureFlag<TContext>> sutVariable, IVariable<string> nameVariable, IVariable<TContext> contextVariable)
-            where TContext : notnull =>
-            Add(sutVariable, () => Create(nameVariable, contextVariable));
+        internal GivenTestContext Sut(out IVariable<IFeatureFlag> sutVariable, IVariable<string> nameVariable)
+        {
+            sutVariable = _sut;
+            return Add(_sut, () => Create(nameVariable));
+        }
+
+        internal GivenTestContext Sut(out IVariable<IFeatureFlag<Guid>> sutVariable, IVariable<string> nameVariable, IVariable<Guid> contextVariable)
+        {
+            sutVariable = _sutContext;
+            return Add(_sutContext, () => Create(nameVariable, contextVariable));
+        }
 
         private IFeatureFlag Create(IVariable<string> nameVariable) =>
             FeatureFlag.Create(GetValue(nameVariable));

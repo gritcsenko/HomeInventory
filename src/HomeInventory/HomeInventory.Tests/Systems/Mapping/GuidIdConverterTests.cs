@@ -5,34 +5,31 @@ using HomeInventory.Domain.ValueObjects;
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
-public class GuidIdConverterTests() : BaseTest<GuidIdConverterTests.GivenTestContext>(t => new(t))
+public class GuidIdConverterTests() : BaseTest<GuidIdConverterTestsGivenContext>(t => new(t))
 {
-    private static readonly Variable<UlidIdConverter<UserId>> _sut = new(nameof(_sut));
-    private static readonly Variable<Ulid> _id = new(nameof(_id));
-
     [Fact]
     public void TryConvert_Should_ReturnValue_When_IdIsNotEmpty()
     {
         Given
-            .Sut(_sut)
-            .New(_id);
+            .Sut(out var sut)
+            .New<Ulid>(out var id);
 
         var then = When
-            .Invoked(_sut, _id, (sut, id) => sut.TryConvert(id));
+            .Invoked(sut, id, (sut, id) => sut.TryConvert(id));
 
         then
-            .Result(_id, (oneOf, id) => oneOf.AsT0.Value.Should().Be(id));
+            .Result(id, (oneOf, id) => oneOf.AsT0.Value.Should().Be(id));
     }
 
     [Fact]
     public void TryConvert_Should_ReturnError_When_IdIsEmpty()
     {
         Given
-            .Sut(_sut)
-            .Empty(_id);
+            .Sut(out var sut)
+            .Empty(out var id);
 
         var then = When
-            .Invoked(_sut, _id, (sut, id) => sut.TryConvert(id));
+            .Invoked(sut, id, (sut, id) => sut.TryConvert(id));
 
         then
             .Result(oneOf => oneOf.AsT1
@@ -44,20 +41,22 @@ public class GuidIdConverterTests() : BaseTest<GuidIdConverterTests.GivenTestCon
     public void Convert_Should_Throw_When_IdIsEmpty()
     {
         Given
-            .Sut(_sut)
-            .Empty(_id);
+            .Sut(out var sut)
+            .Empty(out var id);
 
         When
-            .Catched(_sut, _id, (sut, id) => sut.Convert(id))
+            .Catched(sut, id, (sut, id) => sut.Convert(id))
             .Exception<InvalidOperationException>(ex => ex.Which.Data.ShouldBeDictionaryAnd().Contain(nameof(ObjectValidationError<Ulid>.Value), Ulid.Empty));
     }
+}
 
-#pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
-#pragma warning restore CA1034 // Nested types should not be visible
+public sealed class GuidIdConverterTestsGivenContext(BaseTest test) : GivenContext<GuidIdConverterTestsGivenContext, UlidIdConverter<UserId>>(test)
+{
+    internal GuidIdConverterTestsGivenContext Empty(out IVariable<Ulid> idVariable)
     {
-        internal GivenTestContext Empty(Variable<Ulid> idVariable) => Add(idVariable, () => Ulid.Empty);
-
-        internal GivenTestContext Sut(Variable<UlidIdConverter<UserId>> sutVariable) => Add(sutVariable, () => new());
+        idVariable = new Variable<Ulid>(nameof(Empty));
+        return Add(idVariable, () => Ulid.Empty);
     }
+
+    protected override UlidIdConverter<UserId> CreateSut() => new();
 }

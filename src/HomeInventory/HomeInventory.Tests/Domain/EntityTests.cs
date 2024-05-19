@@ -3,22 +3,17 @@
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => new(t))
+public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t))
 {
-    private static readonly Variable<TestEntityId> _id = new(nameof(_id));
-    private static readonly Variable<TestEntity> _other = new(nameof(_other));
-    private static readonly Variable<TestEntity> _sut = new(nameof(_sut));
-    private static readonly Variable<HashCode> _hash = new(nameof(_hash));
-
     [Fact]
     public void EqualsTEntity_Should_ReturnTrueWhenSameReference()
     {
         Given
-            .New(_id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, sut => sut.Equals(sut))
+            .Invoked(sut, sut => sut.Equals(sut))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -26,12 +21,12 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsTEntity_Should_ReturnTrueWhenOtherHasSameId()
     {
         Given
-            .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var other, id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals(other))
+            .Invoked(sut, other, (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -39,11 +34,11 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsTEntity_Should_ReturnFalseWhenOtherIsNull()
     {
         Given
-            .New(_id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, sut => sut.Equals(default))
+            .Invoked(sut, sut => sut.Equals(default))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -51,13 +46,12 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsTEntity_Should_ReturnFalseWhenOtherHasDifferentId()
     {
         Given
-            .New(_id)
-            .New(_id)
-            .TestEntity(_other, _id[0])
-            .TestEntity(_sut, _id[1]);
+            .Id(out var id, 2)
+            .Sut(out var other, id[0])
+            .Sut(out var sut, id[1]);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals(other))
+            .Invoked(sut, other, (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -65,12 +59,12 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsObject_Should_ReturnFalseWhenOtherHasDifferentType()
     {
         Given
-            .New(_id)
-            .New(_other.OfType<object>())
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .New<object>(out var other)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, _other.OfType<object>(), (sut, other) => sut.Equals(other))
+            .Invoked(sut, other, (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -78,11 +72,11 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsObject_Should_ReturnTrueWhenSameReference()
     {
         Given
-            .New(_id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, sut => sut.Equals((object)sut))
+            .Invoked(sut, sut => sut.Equals((object)sut))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -90,12 +84,12 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsObject_Should_ReturnTrueWhenOtherHasSameId()
     {
         Given
-            .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var other, id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals((object)other))
+            .Invoked(sut, other, (sut, other) => sut.Equals((object)other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -103,11 +97,11 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsObject_Should_ReturnFalseWhenOtherIsNull()
     {
         Given
-            .New(_id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, sut => sut.Equals(default(object?)))
+            .Invoked(sut, sut => sut.Equals(default(object?)))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -115,13 +109,12 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void EqualsObject_Should_ReturnFalseWhenOtherHasDifferentId()
     {
         Given
-            .New(_id)
-            .New(_id)
-            .TestEntity(_other, _id[0])
-            .TestEntity(_sut, _id[1]);
+            .Id(out var id, 2)
+            .Sut(out var other, id[0])
+            .Sut(out var sut, id[1]);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut.Equals((object)other))
+            .Invoked(sut, other, (sut, other) => sut.Equals((object)other))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -129,25 +122,25 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void GetHashCode_Should_ReturnGetHashCodeFromId()
     {
         Given
-            .New(_id)
-            .AddAllToHashCode(_hash, _id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .AddAllToHashCode(out var hash, id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, sut => sut.GetHashCode())
-            .Result(_hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sut, sut => sut.GetHashCode())
+            .Result(hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
     public void OpEquals_Should_ReturnTrueWhenOtherHasSameId()
     {
         Given
-            .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var other, id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut == other)
+            .Invoked(sut, other, (sut, other) => sut == other)
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -155,13 +148,12 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void OpEquals_Should_ReturnFalseWhenOtherHasDifferentId()
     {
         Given
-            .New(_id)
-            .New(_id)
-            .TestEntity(_other, _id[0])
-            .TestEntity(_sut, _id[1]);
+            .Id(out var id, 2)
+            .Sut(out var other, id[0])
+            .Sut(out var sut, id[1]);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut == other)
+            .Invoked(sut, other, (sut, other) => sut == other)
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -169,12 +161,12 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void OpNotEquals_Should_ReturnFalseWhenOtherHasSameId()
     {
         Given
-            .New(_id)
-            .TestEntity(_other, _id)
-            .TestEntity(_sut, _id);
+            .Id(out var id)
+            .Sut(out var other, id)
+            .Sut(out var sut, id);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut != other)
+            .Invoked(sut, other, (sut, other) => sut != other)
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -182,39 +174,39 @@ public sealed class EntityTests() : BaseTest<EntityTests.GivenTestContext>(t => 
     public void OpNotEquals_Should_ReturnTrueWhenOtherHasDifferentId()
     {
         Given
-            .New(_id)
-            .New(_id)
-            .TestEntity(_other, _id[0])
-            .TestEntity(_sut, _id[1]);
+            .Id(out var id, 2)
+            .Sut(out var other, id[0])
+            .Sut(out var sut, id[1]);
 
         When
-            .Invoked(_sut, _other, (sut, other) => sut != other)
+            .Invoked(sut, other, (sut, other) => sut != other)
             .Result(actual => actual.Should().BeTrue());
     }
+}
 
-#pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
-#pragma warning restore CA1034 // Nested types should not be visible
+public sealed class EntityTestsGivenContext(BaseTest test) : GivenContext<EntityTestsGivenContext, TestEntity, TestEntityId>(test)
+{
+    internal EntityTestsGivenContext Id(out IVariable<TestEntityId> variable, int count = 1)
     {
-        internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IVariable<TestEntityId> id) =>
-            TestEntity(entity, id[0]);
+        variable = new Variable<TestEntityId>(nameof(Id));
+        for (var i = 0; i < count; i++)
+        {
+            Add(variable, CreateTestEntityId);
+        }
 
-        internal GivenTestContext TestEntity(IVariable<TestEntity> entity, IIndexedVariable<TestEntityId> id) =>
-            Add(entity, () => CreateTestEntity(id));
+        return This;
 
-        internal GivenTestContext New(IVariable<TestEntityId> variable) => Add(variable, CreateTestEntityId);
-
-        private TestEntity CreateTestEntity(IIndexedVariable<TestEntityId> idVariable) => new(GetValue(idVariable));
-
-        private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
+        TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
     }
 
-    internal class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
-    {
-        public static Result<TestEntityId> CreateFrom(Ulid value) => Result.FromValue(new TestEntityId(value));
-    }
+    protected override TestEntity CreateSut(TestEntityId arg) => new(arg);
+}
 
-    internal class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)
-    {
-    }
+public class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
+{
+    public static Result<TestEntityId> CreateFrom(Ulid value) => Result.FromValue(new TestEntityId(value));
+}
+
+public class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)
+{
 }

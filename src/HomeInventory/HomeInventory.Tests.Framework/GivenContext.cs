@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -19,21 +20,24 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         return This;
     }
 
-    public TContext New<T>(out IVariable<T> variable, int count = 1)
+    public TContext New<T>(out IVariable<T> variable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
-        New(typeof(T).Name, out variable, count);
+        New(out variable, () => _fixture.CreateMany<T>(count), name);
 
-    public TContext New<T>(string name, out IVariable<T> variable, int count = 1)
+    public TContext New<T>(out IVariable<T> variable, Func<T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : notnull =>
+        New(out variable, _ => create(), count, name);
+
+    public TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : notnull =>
+        New(out variable, () => Enumerable.Range(0, count).Select(create), name);
+
+    public TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull
     {
-        variable = new Variable<T>(name);
-        return New(variable, count);
-    }
+        variable = new Variable<T>(name ?? typeof(T).Name);
 
-    public TContext New<T>(IVariable<T> variable, int count = 1)
-        where T : notnull
-    {
-        foreach (var item in _fixture.CreateMany<T>(count))
+        foreach (var item in createMany())
         {
             Add(variable, item);
         }
@@ -41,12 +45,17 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         return This;
     }
 
-    public TContext EmptyHashCode(IVariable<HashCode> hash) =>
-        Add(hash, () => new HashCode());
+    public TContext EmptyHashCode(out IVariable<HashCode> hash)
+    {
+        hash = new Variable<HashCode>(nameof(EmptyHashCode));
+        return Add(hash, () => new HashCode());
+    }
 
-    public TContext SubstituteFor<T>(IVariable<T> variable, params Action<T, VariablesContainer>[] setups)
-        where T : class =>
-        Add(variable, () =>
+    public TContext SubstituteFor<T>(out IVariable<T> variable, params Action<T, VariablesContainer>[] setups)
+        where T : class
+    {
+        variable = new Variable<T>(typeof(T).Name);
+        return Add(variable, () =>
         {
             var value = Substitute.For<T>();
             foreach (var setup in setups)
@@ -55,11 +64,14 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
             }
             return value;
         });
+    }
 
-    public TContext SubstituteFor<T, TArg>(IVariable<T> variable, IVariable<TArg> argVariable, params Action<T, TArg>[] setups)
+    public TContext SubstituteFor<T, TArg>(out IVariable<T> variable, IVariable<TArg> argVariable, params Action<T, TArg>[] setups)
         where T : class
-        where TArg : notnull =>
-        Add(variable, () =>
+        where TArg : notnull
+    {
+        variable = new Variable<T>(typeof(T).Name);
+        return Add(variable, () =>
         {
             var value = Substitute.For<T>();
             var arg = GetValue(argVariable);
@@ -69,12 +81,15 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
             }
             return value;
         });
+    }
 
-    public TContext SubstituteFor<T, TArg1, TArg2>(IVariable<T> variable, IVariable<TArg1> arg1Variable, IVariable<TArg2> arg2Variable, params Action<T, TArg1, TArg2>[] setups)
+    public TContext SubstituteFor<T, TArg1, TArg2>(out IVariable<T> variable, IVariable<TArg1> arg1Variable, IVariable<TArg2> arg2Variable, params Action<T, TArg1, TArg2>[] setups)
         where T : class
         where TArg1 : notnull
-        where TArg2 : notnull =>
-        Add(variable, () =>
+        where TArg2 : notnull
+    {
+        variable = new Variable<T>(typeof(T).Name);
+        return Add(variable, () =>
         {
             var value = Substitute.For<T>();
             var arg1 = GetValue(arg1Variable);
@@ -85,10 +100,13 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
             }
             return value;
         });
+    }
 
-    public TContext SubstituteFor<T>(IVariable<T> variable, IVariable<int> countVariable, params Action<T, int, VariablesContainer>[] setups)
+    public TContext SubstituteFor<T>(out IVariable<T> variable, IVariable<int> countVariable, params Action<T, int, VariablesContainer>[] setups)
         where T : class
     {
+        variable = new Variable<T>(typeof(T).Name);
+
         foreach (var index in Enumerable.Range(0, GetValue(countVariable)))
         {
             Add(variable, () =>
@@ -126,22 +144,20 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
             ? This
             : throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
 
-    public TContext AddAllToHashCode<T>(IVariable<HashCode> hash, IVariable<T> variable)
-        where T : notnull =>
-        AddAllToHashCode(hash[0], variable);
-
-    public TContext AddAllToHashCode<T>(IIndexedVariable<HashCode> hash, IVariable<T> variable)
+    public TContext AddAllToHashCode<T>(out IVariable<HashCode> hash, IVariable<T> variable)
         where T : notnull
     {
-        var hashValue = Variables.TryGet(hash)
-            .OrInvoke(() => AddNewHashCode(hash));
+        hash = new Variable<HashCode>(nameof(AddAllToHashCode));
+        var indexed = hash[0];
+        var hashValue = Variables.TryGet(indexed)
+            .OrInvoke(() => AddNewHashCode(indexed));
 
         foreach (var value in Variables.GetMany(variable))
         {
             hashValue.Add(value);
         }
 
-        return Variables.TryUpdate(hash, () => hashValue)
+        return Variables.TryUpdate(indexed, () => hashValue)
             ? This
             : throw new InvalidOperationException($"Failed to update variable '{hash.Name}'");
     }
@@ -160,13 +176,22 @@ public abstract class GivenContext<TGiven, TSut>(BaseTest test) : GivenContext<T
     where TGiven : GivenContext<TGiven, TSut>
     where TSut : notnull
 {
-    private readonly Variable<TSut> _sut = new(nameof(_sut));
-
-    public TGiven Sut(out IVariable<TSut> sut)
-    {
-        sut = _sut;
-        return Add(_sut, CreateSut);
-    }
+    public TGiven Sut(out IVariable<TSut> sut, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        New(out sut, CreateSut, count, name);
 
     protected abstract TSut CreateSut();
+}
+
+public abstract class GivenContext<TGiven, TSut, TArg>(BaseTest test) : GivenContext<TGiven>(test)
+    where TGiven : GivenContext<TGiven, TSut, TArg>
+    where TSut : notnull
+    where TArg : notnull
+{
+    public TGiven Sut(out IVariable<TSut> sut, IVariable<TArg> arg, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        New(out sut, i => CreateSut(GetValue(arg[i])), count, name);
+
+    public TGiven Sut(out IVariable<TSut> sut, IIndexedVariable<TArg> arg, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        New(out sut, () => CreateSut(GetValue(arg)), name: name);
+
+    protected abstract TSut CreateSut(TArg arg);
 }

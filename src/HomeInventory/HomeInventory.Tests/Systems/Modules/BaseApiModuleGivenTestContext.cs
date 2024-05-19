@@ -21,12 +21,9 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 {
     private readonly IServiceCollection _services;
     private readonly Lazy<IServiceProvider> _lazyServiceProvider;
-    private readonly Variable<HttpContext> _context = new(nameof(_context));
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
     private readonly ICancellation _cancellation;
-    private readonly Variable<List<EndpointDataSource>> _dataSources = new(nameof(_dataSources));
-    private readonly Variable<IEndpointRouteBuilder> _routeBuilder = new(nameof(_routeBuilder));
 
     public BaseApiModuleGivenTestContext(BaseTest test)
         : base(test)
@@ -49,22 +46,25 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         _lazyServiceProvider = new Lazy<IServiceProvider>(() => _services.BuildServiceProvider());
     }
 
-    public IVariable<HttpContext> Context => _context;
-
     protected IServiceCollection Services => _services;
 
     protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
+    public TGiven HttpContext(out IVariable<HttpContext> context)
+    {
+        context = new Variable<HttpContext>(nameof(context));
+        return Add(context, CreateHttpContext);
+    }
+
     public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources)
     {
-        dataSources = _dataSources;
-        return Add(_dataSources, []);
+        dataSources = new Variable<List<EndpointDataSource>>(nameof(dataSources));
+        return Add(dataSources, []);
     }
 
     public TGiven RouteBuilder(IVariable<List<EndpointDataSource>> dataSources, out IVariable<IEndpointRouteBuilder> routeBuilder)
     {
-        routeBuilder = _routeBuilder;
-        return SubstituteFor(_routeBuilder, dataSources, (b, s) => {
+        return SubstituteFor(out routeBuilder, dataSources, (b, s) => {
             b.ServiceProvider.Returns(ServiceProvider);
             b.DataSources.Returns(s);
         });
@@ -124,13 +124,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     }
 
     protected override TModule CreateSut() => ServiceProvider.GetRequiredService<TModule>();
-
-    internal override void Initialize()
-    {
-        base.Initialize();
-
-        Add(_context, CreateHttpContext);
-    }
 
     private DefaultHttpContext CreateHttpContext() => new() { RequestServices = ServiceProvider };
 

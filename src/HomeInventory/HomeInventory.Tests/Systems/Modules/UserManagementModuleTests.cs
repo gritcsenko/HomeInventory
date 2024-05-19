@@ -36,6 +36,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         Given
+            .HttpContext(out var context)
             .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
             .Map(registerRequest).To<UserIdQuery>(out var userIdQuery)
             .Map<UserIdResult>(out var userIdResult).To<RegisterResponse>(out var registerResponse)
@@ -44,7 +45,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, Given.Context, (sut, body, context, ct) => sut.RegisterAsync(body, context, ct));
+            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, context, ct));
 
         then
             .Result(registerResponse, (actual, expected) =>
@@ -56,13 +57,14 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         Given
+            .HttpContext(out var context)
             .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
             .New<DuplicateEmailError>(out var error)
             .OnCommandReturnError(registerCommand, error)
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, Given.Context, (sut, body, context, ct) => sut.RegisterAsync(body, context, ct));
+            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, context, ct));
 
         then
             .Result(error, (actual, error) =>
