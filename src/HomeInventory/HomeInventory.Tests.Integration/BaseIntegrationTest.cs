@@ -7,17 +7,28 @@ using Xunit.Abstractions;
 namespace HomeInventory.Tests.Integration;
 
 [IntegrationTest]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "See InitializeDisposables")]
 public abstract class BaseIntegrationTest : BaseTest
 {
-    private readonly WebApplicationFactory<Program> _appFactory;
+    private readonly WebApplicationFactory<Program> _appFactory = new();
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _testOutputHelper;
 
     protected BaseIntegrationTest(ITestOutputHelper testOutputHelper)
     {
-        AddDisposable(out _appFactory);
-        AddDisposable(_appFactory.CreateClient(), out _client);
+        _client = _appFactory.CreateClient();
         _testOutputHelper = testOutputHelper;
+    }
+
+    protected override IEnumerable<IDisposable> InitializeDisposables()
+    {
+        yield return _appFactory;
+        yield return _client;
+
+        foreach (var disposable in base.InitializeDisposables())
+        {
+            yield return disposable;
+        }
     }
 
     protected IEnumerable<RouteEndpoint> GetEndpoints() =>

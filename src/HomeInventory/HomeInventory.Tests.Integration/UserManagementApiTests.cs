@@ -22,7 +22,7 @@ public class UserManagementApiTests : BaseIntegrationTest
     {
         Fixture.CustomizeRegisterRequest();
         var request = Fixture.Create<RegisterRequest>();
-        AddDisposable(() => JsonContent.Create(request), out _content);
+        _content = JsonContent.Create(request);
     }
 
     [Fact]
@@ -72,5 +72,15 @@ public class UserManagementApiTests : BaseIntegrationTest
         body!.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeJsonElement()
             .Which.Should().BeArrayEqualTo([nameof(DuplicateEmailError)]);
+    }
+
+    protected override IEnumerable<IDisposable> InitializeDisposables()
+    {
+        yield return _content;
+
+        foreach (var disposable in base.InitializeDisposables())
+        {
+            yield return disposable;
+        }
     }
 }

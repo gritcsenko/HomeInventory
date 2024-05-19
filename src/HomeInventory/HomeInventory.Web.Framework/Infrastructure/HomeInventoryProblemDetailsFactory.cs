@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.ObjectModel;
+using System.Net;
 using HomeInventory.Core;
 using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web.Infrastructure;
 
-internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory
+internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory, IProblemDetailsFactory
 {
     private static readonly string? _defaultValidationTitle = new ValidationProblemDetails().Title;
     private readonly ApiBehaviorOptions _options = options.Value;
@@ -24,8 +25,14 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
         string? type = null,
         string? detail = null,
         string? instance = null) =>
-        CreateProblem<ProblemDetails>(statusCode ?? _defaultStatusCode, title, type, detail, instance)
-            .AddProblemDetailsExtensions(httpContext);
+        CreateProblem<ProblemDetails>(
+            statusCode ?? _defaultStatusCode,
+            title,
+            type,
+            detail,
+            instance,
+            ReadOnlyDictionary<string, object?>.Empty)
+            .AddProblemDetailsExtensions(httpContext.TraceIdentifier);
 
     public override ValidationProblemDetails CreateValidationProblemDetails(
         HttpContext httpContext,
@@ -35,16 +42,23 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
         string? type = null,
         string? detail = null,
         string? instance = null) =>
-        CreateProblem<ValidationProblemDetails>(statusCode ?? _defaultValidationStatusCode, title ?? _defaultValidationTitle, type, detail, instance)
+        CreateProblem<ValidationProblemDetails>(
+            statusCode ?? _defaultValidationStatusCode,
+            title ?? _defaultValidationTitle,
+            type,
+            detail,
+            instance,
+            ReadOnlyDictionary<string, object?>.Empty)
             .ApplyErrors(modelStateDictionary)
-            .AddProblemDetailsExtensions(httpContext);
+            .AddProblemDetailsExtensions(httpContext.TraceIdentifier);
 
-    public ProblemDetails ConvertToProblem(HttpContext httpContext, IEnumerable<IError> errors) =>
-        ConvertToProblem(errors).AddProblemDetailsExtensions(httpContext, errors);
+    public ProblemDetails ConvertToProblem(IEnumerable<IError> errors, string? traceIdentifier = null) =>
+        InternalConvertToProblem(errors)
+        .AddProblemDetailsExtensions(traceIdentifier);
 
-    private ProblemDetails ConvertToProblem(IEnumerable<IError> errors)
+    private ProblemDetails InternalConvertToProblem(IEnumerable<IError> errors)
     {
-        var problems = errors.Select(ConvertToProblem).ToReadOnly();
+        var problems = errors.Select(InternalConvertToProblem).ToReadOnly();
         if (problems.Count <= 1)
         {
             return problems.FirstOrDefault() ?? throw new InvalidOperationException("Has to be at least one error provided");
@@ -57,11 +71,13 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             "Multiple Problems",
             type: null,
             "There were multiple problems that have occurred.",
-            instance: null)
-            .AddProblemsAndStatuses(problems);
+            instance: null,
+            ReadOnlyDictionary<string, object?>.Empty)
+            .AddProblemsAndStatuses(problems)
+            .AddProblemDetailsExtensions(errors);
     }
 
-    private ProblemDetails ConvertToProblem(IError error)
+    private ProblemDetails InternalConvertToProblem(IError error)
     {
         var errorType = error.GetType();
         var result = CreateProblem<ProblemDetails>(
@@ -69,19 +85,16 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             errorType.Name,
             type: null,
             error.Message,
-            instance: null);
-        foreach (var pair in error.Metadata)
-        {
-            result.Extensions[pair.Key] = pair.Value;
-        }
+            instance: null,
+            error.Metadata);
         return result;
     }
 
-    private TProblem CreateProblem<TProblem>(HttpStatusCode? statusCode, string? title, string? type, string? detail, string? instance)
+    private TProblem CreateProblem<TProblem>(HttpStatusCode? statusCode, string? title, string? type, string? detail, string? instance, IReadOnlyDictionary<string, object?> metadata)
         where TProblem : ProblemDetails, new() =>
-        CreateProblem<TProblem>((int?)statusCode ?? _defaultStatusCode, title, type, detail, instance);
+        CreateProblem<TProblem>((int?)statusCode ?? _defaultStatusCode, title, type, detail, instance, metadata);
 
-    private TProblem CreateProblem<TProblem>(int statusCode, string? title, string? type, string? detail, string? instance)
+    private TProblem CreateProblem<TProblem>(int statusCode, string? title, string? type, string? detail, string? instance, IReadOnlyDictionary<string, object?> metadata)
         where TProblem : ProblemDetails, new() =>
         new TProblem
         {
@@ -90,6 +103,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             Type = type,
             Detail = detail,
             Instance = instance,
+            Extensions = metadata.ToDictionary(StringComparer.Ordinal)
         }
             .ApplyProblemDetailsDefaults(_options.ClientErrorMapping);
 }

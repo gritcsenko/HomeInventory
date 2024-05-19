@@ -26,19 +26,21 @@ internal static class ProblemDetailsExtensions
         return problemDetails;
     }
 
-    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, HttpContext httpContext)
-        where TProblem : ProblemDetails =>
-        problemDetails.AddProblemDetailsExtensions(httpContext, []);
-
-    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, HttpContext httpContext, IEnumerable<IError> errors)
+    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, string? traceIdentifier = null)
         where TProblem : ProblemDetails
     {
-        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
+        var traceId = Activity.Current?.Id ?? traceIdentifier;
         if (traceId != null)
         {
             problemDetails.Extensions["traceId"] = traceId;
         }
 
+        return problemDetails;
+    }
+
+    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, IEnumerable<IError> errors)
+        where TProblem : ProblemDetails
+    {
         problemDetails.Extensions["errorCodes"] = errors.Select(e => e.GetType().Name).ToArray();
         return problemDetails;
     }

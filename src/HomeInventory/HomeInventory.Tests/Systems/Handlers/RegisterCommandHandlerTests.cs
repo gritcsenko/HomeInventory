@@ -19,6 +19,7 @@ public class RegisterCommandHandlerTests : BaseTest
 
     public RegisterCommandHandlerTests()
     {
+        Fixture.CustomizeUlid();
         Fixture.CustomizeUlidId<UserId>();
         Fixture.CustomizeEmail();
 

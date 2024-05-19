@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
+        services.AddScoped<ProblemTraceIdentifierMiddleware>();
 
         services.AddMappingAssemblySource(moduleAssemblies);
         services.AddAutoMapper((sp, configExpression) =>
@@ -96,9 +97,10 @@ public static class ServiceCollectionExtensions
         app.UseHealthChecksUI();
 
         app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
-        app.Map("/error", (HttpContext context) => Results.Problem(detail: context.GetFeature<IExceptionHandlerFeature>()?.Error?.Message));
+        app.Map("/error", (HttpContext context) => Results.Problem(detail: context.GetFeature<IExceptionHandlerPathFeature>()?.Error?.Message));
 
         app.UseMiddleware<CorrelationIdMiddleware>();
+        app.UseMiddleware<ProblemTraceIdentifierMiddleware>();
 
         app.UseHttpsRedirection();
 

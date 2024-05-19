@@ -40,3 +40,11 @@ internal class CorrelationIdMiddleware(ICorrelationIdContainer container, ILogge
         });
     }
 }
+
+internal class ProblemTraceIdentifierMiddleware : IMiddleware
+{
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        await next(context);
+    }
+}

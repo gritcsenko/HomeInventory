@@ -13,8 +13,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton(ErrorMappingBuilder.CreateDefault());
         services.AddSingleton(sp => sp.GetRequiredService<ErrorMappingBuilder>().Build());
-        services.AddSingleton<HomeInventoryProblemDetailsFactory>();
-        services.AddSingleton<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddTransient<HomeInventoryProblemDetailsFactory>();
+        services.AddTransient<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddTransient<IProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
 
         return services;
     }

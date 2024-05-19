@@ -94,13 +94,38 @@ public sealed class ScopeTests
         actual.Should().BeSameAs(expected);
     }
 
-#pragma warning disable S2094 // Classes should not be empty
-    private sealed class GetNullContext { };
-    private sealed class GetNotNullContext { };
-    private sealed class ResetContext { };
-    private sealed class SetNullDisposedContext { };
-    private sealed class ResetNullDisposedContext { };
-    private sealed class SetTwiceContext { };
-    private sealed class SetTwiceDisposedContext { };
-#pragma warning restore S2094 // Classes should not be empty
+    private sealed class GetNullContext
+    {
+        public GetNullContext() { }
+    };
+
+    private sealed class GetNotNullContext
+    {
+        public GetNotNullContext() { }
+    };
+
+    private sealed class ResetContext
+    {
+        public ResetContext() { }
+    };
+
+    private sealed class SetNullDisposedContext
+    {
+        public SetNullDisposedContext() { }
+    };
+
+    private sealed class ResetNullDisposedContext
+    {
+        public ResetNullDisposedContext() { }
+    };
+
+    private sealed class SetTwiceContext
+    {
+        public SetTwiceContext() { }
+    };
+
+    private sealed class SetTwiceDisposedContext
+    {
+        public SetTwiceDisposedContext() { }
+    };
 }

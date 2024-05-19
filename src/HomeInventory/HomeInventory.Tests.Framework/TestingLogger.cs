@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Reactive.Disposables;
+using Disposable = System.Reactive.Disposables.Disposable;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -18,14 +20,11 @@ public abstract class TestingLogger<T> : ILogger<T>
     {
         private readonly AsyncLocal<CompositeDisposable?> _currentScope = new();
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
         public override IDisposable BeginScope<TState>(TState state)
         {
             var current = _currentScope.Value;
-
-            var disposable = new CompositeDisposable();
-            disposable.AddDisposable(new DisposableAction(() => _currentScope.Value = current));
-
-            return _currentScope.Value = disposable;
+            return _currentScope.Value = [ Disposable.Create(() => _currentScope.Value = current) ];
         }
 
         public override void Log(LogLevel logLevel, EventId eventId, object state, Exception? exception, Func<object, Exception?, string> formatter)

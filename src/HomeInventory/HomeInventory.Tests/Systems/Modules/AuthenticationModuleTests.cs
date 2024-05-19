@@ -1,34 +1,51 @@
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Web.Modules;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Routing.Patterns;
+using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public class AuthenticationModuleTests : BaseApiModuleTests
+public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModuleTestContext>(t => new(t))
 {
-    private static readonly Variable<AuthenticateResult> _authenticateResult = new(nameof(_authenticateResult));
-    private static readonly Variable<LoginResponse> _loginResponse = new(nameof(_loginResponse));
-    private static readonly Variable<LoginRequest> _loginRequest = new(nameof(_loginRequest));
-    private static readonly Variable<AuthenticateQuery> _authenticateQuery = new(nameof(_authenticateQuery));
+    [Fact]
+    public void AddRoutes_ShouldRegister()
+    {
+        Given
+            .DataSources(out var dataSources)
+            .RouteBuilder(dataSources, out var routeBuilder)
+            .Sut(out var sut);
 
-    private static readonly Variable<InvalidCredentialsError> _error = new(nameof(_error));
+        var then = When
+            .Invoked(sut, routeBuilder, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
+
+        then
+            .Ensure(sut, dataSources, (module, dataSources) =>
+                dataSources.Should().ContainSingle()
+                    .Which.Endpoints.OfType<RouteEndpoint>().Should().ContainSingle()
+                    .Which.Should().HaveRoutePattern(module.GroupPrefix, RoutePatternFactory.Parse("login"))
+                    .And.Subject.Metadata.Should().NotBeEmpty()
+                    .And.Subject.GetMetadata<HttpMethodMetadata>().Should().NotBeNull()
+                    .And.Subject.HttpMethods.Should().Contain(HttpMethod.Post.Method));
+    }
 
     [Fact]
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
         Given
-            .Map(_loginRequest, _authenticateQuery)
-            .Map(_authenticateResult, _loginResponse)
-            .OnQueryReturn(_authenticateQuery, _authenticateResult);
+            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
+            .Map<AuthenticateResult>(out var authenticateResult).To<LoginResponse>(out var loginResponse)
+            .OnQueryReturn(authenticateQuery, authenticateResult)
+            .Sut(out var sut);
+
 
         var then = await When
-            .InvokedAsync(_loginRequest, Given.Context, AuthenticationModule.LoginAsync);
+            .InvokedAsync(sut, loginRequest, Given.Context, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
 
         then
-            .Result(_loginResponse, (actual, expected) =>
+            .Result(loginResponse, (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<LoginResponse>>()
                     .Which.Should().HaveValue(expected));
     }
@@ -37,15 +54,16 @@ public class AuthenticationModuleTests : BaseApiModuleTests
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
         Given
-            .Map(_loginRequest, _authenticateQuery)
-            .New(_error)
-            .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(_authenticateQuery, _error);
+            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
+            .New<InvalidCredentialsError>(out var error)
+            .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(authenticateQuery, error)
+            .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(_loginRequest, Given.Context, AuthenticationModule.LoginAsync);
+            .InvokedAsync(sut, loginRequest, Given.Context, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
 
         then
-            .Result(_error, (actual, error) =>
+            .Result(error, (actual, error) =>
                 actual.Result.Should().BeOfType<ProblemHttpResult>()
                     .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
                     .And.Match(x => x.Detail == error.Message));

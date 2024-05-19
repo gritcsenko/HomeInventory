@@ -48,9 +48,6 @@ csharp_style_prefer_null_check_over_type_check = true:suggestion
 [*.{cs,vb}]
 #### Naming styles ####
 
-# CA1716: Identifiers should not match keywords
-dotnet_diagnostic.CA1716.severity = none
-
 # Naming rules
 
 dotnet_naming_rule.interface_should_be_begins_with_i.severity = suggestion

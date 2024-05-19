@@ -10,6 +10,7 @@ public class DictionaryExtensionsTests : BaseTest
 
     public DictionaryExtensionsTests()
     {
+        Fixture.CustomizeUlid();
         _key = Fixture.Create<string>();
         _value = Fixture.Create<Ulid>();
         _invalidKey = Fixture.Create<string>();

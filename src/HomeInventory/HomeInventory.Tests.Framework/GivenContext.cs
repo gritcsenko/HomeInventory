@@ -7,10 +7,25 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
 
     protected TContext This => (TContext)this;
 
+    internal virtual void Initialize()
+    {
+    }
+
     public TContext Customize(ICustomization customization)
     {
         _fixture.Customize(customization);
         return This;
+    }
+
+    public TContext New<T>(out IVariable<T> variable, int count = 1)
+        where T : notnull =>
+        New(typeof(T).Name, out variable, count);
+
+    public TContext New<T>(string name, out IVariable<T> variable, int count = 1)
+        where T : notnull
+    {
+        variable = new Variable<T>(name);
+        return New(variable, count);
     }
 
     public TContext New<T>(IVariable<T> variable, int count = 1)

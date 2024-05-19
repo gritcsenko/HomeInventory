@@ -113,7 +113,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var errors = Array.Empty<IError>();
 
-        Action action = () => sut.ConvertToProblem(_context, errors);
+        Action action = () => sut.ConvertToProblem(errors);
 
         action.Should().ThrowExactly<InvalidOperationException>();
     }
@@ -130,7 +130,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var expectedStatus = (int)_mapping.GetError(errorType);
         var expectedTitle = errorType.Name;
 
-        var details = sut.ConvertToProblem(_context, errors);
+        var details = sut.ConvertToProblem(errors);
 
         using var scope = new AssertionScope();
         details.Status.Should().Be(expectedStatus);
@@ -154,7 +154,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var errors = new IError[] { new ValidationError(messages[0], metadata), new ConflictError(messages[1]) };
         var expectedStatus = (int)_mapping.GetDefaultError();
 
-        var details = sut.ConvertToProblem(_context, errors);
+        var details = sut.ConvertToProblem(errors);
 
         details.Should().NotBeNull();
         details.Status.Should().Be(expectedStatus);
@@ -176,7 +176,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var errors = new IError[] { new ValidationError(messages[0], metadata), new ObjectValidationError<string>(messages[1]) }.ToReadOnly();
         var expectedStatus = (int)_mapping.GetError(errors.First().GetType());
 
-        var details = sut.ConvertToProblem(_context, errors);
+        var details = sut.ConvertToProblem(errors);
 
         details.Status.Should().Be(expectedStatus);
     }

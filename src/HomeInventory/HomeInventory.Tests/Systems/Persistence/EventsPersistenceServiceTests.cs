@@ -20,7 +20,7 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
         : base(t => new(t))
     {
         var options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
-        AddDisposable(DbContextFactory.Default.CreateInMemory(DateTime, options), out _context);
+        _context = DbContextFactory.Default.CreateInMemory(DateTime, options);
     }
 
     [Fact]
@@ -50,10 +50,14 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
                 entity.Received().ClearDomainEvents();
             });
     }
-}
 
-public class EventsPersistenceServiceTestsGivenContext(BaseTest test) : GivenContext<EventsPersistenceServiceTestsGivenContext>(test)
-{
-    internal EventsPersistenceServiceTestsGivenContext Sut(IVariable<EventsPersistenceService> sutVariable, IVariable<DatabaseContext> dbContextVariable) =>
-        Add(sutVariable, () => new EventsPersistenceService(GetValue(dbContextVariable)));
+    protected override IEnumerable<IDisposable> InitializeDisposables()
+    {
+        yield return _context;
+
+        foreach (var disposable in base.InitializeDisposables())
+        {
+            yield return disposable;
+        }
+    }
 }

@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using FluentAssertions.Execution;
+using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
+using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
@@ -56,7 +58,9 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
         Services.Should().ContainSingleScoped<IAuthenticationTokenGenerator>(provider);
         Services.Should().ContainSingleSingleton<HealthCheckService>(provider);
-        Services.Should().ContainSingleSingleton<ProblemDetailsFactory>(provider);
+        Services.Should().ContainSingleTransient<HomeInventoryProblemDetailsFactory>(provider);
+        Services.Should().ContainSingleTransient<ProblemDetailsFactory>(provider);
+        Services.Should().ContainSingleTransient<IProblemDetailsFactory>(provider);
         Services.Should().ContainSingleTransient<IMapper>(provider);
         Services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
         Services.Should().ContainSingleSingleton<IControllerFactory>(provider);
@@ -81,7 +85,9 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public void ShouldUse()
     {
-        Services.AddWeb(
+        Services
+            .AddMediatR()
+            .AddWeb(
             Web.AssemblyReference.Assembly,
             Web.UserManagement.AssemblyReference.Assembly,
             Contracts.Validations.AssemblyReference.Assembly,

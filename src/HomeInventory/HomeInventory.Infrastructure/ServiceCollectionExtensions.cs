@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<PolymorphicDomainEventTypeResolver>();
 
         services.AddHealthChecks()
-             .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, new[] { HealthCheckTags.Ready });
+             .AddCheck<PersistenceHealthCheck>("Persistence", HealthStatus.Unhealthy, [HealthCheckTags.Ready]);
         return services;
     }
 
