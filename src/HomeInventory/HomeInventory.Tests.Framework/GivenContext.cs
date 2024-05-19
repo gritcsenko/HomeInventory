@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Tests.Framework;
+﻿using System.Reflection;
+
+namespace HomeInventory.Tests.Framework;
 
 public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesContainer())
     where TContext : GivenContext<TContext>
@@ -153,15 +155,18 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         return value;
     }
 }
-public abstract class GivenContext<TContext, TSut>(BaseTest test) : GivenContext<TContext>(test)
-    where TContext : GivenContext<TContext, TSut>
+
+public abstract class GivenContext<TGiven, TSut>(BaseTest test) : GivenContext<TGiven>(test)
+    where TGiven : GivenContext<TGiven, TSut>
     where TSut : notnull
 {
     private readonly Variable<TSut> _sut = new(nameof(_sut));
 
-    internal protected IVariable<TSut> Sut => _sut;
-
-    internal protected TContext AddSut() => Add(_sut, CreateSut);
+    public TGiven Sut(out IVariable<TSut> sut)
+    {
+        sut = _sut;
+        return Add(_sut, CreateSut);
+    }
 
     protected abstract TSut CreateSut();
 }

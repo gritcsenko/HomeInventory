@@ -9,11 +9,11 @@ namespace HomeInventory.Web.OpenApi;
 /// </summary>
 public sealed class JsonOpenApiValueConverter : IOpenApiValueConverter
 {
-    public IOpenApiAny? Convert(object? value, Type type)
+    public IOpenApiAny Convert(object? value, Type type)
     {
         if (value is null || value is DBNull)
         {
-            return null;
+            return new OpenApiNull();
         }
 
         var json = JsonSerializer.Serialize(value, type);

@@ -55,12 +55,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
-    public new TGiven Sut(out IVariable<TModule> sut)
-    {
-        sut = base.Sut;
-        return AddSut();
-    }
-
     public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources)
     {
         dataSources = _dataSources;
