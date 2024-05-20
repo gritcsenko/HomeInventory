@@ -10,6 +10,6 @@ public class User(UserId id) : AggregateRoot<User, UserId>(id)
 
     public required string Password { get; init; }
 
-    public void OnUserCreated(IDateTimeService dateTimeService) =>
+    public void OnUserCreated(TimeProvider dateTimeService) =>
         AddDomainEvent(new UserCreatedDomainEvent(dateTimeService, this));
 }

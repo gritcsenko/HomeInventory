@@ -45,7 +45,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, context, ct));
+            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
 
         then
             .Result(registerResponse, (actual, expected) =>
@@ -64,7 +64,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, context, ct));
+            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
 
         then
             .Result(error, (actual, error) =>

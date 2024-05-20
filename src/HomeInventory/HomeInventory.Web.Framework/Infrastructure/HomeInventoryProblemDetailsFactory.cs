@@ -54,7 +54,8 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
 
     public ProblemDetails ConvertToProblem(IEnumerable<IError> errors, string? traceIdentifier = null) =>
         InternalConvertToProblem(errors)
-        .AddProblemDetailsExtensions(traceIdentifier);
+        .AddProblemDetailsExtensions(traceIdentifier)
+        .AddProblemDetailsExtensions(errors);
 
     private ProblemDetails InternalConvertToProblem(IEnumerable<IError> errors)
     {
@@ -73,8 +74,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             "There were multiple problems that have occurred.",
             instance: null,
             ReadOnlyDictionary<string, object?>.Empty)
-            .AddProblemsAndStatuses(problems)
-            .AddProblemDetailsExtensions(errors);
+            .AddProblemsAndStatuses(problems);
     }
 
     private ProblemDetails InternalConvertToProblem(IError error)

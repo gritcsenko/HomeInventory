@@ -9,10 +9,11 @@ public class FixedDateTimeServiceTests : BaseTest
     [Fact]
     public void UtcNow_ShouldReturnSuppliedTime()
     {
-        var expected = DateTimeOffset.UtcNow;
-        var sut = new FixedDateTimeService(expected);
+        var parent = new FixedTimeProvider(TimeProvider.System);
+        var expected = parent.GetUtcNow();
+        var sut = new FixedTimeProvider(parent);
 
-        var actual = sut.UtcNow;
+        var actual = sut.GetUtcNow();
 
         actual.Should().Be(expected);
     }
@@ -20,10 +21,11 @@ public class FixedDateTimeServiceTests : BaseTest
     [Fact]
     public void UtcNow_ShouldReturnSuppliedTimeInUTC()
     {
-        var expected = DateTimeOffset.UtcNow;
-        var sut = new FixedDateTimeService(expected.ToOffset(TimeSpan.FromHours(12)));
+        var parent = new FixedTimeProvider(TimeProvider.System);
+        var expected = parent.GetUtcNow();
+        var sut = new FixedTimeProvider(parent);
 
-        var actual = sut.UtcNow;
+        var actual = sut.GetUtcNow();
 
         using var scope = new AssertionScope();
         actual.Should().Be(expected);
@@ -33,11 +35,12 @@ public class FixedDateTimeServiceTests : BaseTest
     [Fact]
     public void UtcNow_ShouldReturnSuppliedTimeFromOther()
     {
-        var expected = DateTimeOffset.UtcNow;
-        var other = new FixedDateTimeService(expected);
-        var sut = new FixedDateTimeService(other);
+        var parent = new FixedTimeProvider(TimeProvider.System);
+        var expected = parent.GetUtcNow();
+        var other = new FixedTimeProvider(parent);
+        var sut = new FixedTimeProvider(other);
 
-        var actual = sut.UtcNow;
+        var actual = sut.GetUtcNow();
 
         using var scope = new AssertionScope();
         actual.Should().Be(expected);

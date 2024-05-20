@@ -13,7 +13,7 @@ public abstract class BaseTest : IAsyncLifetime
     private readonly List<IAsyncDisposable> _asyncDisposables = [];
     private readonly Lazy<CancellationImplementation> _lazyCancellation = new(() => new CancellationImplementation());
     private readonly Lazy<IFixture> _lazyFixture = new(() => new Fixture());
-    private readonly Lazy<IDateTimeService> _lazyDateTime = new(() => new FixedDateTimeService(DateTimeOffset.UtcNow));
+    private readonly Lazy<TimeProvider> _lazyDateTime = new(() => new FixedTimeProvider(TimeProvider.System));
 
     protected BaseTest()
     {
@@ -24,7 +24,7 @@ public abstract class BaseTest : IAsyncLifetime
 
     protected internal ICancellation Cancellation => _lazyCancellation.Value;
 
-    protected internal IDateTimeService DateTime => _lazyDateTime.Value;
+    protected internal TimeProvider DateTime => _lazyDateTime.Value;
 
     public virtual Task InitializeAsync()
     {

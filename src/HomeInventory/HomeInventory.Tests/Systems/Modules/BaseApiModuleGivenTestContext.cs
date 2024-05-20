@@ -2,8 +2,8 @@
 using AutoMapper;
 using Carter;
 using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Tests.Framework;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
 using MediatR;
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Mono.Cecil;
 using OneOf;
 using OneOf.Types;
 using System.Runtime.CompilerServices;
@@ -34,6 +33,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         _cancellation = test.Cancellation;
 
         _services = new ServiceCollection()
+            .AddDomain()
             .AddOptions(new ApiVersioningOptions())
             .AddSubstitute<IReportApiVersions>()
             .AddSubstitute<IApiVersionParameterSource>()

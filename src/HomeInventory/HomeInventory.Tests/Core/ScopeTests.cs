@@ -11,7 +11,7 @@ public sealed class ScopeTests
 
         var actual = sut.Get();
 
-        actual.Should().BeNull();
+        actual.Should().HaveNoValue();
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public sealed class ScopeTests
         sut.Set(expected);
         var actual = sut.Get();
 
-        actual.Should().BeSameAs(expected);
+        actual.Should().HaveSameValueAs(expected);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class ScopeTests
         sut.Reset();
         var actual = sut.Get();
 
-        actual.Should().BeNull();
+        actual.Should().HaveNoValue();
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public sealed class ScopeTests
         token.Dispose();
         var actual = sut.Get();
 
-        actual.Should().BeNull();
+        actual.Should().HaveNoValue();
     }
 
 
@@ -62,7 +62,7 @@ public sealed class ScopeTests
         token.Dispose();
         var actual = sut.Get();
 
-        actual.Should().BeSameAs(expected);
+        actual.Should().HaveSameValueAs(expected);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public sealed class ScopeTests
         sut.Set(expected);
         var actual = sut.Get();
 
-        actual.Should().BeSameAs(expected);
+        actual.Should().HaveSameValueAs(expected);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public sealed class ScopeTests
         token.Dispose();
         var actual = sut.Get();
 
-        actual.Should().BeSameAs(expected);
+        actual.Should().HaveSameValueAs(expected);
     }
 
     private sealed class GetNullContext

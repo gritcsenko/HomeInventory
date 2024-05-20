@@ -2,8 +2,8 @@
 
 public record DomainEvent(Ulid Id, DateTimeOffset CreatedOn) : IDomainEvent
 {
-    public DomainEvent(IDateTimeService dateTimeService)
-        : this(Ulid.NewUlid(), dateTimeService.UtcNow)
+    public DomainEvent(TimeProvider dateTimeService)
+        : this(Ulid.NewUlid(), dateTimeService.GetUtcNow())
     {
     }
 }

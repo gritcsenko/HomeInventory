@@ -3,6 +3,7 @@ using FluentAssertions.Execution;
 using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Domain;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
@@ -86,6 +87,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     public void ShouldUse()
     {
         Services
+            .AddDomain()
             .AddMediatR()
             .AddWeb(
             Web.AssemblyReference.Assembly,

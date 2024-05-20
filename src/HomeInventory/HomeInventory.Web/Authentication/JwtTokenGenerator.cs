@@ -12,12 +12,12 @@ namespace HomeInventory.Web.Authentication;
 internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 {
     private readonly IJwtIdentityGenerator _jtiGenerator;
-    private readonly IDateTimeService _dateTimeService;
+    private readonly TimeProvider _dateTimeService;
     private readonly JwtOptions _jwtOptions;
     private readonly JwtHeader _header;
     private readonly JwtSecurityTokenHandler _handler = new();
 
-    public JwtTokenGenerator(IJwtIdentityGenerator jtiGenerator, IDateTimeService dateTimeService, IOptions<JwtOptions> jwtOptionsAccessor)
+    public JwtTokenGenerator(IJwtIdentityGenerator jtiGenerator, TimeProvider dateTimeService, IOptions<JwtOptions> jwtOptionsAccessor)
     {
         _jtiGenerator = jtiGenerator;
         _dateTimeService = dateTimeService;
@@ -45,7 +45,7 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
 
     private JwtPayload CreatePayload(params Claim[] claims)
     {
-        var utcNow = _dateTimeService.UtcNow.UtcDateTime;
+        var utcNow = _dateTimeService.GetUtcNow().UtcDateTime;
         return new(_jwtOptions.Issuer, _jwtOptions.Audience, claims, notBefore: utcNow, expires: utcNow.Add(_jwtOptions.Expiry), issuedAt: utcNow);
     }
 }

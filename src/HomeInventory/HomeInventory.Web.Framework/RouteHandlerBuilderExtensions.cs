@@ -17,14 +17,13 @@ public static class RouteHandlerBuilderExtensions
         return builder.AddEndpointFilterFactory((routeHandlerContext, next) =>
         {
             var services = routeHandlerContext.ApplicationServices;
-            var validator = services.GetValidator<T>();
             var problemDetailsFactory = services.GetRequiredService<IProblemDetailsFactory>();
-            var filter = new ValidationEndpointFilter<T>(validator, contextFactory, problemDetailsFactory);
+            var filter = new ValidationEndpointFilter<T>(contextFactory, problemDetailsFactory);
             return (context) => filter.InvokeAsync(context, next);
         });
     }
 
-    private static IValidator GetValidator<T>(this IServiceProvider services)
+    public static IValidator GetValidator<T>(this IServiceProvider services)
     {
         var locator = services.GetRequiredService<IValidatorLocator>();
         var validator = locator.GetValidator<T>();

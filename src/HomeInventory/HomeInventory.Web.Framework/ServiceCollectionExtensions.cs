@@ -48,11 +48,7 @@ public static class ServiceCollectionExtensions
     {
         var services = builder.Services;
         var name = builder.Name;
-        services.AddSingleton(sp =>
-        {
-            var locator = sp.GetRequiredService<IValidatorLocator>();
-            return FluentOptionsValidator.Create(name, locator, validationOptions);
-        });
+        services.AddSingleton(sp => FluentOptionsValidator.Create(name, sp.GetValidator<TOptions>(), validationOptions));
         return builder;
     }
 }

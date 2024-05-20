@@ -11,13 +11,15 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class UserIdQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly ScopeAccessor _scopeAccessor = new();
 
     public UserIdQueryHandlerTests()
     {
         Fixture.CustomizeEmail();
+        AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));
     }
 
-    private UserIdQueryHandler CreateSut() => new(_userRepository);
+    private UserIdQueryHandler CreateSut() => new(_scopeAccessor);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

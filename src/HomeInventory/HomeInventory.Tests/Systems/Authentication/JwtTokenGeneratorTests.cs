@@ -36,7 +36,7 @@ public class JwtTokenGeneratorTests : BaseTest
         var jti = Fixture.Create<string>();
         _jtiGenerator.GenerateNew().Returns(jti);
         var sut = CreateSut();
-        var validFrom = DateTime.UtcNow.DropSubSeconds().UtcDateTime;
+        var validFrom = DateTime.GetUtcNow().DropSubSeconds().UtcDateTime;
 
         var actualTokenString = await sut.GenerateTokenAsync(_user, Cancellation.Token);
 
