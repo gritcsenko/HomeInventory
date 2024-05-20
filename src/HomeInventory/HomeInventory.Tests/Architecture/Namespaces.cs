@@ -16,7 +16,7 @@ internal static class Namespaces
     public const string ContractsValidation = Contracts + ".Validation";
     public const string MediatR = nameof(MediatR);
     public const string AutoMapper = nameof(AutoMapper);
-    public static IEnumerable<string> HomeInventory = new[] { Domain, Application, Infrastructure, Api, Web, Contracts, ContractsValidation };
+    public static IEnumerable<string> HomeInventory = [Domain, Application, Infrastructure, Api, Web, Contracts, ContractsValidation];
 }
 
 [ArchitectureTest]

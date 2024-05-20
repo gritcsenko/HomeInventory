@@ -4,5 +4,5 @@ namespace HomeInventory.Web.OpenApi;
 
 public interface IOpenApiValueConverter
 {
-    IOpenApiAny? Convert(object? value, Type type);
+    IOpenApiAny Convert(object? value, Type type);
 }

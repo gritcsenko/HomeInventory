@@ -30,12 +30,12 @@ public class SwaggerDefaultValuesTests : BaseTest
         var schemaRepository = new SchemaRepository();
         var methodInfo = Substitute.For<MethodInfo>();
         _context = new OperationFilterContext(apiDescription, schemaRegistry, schemaRepository, methodInfo);
-        _childFilters = new ISwaggerOperationFilter[]
-        {
+        _childFilters =
+        [
             new DeprecatedSwaggerOperationFilter(),
             new ResponsesSwaggerOperationFilter(),
             new ParametersSwaggerOperationFilter(_converter),
-        };
+        ];
     }
 
     [Fact]
@@ -46,10 +46,9 @@ public class SwaggerDefaultValuesTests : BaseTest
             Deprecated = false
         };
         var sut = CreateSut();
-        var supported = new[] { new ApiVersion(2, 0) };
-        var deprecated = new[] { new ApiVersion(1, 0) };
-        _context.ApiDescription.ActionDescriptor.EndpointMetadata = new object[] { new ApiVersionMetadata(ApiVersionModel.Empty, new ApiVersionModel(supported, deprecated)) };
-        _context.ApiDescription.Properties[typeof(ApiVersion)] = new ApiVersion(1, 0);
+        var deprecated = new ApiVersion(1, 0);
+        _context.ApiDescription.ActionDescriptor.EndpointMetadata = [new ApiVersionMetadata(ApiVersionModel.Empty, new ApiVersionModel([new ApiVersion(2, 0)], [deprecated]))];
+        _context.ApiDescription.Properties[typeof(ApiVersion)] = deprecated;
 
         sut.Apply(operation, _context);
 
@@ -66,7 +65,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         var sut = CreateSut();
         var supported = new[] { new ApiVersion(2, 0) };
         var deprecated = new[] { new ApiVersion(1, 0) };
-        _context.ApiDescription.ActionDescriptor.EndpointMetadata = new object[] { new ApiVersionMetadata(ApiVersionModel.Empty, new ApiVersionModel(supported, deprecated)) };
+        _context.ApiDescription.ActionDescriptor.EndpointMetadata = [new ApiVersionMetadata(ApiVersionModel.Empty, new ApiVersionModel(supported, deprecated))];
         _context.ApiDescription.Properties[typeof(ApiVersion)] = new ApiVersion(2, 0);
 
         sut.Apply(operation, _context);

@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, IDateTimeService dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
+internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, TimeProvider dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
 {
     private readonly PublishDomainEventsInterceptor _interceptor = interceptor;
-    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly TimeProvider _dateTimeService = dateTimeService;
     private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = configurationAppliers.ToArray();
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        UpdateAuditableEntities(_dateTimeService.UtcNow);
+        UpdateAuditableEntities(_dateTimeService.GetUtcNow());
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }

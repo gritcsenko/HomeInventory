@@ -6,7 +6,7 @@ namespace HomeInventory.Domain.Events;
 
 public record ProductAddedEvent : DomainEvent
 {
-    public ProductAddedEvent(IDateTimeService dateTimeService, StorageArea area, Product product)
+    public ProductAddedEvent(TimeProvider dateTimeService, StorageArea area, Product product)
         : base(dateTimeService)
     {
         Area = area;

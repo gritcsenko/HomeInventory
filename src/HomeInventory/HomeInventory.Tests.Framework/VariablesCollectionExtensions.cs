@@ -3,10 +3,16 @@
 public static class VariablesCollectionExtensions
 {
     public static T Get<T>(this VariablesContainer collection, IIndexedVariable<T> variable)
-        where T : notnull =>
-        collection
-            .TryGet(variable)
-            .OrThrow(() => new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}"));
+        where T : notnull
+    {
+        var result = collection.TryGet(variable);
+        if (result.IsUndefined)
+        {
+            throw new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}");
+        }
+
+        return result.ValueOrDefault!;
+    }
 
     public static IEnumerable<T> GetMany<T>(this VariablesContainer collection, IVariable<T> variable)
         where T : notnull =>

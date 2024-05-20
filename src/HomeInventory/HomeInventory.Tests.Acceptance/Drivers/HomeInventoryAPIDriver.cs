@@ -29,7 +29,7 @@ internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, I
     public IAreaApiDriver Area => _lazyArea.Value;
 
     public void SetToday(DateOnly today) =>
-        Services.GetRequiredService<MutableDateTimeService>().UtcNow = today.ToDateTime(new TimeOnly(12, 0, 0));
+        Services.GetRequiredService<MutableDateTimeService>().SetUtcNow(today.ToDateTime(new TimeOnly(12, 0, 0)));
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -42,7 +42,7 @@ internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, I
             // Replace real database with in-memory database for tests
             services.ReplaceWithSingleton(sp => DbContextFactory.CreateInMemoryOptions<DatabaseContext>("HomeInventory", id));
             services.AddSingleton<MutableDateTimeService>();
-            services.ReplaceWithScoped<IDateTimeService>(sp => sp.GetRequiredService<MutableDateTimeService>());
+            services.ReplaceWithScoped<TimeProvider>(sp => sp.GetRequiredService<MutableDateTimeService>());
         });
 
         return base.CreateHost(builder);
@@ -54,8 +54,12 @@ internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, I
 
     private AreaApiDriver CreateArea() => new(Server);
 
-    private sealed class MutableDateTimeService : IDateTimeService
+    private sealed class MutableDateTimeService : TimeProvider
     {
-        public DateTimeOffset UtcNow { get; set; } = DateTimeOffset.UtcNow;
+        private DateTimeOffset _utcNow = DateTimeOffset.UtcNow;
+
+        public override DateTimeOffset GetUtcNow() => _utcNow;
+
+        public void SetUtcNow(DateTimeOffset value) => _utcNow = value;
     }
 }

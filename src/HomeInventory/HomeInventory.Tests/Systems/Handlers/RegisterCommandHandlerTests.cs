@@ -16,9 +16,11 @@ public class RegisterCommandHandlerTests : BaseTest
     private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
     private readonly RegisterCommand _command;
     private readonly UserId _userId;
+    private readonly ScopeAccessor _scopeAccessor = new();
 
     public RegisterCommandHandlerTests()
     {
+        Fixture.CustomizeUlid();
         Fixture.CustomizeUlidId<UserId>();
         Fixture.CustomizeEmail();
 
@@ -26,9 +28,10 @@ public class RegisterCommandHandlerTests : BaseTest
         Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(_userId.Value));
 
         _command = Fixture.Create<RegisterCommand>();
+        AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));
     }
 
-    private RegisterCommandHandler CreateSut() => new(_userRepository, DateTime, _hasher);
+    private RegisterCommandHandler CreateSut() => new(_scopeAccessor, DateTime, _hasher);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

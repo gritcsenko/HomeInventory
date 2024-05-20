@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -11,7 +12,7 @@ public static class AssertionExtensions
 {
     public static UlidAssertions Should(this Ulid actualValue) => new(actualValue);
 
-    public static ProblemDetailsAssertions Should(this ProblemDetails actualValue) => new(actualValue);
+    public static ObjectAssertions<ProblemDetails> Should(this ProblemDetails actualValue) => new(actualValue);
 
     public static JsonElementAssertions Should(this JsonElement actualValue) => new(actualValue);
 
@@ -22,6 +23,12 @@ public static class AssertionExtensions
     public static OptionAssertions<T> Should<T>(this Optional<T> actualValue)
         where T : notnull =>
         new(actualValue);
+
+    public static GenericCollectionAssertions<EndpointMetadataCollection, object> Should(this EndpointMetadataCollection actualValue) => new(actualValue);
+
+    public static ObjectAssertions<HttpMethodMetadata> Should(this HttpMethodMetadata? actualValue) => new(actualValue);
+
+    public static RouteEndpointAssertions Should(this RouteEndpoint actualValue) => new(actualValue);
 
     public static DictionaryAssertions ShouldBeDictionaryAnd(this IDictionary actualValue) => new(actualValue);
 
