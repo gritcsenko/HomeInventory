@@ -18,17 +18,9 @@ public abstract class BaseIntegrationTest : BaseTest
     {
         _client = _appFactory.CreateClient();
         _testOutputHelper = testOutputHelper;
-    }
 
-    protected override IEnumerable<IDisposable> InitializeDisposables()
-    {
-        yield return _appFactory;
-        yield return _client;
-
-        foreach (var disposable in base.InitializeDisposables())
-        {
-            yield return disposable;
-        }
+        AddDisposable(_client);
+        AddAsyncDisposable(_appFactory);
     }
 
     protected IEnumerable<RouteEndpoint> GetEndpoints() =>

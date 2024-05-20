@@ -64,7 +64,8 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     public TGiven RouteBuilder(IVariable<List<EndpointDataSource>> dataSources, out IVariable<IEndpointRouteBuilder> routeBuilder)
     {
-        return SubstituteFor(out routeBuilder, dataSources, (b, s) => {
+        return SubstituteFor(out routeBuilder, dataSources, (b, s) =>
+        {
             b.ServiceProvider.Returns(ServiceProvider);
             b.DataSources.Returns(s);
         });
@@ -114,7 +115,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             where TDestination : notnull
         {
             _given.New(out destination);
-            
+
             var sourceValue = _given.GetValue(_source);
             var destinationValue = _given.GetValue(destination);
             _given._mapper.Map<TDestination>(sourceValue).Returns(destinationValue);

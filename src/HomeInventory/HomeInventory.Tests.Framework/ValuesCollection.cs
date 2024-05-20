@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Framework;
 
-public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<ValueContainer>
+public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<ValueContainer>, IAsyncDisposable
 {
     private readonly List<ValueContainer> _values = [];
     private readonly Type _valueType = valueType;
@@ -77,4 +77,21 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
 
     IEnumerator IEnumerable.GetEnumerator() =>
         ((IEnumerable)_values).GetEnumerator();
+
+    public async ValueTask DisposeAsync()
+    {
+        foreach (var value in _values)
+        {
+            switch (value)
+            {
+                case IAsyncDisposable asyncDisposable:
+                    await asyncDisposable.DisposeAsync();
+                    break;
+                case IDisposable disposable:
+                    disposable.Dispose();
+                    break;
+            }
+        }
+        _values.Clear();
+    }
 }

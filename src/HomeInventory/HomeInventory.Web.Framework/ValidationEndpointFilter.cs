@@ -29,7 +29,7 @@ internal sealed class ValidationEndpointFilter<T>(IValidator validator, IValidat
         return await next(context);
     }
 
-    private async IAsyncEnumerable<ValidationResult> ValidateArgumentAsync(IEnumerable<T> arguments, [EnumeratorCancellation]CancellationToken cancellationToken)
+    private async IAsyncEnumerable<ValidationResult> ValidateArgumentAsync(IEnumerable<T> arguments, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var argument in arguments)
         {

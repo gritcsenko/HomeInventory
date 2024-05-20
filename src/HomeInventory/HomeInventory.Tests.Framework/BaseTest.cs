@@ -3,7 +3,6 @@ using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Framework.Attributes;
 using HomeInventory.Tests.Framework.Customizations;
-using System.Reactive.Disposables;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -11,13 +10,14 @@ namespace HomeInventory.Tests.Framework;
 [TestCaseOrderer("HomeInventory.Tests.Framework.PriorityTestOrderer", "HomeInventory.Tests.Framework")]
 public abstract class BaseTest : IAsyncLifetime
 {
-    private readonly CompositeDisposable _disposables = [];
+    private readonly List<IAsyncDisposable> _asyncDisposables = [];
     private readonly Lazy<CancellationImplementation> _lazyCancellation = new(() => new CancellationImplementation());
     private readonly Lazy<IFixture> _lazyFixture = new(() => new Fixture());
     private readonly Lazy<IDateTimeService> _lazyDateTime = new(() => new FixedDateTimeService(DateTimeOffset.UtcNow));
 
     protected BaseTest()
     {
+        AddDisposable(_lazyCancellation.ToDisposable());
     }
 
     protected internal IFixture Fixture => _lazyFixture.Value;
@@ -29,20 +29,22 @@ public abstract class BaseTest : IAsyncLifetime
     public virtual Task InitializeAsync()
     {
         Fixture.CustomizeUlid();
-        _disposables.AddAll(InitializeDisposables());
         return Task.CompletedTask;
     }
 
-    public virtual Task DisposeAsync()
+    public virtual async Task DisposeAsync()
     {
-        _disposables.Dispose();
-        return Task.CompletedTask;
+        foreach (var disposable in _asyncDisposables)
+        {
+            await disposable.DisposeAsync();
+        }
     }
 
-    protected virtual IEnumerable<IDisposable> InitializeDisposables()
-    {
-        yield return _lazyCancellation.ToDisposable();
-    }
+    protected void AddDisposable(IDisposable disposable) => AddDisposable(disposable.ToAsyncDisposable());
+
+    protected void AddDisposable(IAsyncDisposable disposable) => AddAsyncDisposable(disposable);
+
+    protected void AddAsyncDisposable(IAsyncDisposable disposable) => _asyncDisposables.Add(disposable);
 }
 
 public abstract class BaseTest<TGiven> : BaseTest
@@ -55,15 +57,10 @@ public abstract class BaseTest<TGiven> : BaseTest
     {
         _lazyGiven = new(() => createGiven(this));
         _lazyWhen = new(() => new WhenContext(Given.Variables, Cancellation));
+        AddDisposable(_lazyGiven.ToAsyncDisposable());
     }
 
     protected TGiven Given => _lazyGiven.Value;
 
     protected WhenContext When => _lazyWhen.Value;
-
-    public override async Task InitializeAsync()
-    {
-        await base.InitializeAsync();
-        Given.Initialize();
-    }
 }

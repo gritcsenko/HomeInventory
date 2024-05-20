@@ -1,18 +1,14 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Framework;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesContainer())
     where TContext : GivenContext<TContext>
 {
     private readonly IFixture _fixture = test.Fixture;
 
     protected TContext This => (TContext)this;
-
-    internal virtual void Initialize()
-    {
-    }
 
     public TContext Customize(ICustomization customization)
     {
@@ -102,41 +98,9 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         });
     }
 
-    public TContext SubstituteFor<T>(out IVariable<T> variable, IVariable<int> countVariable, params Action<T, int, VariablesContainer>[] setups)
-        where T : class
-    {
-        variable = new Variable<T>(typeof(T).Name);
-
-        foreach (var index in Enumerable.Range(0, GetValue(countVariable)))
-        {
-            Add(variable, () =>
-            {
-                var value = Substitute.For<T>();
-                foreach (var setup in setups)
-                {
-                    setup(value, index, Variables);
-                }
-                return value;
-            });
-        }
-
-        return This;
-    }
-
     public TContext Add<T>(IVariable<T> variable, T value)
         where T : notnull =>
         Add(variable, () => value);
-
-    public TContext Add<T>(IVariable<T> variable, IVariable<int> countVariable, Func<T> createValue)
-        where T : notnull
-    {
-        foreach (var _ in Enumerable.Range(0, GetValue(countVariable)))
-        {
-            Add(variable, createValue);
-        }
-
-        return This;
-    }
 
     protected TContext Add<T>(IVariable<T> variable, Func<T> createValue)
         where T : notnull =>

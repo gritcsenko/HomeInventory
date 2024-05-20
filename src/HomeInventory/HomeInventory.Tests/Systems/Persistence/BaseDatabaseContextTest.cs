@@ -9,17 +9,8 @@ public abstract class BaseDatabaseContextTest : BaseTest
     protected BaseDatabaseContextTest()
     {
         _context = DbContextFactory.Default.CreateInMemory<DatabaseContext>(DateTime);
+        AddAsyncDisposable(_context);
     }
 
     protected private DatabaseContext Context => _context;
-
-    protected override IEnumerable<IDisposable> InitializeDisposables()
-    {
-        yield return _context;
-
-        foreach (var disposable in base.InitializeDisposables())
-        {
-            yield return disposable;
-        }
-    }
 }

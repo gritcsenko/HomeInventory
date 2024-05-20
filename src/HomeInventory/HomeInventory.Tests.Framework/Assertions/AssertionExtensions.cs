@@ -25,7 +25,7 @@ public static class AssertionExtensions
         new(actualValue);
 
     public static GenericCollectionAssertions<EndpointMetadataCollection, object> Should(this EndpointMetadataCollection actualValue) => new(actualValue);
-   
+
     public static ObjectAssertions<HttpMethodMetadata> Should(this HttpMethodMetadata? actualValue) => new(actualValue);
 
     public static RouteEndpointAssertions Should(this RouteEndpoint actualValue) => new(actualValue);

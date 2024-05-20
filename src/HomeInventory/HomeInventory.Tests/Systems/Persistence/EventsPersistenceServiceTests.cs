@@ -1,61 +1,46 @@
 ﻿using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
 public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTestsGivenContext>
 {
-    private static readonly Variable<int> _eventsCount = new(nameof(_eventsCount));
-    private static readonly Variable<DatabaseContext> _dbContext = new(nameof(_dbContext));
-    private static readonly Variable<IDomainEvent> _event = new(nameof(_event));
-
-    private readonly DatabaseContext _context;
+    private readonly DbContextOptions<DatabaseContext> _options;
 
     public EventsPersistenceServiceTests()
         : base(t => new(t))
     {
-        var options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
-        _context = DbContextFactory.Default.CreateInMemory(DateTime, options);
+        _options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
     }
 
     [Fact]
     public async Task SaveEvents_ShouldPersistDomainEvents()
     {
-        _ = Given
-            .Add(_dbContext, _context)
-            .Sut(out var sut, _dbContext)
-            .Add(_eventsCount, 3)
-            .Add(_event, _eventsCount, () => new DomainEvent(DateTime))
+        Given
+            .New(out var dbContext, () => DbContextFactory.Default.CreateInMemory(DateTime, _options))
+            .Sut(out var sut, dbContext)
+            .New(out var eventsCount, () => 3)
+            .New<IDomainEvent>(out var domainEvent, eventsCount, () => new DomainEvent(DateTime))
             .SubstituteFor(out IVariable<IHasDomainEvents> entity,
                 (e, v) => e
                 .GetDomainEvents()
-                .Returns(v.GetMany(_event).ToReadOnly()));
+                .Returns(v.GetMany(domainEvent).ToReadOnly()));
 
         var then = await When
-            .InvokedAsync(sut, entity, _dbContext, async (sut, entity, db, t) =>
+            .InvokedAsync(sut, entity, dbContext, async (sut, entity, db, t) =>
             {
                 await sut.SaveEventsAsync(entity, Cancellation.Token);
                 return await db.SaveChangesAsync(t);
             });
 
         then
-            .Result(_eventsCount, entity, (actual, expected, entity) =>
+            .Result(eventsCount, entity, (actual, expected, entity) =>
             {
                 actual.Should().Be(expected);
                 entity.Received().ClearDomainEvents();
             });
-    }
-
-    protected override IEnumerable<IDisposable> InitializeDisposables()
-    {
-        yield return _context;
-
-        foreach (var disposable in base.InitializeDisposables())
-        {
-            yield return disposable;
-        }
     }
 }

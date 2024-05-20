@@ -24,7 +24,7 @@ public abstract class TestingLogger<T> : ILogger<T>
         public override IDisposable BeginScope<TState>(TState state)
         {
             var current = _currentScope.Value;
-            return _currentScope.Value = [ Disposable.Create(() => _currentScope.Value = current) ];
+            return _currentScope.Value = [Disposable.Create(() => _currentScope.Value = current)];
         }
 
         public override void Log(LogLevel logLevel, EventId eventId, object state, Exception? exception, Func<object, Exception?, string> formatter)
