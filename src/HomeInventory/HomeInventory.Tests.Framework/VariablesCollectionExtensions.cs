@@ -8,7 +8,7 @@ public static class VariablesCollectionExtensions
         var result = collection.TryGet(variable);
         if (result.IsUndefined)
         {
-           throw new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}");
+            throw new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}");
         }
 
         return result.ValueOrDefault!;
