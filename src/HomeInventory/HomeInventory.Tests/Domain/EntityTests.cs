@@ -186,20 +186,11 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
 
 public sealed class EntityTestsGivenContext(BaseTest test) : GivenContext<EntityTestsGivenContext, TestEntity, TestEntityId>(test)
 {
-    internal EntityTestsGivenContext Id(out IVariable<TestEntityId> variable, int count = 1)
-    {
-        variable = new Variable<TestEntityId>(nameof(Id));
-        for (var i = 0; i < count; i++)
-        {
-            Add(variable, CreateTestEntityId);
-        }
-
-        return This;
-
-        TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
-    }
+    internal EntityTestsGivenContext Id(out IVariable<TestEntityId> id, int count = 1) => New(out id, CreateTestEntityId, count);
 
     protected override TestEntity CreateSut(TestEntityId arg) => new(arg);
+
+    private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
 }
 
 public class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>

@@ -39,7 +39,7 @@ public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValue
     public void Convert_ShouldReturnNull_WhenValueIsDbNull(bool expected)
     {
         Given
-            .Value(expected, out var value)
+            .Value(out var value, expected)
             .Sut(out var sut);
 
         var then = When

@@ -52,11 +52,8 @@ public class GuidIdConverterTests() : BaseTest<GuidIdConverterTestsGivenContext>
 
 public sealed class GuidIdConverterTestsGivenContext(BaseTest test) : GivenContext<GuidIdConverterTestsGivenContext, UlidIdConverter<UserId>>(test)
 {
-    internal GuidIdConverterTestsGivenContext Empty(out IVariable<Ulid> idVariable)
-    {
-        idVariable = new Variable<Ulid>(nameof(Empty));
-        return Add(idVariable, () => Ulid.Empty);
-    }
+    internal GuidIdConverterTestsGivenContext Empty(out IVariable<Ulid> empty) =>
+        New(out empty, () => Ulid.Empty);
 
     protected override UlidIdConverter<UserId> CreateSut() => new();
 }

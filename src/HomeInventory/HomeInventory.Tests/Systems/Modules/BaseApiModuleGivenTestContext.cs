@@ -50,26 +50,18 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
-    public TGiven HttpContext(out IVariable<HttpContext> context)
-    {
-        context = new Variable<HttpContext>(nameof(context));
-        return Add(context, CreateHttpContext);
-    }
+    public TGiven HttpContext(out IVariable<HttpContext> context) =>
+        New(out context, CreateHttpContext);
 
-    public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources)
-    {
-        dataSources = new Variable<List<EndpointDataSource>>(nameof(dataSources));
-        return Add(dataSources, []);
-    }
+    public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources) =>
+        New(out dataSources, () => new List<EndpointDataSource>());
 
-    public TGiven RouteBuilder(IVariable<List<EndpointDataSource>> dataSources, out IVariable<IEndpointRouteBuilder> routeBuilder)
-    {
-        return SubstituteFor(out routeBuilder, dataSources, (b, s) =>
+    public TGiven RouteBuilder(out IVariable<IEndpointRouteBuilder> routeBuilder, IVariable<List<EndpointDataSource>> dataSources) =>
+        SubstituteFor(out routeBuilder, dataSources, (b, s) =>
         {
             b.ServiceProvider.Returns(ServiceProvider);
             b.DataSources.Returns(s);
         });
-    }
 
     internal TGiven OnQueryReturn<TRequest, TResult>(IVariable<TRequest> request, IVariable<TResult> result)
         where TRequest : notnull, IQuery<TResult>

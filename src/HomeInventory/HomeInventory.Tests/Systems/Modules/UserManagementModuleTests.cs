@@ -16,7 +16,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     {
         Given
             .DataSources(out var dataSources)
-            .RouteBuilder(dataSources, out var routeBuilder)
+            .RouteBuilder(out var routeBuilder, dataSources)
             .Sut(out var sut);
 
         var then = When

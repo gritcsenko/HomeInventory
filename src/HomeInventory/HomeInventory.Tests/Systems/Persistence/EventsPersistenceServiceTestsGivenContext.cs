@@ -6,21 +6,12 @@ namespace HomeInventory.Tests.Systems.Persistence;
 
 public class EventsPersistenceServiceTestsGivenContext(BaseTest test) : GivenContext<EventsPersistenceServiceTestsGivenContext>(test)
 {
-    internal EventsPersistenceServiceTestsGivenContext Sut(out IVariable<EventsPersistenceService> sutVariable, IVariable<DatabaseContext> dbContextVariable)
-    {
-        sutVariable = new Variable<EventsPersistenceService>("sut");
-        return Add(sutVariable, () => new EventsPersistenceService(GetValue(dbContextVariable)));
-    }
+    internal EventsPersistenceServiceTestsGivenContext Sut(out IVariable<EventsPersistenceService> sut, IVariable<DatabaseContext> dbContextVariable) =>
+        New(out sut, () => CreateSut(GetValue(dbContextVariable)));
 
     public EventsPersistenceServiceTestsGivenContext New<T>(out IVariable<T> variable, IVariable<int> countVariable, Func<T> createValue, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull
-    {
-        variable = new Variable<T>(name ?? typeof(T).Name);
-        foreach (var _ in Enumerable.Range(0, GetValue(countVariable)))
-        {
-            Add(variable, createValue);
-        }
+        where T : notnull =>
+        New(out variable, () => Enumerable.Range(0, GetValue(countVariable)).Select(_ => createValue()), name);
 
-        return This;
-    }
+    private static EventsPersistenceService CreateSut(DatabaseContext arg) => new(arg);
 }

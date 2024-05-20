@@ -6,15 +6,11 @@ public sealed class JsonOpenApiValueConverterGivenContext(BaseTest test) : Given
 {
     private readonly Variable<object> _value = new(nameof(_value));
 
-    public JsonOpenApiValueConverterGivenContext NullValue(out IVariable<object> valueVariable) => Value(null!, out valueVariable);
+    public JsonOpenApiValueConverterGivenContext NullValue(out IVariable<object> valueVariable) => New(out valueVariable, () => null!);
 
-    public JsonOpenApiValueConverterGivenContext DbNullValue(out IVariable<object> valueVariable) => Value(DBNull.Value, out valueVariable);
+    public JsonOpenApiValueConverterGivenContext DbNullValue(out IVariable<object> valueVariable) => New(out valueVariable, () => DBNull.Value);
 
-    public JsonOpenApiValueConverterGivenContext Value(object value, out IVariable<object> valueVariable)
-    {
-        valueVariable = _value;
-        return Add(_value, value!);
-    }
+    public JsonOpenApiValueConverterGivenContext Value(out IVariable<object> valueVariable, object value) => New(out valueVariable, () => value);
 
     protected override JsonOpenApiValueConverter CreateSut() => new();
 }

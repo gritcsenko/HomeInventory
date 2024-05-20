@@ -4,14 +4,14 @@ public sealed class VariablesContainer : IAsyncDisposable
 {
     private readonly Dictionary<string, ValuesCollection> _variables = [];
 
-    public bool TryAdd<T>(IVariable<T> variable, Func<T> createValueFunc)
+    public Optional<T> TryAdd<T>(IVariable<T> variable, Func<T> createValueFunc)
         where T : notnull
     {
         var collection = GetAllValues(variable);
         return collection.TryAdd(createValueFunc);
     }
 
-    public async Task<bool> TryAddAsync<T>(IVariable<T> variable, Func<Task<T>> createValueFunc)
+    public async Task<Optional<T>> TryAddAsync<T>(IVariable<T> variable, Func<Task<T>> createValueFunc)
         where T : notnull
     {
         var collection = GetAllValues(variable);
@@ -25,19 +25,21 @@ public sealed class VariablesContainer : IAsyncDisposable
         return collection.TryGet<T>(variable.Index);
     }
 
+    public Optional<T> TryGetOrAdd<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
+        where T : notnull
+    {
+        var collection = GetAllValues(variable);
+        return collection.TryGetOrAdd<T>(variable.Index, createValueFunc);
+    }
+
     public IEnumerable<T> GetAll<T>(IVariable<T> variable)
         where T : notnull
     {
         var collection = GetAllValues(variable);
-        if (!collection.IsAsignable<T>())
-        {
-            return [];
-        }
-
-        return collection.GetAll<T>();
+        return collection.IsAsignable<T>() ? collection.GetAll<T>() : ([]);
     }
 
-    public bool TryUpdate<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
+    public Optional<T> TryUpdate<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
         where T : notnull
     {
         var collection = GetAllValues(variable);

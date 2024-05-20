@@ -113,17 +113,11 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
         private static readonly Variable<IFeatureFlag> _sut = new(nameof(_sut));
         private static readonly Variable<IFeatureFlag<Guid>> _sutContext = new(nameof(_sutContext));
 
-        internal GivenTestContext Sut(out IVariable<IFeatureFlag> sutVariable, IVariable<string> nameVariable)
-        {
-            sutVariable = _sut;
-            return Add(_sut, () => Create(nameVariable));
-        }
+        internal GivenTestContext Sut(out IVariable<IFeatureFlag> sut, IVariable<string> nameVariable) =>
+            New(out sut, () => Create(nameVariable));
 
-        internal GivenTestContext Sut(out IVariable<IFeatureFlag<Guid>> sutVariable, IVariable<string> nameVariable, IVariable<Guid> contextVariable)
-        {
-            sutVariable = _sutContext;
-            return Add(_sutContext, () => Create(nameVariable, contextVariable));
-        }
+        internal GivenTestContext Sut(out IVariable<IFeatureFlag<Guid>> sut, IVariable<string> nameVariable, IVariable<Guid> contextVariable) =>
+            New(out sut, () => Create(nameVariable, contextVariable));
 
         private IFeatureFlag Create(IVariable<string> nameVariable) =>
             FeatureFlag.Create(GetValue(nameVariable));
