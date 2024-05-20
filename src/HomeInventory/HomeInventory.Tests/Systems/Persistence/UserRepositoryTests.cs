@@ -14,6 +14,7 @@ public class UserRepositoryTests : BaseRepositoryTest
 
     public UserRepositoryTests()
     {
+        Fixture.CustomizeUlid();
         Fixture.CustomizeUlidId<UserId>();
         Fixture.CustomizeEmail();
 

@@ -1,6 +1,7 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using MediatR;
@@ -18,17 +19,19 @@ public class UnitOfWorkBehaviorTests : BaseTest
 {
     private readonly TestingLogger<UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>>> _logger = Substitute.For<TestingLogger<UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>>>>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly ScopeAccessor _scopeAccessor = new();
 
     public UnitOfWorkBehaviorTests()
     {
         Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(id => new ValueSupplier<Ulid>(id));
+        AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
     }
 
     [Fact]
     public void Should_BeResolvedForCommand()
     {
         var services = new ServiceCollection();
-        services.AddSingleton(_unitOfWork);
+        services.AddSingleton<IScopeAccessor>(_scopeAccessor);
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
 
         var serviceConfig = new MediatRServiceConfiguration()
@@ -88,5 +91,5 @@ public class UnitOfWorkBehaviorTests : BaseTest
         Task<OneOf<Success, IError>> Handler() => Task.FromResult(_response);
     }
 
-    private UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>> CreateSut() => new(_unitOfWork, _logger);
+    private UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>> CreateSut() => new(_scopeAccessor, _logger);
 }

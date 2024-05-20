@@ -12,6 +12,12 @@ internal static class FluentOptionsValidator
         where TOptions : class
     {
         var validator = validatorLocator.GetValidator<TOptions>();
+        return Create(name, validator, validationOptions);
+    }
+
+    public static IValidateOptions<TOptions> Create<TOptions>(string name, IValidator validator, Action<ValidationStrategy<TOptions>>? validationOptions = null)
+        where TOptions : class
+    {
         var factory = new ValidationContextFactory<TOptions>(validationOptions);
         return new FluentOptionsValidator<TOptions>(name, validator, factory);
     }

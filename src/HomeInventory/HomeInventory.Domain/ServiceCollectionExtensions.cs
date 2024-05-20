@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Core;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,9 +8,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
+        services.AddSingleton<IScopeAccessor, ScopeAccessor>();
         services.AddSingleton<IAmountFactory, AmountFactory>();
-        services.AddSingleton<SystemDateTimeService>();
-        services.AddScoped<IDateTimeService>(sp => new FixedDateTimeService(sp.GetRequiredService<SystemDateTimeService>()));
+        services.AddTransient<TimeProvider>(_ => new FixedTimeProvider(TimeProvider.System));
         return services;
     }
 }

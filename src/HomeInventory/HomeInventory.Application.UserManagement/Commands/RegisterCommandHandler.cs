@@ -3,28 +3,29 @@ using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal sealed class RegisterCommandHandler(IUserRepository userRepository, IDateTimeService dateTimeService, IPasswordHasher hasher) : CommandHandler<RegisterCommand>
+internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher) : CommandHandler<RegisterCommand>
 {
-    private readonly IUserRepository _userRepository = userRepository;
-    private readonly IDateTimeService _dateTimeService = dateTimeService;
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
+    private readonly TimeProvider timeProvider = timeProvider;
     private readonly IPasswordHasher _hasher = hasher;
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
-        if (await _userRepository.IsUserHasEmailAsync(command.Email, cancellationToken))
+        var scope = _scopeAccessor.GetScope<IUserRepository>();
+        var userRepository = scope.Get().OrThrow<InvalidOperationException>();
+        if (await userRepository.IsUserHasEmailAsync(command.Email, cancellationToken))
         {
             return new DuplicateEmailError();
         }
 
         var user = await command.CreateUserAsync(_hasher, cancellationToken);
         var result = await user
-            .Tap(u => u.OnUserCreated(_dateTimeService))
-            .Tap(u => _userRepository.AddAsync(u, cancellationToken));
+            .Tap(u => u.OnUserCreated(timeProvider))
+            .Tap(u => userRepository.AddAsync(u, cancellationToken));
 
         return result
             .Convert<OneOf<Success, IError>>(_ => new Success())

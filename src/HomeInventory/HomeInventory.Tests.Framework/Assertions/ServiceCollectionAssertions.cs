@@ -1,10 +1,11 @@
 ﻿using HomeInventory.Tests.Framework.Assertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Linq.Expressions;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class ServiceCollectionAssertions(IServiceCollection value) : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>(value)
+public sealed class ServiceCollectionAssertions(IServiceCollection value) : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>(value)
 {
     public AndWhichConstraint<ObjectAssertions, IConfigureOptions<TOptions>> ContainConfigureOptions<TOptions>(IServiceProvider provider)
         where TOptions : class =>
@@ -39,11 +40,18 @@ public class ServiceCollectionAssertions(IServiceCollection value) : GenericColl
         where T : class =>
         ContainSingle(typeof(T), lifetime);
 
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime) =>
-        ContainSingle(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
+    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime)
+    {
+        var matched = Subject.Where(d => d.ServiceType == serviceType && !d.IsKeyedService)
+            .Should().ContainSingle(d => d.Lifetime == lifetime, $"Expected {nameof(ServiceDescriptor.Lifetime)} of the {serviceType.FullName} to be {lifetime}")
+            .Subject;
+        return new(this, matched);
+    }
 
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime) =>
-        Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
+    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime)
+    {
+        return Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
+    }
 
     private AndConstraint<ServiceCollectionAssertions> Contain<T>(IServiceProvider provider, ServiceLifetime lifetime)
         where T : class =>

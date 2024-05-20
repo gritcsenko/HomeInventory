@@ -3,6 +3,7 @@
   <ItemGroup>
     <PackageReference Include="DotNext" />
     <PackageReference Include="OneOf" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
 
 </Project>

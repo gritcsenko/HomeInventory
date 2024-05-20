@@ -8,7 +8,8 @@ public abstract class BaseDatabaseContextTest : BaseTest
 
     protected BaseDatabaseContextTest()
     {
-        AddDisposable(DbContextFactory.Default.CreateInMemory<DatabaseContext>(DateTime), out _context);
+        _context = DbContextFactory.Default.CreateInMemory<DatabaseContext>(DateTime);
+        AddAsyncDisposable(_context);
     }
 
     protected private DatabaseContext Context => _context;

@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using FluentAssertions.Execution;
 using Flurl;
 using HomeInventory.Contracts;
-using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,15 +21,17 @@ public class UserManagementApiTests : BaseIntegrationTest
     {
         Fixture.CustomizeRegisterRequest();
         var request = Fixture.Create<RegisterRequest>();
-        AddDisposable(() => JsonContent.Create(request), out _content);
+        _content = JsonContent.Create(request);
+        AddDisposable(_content);
     }
 
     [Fact]
     [TestPriority(1)]
     public void VerifyEndpoints()
     {
+        var endpoints = GetEndpoints();
+
         using var scope = new AssertionScope();
-        var endpoints = GetEndpoints().ToReadOnly();
         endpoints.Should().ContainEndpoint(_registerRoute, HttpMethods.Post)
             .Which.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
     }
@@ -40,13 +41,12 @@ public class UserManagementApiTests : BaseIntegrationTest
     public async Task Register_ReturnsSuccess()
     {
         var response = await PostAsync(_registerRoute, _content);
+        var body = (await response.Content.ReadFromJsonAsync<RegisterResponse>(options: null, Cancellation.Token))!;
 
         using var scope = new AssertionScope();
-        response.StatusCode.Should().BeDefined()
-            .And.Be(HttpStatusCode.OK);
-        var body = await response.Content.ReadFromJsonAsync<RegisterResponse>(options: null, Cancellation.Token);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         body.Should().NotBeNull();
-        body!.UserId.Should().NotBeEmpty();
+        body.UserId.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -55,21 +55,20 @@ public class UserManagementApiTests : BaseIntegrationTest
     {
         _ = await PostAsync(_registerRoute, _content);
         var response = await PostAsync(_registerRoute, _content);
+        var body = (await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, Cancellation.Token))!;
 
         using var scope = new AssertionScope();
-        response.StatusCode.Should().BeDefined()
-            .And.Be(HttpStatusCode.Conflict);
-        var body = await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, Cancellation.Token)!;
-        body!.Should().NotBeNull();
-        body!.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.10");
-        body!.Status.Should().Be(StatusCodes.Status409Conflict);
-        body!.Title.Should().Be(nameof(DuplicateEmailError));
-        body!.Detail.Should().Be(DuplicateEmailError.DefaultMessage);
-        body!.Instance.Should().BeNull();
-        body!.Extensions.Should().ContainKey("traceId")
+        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        body.Should().NotBeNull();
+        body.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.10");
+        body.Status.Should().Be(StatusCodes.Status409Conflict);
+        body.Title.Should().Be(nameof(DuplicateEmailError));
+        body.Detail.Should().Be(DuplicateEmailError.DefaultMessage);
+        body.Instance.Should().BeNull();
+        body.Extensions.Should().ContainKey("traceId")
             .WhoseValue.Should().BeJsonElement()
             .Which.GetString().Should().NotBeNullOrEmpty();
-        body!.Extensions.Should().ContainKey("errorCodes")
+        body.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeJsonElement()
             .Which.Should().BeArrayEqualTo([nameof(DuplicateEmailError)]);
     }

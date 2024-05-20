@@ -1,59 +1,43 @@
 ﻿using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
 public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTestsGivenContext>
 {
-    private static readonly Variable<int> _eventsCount = new(nameof(_eventsCount));
-    private static readonly Variable<DatabaseContext> _dbContext = new(nameof(_dbContext));
-    private static readonly Variable<EventsPersistenceService> _sut = new(nameof(_sut));
-    private static readonly Variable<IHasDomainEvents> _entity = new(nameof(_entity));
-    private static readonly Variable<IDomainEvent> _event = new(nameof(_event));
-
-    private readonly DatabaseContext _context;
+    private readonly DbContextOptions<DatabaseContext> _options;
 
     public EventsPersistenceServiceTests()
         : base(t => new(t))
     {
-        var options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
-        AddDisposable(DbContextFactory.Default.CreateInMemory(DateTime, options), out _context);
+        _options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
     }
 
     [Fact]
     public async Task SaveEvents_ShouldPersistDomainEvents()
     {
-        _ = Given
-            .Add(_dbContext, _context)
-            .Sut(_sut, _dbContext)
-            .Add(_eventsCount, 3)
-            .Add(_event, _eventsCount, () => new DomainEvent(DateTime))
-            .SubstituteFor(_entity,
-                (e, v) => e
-                .GetDomainEvents()
-                .Returns(v.GetMany(_event).ToReadOnly()));
+        Given
+            .New(out var dbContext, () => DbContextFactory.Default.CreateInMemory(DateTime, _options))
+            .Sut(out var sut, dbContext)
+            .New(out var eventsCount, () => 3)
+            .New<IDomainEvent>(out var domainEvent, () => new DomainEvent(DateTime), eventsCount)
+            .SubstituteFor(out IVariable<IHasDomainEvents> entity, e => e.GetDomainEvents().Returns(Given.Variables.GetMany(domainEvent).ToReadOnly()));
 
         var then = await When
-            .InvokedAsync(_sut, _entity, _dbContext, async (sut, entity, db, t) =>
+            .InvokedAsync(sut, entity, dbContext, async (sut, entity, db, t) =>
             {
                 await sut.SaveEventsAsync(entity, Cancellation.Token);
                 return await db.SaveChangesAsync(t);
             });
 
         then
-            .Result(_eventsCount, _entity, (actual, expected, entity) =>
+            .Result(eventsCount, entity, (actual, expected, entity) =>
             {
                 actual.Should().Be(expected);
                 entity.Received().ClearDomainEvents();
             });
     }
-}
-
-public class EventsPersistenceServiceTestsGivenContext(BaseTest test) : GivenContext<EventsPersistenceServiceTestsGivenContext>(test)
-{
-    internal EventsPersistenceServiceTestsGivenContext Sut(IVariable<EventsPersistenceService> sutVariable, IVariable<DatabaseContext> dbContextVariable) =>
-        Add(sutVariable, () => new EventsPersistenceService(GetValue(dbContextVariable)));
 }

@@ -13,8 +13,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton(ErrorMappingBuilder.CreateDefault());
         services.AddSingleton(sp => sp.GetRequiredService<ErrorMappingBuilder>().Build());
-        services.AddSingleton<HomeInventoryProblemDetailsFactory>();
-        services.AddSingleton<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddTransient<HomeInventoryProblemDetailsFactory>();
+        services.AddTransient<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddTransient<IProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
 
         return services;
     }
@@ -47,11 +48,7 @@ public static class ServiceCollectionExtensions
     {
         var services = builder.Services;
         var name = builder.Name;
-        services.AddSingleton(sp =>
-        {
-            var locator = sp.GetRequiredService<IValidatorLocator>();
-            return FluentOptionsValidator.Create(name, locator, validationOptions);
-        });
+        services.AddSingleton(sp => FluentOptionsValidator.Create(name, sp.GetValidator<TOptions>(), validationOptions));
         return builder;
     }
 }

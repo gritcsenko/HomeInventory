@@ -20,14 +20,14 @@ public class DbContextFactory
 
     public static DbContextFactory Default { get; } = new DbContextFactory(new ReflectionDbContextFactory());
 
-    public TContext CreateInMemory<TContext>(IDateTimeService dateTimeService)
+    public TContext CreateInMemory<TContext>(TimeProvider dateTimeService)
         where TContext : DbContext
     {
         var options = CreateInMemoryOptions<TContext>();
         return CreateInMemory(dateTimeService, options);
     }
 
-    public TContext CreateInMemory<TContext>(IDateTimeService dateTimeService, DbContextOptions<TContext> options)
+    public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options)
         where TContext : DbContext =>
         CreateInMemory(
             dateTimeService,
@@ -35,7 +35,7 @@ public class DbContextFactory
             new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent)) })),
             new UserModelDatabaseConfigurationApplier());
 
-    public TContext CreateInMemory<TContext>(IDateTimeService dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
+    public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
         where TContext : DbContext
     {
         var interceptor = new PublishDomainEventsInterceptor(Substitute.For<IPublisher>());

@@ -15,7 +15,7 @@ public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResul
         return this;
     }
 
-    public ThenContext<TResult> Result<TArg>(Variable<TArg> arg, Action<TResult, TArg> assert)
+    public ThenContext<TResult> Result<TArg>(IVariable<TArg> arg, Action<TResult, TArg> assert)
         where TArg : notnull =>
         Result(arg[0], assert);
 
@@ -23,7 +23,7 @@ public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResul
         where TArg : notnull =>
         Result(r => assert(r, GetValue(arg)));
 
-    public ThenContext<TResult> Result<TArg1, TArg2>(Variable<TArg1> arg1, Variable<TArg2> arg2, Action<TResult, TArg1, TArg2> assert)
+    public ThenContext<TResult> Result<TArg1, TArg2>(IVariable<TArg1> arg1, IVariable<TArg2> arg2, Action<TResult, TArg1, TArg2> assert)
         where TArg1 : notnull
         where TArg2 : notnull =>
         Result(arg1[0], arg2[0], assert);
@@ -36,6 +36,15 @@ public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResul
 
 public class ThenContext(VariablesContainer variables) : BaseContext(variables)
 {
+    public ThenContext Ensure<TArg1, TArg2>(IVariable<TArg1> arg1Variable, IVariable<TArg2> arg2Variable, Action<TArg1, TArg2> assert)
+        where TArg1 : notnull
+        where TArg2 : notnull =>
+        Ensure(arg1Variable, arg1 => assert(arg1, GetValue(arg2Variable)));
+
+    public ThenContext Ensure<TArg1>(IVariable<TArg1> argVariable, Action<TArg1> assert)
+        where TArg1 : notnull =>
+        Ensure(() => assert(GetValue(argVariable)));
+
     public ThenContext Ensure(Action assert)
     {
         using var scope = new AssertionScope();
