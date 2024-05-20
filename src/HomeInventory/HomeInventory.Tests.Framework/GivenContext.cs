@@ -87,8 +87,11 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     {
         foreach (var value in createValues())
         {
-            Variables.TryAdd(variable, () => value)
-                .OrThrow(() => throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}"));
+            var result = Variables.TryAdd(variable, () => value);
+            if (result.IsUndefined)
+            {
+                throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
+            }
         }
 
         return This;

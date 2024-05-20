@@ -3,6 +3,7 @@ using AutoMapper;
 using Carter;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Tests.Framework;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
 using MediatR;
@@ -10,8 +11,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Mono.Cecil;
 using OneOf;
 using OneOf.Types;
+using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -81,11 +84,12 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     internal TGiven OnCommandReturnError<TRequest, TError>(IVariable<TRequest> request, IVariable<TError> result)
         where TRequest : notnull, ICommand
         where TError : notnull, IError =>
-        OnRequestReturnError<TRequest, Success, TError>(request, result);
+    OnRequestReturnError<TRequest, Success, TError>(request, result);
 
-    internal IDestinationMapper Map<TSource>(out IVariable<TSource> source)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S3427:Method overloads with default parameter values should not overlap", Justification = "False positive")]
+    internal IDestinationMapper Map<TSource>(out IVariable<TSource> source, [CallerArgumentExpression(nameof(source))] string? name = null)
         where TSource : notnull =>
-        New(out source).Map(source);
+        New(out source, name: name).Map(source);
 
     internal IDestinationMapper Map<TSource>(IVariable<TSource> source)
         where TSource : notnull =>
@@ -93,7 +97,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     internal interface IDestinationMapper
     {
-        TGiven To<TDestination>(out IVariable<TDestination> destination)
+        TGiven To<TDestination>(out IVariable<TDestination> destination, [CallerArgumentExpression(nameof(destination))] string? name = null)
             where TDestination : notnull;
     }
 
@@ -103,10 +107,10 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         private readonly TGiven _given = given;
         private readonly IVariable<TSource> _source = source;
 
-        public TGiven To<TDestination>(out IVariable<TDestination> destination)
+        public TGiven To<TDestination>(out IVariable<TDestination> destination, [CallerArgumentExpression(nameof(destination))] string? name = null)
             where TDestination : notnull
         {
-            _given.New(out destination);
+            _given.New(out destination, name: name);
 
             var sourceValue = _given.GetValue(_source);
             var destinationValue = _given.GetValue(destination);

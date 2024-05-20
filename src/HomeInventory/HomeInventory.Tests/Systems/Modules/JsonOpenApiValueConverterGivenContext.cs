@@ -1,4 +1,6 @@
 ﻿using HomeInventory.Web.OpenApi;
+using Mono.Cecil;
+using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -6,11 +8,11 @@ public sealed class JsonOpenApiValueConverterGivenContext(BaseTest test) : Given
 {
     private readonly Variable<object> _value = new(nameof(_value));
 
-    public JsonOpenApiValueConverterGivenContext NullValue(out IVariable<object> valueVariable) => New(out valueVariable, () => null!);
+    public JsonOpenApiValueConverterGivenContext NullValue(out IVariable<object> valueVariable, [CallerArgumentExpression(nameof(valueVariable))] string? name = null) => Value(out valueVariable, default!, name: name);
 
-    public JsonOpenApiValueConverterGivenContext DbNullValue(out IVariable<object> valueVariable) => New(out valueVariable, () => DBNull.Value);
+    public JsonOpenApiValueConverterGivenContext DbNullValue(out IVariable<object> valueVariable, [CallerArgumentExpression(nameof(valueVariable))] string? name = null) => New(out valueVariable, () => DBNull.Value, name: name);
 
-    public JsonOpenApiValueConverterGivenContext Value(out IVariable<object> valueVariable, object value) => New(out valueVariable, () => value);
+    public JsonOpenApiValueConverterGivenContext Value(out IVariable<object> valueVariable, object value, [CallerArgumentExpression(nameof(valueVariable))] string? name = null) => New(out valueVariable, () => value, name: name);
 
     protected override JsonOpenApiValueConverter CreateSut() => new();
 }
