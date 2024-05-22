@@ -16,7 +16,7 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
 
     public required StorageAreaName Name { get; init; }
 
-    public OneOf<Success, DuplicateProductError> Add(Product item, IDateTimeService dateTimeService)
+    public OneOf<Success, DuplicateProductError> Add(Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);
@@ -31,7 +31,7 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
         return new Success();
     }
 
-    public OneOf<Success, NotFound> Remove(Product item, IDateTimeService dateTimeService)
+    public OneOf<Success, NotFound> Remove(Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);

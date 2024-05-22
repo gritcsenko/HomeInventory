@@ -1,17 +1,19 @@
-﻿using HomeInventory.Application.Cqrs.Queries.Areas;
+﻿using AutoMapper;
+using HomeInventory.Application.Cqrs.Queries.Areas;
 using HomeInventory.Contracts;
+using HomeInventory.Web.Infrastructure;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AreaModule : ApiModule
+public class AreaModule(IMapper mapper, ISender sender, IProblemDetailsFactory factory) : ApiModule("/api/areas"/*, PermissionType.AccessAreas*/)
 {
-    public AreaModule()
-        : base("/api/areas"/*, PermissionType.AccessAreas*/)
-    {
-    }
+    private readonly IMapper _mapper = mapper;
+    private readonly ISender _sender = sender;
+    private readonly IProblemDetailsFactory _factory = factory;
 
     protected override void AddRoutes(RouteGroupBuilder group)
     {
@@ -21,11 +23,10 @@ public class AreaModule : ApiModule
             ;
     }
 
-    public static async Task<IResult> GetAllAsync(HttpContext context, CancellationToken cancellationToken = default)
+    public async Task<IResult> GetAllAsync(HttpContext context, CancellationToken cancellationToken = default)
     {
-        var mapper = context.GetMapper();
         ////var apiVersion = context.GetRequestedApiVersion();
-        var result = await context.GetSender().Send(new AllAreasQuery(), cancellationToken);
-        return context.MatchToOk(result, mapper.Map<AreaResponse[]>);
+        var result = await _sender.Send(new AllAreasQuery(), cancellationToken);
+        return _factory.MatchToOk(result, _mapper.Map<AreaResponse[]>);
     }
 }
