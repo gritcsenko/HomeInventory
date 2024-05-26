@@ -1,10 +1,12 @@
 ﻿using HomeInventory.Domain.Events;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -31,7 +33,7 @@ public class DbContextFactory
         CreateInMemory(
             dateTimeService,
             options,
-            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent)) })),
+            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver([new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent))])),
             new UserModelDatabaseConfigurationApplier());
 
     public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
@@ -41,10 +43,10 @@ public class DbContextFactory
         return _factory.Create(options, interceptor, dateTimeService, appliers);
     }
 
-    public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Ulid? id = null)
+    public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Cuid? id = null)
         where TContext : DbContext =>
         new DbContextOptionsBuilder<TContext>()
-            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? Ulid.NewUlid()))
+            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? IdSuppliers.Cuid.Invoke()))
             .EnableSensitiveDataLogging()
             .Options;
 }

@@ -37,9 +37,8 @@ internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, I
         // Add mock/test services to the builder here
         builder.ConfigureServices(services =>
         {
-            var id = Ulid.NewUlid();
             // Replace real database with in-memory database for tests
-            services.ReplaceWithSingleton(sp => DbContextFactory.CreateInMemoryOptions<DatabaseContext>("HomeInventory", id));
+            services.ReplaceWithSingleton(sp => DbContextFactory.CreateInMemoryOptions<DatabaseContext>("HomeInventory"));
             services.AddSingleton<MutableDateTimeService>();
             services.ReplaceWithScoped<TimeProvider>(sp => sp.GetRequiredService<MutableDateTimeService>());
         });
