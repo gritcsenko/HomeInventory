@@ -1,16 +1,17 @@
 ﻿using System.Security.Claims;
-using HomeInventory.Application.Mapping;
 using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Visus.Cuid;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
 internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
 {
-    private static readonly UlidIdConverter<UserId> _idConverter = new();
+    private static readonly CuidIdConverter<UserId> _idConverter = new();
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DynamicPermissionRequirement requirement)
     {
@@ -32,7 +33,7 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
             return;
         }
 
-        if (!Ulid.TryParse(idText, out var id))
+        if (!Cuid.TryParse(idText, out var id))
         {
             context.Fail(new AuthorizationFailureReason(this, $"User has no valid id '{idText}'"));
             return;

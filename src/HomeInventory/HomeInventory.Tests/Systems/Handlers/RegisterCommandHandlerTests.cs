@@ -20,12 +20,11 @@ public class RegisterCommandHandlerTests : BaseTest
 
     public RegisterCommandHandlerTests()
     {
-        Fixture.CustomizeUlid();
-        Fixture.CustomizeUlidId<UserId>();
+        Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
 
         _userId = Fixture.Create<UserId>();
-        Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(_userId.Value));
+        Fixture.CustomizeSupplier(() => _userId.Value);
 
         _command = Fixture.Create<RegisterCommand>();
         AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));

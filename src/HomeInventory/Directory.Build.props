@@ -12,7 +12,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <WarningLevel>9999</WarningLevel>
     <IsPackable>false</IsPackable>
-    <NoWarn>CA1062;CA2007;CA1716</NoWarn>
+    <NoWarn>CA1062;CA2007;CA1716;VISLIB0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

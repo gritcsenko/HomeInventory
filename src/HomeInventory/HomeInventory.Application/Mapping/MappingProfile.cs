@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Ids;
+using Visus.Cuid;
 
 namespace HomeInventory.Application.Mapping;
 
@@ -11,12 +13,12 @@ public abstract class MappingProfile : Profile
     }
 
     protected void CreateMapForId<TId>()
-        where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>
+        where TId : class, ICuidBuildable<TId>, ICuidIdentifierObject<TId>
     {
-        var converter = new UlidIdConverter<TId>();
-        CreateMap<TId, Ulid>()
+        var converter = new CuidIdConverter<TId>();
+        CreateMap<TId, Cuid>()
             .ConvertUsing(x => x.Value);
-        CreateMap<Ulid, TId>()
+        CreateMap<Cuid, TId>()
             .ConvertUsing(id => converter.Convert(id));
     }
 

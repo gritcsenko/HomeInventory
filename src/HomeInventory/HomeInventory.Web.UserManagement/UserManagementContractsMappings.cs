@@ -5,6 +5,7 @@ using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Framework;
+using Visus.Cuid;
 
 namespace HomeInventory.Web.UserManagement;
 
@@ -26,7 +27,7 @@ internal sealed class UserManagementContractsMappings : ContractsMappingProfile
     {
         var email = ctx.Mapper.MapOrFail<Email>(c.Email);
         var password = c.Password;
-        var userIdSupplier = new DelegatingSupplier<Ulid>(Ulid.NewUlid);
+        var userIdSupplier = new DelegatingSupplier<Cuid>(Cuid.NewCuid);
         return new RegisterCommand(email, password, userIdSupplier);
     }
 }

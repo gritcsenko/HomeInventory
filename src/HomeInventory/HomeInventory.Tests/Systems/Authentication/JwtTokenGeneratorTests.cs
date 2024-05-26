@@ -19,8 +19,7 @@ public class JwtTokenGeneratorTests : BaseTest
 
     public JwtTokenGeneratorTests()
     {
-        Fixture.CustomizeUlid();
-        Fixture.CustomizeUlidId<UserId>();
+        Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
         _options = Fixture.Build<JwtOptions>()
                 .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))

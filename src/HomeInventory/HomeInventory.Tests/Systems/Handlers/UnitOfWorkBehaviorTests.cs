@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
+using Visus.Cuid;
 using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -23,7 +24,8 @@ public class UnitOfWorkBehaviorTests : BaseTest
 
     public UnitOfWorkBehaviorTests()
     {
-        Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(id => new ValueSupplier<Ulid>(id));
+        Fixture.CustomizeCuid();
+        Fixture.CustomizeSupplier<Cuid>();
         AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
     }
 

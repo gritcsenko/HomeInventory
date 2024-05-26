@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.ValueObjects;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -9,8 +10,8 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
         : base(createGiven)
     {
         Fixture
-            .CustomizeUlidId<UserId>()
+            .CustomizeId<UserId>()
             .CustomizeEmail()
-            .CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(Ulid.NewUlid()));
+            .CustomizeSupplier(Cuid.NewCuid);
     }
 }

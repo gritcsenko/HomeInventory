@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
+﻿using DotNext;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
@@ -29,6 +30,11 @@ internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeP
 
         return result
             .Convert<OneOf<Success, IError>>(_ => new Success())
-            .OrInvoke(() => new ObjectValidationError<Ulid>(command.UserIdSupplier));
+            .OrInvoke(() => command.UserIdSupplier.CreateObjectValidationError());
     }
+}
+
+file static class SupplierExtensions
+{
+    public static OneOf<Success, IError> CreateObjectValidationError<TId>(this ISupplier<TId> supplier) => new ObjectValidationError<TId>(supplier);
 }

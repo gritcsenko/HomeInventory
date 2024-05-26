@@ -1,11 +1,12 @@
 ﻿using HomeInventory.Domain.Primitives;
+using Visus.Cuid;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class MeasurementType : BaseEnumeration<MeasurementType, Ulid>
+public sealed class MeasurementType : BaseEnumeration<MeasurementType, Cuid>
 {
     internal MeasurementType(string name)
-        : base(name, Ulid.NewUlid())
+        : base(name, Cuid.NewCuid())
     {
     }
 

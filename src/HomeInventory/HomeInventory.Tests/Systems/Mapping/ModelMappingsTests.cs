@@ -4,6 +4,7 @@ using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -31,8 +32,7 @@ public class ModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
-        fixture.CustomizeUlid();
-        fixture.CustomizeUlidId<ProductId>();
+        fixture.CustomizeId<ProductId>();
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
         fixture.CustomizeFromFactory<int, AmountUnit>(i => items.ElementAt(i % items.Count));
@@ -43,7 +43,7 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var data = new TheoryData<object, Type>();
 
-        Add<ProductId, Ulid>(fixture, data);
+        Add<ProductId, Cuid>(fixture, data);
 
         Add<Amount, ProductAmountModel>(fixture, data);
 

@@ -1,14 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
 using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
+using Visus.Cuid;
 
 namespace HomeInventory.Domain.ValueObjects;
-public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
+public sealed class AmountUnit : BaseEnumeration<AmountUnit, Cuid>
 {
     private readonly decimal _metricUnitScale = 1m;
 
     internal AmountUnit(MeasurementType measurement, [CallerMemberName] string name = "")
-        : base(name, Ulid.NewUlid())
+        : base(name, Cuid.NewCuid())
     {
         Measurement = measurement;
     }

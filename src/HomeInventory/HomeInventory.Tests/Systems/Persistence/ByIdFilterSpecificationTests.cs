@@ -13,8 +13,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
 
     public ByIdFilterSpecificationTests()
     {
-        Fixture.CustomizeUlid();
-        Fixture.CustomizeUlidId<UserId>();
+        Fixture.CustomizeId<UserId>();
         _id = Fixture.Create<UserId>();
     }
 

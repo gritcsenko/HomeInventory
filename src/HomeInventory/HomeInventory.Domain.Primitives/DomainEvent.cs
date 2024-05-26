@@ -1,9 +1,9 @@
 ﻿namespace HomeInventory.Domain.Events;
 
-public record DomainEvent(Ulid Id, DateTimeOffset CreatedOn) : IDomainEvent
+public record DomainEvent(Cuid Id, DateTimeOffset CreatedOn) : IDomainEvent
 {
     public DomainEvent(TimeProvider dateTimeService)
-        : this(Ulid.NewUlid(), dateTimeService.GetUtcNow())
+        : this(Cuid.NewCuid(), dateTimeService.GetUtcNow())
     {
     }
 }

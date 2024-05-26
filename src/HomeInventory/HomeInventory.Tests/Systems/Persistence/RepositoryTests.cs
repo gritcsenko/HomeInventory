@@ -14,7 +14,7 @@ public class RepositoryTests : BaseRepositoryTest
 {
     public RepositoryTests()
     {
-        Fixture.CustomizeUlidId<UserId>();
+        Fixture.CustomizeId<UserId>();
     }
 
     [Fact]

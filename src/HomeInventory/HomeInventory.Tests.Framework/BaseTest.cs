@@ -28,7 +28,6 @@ public abstract class BaseTest : IAsyncLifetime
 
     public virtual Task InitializeAsync()
     {
-        Fixture.CustomizeUlid();
         return Task.CompletedTask;
     }
 
