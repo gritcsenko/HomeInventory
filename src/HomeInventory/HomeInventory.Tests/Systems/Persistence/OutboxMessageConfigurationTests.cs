@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Events;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
@@ -49,7 +50,7 @@ public class OutboxMessageConfigurationTests : BaseTest
         property.Should().NotBeNull();
         var converter = property!.GetValueConverter();
         converter.Should().NotBeNull();
-        var text = converter!.ConvertToProvider(new UserCreatedDomainEvent(DateTime, Fixture.Create<User>()));
+        var text = converter!.ConvertToProvider(new UserCreatedDomainEvent(IdSuppliers.Cuid, DateTime, Fixture.Create<User>()));
         text.Should().NotBeNull();
     }
 

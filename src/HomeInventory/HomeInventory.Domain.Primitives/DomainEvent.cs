@@ -2,8 +2,8 @@
 
 public record DomainEvent(Cuid Id, DateTimeOffset CreatedOn) : IDomainEvent
 {
-    public DomainEvent(TimeProvider dateTimeService)
-        : this(Cuid.NewCuid(), dateTimeService.GetUtcNow())
+    public DomainEvent(ISupplier<Cuid> supplier, TimeProvider dateTimeService)
+        : this(supplier.Invoke(), dateTimeService.GetUtcNow())
     {
     }
 }

@@ -10,28 +10,45 @@ public static class FixtureExtensions
         where TId : class, ICuidBuildable<TId>, ICuidIdentifierObject<TId> =>
         fixture
             .CustomizeCuid()
-            .CustomizeFromFactory<Cuid, TId>(source => TId.CreateBuilder().WithValue(source).Build().Value);
+            .CustomizeFromFactory<TId, ISupplier<Cuid>>(s => TId.CreateBuilder().WithValue(s.Invoke()).Build().Value);
 
     public static IFixture CustomizeEmail(this IFixture fixture) =>
         fixture
             .CustomizeCuid()
-            .CustomizeFromFactory<Cuid, Email>(value => new Email(value.ToString()));
+            .CustomizeFromFactory<Email, ISupplier<Cuid>>(s => new Email(s.Invoke().ToString() + "@email.com"));
 
-    public static IFixture CustomizeSupplier<TValue>(this IFixture fixture, Func<TValue> createFunc) =>
-        fixture.CustomizeFromFactory<TValue, ISupplier<TValue>>(_ => new ValueSupplier<TValue>(createFunc()));
+    public static IFixture CustomizeFromFactory<TObject>(this IFixture fixture, Func<TObject> createFunc)
+    {
+        fixture
+            .Customize<TObject>(c => c.FromFactory(createFunc));
+        return fixture;
+    }
 
-    public static IFixture CustomizeSupplier<TValue>(this IFixture fixture) =>
-        fixture.CustomizeFromFactory<TValue, ISupplier<TValue>>(value => new ValueSupplier<TValue>(value));
+    public static IFixture CustomizeFromFactory<TObject, TValue>(this IFixture fixture, Func<TValue, TObject> createFunc)
+    {
+        fixture
+            .Customize<TObject>(c => c.FromFactory(createFunc));
+        return fixture;
+    }
 
-    public static IFixture CustomizeFromFactory<TValue, TObject>(this IFixture fixture, Func<TValue, TObject> createFunc) =>
-        fixture.Customize(new FromFactoryCustomization<TValue, TObject>(createFunc));
+    public static IFixture CustomizeFromFactory<TObject, TValue1, TValue2>(this IFixture fixture, Func<TValue1, TValue2, TObject> createFunc)
+    {
+        fixture
+            .Customize<TObject>(c => c.FromFactory(createFunc));
+        return fixture;
+    }
 
     public static IFixture CustomizeRegisterRequest(this IFixture fixture) =>
         fixture.Customize(new RegisterRequestCustomization());
 
     public static IFixture CustomizeUlid(this IFixture fixture) =>
-        fixture.Customize(new UlidCustomization());
+        fixture.CustomizeIdSupply(IdSuppliers.Ulid);
 
     public static IFixture CustomizeCuid(this IFixture fixture) =>
-        fixture.Customize(new CuidCustomization());
+        fixture.CustomizeIdSupply(IdSuppliers.Cuid);
+
+    private static IFixture CustomizeIdSupply<TId>(this IFixture fixture, ISupplier<TId> supplier) =>
+        fixture
+            .CustomizeFromFactory(() => supplier)
+            .CustomizeFromFactory<TId, ISupplier<TId>>(s => s.Invoke());
 }

@@ -8,7 +8,7 @@ public abstract class UlidIdentifierObject<TSelf>(Ulid value) : BuildableIdentif
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "By design")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2743:Static fields should not be used in generic types", Justification = "By design")]
-    public static ISupplier<Ulid> IdSupplier { get; } = new DelegatingSupplier<Ulid>(Ulid.NewUlid);
+    public static ISupplier<Ulid> IdSupplier => IdSuppliers.Ulid;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "By design")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2743:Static fields should not be used in generic types", Justification = "By design")]

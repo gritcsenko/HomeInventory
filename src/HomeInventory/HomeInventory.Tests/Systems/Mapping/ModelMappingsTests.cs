@@ -4,6 +4,7 @@ using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Tests.Framework.Customizations;
 using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
@@ -35,8 +36,8 @@ public class ModelMappingsTests : BaseMappingsTests
         fixture.CustomizeId<ProductId>();
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
-        fixture.CustomizeFromFactory<int, AmountUnit>(i => items.ElementAt(i % items.Count));
-        fixture.CustomizeFromFactory<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit));
+        fixture.CustomizeFromFactory<AmountUnit, int>(i => items.ElementAt(i % items.Count));
+        fixture.CustomizeFromFactory<Amount, (decimal value, AmountUnit unit)>(x => new Amount(x.value, x.unit));
 
         fixture.Customize<ProductAmountModel>(builder =>
             builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));

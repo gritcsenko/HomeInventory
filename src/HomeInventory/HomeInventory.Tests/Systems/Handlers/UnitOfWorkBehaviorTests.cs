@@ -5,11 +5,9 @@ using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using MediatR;
 using MediatR.Registration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
-using Visus.Cuid;
 using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -24,7 +22,6 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public UnitOfWorkBehaviorTests()
     {
         Fixture.CustomizeCuid();
-        Fixture.CustomizeSupplier<Cuid>();
         AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
     }
 

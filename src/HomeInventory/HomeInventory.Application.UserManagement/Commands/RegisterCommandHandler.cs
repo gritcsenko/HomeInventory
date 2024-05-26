@@ -5,14 +5,16 @@ using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
+using Visus.Cuid;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher) : CommandHandler<RegisterCommand>
+internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, ISupplier<Cuid> idSupplier) : CommandHandler<RegisterCommand>
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
-    private readonly TimeProvider timeProvider = timeProvider;
+    private readonly TimeProvider _timeProvider = timeProvider;
     private readonly IPasswordHasher _hasher = hasher;
+    private readonly ISupplier<Cuid> _idSupplier = idSupplier;
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
@@ -25,7 +27,7 @@ internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeP
 
         var user = await command.CreateUserAsync(_hasher, cancellationToken);
         var result = await user
-            .Tap(u => u.OnUserCreated(timeProvider))
+            .Tap(u => u.OnUserCreated(_idSupplier, _timeProvider))
             .Tap(u => userRepository.AddAsync(u, cancellationToken));
 
         return result

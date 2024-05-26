@@ -5,7 +5,9 @@ using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -15,22 +17,19 @@ public class RegisterCommandHandlerTests : BaseTest
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
     private readonly RegisterCommand _command;
-    private readonly UserId _userId;
     private readonly ScopeAccessor _scopeAccessor = new();
 
     public RegisterCommandHandlerTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-
-        _userId = Fixture.Create<UserId>();
-        Fixture.CustomizeSupplier(() => _userId.Value);
+        Fixture.CustomizeFromFactory<RegisterCommand, Email, ISupplier<Cuid>>((e, s) => new RegisterCommand(e, s.Invoke().ToString(), s));
 
         _command = Fixture.Create<RegisterCommand>();
         AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));
     }
 
-    private RegisterCommandHandler CreateSut() => new(_scopeAccessor, DateTime, _hasher);
+    private RegisterCommandHandler CreateSut() => new(_scopeAccessor, DateTime, _hasher, IdSuppliers.Cuid);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -64,8 +63,6 @@ public class RegisterCommandHandlerTests : BaseTest
         result.Index.Should().Be(1);
         result.Value.Should().BeAssignableTo<IError>()
             .Which.Should().BeOfType<DuplicateEmailError>();
-#pragma warning disable CA2012 // Use ValueTasks correctly
-        _ = _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), Cancellation.Token);
-#pragma warning restore CA2012 // Use ValueTasks correctly
+        await _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), Cancellation.Token);
     }
 }

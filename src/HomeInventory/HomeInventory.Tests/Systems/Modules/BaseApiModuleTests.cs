@@ -11,7 +11,6 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
     {
         Fixture
             .CustomizeId<UserId>()
-            .CustomizeEmail()
-            .CustomizeSupplier(Cuid.NewCuid);
+            .CustomizeEmail();
     }
 }
