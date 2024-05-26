@@ -1,4 +1,5 @@
-﻿using HomeInventory.Web.Configuration;
+﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -9,7 +10,7 @@ namespace HomeInventory.Tests.Middlewares;
 public class CorrelationIdMiddlewareTests : BaseTest
 {
     private readonly TestingLogger<CorrelationIdMiddleware> _logger = Substitute.For<TestingLogger<CorrelationIdMiddleware>>();
-    private readonly CorrelationIdContainer _container = new();
+    private readonly CorrelationIdContainer _container = new(IdSuppliers.Cuid);
     private readonly DefaultHttpContext _httpContext = new();
     private readonly IHttpResponseFeature _httpResponseFeature = Substitute.For<IHttpResponseFeature>();
 

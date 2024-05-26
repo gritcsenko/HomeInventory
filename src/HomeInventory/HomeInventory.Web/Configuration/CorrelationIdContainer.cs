@@ -4,11 +4,11 @@ using Visus.Cuid;
 
 namespace HomeInventory.Web.Configuration;
 
-internal class CorrelationIdContainerr : ICorrelationIdContainer
+internal class CorrelationIdContainer : ICorrelationIdContainer
 {
     private readonly ISupplier<Cuid> _supplier;
 
-    public CorrelationIdContainerr(ISupplier<Cuid> supplier)
+    public CorrelationIdContainer(ISupplier<Cuid> supplier)
     {
         _supplier = supplier;
         CorrelationId = CreateNewId();
