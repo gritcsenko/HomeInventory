@@ -3,6 +3,7 @@ using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.UserManagement;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -24,12 +25,11 @@ public class UserManagementContractsMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> Data()
     {
         var fixture = new Fixture();
-        fixture.CustomizeUlid();
-        fixture.CustomizeUlidId<UserId>();
+        fixture.CustomizeId<UserId>();
         fixture.CustomizeEmail();
         return new()
         {
-            { fixture.Create<UserId>(), typeof(Ulid) },
+            { fixture.Create<UserId>(), typeof(Cuid) },
             { fixture.Create<Email>(), typeof(string) },
             { fixture.Create<RegisterRequest>(), typeof(RegisterCommand) },
             { fixture.Create<RegisterRequest>(), typeof(UserIdQuery) },

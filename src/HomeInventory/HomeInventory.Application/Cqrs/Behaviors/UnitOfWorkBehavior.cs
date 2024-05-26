@@ -1,9 +1,7 @@
-﻿using System;
-using System.Transactions;
+﻿using System.Transactions;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 

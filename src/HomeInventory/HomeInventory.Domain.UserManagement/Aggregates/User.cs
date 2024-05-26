@@ -1,6 +1,8 @@
-﻿using HomeInventory.Domain.Events;
+﻿using DotNext;
+using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
+using Visus.Cuid;
 
 namespace HomeInventory.Domain.Aggregates;
 
@@ -10,6 +12,6 @@ public class User(UserId id) : AggregateRoot<User, UserId>(id)
 
     public required string Password { get; init; }
 
-    public void OnUserCreated(TimeProvider dateTimeService) =>
-        AddDomainEvent(new UserCreatedDomainEvent(dateTimeService, this));
+    public void OnUserCreated(ISupplier<Cuid> supplier, TimeProvider dateTimeService) =>
+        AddDomainEvent(new UserCreatedDomainEvent(supplier, dateTimeService, this));
 }

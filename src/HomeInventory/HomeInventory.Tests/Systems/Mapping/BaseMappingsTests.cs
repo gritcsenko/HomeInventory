@@ -10,6 +10,7 @@ public abstract class BaseMappingsTests : BaseTest
 
     protected BaseMappingsTests()
     {
+        Services.AddMappingTypeConverter();
     }
 
     public IServiceCollection Services => _services;

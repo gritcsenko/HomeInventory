@@ -1,12 +1,10 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Commands.Register;
-using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using MediatR;
 using MediatR.Registration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
@@ -23,7 +21,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
 
     public UnitOfWorkBehaviorTests()
     {
-        Fixture.CustomizeFromFactory<Ulid, ISupplier<Ulid>>(id => new ValueSupplier<Ulid>(id));
+        Fixture.CustomizeCuid();
         AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
     }
 

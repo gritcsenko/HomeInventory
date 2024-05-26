@@ -21,8 +21,7 @@ public class LoggingBehaviorTests : BaseTest
 
     public LoggingBehaviorTests()
     {
-        Fixture.CustomizeUlid();
-        Fixture.CustomizeUlidId<UserId>();
+        Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
         _request = Fixture.Create<AuthenticateQuery>();
         _response = Fixture.Create<AuthenticateResult>();

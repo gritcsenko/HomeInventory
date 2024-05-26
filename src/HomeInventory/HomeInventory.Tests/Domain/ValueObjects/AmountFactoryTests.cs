@@ -1,4 +1,5 @@
 ﻿using FluentAssertions.Execution;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
@@ -11,7 +12,7 @@ public class AmountFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var value = 0m;
-        var unknownUnit = new AmountUnit(MeasurementType.Area, Fixture.Create<string>());
+        var unknownUnit = AmountUnit.Create(MeasurementType.Area, IdSuppliers.Cuid, Fixture.Create<string>());
 
         var result = sut.Create(value, unknownUnit);
 
@@ -27,7 +28,7 @@ public class AmountFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var value = 0m;
-        var unknownUnit = new AmountUnit(new MeasurementType(Fixture.Create<string>()), Fixture.Create<string>());
+        var unknownUnit = AmountUnit.Create(MeasurementType.Create(IdSuppliers.Cuid, Fixture.Create<string>()), IdSuppliers.Cuid, Fixture.Create<string>());
 
         var result = sut.Create(value, unknownUnit);
 

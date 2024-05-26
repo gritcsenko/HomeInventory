@@ -25,7 +25,7 @@ public class UserIdQueryHandlerTests : BaseTest
     public async Task Handle_OnSuccess_ReturnsResult()
     {
         // Given
-        Fixture.CustomizeUlidId<UserId>();
+        Fixture.CustomizeId<UserId>();
         var _user = Fixture.Create<User>();
         var query = new UserIdQuery(_user.Email);
 

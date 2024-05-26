@@ -1,14 +1,15 @@
 ﻿using DotNext;
-using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Ids;
+using Visus.Cuid;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class ProductId : UlidIdentifierObject<ProductId>, IUlidBuildable<ProductId>
+public sealed class ProductId : CuidIdentifierObject<ProductId>, ICuidBuildable<ProductId>
 {
-    private ProductId(Ulid value)
+    private ProductId(Cuid value)
         : base(value)
     {
     }
 
-    public static Result<ProductId> CreateFrom(Ulid value) => Result.FromValue(new ProductId(value));
+    public static Result<ProductId> CreateFrom(Cuid value) => Result.FromValue(new ProductId(value));
 }

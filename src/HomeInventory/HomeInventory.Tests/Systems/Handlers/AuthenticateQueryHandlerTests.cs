@@ -19,8 +19,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
     public AuthenticateQueryHandlerTests()
     {
-        Fixture.CustomizeUlid();
-        Fixture.CustomizeUlidId<UserId>();
+        Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
         _user = Fixture.Create<User>();
     }

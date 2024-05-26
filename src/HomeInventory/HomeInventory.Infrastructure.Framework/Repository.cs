@@ -3,6 +3,7 @@ using AutoMapper;
 using DotNext;
 using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Infrastructure.Framework.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;

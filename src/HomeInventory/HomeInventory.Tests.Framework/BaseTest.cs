@@ -1,8 +1,6 @@
 ﻿using HomeInventory.Core;
 using HomeInventory.Domain;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Tests.Framework.Attributes;
-using HomeInventory.Tests.Framework.Customizations;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -28,7 +26,6 @@ public abstract class BaseTest : IAsyncLifetime
 
     public virtual Task InitializeAsync()
     {
-        Fixture.CustomizeUlid();
         return Task.CompletedTask;
     }
 

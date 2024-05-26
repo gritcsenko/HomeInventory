@@ -8,20 +8,19 @@ using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-namespace HomeInventory.Infrastructure;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddDatabase();
         services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
-        services.AddMappingAssemblySource(AssemblyReference.Assembly);
+        services.AddMappingAssemblySource(HomeInventory.Infrastructure.AssemblyReference.Assembly);
 
         services.AddSingleton<AmountObjectConverter>();
         services.AddScoped<IEventsPersistenceService, EventsPersistenceService>();
