@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Framework;
 
-public static class ReflectionMethods
+internal static class ReflectionMethods
 {
     private const BindingFlags _createInstanceBindingAttr = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.CreateInstance;
 

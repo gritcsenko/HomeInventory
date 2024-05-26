@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions.Execution;
-using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain;
-using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
@@ -15,7 +12,6 @@ using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -46,11 +42,13 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public void ShouldRegister()
     {
-        Services.AddWeb(
-            Web.AssemblyReference.Assembly,
-            Web.UserManagement.AssemblyReference.Assembly,
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
+        Services
+            .AddDomain()
+            .AddWeb(
+                Web.AssemblyReference.Assembly,
+                Web.UserManagement.AssemblyReference.Assembly,
+                Contracts.Validations.AssemblyReference.Assembly,
+                Contracts.UserManagement.Validators.AssemblyReference.Assembly);
         var provider = CreateProvider();
 
         using var scope = new AssertionScope();

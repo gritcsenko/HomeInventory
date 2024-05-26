@@ -1,5 +1,4 @@
 ﻿using FluentAssertions.Execution;
-using HomeInventory.Domain;
 
 namespace HomeInventory.Tests.DependencyInjection;
 

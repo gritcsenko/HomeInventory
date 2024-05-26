@@ -2,7 +2,6 @@
 using AutoMapper;
 using Carter;
 using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
@@ -10,7 +9,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using OneOf;
 using OneOf.Types;
 using System.Runtime.CompilerServices;
