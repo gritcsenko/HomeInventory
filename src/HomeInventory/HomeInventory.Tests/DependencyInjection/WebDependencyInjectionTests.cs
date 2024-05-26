@@ -42,11 +42,13 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public void ShouldRegister()
     {
-        Services.AddWeb(
-            Web.AssemblyReference.Assembly,
-            Web.UserManagement.AssemblyReference.Assembly,
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
+        Services
+            .AddDomain()
+            .AddWeb(
+                Web.AssemblyReference.Assembly,
+                Web.UserManagement.AssemblyReference.Assembly,
+                Contracts.Validations.AssemblyReference.Assembly,
+                Contracts.UserManagement.Validators.AssemblyReference.Assembly);
         var provider = CreateProvider();
 
         using var scope = new AssertionScope();
