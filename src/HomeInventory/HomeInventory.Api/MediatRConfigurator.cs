@@ -4,7 +4,7 @@ using MediatR;
 using MediatR.NotificationPublishers;
 using MediatR.Registration;
 
-namespace HomeInventory.Api;
+namespace Microsoft.Extensions.DependencyInjection;
 
 internal static class MediatRConfigurator
 {

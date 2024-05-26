@@ -1,6 +1,4 @@
-﻿using Bogus.DataSets;
-using HomeInventory.Domain.Primitives;
-using HomeInventory.Tests.Framework;
+﻿using HomeInventory.Domain.Primitives;
 using System.Runtime.CompilerServices;
 using Visus.Cuid;
 

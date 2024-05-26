@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.FeatureManagement;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
@@ -8,9 +9,11 @@ public class ApplicationDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public void ShouldRegister()
     {
-        Services.AddApplication();
+        Services
+            .AddSubstitute<IConfiguration>()
+            .AddApplication();
         var provider = CreateProvider();
 
-        Services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
+        Services.Should().ContainSingleSingleton<IFeatureDefinitionProvider>(provider);
     }
 }

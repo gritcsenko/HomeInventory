@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Domain.Events;
 

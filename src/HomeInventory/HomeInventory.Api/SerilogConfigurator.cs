@@ -2,7 +2,7 @@
 using Serilog;
 using Serilog.Core;
 
-namespace HomeInventory.Api;
+namespace Microsoft.Extensions.DependencyInjection;
 
 internal static class SerilogConfigurator
 {

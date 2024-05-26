@@ -2,7 +2,7 @@
 
 public abstract class IdentifierObjectBuilder<TSelf, TObject, TId>(Func<TId, Result<TObject>> objectFactoryFunc) : ValueObjectBuilder<TSelf, TObject, TId>
     where TSelf : IdentifierObjectBuilder<TSelf, TObject, TId>
-    where TObject : class, IIdBuildable<TObject, TId, TSelf>, IBuildableIdentifierObject<TObject, TId, TSelf>
+    where TObject : class, IIdBuildable<TObject, TId, TSelf>, IBuildableIdentifierObject<TObject, TId, TSelf>, IValuableIdentifierObject<TObject, TId>
     where TId : notnull
 {
     private readonly Func<TId, Result<TObject>> _objectFactoryFunc = objectFactoryFunc;

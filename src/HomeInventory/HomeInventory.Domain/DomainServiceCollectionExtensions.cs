@@ -1,10 +1,10 @@
 ﻿using HomeInventory.Core;
+using HomeInventory.Domain;
 using HomeInventory.Domain.ValueObjects;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace HomeInventory.Domain;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class DomainServiceCollectionExtensions
 {
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {

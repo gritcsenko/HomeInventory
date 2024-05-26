@@ -1,9 +1,8 @@
 ﻿using HomeInventory.Domain.Primitives;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace HomeInventory.Infrastructure;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class InfrastructureFrameworkServiceCollectionExtensions
 {
     public static IServiceCollection AddRepository<TEntity, TRepository, TRepositoryImplementation>(this IServiceCollection services)
         where TEntity : class, IEntity<TEntity>
