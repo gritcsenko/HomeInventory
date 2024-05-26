@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="cuid.net" />
     <PackageReference Include="OneOf.SourceGenerator" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="Ulid" />

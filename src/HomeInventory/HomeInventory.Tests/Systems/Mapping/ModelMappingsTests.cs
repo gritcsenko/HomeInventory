@@ -1,11 +1,10 @@
-﻿using HomeInventory.Domain;
-using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -33,7 +32,7 @@ public class ModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldProjectStorageAreaModelToStorageArea()
     {
-        Fixture.CustomizeUlidId<StorageAreaId>();
+        Fixture.CustomizeId<StorageAreaId>();
         var sut = CreateSut<ModelMappings>();
         var instance = Fixture.Create<StorageAreaModel>();
         var source = new[] { instance }.AsQueryable();
@@ -46,24 +45,23 @@ public class ModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
-        fixture.CustomizeUlid();
-        fixture.CustomizeUlidId<ProductId>();
-        fixture.CustomizeUlidId<MaterialId>();
-        fixture.CustomizeUlidId<StorageAreaId>();
-        fixture.CustomizeFromFactory<string, StorageAreaName>(x => new StorageAreaName(x));
+        fixture.CustomizeId<ProductId>();
+        fixture.CustomizeId<MaterialId>();
+        fixture.CustomizeId<StorageAreaId>();
+        fixture.CustomizeFromFactory<StorageAreaName, string>(x => new(x));
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
-        fixture.CustomizeFromFactory<int, AmountUnit>(i => items.ElementAt(i % items.Count));
-        fixture.CustomizeFromFactory<(decimal value, AmountUnit unit), Amount>(x => new Amount(x.value, x.unit));
+        fixture.CustomizeFromFactory<AmountUnit, int>(i => items.ElementAt(i % items.Count));
+        fixture.CustomizeFromFactory<Amount, (decimal value, AmountUnit unit)>(x => new Amount(x.value, x.unit));
 
         fixture.Customize<ProductAmountModel>(builder =>
             builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));
 
         var data = new TheoryData<object, Type>();
 
-        Add<ProductId, Ulid>(fixture, data);
-        Add<MaterialId, Ulid>(fixture, data);
-        Add<StorageAreaId, Ulid>(fixture, data);
+        Add<ProductId, Cuid>(fixture, data);
+        Add<MaterialId, Cuid>(fixture, data);
+        Add<StorageAreaId, Cuid>(fixture, data);
 
         Add<StorageAreaName, string>(fixture, data);
 

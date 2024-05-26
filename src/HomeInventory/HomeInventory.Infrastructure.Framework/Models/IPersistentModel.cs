@@ -1,6 +1,8 @@
-﻿namespace HomeInventory.Infrastructure.Persistence.Models;
+﻿using Visus.Cuid;
 
-public interface IPersistentModel : IPersistentModel<Ulid>
+namespace HomeInventory.Infrastructure.Persistence.Models;
+
+public interface IPersistentModel : IPersistentModel<Cuid>
 {
 }
 

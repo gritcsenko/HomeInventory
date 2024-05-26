@@ -9,8 +9,7 @@ public abstract class BaseApiModuleTests<TGiven> : BaseTest<TGiven>
         : base(createGiven)
     {
         Fixture
-            .CustomizeUlidId<UserId>()
-            .CustomizeEmail()
-            .CustomizeFromFactory<Ulid, ISupplier<Ulid>>(_ => new ValueSupplier<Ulid>(Ulid.NewUlid()));
+            .CustomizeId<UserId>()
+            .CustomizeEmail();
     }
 }

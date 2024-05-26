@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives.Ids;
+
+namespace HomeInventory.Domain.Primitives;
 
 public interface IEntityWithId<out TIdentifier>
     where TIdentifier : IIdentifierObject<TIdentifier>

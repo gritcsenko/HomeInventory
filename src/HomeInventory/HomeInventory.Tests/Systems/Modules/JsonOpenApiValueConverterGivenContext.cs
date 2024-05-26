@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Web.OpenApi;
-using Mono.Cecil;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;

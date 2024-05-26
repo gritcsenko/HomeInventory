@@ -1,10 +1,10 @@
-﻿using HomeInventory.Domain.Aggregates;
-using HomeInventory.Infrastructure.Framework.Mapping;
+﻿using HomeInventory.Application.Framework.Mapping;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.UserManagement.Mapping;
 
-internal sealed class UserManagementModelMappings : ModelMappingsProfile
+internal sealed class UserManagementModelMappings : BaseMappingsProfile
 {
     public UserManagementModelMappings()
     {

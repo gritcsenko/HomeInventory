@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -10,6 +9,7 @@ public abstract class BaseMappingsTests : BaseTest
 
     protected BaseMappingsTests()
     {
+        Services.AddMappingTypeConverter();
     }
 
     public IServiceCollection Services => _services;

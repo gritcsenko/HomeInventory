@@ -1,4 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Ids;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Domain;
 
@@ -184,18 +186,24 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
     }
 }
 
-public sealed class EntityTestsGivenContext(BaseTest test) : GivenContext<EntityTestsGivenContext, TestEntity, TestEntityId>(test)
+public sealed class EntityTestsGivenContext : GivenContext<EntityTestsGivenContext, TestEntity, TestEntityId>
 {
+    public EntityTestsGivenContext(BaseTest test)
+        : base(test)
+    {
+        test.Fixture.CustomizeCuid();
+    }
+
     internal EntityTestsGivenContext Id(out IVariable<TestEntityId> id, int count = 1) => New(out id, CreateTestEntityId, count);
 
     protected override TestEntity CreateSut(TestEntityId arg) => new(arg);
 
-    private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
+    private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Cuid>()).Value;
 }
 
-public class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
+public class TestEntityId(Cuid value) : CuidIdentifierObject<TestEntityId>(value), ICuidBuildable<TestEntityId>
 {
-    public static Result<TestEntityId> CreateFrom(Ulid value) => Result.FromValue(new TestEntityId(value));
+    public static Result<TestEntityId> CreateFrom(Cuid value) => Result.FromValue(new TestEntityId(value));
 }
 
 public class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions.Execution;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
@@ -8,8 +9,9 @@ public class ObjectExtensionsTests : BaseTest
     [Fact]
     public void GetComparer_ShouldReturnForValueType()
     {
-        var value = Fixture.Create<Ulid>();
-        var actual = ObjectExtensions.GetComparer<Ulid>();
+        Fixture.CustomizeCuid();
+        var value = Fixture.Create<Cuid>();
+        var actual = ObjectExtensions.GetComparer<Cuid>();
 
         using var scope = new AssertionScope();
         actual.Should().NotBeNull();

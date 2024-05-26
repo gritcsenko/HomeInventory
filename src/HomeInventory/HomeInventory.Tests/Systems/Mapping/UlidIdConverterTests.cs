@@ -1,11 +1,10 @@
-﻿using HomeInventory.Application.Mapping;
-using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
-public class GuidIdConverterTests() : BaseTest<GuidIdConverterTestsGivenContext>(t => new(t))
+public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>(t => new(t))
 {
     [Fact]
     public void TryConvert_Should_ReturnValue_When_IdIsNotEmpty()
@@ -50,10 +49,21 @@ public class GuidIdConverterTests() : BaseTest<GuidIdConverterTestsGivenContext>
     }
 }
 
-public sealed class GuidIdConverterTestsGivenContext(BaseTest test) : GivenContext<GuidIdConverterTestsGivenContext, UlidIdConverter<UserId>>(test)
+public sealed class UlidIdConverterTestsGivenContext : GivenContext<UlidIdConverterTestsGivenContext, UlidIdConverter<TestId>>
 {
-    internal GuidIdConverterTestsGivenContext Empty(out IVariable<Ulid> empty) =>
+    public UlidIdConverterTestsGivenContext(BaseTest test)
+        : base(test)
+    {
+        test.Fixture.CustomizeUlid();
+    }
+
+    internal UlidIdConverterTestsGivenContext Empty(out IVariable<Ulid> empty) =>
         New(out empty, () => Ulid.Empty);
 
-    protected override UlidIdConverter<UserId> CreateSut() => new();
+    protected override UlidIdConverter<TestId> CreateSut() => new();
+}
+
+public class TestId(Ulid value) : UlidIdentifierObject<TestId>(value), IUlidBuildable<TestId>
+{
+    public static Result<TestId> CreateFrom(Ulid value) => Result.FromValue(new TestId(value));
 }

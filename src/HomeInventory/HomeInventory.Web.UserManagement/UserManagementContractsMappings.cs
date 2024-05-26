@@ -1,32 +1,30 @@
 ﻿using AutoMapper;
-using DotNext;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
+using HomeInventory.Application.Framework.Mapping;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Framework;
 
 namespace HomeInventory.Web.UserManagement;
 
-internal sealed class UserManagementContractsMappings : ContractsMappingProfile
+internal sealed class UserManagementContractsMappings : BaseMappingsProfile
 {
     public UserManagementContractsMappings()
     {
-        CreateMapForId<UserId>();
-        CreateMapForString(x => new Email(x), x => x.Value);
+        CreateMap<UserId>().Using(x => x.Value, UserId.Converter);
+        CreateMap<Email>().Using(x => x.Value, x => new Email(x));
 
-        CreateMap<RegisterRequest, RegisterCommand>()
-            .ConstructUsing(CreateRegisterCommand);
+        CreateMap<RegisterRequest>().Using(CreateRegisterCommand);
 
-        CreateMap<RegisterRequest, UserIdQuery>();
-        CreateMap<UserIdResult, RegisterResponse>();
+        CreateMap<RegisterRequest>().To<UserIdQuery>();
+        CreateMap<UserIdResult>().To<RegisterResponse>();
     }
 
     private static RegisterCommand CreateRegisterCommand(RegisterRequest c, ResolutionContext ctx)
     {
         var email = ctx.Mapper.MapOrFail<Email>(c.Email);
         var password = c.Password;
-        var userIdSupplier = new DelegatingSupplier<Ulid>(Ulid.NewUlid);
-        return new RegisterCommand(email, password, userIdSupplier);
+        return new RegisterCommand(email, password);
     }
 }

@@ -1,10 +1,9 @@
-﻿using HomeInventory.Domain;
-using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
 using HomeInventory.Web.UserManagement;
+using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -15,6 +14,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     {
         Services.AddDomain();
         Services.AddInfrastructure();
+        Fixture.CustomizeId<UserId>();
     }
 
     [Theory]
@@ -32,7 +32,6 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldMapUserModelToUser()
     {
-        Fixture.CustomizeUlidId<UserId>();
         var sut = CreateSut<UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
 
@@ -47,7 +46,6 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     [Fact]
     public void ShouldProjectUserModelToUser()
     {
-        Fixture.CustomizeUlidId<UserId>();
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
         var source = new[] { instance }.AsQueryable();
@@ -60,13 +58,12 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     public static TheoryData<object, Type> MapData()
     {
         var fixture = new Fixture();
-        fixture.CustomizeUlid();
-        fixture.CustomizeUlidId<UserId>();
+        fixture.CustomizeId<UserId>();
         fixture.CustomizeEmail();
 
         var data = new TheoryData<object, Type>();
 
-        Add<UserId, Ulid>(fixture, data);
+        Add<UserId, Cuid>(fixture, data);
 
         Add<Email, string>(fixture, data);
 

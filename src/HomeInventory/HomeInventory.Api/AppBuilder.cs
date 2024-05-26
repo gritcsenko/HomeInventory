@@ -1,9 +1,4 @@
-﻿using HomeInventory.Application;
-using HomeInventory.Domain;
-using HomeInventory.Infrastructure;
-using HomeInventory.Infrastructure.UserManagement;
-using HomeInventory.Web;
-using Serilog;
+﻿using Serilog;
 
 namespace HomeInventory.Api;
 

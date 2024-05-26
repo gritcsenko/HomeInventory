@@ -1,13 +1,13 @@
-﻿using Carter;
-using FluentValidation.Internal;
+﻿using FluentValidation.Internal;
+using HomeInventory.Web;
+using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace HomeInventory.Web.Framework;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class WebFrameworkServiceCollectionExtensions
 {
     public static IServiceCollection AddWebFramework(this IServiceCollection services)
     {

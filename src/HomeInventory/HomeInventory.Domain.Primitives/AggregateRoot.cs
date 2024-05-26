@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives.Ids;
+
+namespace HomeInventory.Domain.Primitives;
 
 public abstract class AggregateRoot<TSelf, TIdentity>(TIdentity id) : Entity<TSelf, TIdentity>(id), IHasDomainEvents
     where TIdentity : IIdentifierObject<TIdentity>

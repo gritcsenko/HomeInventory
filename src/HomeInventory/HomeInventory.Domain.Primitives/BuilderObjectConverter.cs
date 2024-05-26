@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Application.Mapping;
 
-public class BuilderObjectConverter<TBuilder, TObject, TValue> : ObjectConverter<TObject, TValue>
+public class BuilderObjectConverter<TBuilder, TObject, TValue> : ObjectConverter<TValue, TObject>
     where TValue : notnull
     where TBuilder : IValueObjectBuilder<TBuilder, TObject, TValue>
     where TObject : class, IValueObject<TObject>, IOptionalBuildable<TObject, TBuilder>

@@ -6,10 +6,8 @@ using HealthChecks.UI.Client;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web.Authentication;
-using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Configuration.Interfaces;
-using HomeInventory.Web.Framework;
 using HomeInventory.Web.Middleware;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,9 +19,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace HomeInventory.Web;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class WebServiceCollectionExtensions
 {
     public static IServiceCollection AddWeb(this IServiceCollection services, params Assembly[] moduleAssemblies)
     {
@@ -47,7 +45,7 @@ public static class ServiceCollectionExtensions
             configExpression.ConstructServicesUsing(sp.GetService);
         }, Type.EmptyTypes);
 
-        services.AddAuthorization();
+        services.AddWebAuthorization();
 
         services.AddOpenApiDocs();
 
@@ -56,7 +54,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static void AddAuthorization(this IServiceCollection services)
+    private static void AddWebAuthorization(this IServiceCollection services)
     {
         services.AddDynamicAuthorization();
 

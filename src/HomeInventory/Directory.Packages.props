@@ -17,6 +17,7 @@
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="Carter" Version="8.1.0" />
+    <PackageVersion Include="cuid.net" Version="6.0.0-beta.10" />
     <PackageVersion Include="DotNext" Version="5.3.1" />
     <PackageVersion Include="FastExpressionCompiler" Version="4.2.0" />
     <PackageVersion Include="FluentValidation" Version="11.9.1" />
@@ -81,8 +82,8 @@
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.4.0" />
     <PackageVersion Include="Verify.Xunit" Version="24.2.0" />
-    <PackageVersion Include="xunit" Version="2.8.0" />
-    <PackageVersion Include="xunit.core" Version="2.8.0" />
+    <PackageVersion Include="xunit" Version="2.8.1" />
+    <PackageVersion Include="xunit.core" Version="2.8.1" />
   </ItemGroup>
   <ItemGroup>
     <!--Compile-time dependencies-->
@@ -94,6 +95,6 @@
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.25.1.91650" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
   </ItemGroup>
 </Project>

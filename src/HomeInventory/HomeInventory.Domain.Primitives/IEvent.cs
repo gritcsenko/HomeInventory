@@ -2,5 +2,5 @@
 
 public interface IEvent
 {
-    Ulid Id { get; }
+    Cuid Id { get; }
 }

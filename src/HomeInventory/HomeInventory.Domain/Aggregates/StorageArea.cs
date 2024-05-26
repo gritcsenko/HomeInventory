@@ -1,10 +1,12 @@
-﻿using HomeInventory.Domain.Entities;
+﻿using DotNext;
+using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using OneOf;
 using OneOf.Types;
+using Visus.Cuid;
 
 namespace HomeInventory.Domain.Aggregates;
 
@@ -16,7 +18,7 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
 
     public required StorageAreaName Name { get; init; }
 
-    public OneOf<Success, DuplicateProductError> Add(Product item, TimeProvider dateTimeService)
+    public OneOf<Success, DuplicateProductError> Add(ISupplier<Cuid> supplier, Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);
@@ -27,11 +29,11 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
         }
 
         _products.AddLast(item);
-        AddDomainEvent(new ProductAddedEvent(dateTimeService, this, item));
+        AddDomainEvent(new ProductAddedEvent(supplier, dateTimeService, this, item));
         return new Success();
     }
 
-    public OneOf<Success, NotFound> Remove(Product item, TimeProvider dateTimeService)
+    public OneOf<Success, NotFound> Remove(ISupplier<Cuid> supplier, Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);
@@ -42,7 +44,7 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
         }
 
         _products.Remove(item);
-        AddDomainEvent(new ProductRemovedEvent(dateTimeService, this, item));
+        AddDomainEvent(new ProductRemovedEvent(supplier, dateTimeService, this, item));
         return new Success();
     }
 }

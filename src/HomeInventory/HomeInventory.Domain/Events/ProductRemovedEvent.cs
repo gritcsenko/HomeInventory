@@ -1,13 +1,14 @@
-﻿using HomeInventory.Domain.Aggregates;
+﻿using DotNext;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Entities;
-using HomeInventory.Domain.Primitives;
+using Visus.Cuid;
 
 namespace HomeInventory.Domain.Events;
 
 public record ProductRemovedEvent : DomainEvent
 {
-    public ProductRemovedEvent(TimeProvider dateTimeService, StorageArea area, Product product)
-        : base(dateTimeService)
+    public ProductRemovedEvent(ISupplier<Cuid> supplier, TimeProvider dateTimeService, StorageArea area, Product product)
+        : base(supplier, dateTimeService)
     {
         Area = area;
         Product = product;
