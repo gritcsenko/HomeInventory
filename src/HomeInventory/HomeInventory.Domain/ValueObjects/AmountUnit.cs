@@ -62,8 +62,8 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Cuid>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(baseUnitScale);
         return new(
-            name, 
-            supplier, 
+            name,
+            supplier,
             baseUnit.Measurement,
             baseUnit._metricUnitScale * baseUnitScale,
             baseUnit.IsMetric && (baseUnitScale == 1 || baseUnitScale.IsPow10()));
