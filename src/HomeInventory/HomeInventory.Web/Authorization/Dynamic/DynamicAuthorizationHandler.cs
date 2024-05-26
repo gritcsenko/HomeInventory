@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,8 +10,6 @@ namespace HomeInventory.Web.Authorization.Dynamic;
 
 internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
 {
-    private static readonly CuidIdConverter<UserId> _idConverter = new();
-
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DynamicPermissionRequirement requirement)
     {
         if (context.Resource is not HttpContext httpContext)
@@ -39,7 +36,7 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
             return;
         }
 
-        await _idConverter.TryConvert(id)
+        await UserId.Converter.TryConvert(id)
             .Match(async userId =>
             {
                 using var scope = httpContext.RequestServices.CreateScope();

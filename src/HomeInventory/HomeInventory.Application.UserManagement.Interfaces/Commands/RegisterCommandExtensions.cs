@@ -11,7 +11,7 @@ public static class RegisterCommandExtensions
     public static async ValueTask<Optional<User>> CreateUserAsync(this RegisterCommand command, IPasswordHasher hasher, CancellationToken cancellationToken = default) =>
         await UserId
             .CreateBuilder()
-            .WithValue(command.UserIdSupplier.Invoke())
+            .WithValue(UserId.IdSupplier.Invoke())
             .Build()
             .ConvertAsync(async (id, t) =>
             {

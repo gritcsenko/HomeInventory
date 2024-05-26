@@ -1,5 +1,4 @@
-﻿
-using HomeInventory.Application.Mapping;
+﻿using HomeInventory.Application.Mapping;
 
 namespace HomeInventory.Domain.Primitives.Ids;
 

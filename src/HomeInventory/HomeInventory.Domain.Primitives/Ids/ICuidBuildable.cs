@@ -4,4 +4,3 @@ public interface ICuidBuildable<TSelf> : IIdBuildable<TSelf, Cuid, CuidIdentifie
     where TSelf : class, ICuidBuildable<TSelf>, ICuidIdentifierObject<TSelf>
 {
 }
-

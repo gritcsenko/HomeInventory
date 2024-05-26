@@ -7,5 +7,4 @@ namespace HomeInventory.Application.Cqrs.Commands.Register;
 
 public sealed record class RegisterCommand(
     Email Email,
-    string Password,
-    ISupplier<Cuid> UserIdSupplier) : ICommand;
+    string Password) : ICommand;

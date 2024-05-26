@@ -5,16 +5,17 @@ using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.ValueObjects;
 using Visus.Cuid;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, ISupplier<Cuid> idSupplier) : CommandHandler<RegisterCommand>
+internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, ISupplier<Cuid> eventIdSupplier) : CommandHandler<RegisterCommand>
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly TimeProvider _timeProvider = timeProvider;
     private readonly IPasswordHasher _hasher = hasher;
-    private readonly ISupplier<Cuid> _idSupplier = idSupplier;
+    private readonly ISupplier<Cuid> _eventIdSupplier = eventIdSupplier;
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
@@ -27,12 +28,12 @@ internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeP
 
         var user = await command.CreateUserAsync(_hasher, cancellationToken);
         var result = await user
-            .Tap(u => u.OnUserCreated(_idSupplier, _timeProvider))
+            .Tap(u => u.OnUserCreated(_eventIdSupplier, _timeProvider))
             .Tap(u => userRepository.AddAsync(u, cancellationToken));
 
         return result
             .Convert<OneOf<Success, IError>>(_ => new Success())
-            .OrInvoke(() => command.UserIdSupplier.CreateObjectValidationError());
+            .OrInvoke(() => UserId.IdSupplier.CreateObjectValidationError());
     }
 }
 
