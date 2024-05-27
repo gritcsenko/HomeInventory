@@ -6,7 +6,6 @@ using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OneOf;
@@ -47,12 +46,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         _lazyServiceProvider = new Lazy<IServiceProvider>(() => _services.BuildServiceProvider());
     }
 
-    protected IServiceCollection Services => _services;
-
     protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
-
-    public TGiven HttpContext(out IVariable<HttpContext> context) =>
-        New(out context, CreateHttpContext);
 
     public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources) =>
         New(out dataSources, () => new List<EndpointDataSource>());
@@ -119,8 +113,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     }
 
     protected override TModule CreateSut() => ServiceProvider.GetRequiredService<TModule>();
-
-    private DefaultHttpContext CreateHttpContext() => new() { RequestServices = ServiceProvider };
 
     private TGiven OnRequestReturnError<TRequest, TResult, TError>(IVariable<TRequest> request, IVariable<TError> result)
         where TRequest : IRequest<OneOf<TResult, IError>>

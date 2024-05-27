@@ -9,10 +9,10 @@ namespace HomeInventory.Web.Infrastructure;
 
 public static class ProblemDetailsFactoryExtensions
 {
-    public static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, ValidationResult result, string? traceIdentifier = null) =>
-        factory.ConvertToProblem(result.Errors.Select(x => new ValidationError(x.ErrorMessage)), traceIdentifier);
+    public static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, ValidationResult result) =>
+        factory.ConvertToProblem(result.Errors.Select(x => new ValidationError(x.ErrorMessage)));
 
-    public static Results<Ok<TResponse>, ProblemHttpResult> MatchToOk<T, TResponse>(this IProblemDetailsFactory factory, OneOf<T, IError> errorOrResult, Func<T, TResponse> onValue, string? traceIdentifier = null) =>
+    public static Results<Ok<TResponse>, ProblemHttpResult> MatchToOk<T, TResponse>(this IProblemDetailsFactory factory, OneOf<T, IError> errorOrResult, Func<T, TResponse> onValue) =>
         errorOrResult.Match<Results<Ok<TResponse>, ProblemHttpResult>>(
             value =>
             {
@@ -20,7 +20,7 @@ public static class ProblemDetailsFactoryExtensions
             },
             error =>
             {
-                var problem = factory.ConvertToProblem([error], traceIdentifier);
+                var problem = factory.ConvertToProblem([error]);
                 return TypedResults.Problem(problem);
             });
 }

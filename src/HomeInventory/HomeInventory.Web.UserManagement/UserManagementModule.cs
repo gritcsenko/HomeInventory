@@ -4,7 +4,6 @@ using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Core;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
 using MediatR;
@@ -13,7 +12,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using System.Reactive.Disposables;
 
 namespace HomeInventory.Web.Modules;
 
@@ -31,12 +29,9 @@ public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor
             .WithValidationOf<RegisterRequest>();
     }
 
-    public async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
+    public async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserRepository userRepository, CancellationToken cancellationToken = default)
     {
-        using var _ = new CompositeDisposable {
-            _scopeAccessor.Set(userRepository),
-            _scopeAccessor.Set(unitOfWork),
-        };
+        using var _ = _scopeAccessor.Set(userRepository);
 
         var command = _mapper.MapOrFail<RegisterCommand>(body);
         var result = await _sender.Send(command, cancellationToken);
@@ -45,11 +40,11 @@ public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor
             {
                 var query = _mapper.MapOrFail<UserIdQuery>(body);
                 var queryResult = await _sender.Send(query, cancellationToken);
-                return _problemDetailsFactory.MatchToOk(queryResult, _mapper.MapOrFail<RegisterResponse>, context.TraceIdentifier);
+                return _problemDetailsFactory.MatchToOk(queryResult, _mapper.MapOrFail<RegisterResponse>);
             },
             async error =>
             {
-                var problem = _problemDetailsFactory.ConvertToProblem([error], context.TraceIdentifier);
+                var problem = _problemDetailsFactory.ConvertToProblem([error]);
                 var result = TypedResults.Problem(problem);
                 return await ValueTask.FromResult(result);
             });

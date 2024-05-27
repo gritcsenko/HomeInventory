@@ -10,11 +10,12 @@ using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Web.Infrastructure;
 
-internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory, IProblemDetailsFactory
+internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IScopeAccessor scopeAccessor, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory, IProblemDetailsFactory
 {
     private static readonly string? _defaultValidationTitle = new ValidationProblemDetails().Title;
     private readonly ApiBehaviorOptions _options = options.Value;
     private readonly ErrorMapping _errorMapping = errorMapping;
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly int _defaultStatusCode = (int)errorMapping.GetDefaultError();
     private readonly int _defaultValidationStatusCode = (int)errorMapping.GetDefaultValidationError();
 
@@ -52,9 +53,9 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             .ApplyErrors(modelStateDictionary)
             .AddProblemDetailsExtensions(httpContext.TraceIdentifier);
 
-    public ProblemDetails ConvertToProblem(IEnumerable<IError> errors, string? traceIdentifier = null) =>
+    public ProblemDetails ConvertToProblem(IEnumerable<IError> errors) =>
         InternalConvertToProblem(errors)
-        .AddProblemDetailsExtensions(traceIdentifier)
+        .AddProblemDetailsExtensions(_scopeAccessor.Get<TraceIdentifierContainer>().Or(null)?.TraceIdentifier)
         .AddProblemDetailsExtensions(errors);
 
     private ProblemDetails InternalConvertToProblem(IEnumerable<IError> errors)

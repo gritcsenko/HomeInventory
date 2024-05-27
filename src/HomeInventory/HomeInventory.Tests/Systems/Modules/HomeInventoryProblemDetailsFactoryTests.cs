@@ -20,6 +20,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     private readonly string _instance;
     private readonly ModelStateDictionary _state;
     private readonly ErrorMapping _mapping = ErrorMappingBuilder.CreateDefault().Build();
+    private readonly ScopeAccessor _scopeAccessor = new();
 
     public HomeInventoryProblemDetailsFactoryTests()
     {
@@ -263,5 +264,5 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
             .Which.Should().Be(id);
     }
 
-    private HomeInventoryProblemDetailsFactory CreateSut() => new(_mapping, Options.Create(_options));
+    private HomeInventoryProblemDetailsFactory CreateSut() => new(_mapping, _scopeAccessor, Options.Create(_options));
 }

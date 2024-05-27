@@ -36,6 +36,8 @@ public static class WebServiceCollectionExtensions
 
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
+        services.AddScoped<MapperScopeInjectionMiddleware>();
+        services.AddScoped<UnitOfWorkScopeInjectionMiddleware>();
         services.AddScoped<ProblemTraceIdentifierMiddleware>();
 
         services.AddMappingAssemblySource(moduleAssemblies);
@@ -99,6 +101,8 @@ public static class WebServiceCollectionExtensions
 
         app.UseMiddleware<CorrelationIdMiddleware>();
         app.UseMiddleware<ProblemTraceIdentifierMiddleware>();
+        app.UseMiddleware<MapperScopeInjectionMiddleware>();
+        app.UseMiddleware<UnitOfWorkScopeInjectionMiddleware>();
 
         app.UseHttpsRedirection();
 
