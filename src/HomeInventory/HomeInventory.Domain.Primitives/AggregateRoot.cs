@@ -6,11 +6,11 @@ public abstract class AggregateRoot<TSelf, TIdentity>(TIdentity id) : Entity<TSe
     where TIdentity : IIdentifierObject<TIdentity>
     where TSelf : AggregateRoot<TSelf, TIdentity>
 {
-    private readonly EventsCollection _events = new();
+    private readonly EventsCollection _events = [];
 
-    public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _events.DomainEvents;
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _events;
 
     public void ClearDomainEvents() => _events.Clear();
 
-    protected void AddDomainEvent(IDomainEvent @event) => _events.Push(@event);
+    protected void AddDomainEvent(IDomainEvent @event) => _events.Add(@event);
 }

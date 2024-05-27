@@ -1,16 +1,18 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using System.Collections;
 
-internal sealed class EventsCollection
+namespace HomeInventory.Domain.Primitives;
+
+internal sealed class EventsCollection : IReadOnlyCollection<IDomainEvent>
 {
     private readonly List<IDomainEvent> _events = [];
 
-    public EventsCollection()
-    {
-    }
+    public int Count => _events.Count;
 
-    public void Push(IDomainEvent domainEvent) => _events.Add(domainEvent);
+    public void Add(IDomainEvent domainEvent) => _events.Add(domainEvent);
 
-    internal void Clear() => _events.Clear();
+    public void Clear() => _events.Clear();
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _events.AsReadOnly();
+    public IEnumerator<IDomainEvent> GetEnumerator() => _events.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => _events.GetEnumerator();
 }

@@ -10,7 +10,7 @@ internal class EventsPersistenceService(IDatabaseContext context) : IEventsPersi
 
     public ValueTask SaveEventsAsync(IHasDomainEvents entity, CancellationToken cancellationToken = default)
     {
-        var events = entity.GetDomainEvents();
+        var events = entity.DomainEvents;
         var messages = events.Select(CreateMessage);
         _context.GetDbSet<OutboxMessage>().AddRange(messages);
         entity.ClearDomainEvents();
