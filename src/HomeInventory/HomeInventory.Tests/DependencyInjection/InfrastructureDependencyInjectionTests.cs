@@ -4,13 +4,11 @@ using FluentAssertions.Execution;
 using HomeInventory.Application;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.DependencyInjection;
