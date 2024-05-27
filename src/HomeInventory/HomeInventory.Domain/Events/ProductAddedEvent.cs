@@ -1,5 +1,6 @@
 ﻿using DotNext;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives.Events;
 using Visus.Cuid;
 
 namespace HomeInventory.Domain.Events;

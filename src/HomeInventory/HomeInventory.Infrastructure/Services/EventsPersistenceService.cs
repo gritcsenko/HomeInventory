@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives.Events;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 

@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.Events;
+using HomeInventory.Domain.Primitives.Events;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;

@@ -1,4 +1,5 @@
-﻿using HomeInventory.Domain.Primitives.Ids;
+﻿using HomeInventory.Domain.Primitives.Events;
+using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Domain.Primitives;
 

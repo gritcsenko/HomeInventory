@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives.Events;
 
 namespace HomeInventory.Application.Cqrs.DomainEvents;
 

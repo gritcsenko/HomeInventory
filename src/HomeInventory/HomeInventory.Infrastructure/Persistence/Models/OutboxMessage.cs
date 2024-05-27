@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Events;
 using Visus.Cuid;
 
 namespace HomeInventory.Infrastructure.Persistence.Models;
