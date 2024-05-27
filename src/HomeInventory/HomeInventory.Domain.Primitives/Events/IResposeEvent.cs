@@ -6,6 +6,7 @@ public interface IResposeEvent<out TRequest> : IRequestResultEvent<TRequest, Suc
     where TRequest : IRequestEvent
 {
 }
+
 public interface IResposeEvent<out TRequest, TResult> : IRequestResultEvent<TRequest, TResult>
     where TRequest : IRequestEvent<TResult>
 {

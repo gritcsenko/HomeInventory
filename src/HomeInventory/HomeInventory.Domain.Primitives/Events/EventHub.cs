@@ -8,22 +8,12 @@ public sealed class EventHub : Disposable, IEventHub
     private readonly ConcurrentDictionary<Type, IDisposable> _publishers = new();
 
     public void Notify<TEvent>(TEvent @event)
-        where TEvent : IEvent
-    {
-        var publisher = GetPublisher<TEvent>();
-        publisher.OnNext(@event);
-    }
+        where TEvent : IEvent => 
+        GetPublisher<TEvent>().OnNext(@event);
 
-    public IDisposable Subscribe<TEvent>(IObserver<TEvent> observer)
+    public IObservable<TEvent> GetEvents<TEvent>()
         where TEvent : IEvent =>
-        Subscribe<TEvent>(o => o.Subscribe(observer));
-
-    public IDisposable Subscribe<TEvent>(Func<IObservable<TEvent>, IDisposable> subscribeFunc)
-        where TEvent : IEvent
-    {
-        var publisher = GetPublisher<TEvent>();
-        return subscribeFunc(publisher);
-    }
+        GetPublisher<TEvent>();
 
     protected override void Dispose(bool disposing)
     {
@@ -38,13 +28,11 @@ public sealed class EventHub : Disposable, IEventHub
 
     private Subject<TEvent> GetPublisher<TEvent>() where TEvent : IEvent
     {
-        EnsureNotDisposingOrDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, nameof(EventHub));
         var key = typeof(TEvent);
         var publisher = _publishers.GetOrAdd(key, CreatePublisher);
         return (Subject<TEvent>)publisher;
     }
-
-    private void EnsureNotDisposingOrDisposed() => ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, nameof(EventHub));
 
     private IDisposable CreatePublisher(Type type)
     {
