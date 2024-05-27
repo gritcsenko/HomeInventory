@@ -11,8 +11,7 @@ internal sealed class UserIdQueryHandler(IScopeAccessor scopeAccessor) : QueryHa
 
     protected override async Task<OneOf<UserIdResult, IError>> InternalHandle(UserIdQuery query, CancellationToken cancellationToken)
     {
-        var scope = _scopeAccessor.GetScope<IUserRepository>();
-        var userRepository = scope.Get().OrThrow<InvalidOperationException>();
+        var userRepository = _scopeAccessor.Get<IUserRepository>().OrThrow<InvalidOperationException>();
         var result = await userRepository.FindFirstByEmailUserOptionalAsync(query.Email, cancellationToken);
         return result
             .Convert<OneOf<UserIdResult, IError>>(user => new UserIdResult(user.Id))

@@ -34,8 +34,8 @@ public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor
     public async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
     {
         using var _ = new CompositeDisposable {
-            _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
-            _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork),
+            _scopeAccessor.Set(userRepository),
+            _scopeAccessor.Set(unitOfWork),
         };
 
         var command = _mapper.MapOrFail<RegisterCommand>(body);

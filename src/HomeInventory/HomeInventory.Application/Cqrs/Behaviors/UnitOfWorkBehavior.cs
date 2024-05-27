@@ -28,8 +28,7 @@ internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scop
 
     private async Task SaveChangesAsync(TransactionScope transactionScope, CancellationToken cancellationToken)
     {
-        var serviceScope = _scopeAccessor.GetScope<IUnitOfWork>();
-        var unitOfWork = serviceScope.Get().OrThrow<InvalidOperationException>();
+        var unitOfWork = _scopeAccessor.Get<IUnitOfWork>().OrThrow<InvalidOperationException>();
         var count = await unitOfWork.SaveChangesAsync(cancellationToken);
         switch (count)
         {

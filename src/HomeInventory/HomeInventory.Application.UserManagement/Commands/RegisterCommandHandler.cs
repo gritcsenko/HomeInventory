@@ -19,8 +19,7 @@ internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeP
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
-        var scope = _scopeAccessor.GetScope<IUserRepository>();
-        var userRepository = scope.Get().OrThrow<InvalidOperationException>();
+        var userRepository = _scopeAccessor.Get<IUserRepository>().OrThrow<InvalidOperationException>();
         if (await userRepository.IsUserHasEmailAsync(command.Email, cancellationToken))
         {
             return new DuplicateEmailError();
