@@ -9,11 +9,11 @@ public static class EventHubExtensions
 {
     public static Task<OneOf<Success, IError>> RequestAsync<TRequest>(this IEventHub hub, TRequest request, CancellationToken cancellationToken = default)
         where TRequest : class, IRequestEvent =>
-        hub.InternalRequestAsync<TRequest, IResposeEvent<TRequest>, Success>(request, cancellationToken);
+        hub.InternalRequestAsync<TRequest, ResposeEvent<TRequest>, Success>(request, cancellationToken);
 
     public static Task<OneOf<TResult, IError>> RequestAsync<TRequest, TResult>(this IEventHub hub, TRequest request, CancellationToken cancellationToken = default)
         where TRequest : class, IRequestEvent<TResult> =>
-        hub.InternalRequestAsync<TRequest, IResposeEvent<TRequest, TResult>, TResult>(request, cancellationToken);
+        hub.InternalRequestAsync<TRequest, ResposeEvent<TRequest, TResult>, TResult>(request, cancellationToken);
 
     private static Task<OneOf<TResult, IError>> InternalRequestAsync<TRequest, TResponse, TResult>(this IEventHub hub, TRequest request, CancellationToken cancellationToken = default)
         where TRequest : class, IEvent
@@ -24,7 +24,8 @@ public static class EventHubExtensions
             .Select(e => e.Result)
             .ToTask(cancellationToken);
 
-        hub.Notify(new CancellableRequestEvent<TRequest>(request.Id, request, cancellationToken));
+        var @event = new CancellableRequestEvent<TRequest>(request, cancellationToken);
+        hub.Inject(Observable.Return(@event));
 
         return task;
     }

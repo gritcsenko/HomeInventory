@@ -1,30 +1,24 @@
 ﻿using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 
 namespace HomeInventory.Domain.Primitives.Events;
 
-public abstract class EventHandlerBase<TEvent>() : Disposable
+public abstract class EventHandlerBase<TEvent, TResult>()
     where TEvent : IEvent
 {
-    private readonly CancellationTokenSource _source = new();
-
     public IDisposable Subscribe(IEventHub hub) =>
-        hub.GetEvents<TEvent>().Select(e => HandleEvent(hub, e)).Concat().Subscribe();
+        InternalModify(hub, hub.GetEvents<TEvent>()).Subscribe();
+
+    protected virtual IObservable<TResult> InternalModify(IEventHub hub, IObservable<TEvent> events) => events.SelectMany(e => HandleEvent(hub, e));
+
+    protected abstract IObservable<TResult> HandleEvent(IEventHub hub, TEvent @event);
+}
+
+public abstract class EventHandlerBase<TEvent>() : EventHandlerBase<TEvent, Unit>
+    where TEvent : IEvent
+{
+    protected override IObservable<Unit> HandleEvent(IEventHub hub, TEvent @event) =>
+        Observable.FromAsync(ct => HandleEventAsync(hub, @event, ct));
 
     protected abstract Task HandleEventAsync(IEventHub hub, TEvent @event, CancellationToken cancellationToken);
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _source.Cancel();
-            _source.Dispose();
-        }
-
-        base.Dispose(disposing);
-    }
-
-    private IObservable<Unit> HandleEvent(IEventHub hub, TEvent @event) =>
-        Observable.Defer(() => HandleEventAsync(hub, @event, _source.Token).ToObservable());
 }

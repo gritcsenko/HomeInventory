@@ -1,40 +1,39 @@
 ﻿using HomeInventory.Domain.Primitives.Errors;
 using OneOf.Types;
+using System.Reactive.Linq;
 
 namespace HomeInventory.Domain.Primitives.Events;
 
-public abstract class RequestHandlerBase<TRequest, TResponse, TResult>(ISupplier<Cuid> supplier) : EventHandlerBase<CancellableRequestEvent<TRequest>>
+public abstract class RequestHandlerBase<TRequest, TResponse, TResult>() : EventHandlerBase<CancellableRequestEvent<TRequest>, TResponse>
     where TRequest : IEvent
     where TResponse : IRequestResultEvent<TRequest, TResult>
 {
-    private readonly ISupplier<Cuid> _supplier = supplier;
-    protected sealed override async Task HandleEventAsync(IEventHub hub, CancellableRequestEvent<TRequest> @event, CancellationToken cancellationToken)
+    protected sealed override IObservable<TResponse> InternalModify(IEventHub hub, IObservable<CancellableRequestEvent<TRequest>> events)
     {
-        using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, @event.CancellationToken);
-        var result = await HandleRequestAsync(hub, @event.Payload, source.Token);
-        var response = CreateResponse(_supplier.Invoke(), @event.Payload, result);
-        hub.Notify(response);
+        var responses = base.InternalModify(hub, events);
+        hub.Inject(responses);
+        return responses;
     }
+
+    protected sealed override IObservable<TResponse> HandleEvent(IEventHub hub, CancellableRequestEvent<TRequest> @event) =>
+        Observable.FromAsync(() => HandleRequestAsync(hub, @event.Payload, @event.CancellationToken))
+            .Select(result => CreateResponse(hub.EventIdSupplier.Invoke(), hub.EventCreatedTimeProvider.GetUtcNow(), @event.Payload, result));
 
     protected abstract Task<OneOf<TResult, IError>> HandleRequestAsync(IEventHub hub, TRequest request, CancellationToken cancellationToken);
 
-    protected abstract TResponse CreateResponse(Cuid id, TRequest payload, OneOf<TResult, IError> result);
+    protected abstract TResponse CreateResponse(Cuid id, DateTimeOffset createdOn, TRequest payload, OneOf<TResult, IError> result);
 }
 
-public abstract class RequestHandlerBase<TRequest>(ISupplier<Cuid> supplier) : RequestHandlerBase<TRequest, IResposeEvent<TRequest>, Success>(supplier)
+public abstract class RequestHandlerBase<TRequest>() : RequestHandlerBase<TRequest, ResposeEvent<TRequest>, Success>()
     where TRequest : IRequestEvent
 {
-    protected sealed override IResposeEvent<TRequest> CreateResponse(Cuid id, TRequest payload, OneOf<Success, IError> result) =>
-        new ResposeEvent(id, payload, result);
-
-    private sealed record class ResposeEvent(Cuid Id, TRequest Request, OneOf<Success, IError> Result) : IResposeEvent<TRequest>;
+    protected sealed override ResposeEvent<TRequest> CreateResponse(Cuid id, DateTimeOffset createdOn, TRequest payload, OneOf<Success, IError> result) =>
+        new(id, createdOn, payload, result);
 }
 
-public abstract class RequestHandlerBase<TRequest, TResult>(ISupplier<Cuid> supplier) : RequestHandlerBase<TRequest, IResposeEvent<TRequest, TResult>, TResult>(supplier)
+public abstract class RequestHandlerBase<TRequest, TResult>() : RequestHandlerBase<TRequest, ResposeEvent<TRequest, TResult>, TResult>()
     where TRequest : IRequestEvent<TResult>
 {
-    protected sealed override IResposeEvent<TRequest, TResult> CreateResponse(Cuid id, TRequest payload, OneOf<TResult, IError> result) =>
-        new ResposeEvent(id, payload, result);
-
-    private sealed record class ResposeEvent(Cuid Id, TRequest Request, OneOf<TResult, IError> Result) : IResposeEvent<TRequest, TResult>;
+    protected sealed override ResposeEvent<TRequest, TResult> CreateResponse(Cuid id, DateTimeOffset createdOn, TRequest payload, OneOf<TResult, IError> result) =>
+        new(id, createdOn, payload, result);
 }

@@ -2,7 +2,11 @@
 
 public interface IEventHub : IDisposable
 {
-    void Notify<TEvent>(TEvent @event) where TEvent : IEvent;
+    ISupplier<Cuid> EventIdSupplier { get; }
+
+    TimeProvider EventCreatedTimeProvider { get; }
+
+    void Inject<TEvent>(IObservable<TEvent> events) where TEvent : IEvent;
 
     IObservable<TEvent> GetEvents<TEvent>() where TEvent : IEvent;
 }
