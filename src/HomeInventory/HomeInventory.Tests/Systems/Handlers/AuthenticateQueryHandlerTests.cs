@@ -30,6 +30,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var services = new ServiceCollection();
         services.AddSingleton(_scopeAccessor);
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddDomain();
         services.AddMessageHub(AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
     }

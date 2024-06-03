@@ -13,7 +13,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class UnitOfWorkBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage>> _logger = Substitute.For<TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage>>>();
+    private readonly TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Success>> _logger = Substitute.For<TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Success>>>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ScopeAccessor _scopeAccessor = new();
     private readonly ServiceProvider _services;
@@ -25,6 +25,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
         var services = new ServiceCollection();
         services.AddSingleton<IScopeAccessor>(_scopeAccessor);
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddDomain();
         services.AddMessageHub(AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
     }
@@ -85,5 +86,5 @@ public class UnitOfWorkBehaviorTests : BaseTest
 
     private IMessageHub Hub => _services.GetRequiredService<IMessageHub>();
 
-    private UnitOfWorkRequestBehavior<RegisterUserRequestMessage> CreateSut() => new(_scopeAccessor, _logger);
+    private UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Success> CreateSut() => new(_scopeAccessor, _logger);
 }

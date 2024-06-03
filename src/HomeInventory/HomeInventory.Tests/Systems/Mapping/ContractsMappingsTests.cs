@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Mapping;
 
@@ -15,7 +16,7 @@ public class ContractsMappingsTests : BaseMappingsTests
         var sut = CreateSut<ContractsMappings>();
         var source = instance.GetType();
 
-        var target = sut.Map(instance, source, destination);
+        var target = sut.Map(instance, source, destination, c => c.State = ServiceProvider.GetRequiredService<IMessageHub>());
 
         target.Should().BeAssignableTo(destination);
     }

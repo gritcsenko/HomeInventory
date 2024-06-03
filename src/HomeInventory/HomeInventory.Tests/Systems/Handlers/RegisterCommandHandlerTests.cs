@@ -29,6 +29,7 @@ public class RegisterCommandHandlerTests : BaseTest
         Fixture.CustomizeFromFactory<RegisterUserRequestMessage, Email, ISupplier<Cuid>>((e, s) => new RegisterUserRequestMessage(IdSuppliers.Cuid.Invoke(), DateTime.GetUtcNow(), e, s.Invoke().ToString()));
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddDomain();
         services.AddMessageHub(AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
     }

@@ -1,26 +1,22 @@
 ﻿using HomeInventory.Domain.Primitives.Errors;
 using OneOf;
-using OneOf.Types;
 
 namespace HomeInventory.Core;
 
 public static class OneOfExtensions
 {
-    public static async Task<OneOf<Success, IError>> OnSuccessAsync(this Task<OneOf<Success, IError>> oneOfTask, Func<Task> action)
+    public static async Task<OneOf<TResult, IError>> OnResultAsync<TResult>(this Task<OneOf<TResult, IError>> oneOfTask, Func<Task> action)
     {
         var oneOf = await oneOfTask;
-        return await oneOf.OnSuccessAsync(action);
+        return await oneOf.OnResultAsync(action);
     }
 
-    public static async Task<OneOf<Success, IError>> OnSuccessAsync(this OneOf<Success, IError> oneOf, Func<Task> action) =>
+    public static async Task<OneOf<TResult, IError>> OnResultAsync<TResult>(this OneOf<TResult, IError> oneOf, Func<Task> action) =>
         await oneOf.MapT0Async(async s =>
         {
             await action();
             return s;
         });
-
-    public static async Task<OneOf<TResult, IError>> MapSuccessAsync<TResult>(this OneOf<Success, IError> oneOf, Func<Task<TResult>> mapFunc) =>
-        await oneOf.MapT0Async(async _ => await mapFunc());
 
     public static async Task<OneOf<TResult, T1>> MapT0Async<T0, T1, TResult>(this OneOf<T0, T1> oneOf, Func<T0, Task<TResult>> mapFunc) =>
         oneOf.Index switch

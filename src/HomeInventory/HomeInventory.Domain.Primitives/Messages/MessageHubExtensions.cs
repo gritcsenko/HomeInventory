@@ -7,7 +7,10 @@ namespace HomeInventory.Domain.Primitives.Messages;
 
 public static class MessageHubExtensions
 {
-    private static readonly MethodInfo _request = typeof(MessageHubExtensions).GetMethod(nameof(InternalRequestAsync))!.GetGenericMethodDefinition();
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Implementation details with generics")]
+    private static readonly MethodInfo _request = typeof(MessageHubExtensions)
+        .GetMethod(nameof(InternalRequestAsync), BindingFlags.NonPublic | BindingFlags.Static)!
+        .GetGenericMethodDefinition();
 
     public static Task<OneOf<TResponse, IError>> RequestAsync<TResponse>(this IMessageHub hub, IRequestMessage<TResponse> request, CancellationToken cancellationToken = default) =>
         (Task<OneOf<TResponse, IError>>)_request.MakeGenericMethod(request.GetType(), typeof(TResponse)).Invoke(null, [hub, request, cancellationToken])!;
@@ -26,6 +29,7 @@ public static class MessageHubExtensions
         var task = hub.GetMessages<ResposeMessage<TRequest, TResponse>>()
             .Where(e => ReferenceEquals(e.Request, request))
             .Select(e => e.Result)
+            .FirstAsync()
             .ToTask(cancellationToken);
 
         var @event = request.ToCancellable(cancellationToken);

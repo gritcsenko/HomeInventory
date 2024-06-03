@@ -26,6 +26,7 @@ public class LoggingBehaviorTests : BaseTest
         _response = Fixture.Create<AuthenticateResult>();
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddDomain();
         services.AddMessageHub(AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
     }

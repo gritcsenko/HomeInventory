@@ -105,12 +105,20 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             var sourceValue = _given.GetValue(_source);
             var destinationValue = _given.GetValue(destination);
             _given._mapper.Map<TDestination>(sourceValue).Returns(destinationValue);
+            _given._mapper.Map(sourceValue, Arg.Any<Action<IMappingOperationOptions<object, TDestination>>>()).Returns(destinationValue);
 
             return _given;
         }
     }
 
-    protected override TModule CreateSut() => ServiceProvider.GetRequiredService<TModule>();
+    protected override TModule CreateSut()
+    {
+        var accessor = ServiceProvider.GetRequiredService<IScopeAccessor>();
+        accessor.Set(ServiceProvider.GetRequiredService<IMapper>());
+        accessor.Set(ServiceProvider.GetRequiredService<IMessageHub>());
+        accessor.Set(ServiceProvider.GetRequiredService<IProblemDetailsFactory>());
+        return ServiceProvider.GetRequiredService<TModule>();
+    }
 
     private TGiven OnRequestReturnError<TRequest, TResponse, TError>(IVariable<TRequest> request, IVariable<TError> result)
         where TRequest : IRequestMessage<TResponse>
@@ -134,8 +142,8 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     {
         var requestValue = GetValue(request);
         var response = Hub.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, requestValue, oneOf));
-        Hub.Inject(Observable.Return(requestValue));
-        Hub.Inject(Observable.Return(response));
+        Hub.Inject(Observable.Repeat(requestValue));
+        Hub.Inject(Observable.Repeat(response));
         return This;
     }
 }

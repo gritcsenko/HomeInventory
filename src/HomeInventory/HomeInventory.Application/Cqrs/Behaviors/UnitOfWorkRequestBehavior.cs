@@ -5,19 +5,19 @@ using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal sealed class UnitOfWorkRequestBehavior<TRequest>(IScopeAccessor scopeAccessor, ILogger<UnitOfWorkRequestBehavior<TRequest>> logger) : IRequestPipelineBehavior<TRequest, Success>
-    where TRequest : IRequestMessage<Success>
+internal sealed class UnitOfWorkRequestBehavior<TRequest, TResponse>(IScopeAccessor scopeAccessor, ILogger<UnitOfWorkRequestBehavior<TRequest, TResponse>> logger) : IRequestPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequestMessage<TResponse>
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();
 
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly ILogger _logger = logger;
 
-    public async Task<OneOf<Success, IError>> OnRequest(IMessageHub hub, TRequest request, Func<Task<OneOf<Success, IError>>> handler, CancellationToken cancellationToken = default)
+    public async Task<OneOf<TResponse, IError>> OnRequest(IMessageHub hub, TRequest request, Func<Task<OneOf<TResponse, IError>>> handler, CancellationToken cancellationToken = default)
     {
         using var scope = new TransactionScope();
         return await handler()
-            .OnSuccessAsync(() => SaveChangesAsync(scope, cancellationToken));
+            .OnResultAsync(() => SaveChangesAsync(scope, cancellationToken));
     }
 
     private async Task SaveChangesAsync(TransactionScope transactionScope, CancellationToken cancellationToken)

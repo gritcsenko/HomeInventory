@@ -22,6 +22,7 @@ public class UserIdQueryHandlerTests : BaseTest
         AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddDomain();
         services.AddMessageHub(AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
     }

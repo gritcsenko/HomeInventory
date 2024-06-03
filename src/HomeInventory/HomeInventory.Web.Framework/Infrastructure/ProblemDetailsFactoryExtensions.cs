@@ -39,9 +39,9 @@ public static class ProblemDetailsFactoryExtensions
 
     public static Results<Ok<TResponse>, ProblemHttpResult> Unwrap<TResponse>(this Results<Ok<Results<Ok<TResponse>, ProblemHttpResult>>, ProblemHttpResult> wrapped)
     {
-        if (wrapped.Result is Results<Ok<TResponse>, ProblemHttpResult> result)
+        if (wrapped.Result is Ok<Results<Ok<TResponse>, ProblemHttpResult>> result)
         {
-            return result;
+            return (Ok<TResponse>)result.Value!.Result;
         }
 
         return (ProblemHttpResult)wrapped.Result;

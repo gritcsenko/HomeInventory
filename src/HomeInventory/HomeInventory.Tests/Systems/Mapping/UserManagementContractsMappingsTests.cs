@@ -1,6 +1,7 @@
 ﻿using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.UserManagement;
 using Visus.Cuid;
@@ -17,7 +18,7 @@ public class UserManagementContractsMappingsTests : BaseMappingsTests
         var sut = CreateSut<UserManagementContractsMappings>();
         var source = instance.GetType();
 
-        var target = sut.Map(instance, source, destination);
+        var target = sut.Map(instance, source, destination, c => c.State = ServiceProvider.GetRequiredService<IMessageHub>());
 
         target.Should().BeAssignableTo(destination);
     }
