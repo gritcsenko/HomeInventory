@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives.Events;
 using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Domain.Primitives;
 

@@ -1,35 +1,31 @@
 ﻿using System.Transactions;
-using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scopeAccessor, ILogger<UnitOfWorkBehavior<TRequest, TIgnored>> logger) : IPipelineBehavior<TRequest, OneOf<Success, IError>>
-    where TRequest : ICommand
+internal sealed class UnitOfWorkRequestBehavior<TRequest>(IScopeAccessor scopeAccessor, ILogger<UnitOfWorkRequestBehavior<TRequest>> logger) : IRequestPipelineBehavior<TRequest, Success>
+    where TRequest : IRequestMessage<Success>
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();
 
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly ILogger _logger = logger;
 
-    public async Task<OneOf<Success, IError>> Handle(TRequest request, RequestHandlerDelegate<OneOf<Success, IError>> next, CancellationToken cancellationToken)
+    public async Task<OneOf<Success, IError>> OnRequest(IMessageHub hub, TRequest request, Func<Task<OneOf<Success, IError>>> handler, CancellationToken cancellationToken = default)
     {
         using var scope = new TransactionScope();
-
-        var result = await next();
-        if (result.IsT0)
-        {
-            await SaveChangesAsync(scope, cancellationToken);
-        }
-
-        return result;
+        return await handler()
+            .OnSuccessAsync(() => SaveChangesAsync(scope, cancellationToken));
     }
 
     private async Task SaveChangesAsync(TransactionScope transactionScope, CancellationToken cancellationToken)
     {
-        var unitOfWork = _scopeAccessor.Get<IUnitOfWork>().OrThrow<InvalidOperationException>();
+        var unitOfWork = _scopeAccessor.TryGet<IUnitOfWork>().OrThrow<InvalidOperationException>();
         var count = await unitOfWork.SaveChangesAsync(cancellationToken);
+        transactionScope.Complete();
+
         switch (count)
         {
             case 0:
@@ -40,6 +36,5 @@ internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scop
                 break;
         }
 
-        transactionScope.Complete();
     }
 }

@@ -5,5 +5,5 @@ public interface IScope<TContext>
 {
     IDisposable Set(TContext context);
     IDisposable Reset();
-    Optional<TContext> Get();
+    Optional<TContext> TryGet();
 }

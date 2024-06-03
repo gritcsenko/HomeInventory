@@ -5,7 +5,7 @@ internal sealed class Scope<TContext> : IScope<TContext>
 {
     private readonly AsyncLocal<Stack<Optional<TContext>>> _stack = new();
 
-    public Optional<TContext> Get()
+    public Optional<TContext> TryGet()
     {
         var stack = GetStack();
         return stack.TryPeek(out var context) ? context : Optional<TContext>.None;

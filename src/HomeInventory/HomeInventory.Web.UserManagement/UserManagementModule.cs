@@ -4,23 +4,19 @@ using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Core;
 using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiModule("/api/users/manage")
+public class UserManagementModule(IScopeAccessor scopeAccessor) : ApiModule("/api/users/manage")
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly ISender _sender = sender;
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
-    private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
 
     protected override void AddRoutes(RouteGroupBuilder group)
     {
@@ -32,21 +28,19 @@ public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor
     public async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserRepository userRepository, CancellationToken cancellationToken = default)
     {
         using var _ = _scopeAccessor.Set(userRepository);
+        var mapper = _scopeAccessor.TryGet<IMapper>().OrThrow<InvalidOperationException>();
+        var hub = _scopeAccessor.TryGet<IMessageHub>().OrThrow<InvalidOperationException>();
+        var factory = _scopeAccessor.TryGet<IProblemDetailsFactory>().OrThrow<InvalidOperationException>();
+        var command = mapper.MapOrFail<RegisterUserRequestMessage>(body, o => o.State = hub);
+        var response = await hub.RequestAsync(command, cancellationToken);
 
-        var command = _mapper.MapOrFail<RegisterCommand>(body);
-        var result = await _sender.Send(command, cancellationToken);
-        return await result.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
-            async _ =>
+        var result = await factory.MatchToOk(response,
+            async success =>
             {
-                var query = _mapper.MapOrFail<UserIdQuery>(body);
-                var queryResult = await _sender.Send(query, cancellationToken);
-                return _problemDetailsFactory.MatchToOk(queryResult, _mapper.MapOrFail<RegisterResponse>);
-            },
-            async error =>
-            {
-                var problem = _problemDetailsFactory.ConvertToProblem([error]);
-                var result = TypedResults.Problem(problem);
-                return await ValueTask.FromResult(result);
+                var query = mapper.MapOrFail<UserIdQueryMessage>(body, o => o.State = hub);
+                var queryResult = await hub.RequestAsync(query, cancellationToken);
+                return factory.MatchToOk(queryResult, mapper.MapOrFail<RegisterResponse>);
             });
+        return result.Unwrap();
     }
 }

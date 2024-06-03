@@ -39,6 +39,8 @@ public static class WebServiceCollectionExtensions
         services.AddScoped<MapperScopeInjectionMiddleware>();
         services.AddScoped<UnitOfWorkScopeInjectionMiddleware>();
         services.AddScoped<ProblemTraceIdentifierMiddleware>();
+        services.AddScoped<MessageHubScopeInjectionMiddleware>();
+        services.AddScoped<ProblemDetailsFactoryScopeInjectionMiddleware>();
 
         services.AddMappingAssemblySource(moduleAssemblies);
         services.AddAutoMapper((sp, configExpression) =>
@@ -103,6 +105,8 @@ public static class WebServiceCollectionExtensions
         app.UseMiddleware<ProblemTraceIdentifierMiddleware>();
         app.UseMiddleware<MapperScopeInjectionMiddleware>();
         app.UseMiddleware<UnitOfWorkScopeInjectionMiddleware>();
+        app.UseMiddleware<MessageHubScopeInjectionMiddleware>();
+        app.UseMiddleware<ProblemDetailsFactoryScopeInjectionMiddleware>();
 
         app.UseHttpsRedirection();
 

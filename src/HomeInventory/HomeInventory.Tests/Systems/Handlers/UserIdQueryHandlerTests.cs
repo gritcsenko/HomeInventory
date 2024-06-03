@@ -19,7 +19,7 @@ public class UserIdQueryHandlerTests : BaseTest
         AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));
     }
 
-    private UserIdQueryHandler CreateSut() => new(_scopeAccessor);
+    private UserIdQueryMessageHandler CreateSut() => new(_scopeAccessor);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -27,13 +27,13 @@ public class UserIdQueryHandlerTests : BaseTest
         // Given
         Fixture.CustomizeId<UserId>();
         var _user = Fixture.Create<User>();
-        var query = new UserIdQuery(_user.Email);
+        var query = new UserIdQueryMessage(_user.Email);
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, Cancellation.Token);
+        var result = await sut.HandleAsync(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
         result.Index.Should().Be(0);
@@ -47,12 +47,12 @@ public class UserIdQueryHandlerTests : BaseTest
     public async Task Handle_OnNotFound_ReturnsError()
     {
         // Given
-        var query = Fixture.Create<UserIdQuery>();
+        var query = Fixture.Create<UserIdQueryMessage>();
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional.None<User>());
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, Cancellation.Token);
+        var result = await sut.HandleAsync(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
         result.Index.Should().Be(1);

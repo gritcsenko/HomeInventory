@@ -1,11 +1,10 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
 using Carter;
-using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OneOf;
@@ -20,7 +19,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 {
     private readonly IServiceCollection _services;
     private readonly Lazy<IServiceProvider> _lazyServiceProvider;
-    private readonly ISender _mediator;
+    private readonly IMessageHub _hub;
     private readonly IMapper _mapper;
     private readonly ICancellation _cancellation;
 
@@ -35,7 +34,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             .AddSubstitute<IReportApiVersions>()
             .AddSubstitute<IApiVersionParameterSource>()
             .AddSubstitute<IValidatorLocator>()
-            .AddSubstitute(out _mediator)
+            .AddSubstitute(out _hub)
             .AddSubstitute(out _mapper)
             .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
             .AddOptions(new ApiBehaviorOptions())
@@ -134,7 +133,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         where TRequest : IRequest<OneOf<TResult, IError>>
         where TResult : notnull
     {
-        _mediator.Send(GetValue(request), _cancellation.Token)
+        _hub.Send(GetValue(request), _cancellation.Token)
             .Returns(oneOf);
         return This;
     }

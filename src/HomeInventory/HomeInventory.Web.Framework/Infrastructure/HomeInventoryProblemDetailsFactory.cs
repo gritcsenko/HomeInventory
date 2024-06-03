@@ -55,7 +55,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
 
     public ProblemDetails ConvertToProblem(IEnumerable<IError> errors) =>
         InternalConvertToProblem(errors)
-        .AddProblemDetailsExtensions(_scopeAccessor.Get<TraceIdentifierContainer>().Or(null)?.TraceIdentifier)
+        .AddProblemDetailsExtensions(_scopeAccessor.TryGet<TraceIdentifierContainer>().Or(null)?.TraceIdentifier)
         .AddProblemDetailsExtensions(errors);
 
     private ProblemDetails InternalConvertToProblem(IEnumerable<IError> errors)

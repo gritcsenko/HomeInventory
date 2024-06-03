@@ -1,25 +1,26 @@
 ﻿using HomeInventory.Application.Cqrs.DomainEvents;
-using MediatR;
+using HomeInventory.Domain.Primitives.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Reactive.Linq;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 
-internal class PublishDomainEventsInterceptor(IPublisher publisher) : SaveChangesInterceptor
+internal class PublishDomainEventsInterceptor(IMessageHub hub) : SaveChangesInterceptor
 {
-    private readonly IPublisher _publisher = publisher;
+    private readonly IMessageHub _hub = hub;
 
     public override async ValueTask<int> SavedChangesAsync(SaveChangesCompletedEventData eventData, int result, CancellationToken cancellationToken = default)
     {
         if (eventData.Context is { } context)
         {
-            await PublishEventsAsync(context, cancellationToken);
+            PublishEvents(context);
         }
 
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 
-    private async ValueTask PublishEventsAsync(DbContext context, CancellationToken cancellationToken)
+    private void PublishEvents(DbContext context)
     {
         var domainEvents = context.ChangeTracker
             .Entries<OutboxMessage>()
@@ -27,8 +28,8 @@ internal class PublishDomainEventsInterceptor(IPublisher publisher) : SaveChange
 
         foreach (var domainEvent in domainEvents)
         {
-            object notification = DomainEventNotification.Create(domainEvent);
-            await _publisher.Publish(notification, cancellationToken);
+            var notification = _hub.CreateDomainNotification(domainEvent);
+            _hub.Inject(Observable.Return(notification));
         }
     }
 }

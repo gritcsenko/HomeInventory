@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using DotNext.Collections.Generic;
-using HomeInventory.Domain.Primitives.Events;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Infrastructure.Framework;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;

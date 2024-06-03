@@ -1,5 +1,5 @@
-﻿using HomeInventory.Domain.Primitives.Events;
-using HomeInventory.Domain.Primitives.Ids;
+﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 

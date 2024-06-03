@@ -10,7 +10,7 @@ public static class ScopeAccessorExtensions
         where TContext : class =>
         accessor.GetScope<TContext>().Reset();
 
-    public static Optional<TContext> Get<TContext>(this IScopeAccessor accessor)
+    public static Optional<TContext> TryGet<TContext>(this IScopeAccessor accessor)
         where TContext : class =>
-        accessor.GetScope<TContext>().Get();
+        accessor.GetScope<TContext>().TryGet();
 }

@@ -21,14 +21,14 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     private readonly ISpecificationEvaluator _evaluator = evaluator;
     private readonly IEventsPersistenceService _eventsPersistenceService = eventsPersistenceService;
 
-    public async ValueTask AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    public async Task AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
         _ = await InternalAddAsync(set, entity, cancellationToken);
     }
 
-    public async ValueTask AddRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    public async Task AddRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
@@ -38,14 +38,14 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         }
     }
 
-    public async ValueTask UpdateAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
         _ = await InternalUpdateAsync(set, entity, cancellationToken);
     }
 
-    public async ValueTask UpdateRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    public async Task UpdateRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
@@ -55,14 +55,14 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         }
     }
 
-    public async ValueTask DeleteAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
         _ = await InternalDeleteAsync(set, entity, cancellationToken);
     }
 
-    public async ValueTask DeleteRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
+    public async Task DeleteRangeAsync(IEnumerable<TAggregateRoot> entities, CancellationToken cancellationToken = default)
     {
         var set = Set();
 
@@ -72,16 +72,16 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         }
     }
 
-    public async ValueTask<int> CountAsync(CancellationToken cancellationToken = default) =>
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default) =>
         await Set().CountAsync(cancellationToken);
 
-    public async ValueTask<bool> AnyAsync(CancellationToken cancellationToken = default) =>
+    public async Task<bool> AnyAsync(CancellationToken cancellationToken = default) =>
         await Set().AnyAsync(cancellationToken);
 
     public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
         AsyncEnumerable.ToAsyncEnumerable(ToEntity(Set(), cancellationToken));
 
-    public async ValueTask<Optional<TAggregateRoot>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async Task<Optional<TAggregateRoot>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query, cancellationToken);
@@ -93,7 +93,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         return Optional.None<TAggregateRoot>();
     }
 
-    public async ValueTask<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async Task<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification, evaluateCriteriaOnly: true);
         return await query.AnyAsync(cancellationToken);
@@ -121,13 +121,13 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TModel> inputQuery, ISpecification<TModel, TResult> specification) =>
         _evaluator.GetQuery(inputQuery, specification);
 
-    private async ValueTask<EntityEntry<TModel>> InternalAddAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Add(m), cancellationToken);
+    private async Task<EntityEntry<TModel>> InternalAddAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Add(m), cancellationToken);
 
-    private async ValueTask<EntityEntry<TModel>> InternalUpdateAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Update(m), cancellationToken);
+    private async Task<EntityEntry<TModel>> InternalUpdateAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Update(m), cancellationToken);
 
-    private async ValueTask<EntityEntry<TModel>> InternalDeleteAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Remove(m), cancellationToken);
+    private async Task<EntityEntry<TModel>> InternalDeleteAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, (s, m) => s.Remove(m), cancellationToken);
 
-    private async ValueTask<EntityEntry<TModel>> InternalModifyAsync(DbSet<TModel> set, TAggregateRoot entity, Func<DbSet<TModel>, TModel, EntityEntry<TModel>> modifyAction, CancellationToken cancellationToken)
+    private async Task<EntityEntry<TModel>> InternalModifyAsync(DbSet<TModel> set, TAggregateRoot entity, Func<DbSet<TModel>, TModel, EntityEntry<TModel>> modifyAction, CancellationToken cancellationToken)
     {
         var model = ToModel(entity);
         var entry = modifyAction(set, model);

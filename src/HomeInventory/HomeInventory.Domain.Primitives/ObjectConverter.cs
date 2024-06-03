@@ -1,6 +1,6 @@
 using HomeInventory.Domain.Primitives.Errors;
 
-namespace HomeInventory.Application.Mapping;
+namespace HomeInventory.Domain.Primitives;
 
 public abstract class ObjectConverter<TSource, TDestination>
 {

@@ -1,9 +1,10 @@
 using AutoMapper;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
+using HomeInventory.Core;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,9 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetailsFactory problemDetailsFactory) : ApiModule("/api/authentication")
+public class AuthenticationModule(IScopeAccessor scopeAccessor) : ApiModule("/api/authentication")
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly ISender _sender = sender;
-    private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
 
     protected override void AddRoutes(RouteGroupBuilder group)
     {
@@ -26,8 +25,12 @@ public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetail
 
     public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, CancellationToken cancellationToken = default)
     {
-        var query = _mapper.MapOrFail<AuthenticateQuery>(body);
-        var result = await _sender.Send(query, cancellationToken);
-        return _problemDetailsFactory.MatchToOk(result, _mapper.MapOrFail<LoginResponse>);
+        var mapper = _scopeAccessor.TryGet<IMapper>().OrThrow<InvalidOperationException>();
+        var hub = _scopeAccessor.TryGet<IMessageHub>().OrThrow<InvalidOperationException>();
+        var factory = _scopeAccessor.TryGet<IProblemDetailsFactory>().OrThrow<InvalidOperationException>();
+
+        var request = mapper.MapOrFail<AuthenticateRequestMessage>(body, o => o.State = hub);
+        var response = await hub.RequestAsync(request, cancellationToken);
+        return factory.MatchToOk(response, mapper.MapOrFail<LoginResponse>);
     }
 }

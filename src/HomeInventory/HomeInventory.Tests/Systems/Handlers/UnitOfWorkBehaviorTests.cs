@@ -3,6 +3,7 @@ using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Messages;
 using MediatR;
 using MediatR.Registration;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class UnitOfWorkBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>>> _logger = Substitute.For<TestingLogger<UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>>>>();
+    private readonly TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage>> _logger = Substitute.For<TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage>>>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ScopeAccessor _scopeAccessor = new();
 
@@ -38,7 +39,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
         ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
         ServiceRegistrar.AddRequiredServices(services, serviceConfig);
 
-        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<RegisterCommand, OneOf<Success, IError>>>();
+        var behavior = services.BuildServiceProvider().GetRequiredService<IRequestPipelineBehavior<RegisterUserRequestMessage, Success>>();
 
         behavior.Should().NotBeNull();
     }
@@ -47,10 +48,10 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public async Task Handle_Should_ReturnResponseFromNext()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
+        var _request = Fixture.Create<RegisterUserRequestMessage>();
         var _response = OneOf<Success, IError>.FromT0(new Success());
 
-        var response = await sut.Handle(_request, Handler, Cancellation.Token);
+        var response = await sut.OnRequest(_request, Handler, Cancellation.Token);
 
         response.Value.Should().Be(_response.Value);
 
@@ -61,10 +62,10 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public async Task Handle_Should_CallSave_When_Success()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
+        var _request = Fixture.Create<RegisterUserRequestMessage>();
         var _response = OneOf<Success, IError>.FromT0(new Success());
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.OnRequest(_request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(1)
@@ -77,10 +78,10 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public async Task Handle_Should_NotCallSave_When_Error()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
+        var _request = Fixture.Create<RegisterUserRequestMessage>();
         var _response = OneOf<Success, IError>.FromT1(new NotFoundError(Fixture.Create<string>()));
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.OnRequest(_request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(0)
@@ -89,5 +90,5 @@ public class UnitOfWorkBehaviorTests : BaseTest
         Task<OneOf<Success, IError>> Handler() => Task.FromResult(_response);
     }
 
-    private UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>> CreateSut() => new(_scopeAccessor, _logger);
+    private UnitOfWorkRequestBehavior<RegisterUserRequestMessage> CreateSut() => new(_scopeAccessor, _logger);
 }

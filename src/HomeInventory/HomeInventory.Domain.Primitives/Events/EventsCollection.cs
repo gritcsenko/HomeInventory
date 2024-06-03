@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using HomeInventory.Domain.Primitives.Messages;
+using System.Collections;
 
 namespace HomeInventory.Domain.Primitives.Events;
 

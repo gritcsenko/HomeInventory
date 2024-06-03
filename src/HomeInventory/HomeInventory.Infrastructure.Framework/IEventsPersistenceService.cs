@@ -1,8 +1,8 @@
-﻿using HomeInventory.Domain.Primitives.Events;
+﻿using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
 public interface IEventsPersistenceService
 {
-    ValueTask SaveEventsAsync(IHasDomainEvents entity, CancellationToken cancellationToken = default);
+    Task SaveEventsAsync(IHasDomainEvents entity, CancellationToken cancellationToken = default);
 }

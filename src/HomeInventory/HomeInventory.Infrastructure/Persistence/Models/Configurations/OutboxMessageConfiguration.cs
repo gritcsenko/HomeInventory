@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using HomeInventory.Domain.Primitives.Events;
+using HomeInventory.Domain.Primitives.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

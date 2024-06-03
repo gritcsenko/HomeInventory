@@ -1,3 +1,5 @@
-﻿namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
+﻿using HomeInventory.Domain.Primitives.Events;
 
-public record class AuthenticateResult(Domain.ValueObjects.UserId Id, string Token);
+namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
+
+public sealed record class AuthenticateResult(Domain.ValueObjects.UserId Id, string Token);

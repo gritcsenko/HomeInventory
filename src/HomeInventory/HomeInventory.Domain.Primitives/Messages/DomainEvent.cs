@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives.Events;
+﻿namespace HomeInventory.Domain.Primitives.Messages;
 
 public record DomainEvent(Cuid Id, DateTimeOffset CreatedOn) : IDomainEvent
 {
