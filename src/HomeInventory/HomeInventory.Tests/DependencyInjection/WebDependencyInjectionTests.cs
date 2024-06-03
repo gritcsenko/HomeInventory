@@ -86,7 +86,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     {
         Services
             .AddDomain()
-            .AddMediatR()
+            .AddMessageHubCore()
             .AddWeb(
             Web.AssemblyReference.Assembly,
             Web.UserManagement.AssemblyReference.Assembly,

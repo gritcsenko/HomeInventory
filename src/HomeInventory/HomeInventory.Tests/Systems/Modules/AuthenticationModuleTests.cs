@@ -35,7 +35,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
         Given
-            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
+            .Map<LoginRequest>(out var loginRequest).To<AuthenticateRequestMessage>(out var authenticateQuery)
             .Map<AuthenticateResult>(out var authenticateResult).To<LoginResponse>(out var loginResponse)
             .OnQueryReturn(authenticateQuery, authenticateResult)
             .Sut(out var sut);
@@ -54,9 +54,9 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
         Given
-            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
+            .Map<LoginRequest>(out var loginRequest).To<AuthenticateRequestMessage>(out var authenticateQuery)
             .New<InvalidCredentialsError>(out var error)
-            .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(authenticateQuery, error)
+            .OnQueryReturnError<AuthenticateRequestMessage, AuthenticateResult, InvalidCredentialsError>(authenticateQuery, error)
             .Sut(out var sut);
 
         var then = await When

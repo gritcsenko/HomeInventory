@@ -27,7 +27,7 @@ public class ContractsMappingsTests : BaseMappingsTests
         fixture.CustomizeEmail();
         return new()
         {
-            { fixture.Create<LoginRequest>(), typeof(AuthenticateQuery) },
+            { fixture.Create<LoginRequest>(), typeof(AuthenticateRequestMessage) },
             { fixture.Create<AuthenticateResult>(), typeof(LoginResponse) },
         };
     }

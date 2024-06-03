@@ -1,3 +1,4 @@
+using FluentAssertions.Common;
 using FluentAssertions.Execution;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Interfaces.Authentication;
@@ -6,7 +7,9 @@ using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -17,15 +20,18 @@ public class RegisterCommandHandlerTests : BaseTest
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
     private readonly ScopeAccessor _scopeAccessor = new();
+    private readonly ServiceProvider _services;
 
     public RegisterCommandHandlerTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
         Fixture.CustomizeFromFactory<RegisterUserRequestMessage, Email, ISupplier<Cuid>>((e, s) => new RegisterUserRequestMessage(IdSuppliers.Cuid.Invoke(), DateTime.GetUtcNow(), e, s.Invoke().ToString()));
+        var services = new ServiceCollection();
+        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddMessageHub(AssemblyReference.Assembly);
+        _services = services.BuildServiceProvider();
     }
-
-    private RegisterUserRequestHandler CreateSut() => new(_scopeAccessor, _hasher);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -40,7 +46,7 @@ public class RegisterCommandHandlerTests : BaseTest
 
         var sut = CreateSut();
         // When
-        var result = await sut.HandleAsync(command, Cancellation.Token);
+        var result = await sut.HandleAsync(Hub, command, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
         result.Index.Should().Be(0);
@@ -57,7 +63,7 @@ public class RegisterCommandHandlerTests : BaseTest
 
         var sut = CreateSut();
         // When
-        var result = await sut.HandleAsync(command, Cancellation.Token);
+        var result = await sut.HandleAsync(Hub, command, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
         result.Index.Should().Be(1);
@@ -65,4 +71,8 @@ public class RegisterCommandHandlerTests : BaseTest
             .Which.Should().BeOfType<DuplicateEmailError>();
         await _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), Cancellation.Token);
     }
+
+    private IMessageHub Hub => _services.GetRequiredService<IMessageHub>();
+
+    private RegisterUserRequestHandler CreateSut() => new(_scopeAccessor, _hasher);
 }

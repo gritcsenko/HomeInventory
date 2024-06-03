@@ -31,8 +31,8 @@ public class UserManagementContractsMappingsTests : BaseMappingsTests
         {
             { fixture.Create<UserId>(), typeof(Cuid) },
             { fixture.Create<Email>(), typeof(string) },
-            { fixture.Create<RegisterRequest>(), typeof(RegisterCommand) },
-            { fixture.Create<RegisterRequest>(), typeof(UserIdQuery) },
+            { fixture.Create<RegisterRequest>(), typeof(RegisterUserRequestMessage) },
+            { fixture.Create<RegisterRequest>(), typeof(UserIdQueryMessage) },
             { fixture.Create<UserIdResult>(), typeof(RegisterResponse) },
         };
     }
