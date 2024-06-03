@@ -15,7 +15,7 @@ public static class MessageHubExtensions
     public static ResposeMessage<TRequest, TResponse> CreateResponse<TRequest, TResponse>(this IMessageHub hub, TRequest request, OneOf<TResponse, IError> response)
         where TRequest : IRequestMessage<TResponse> =>
         hub.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, request, response));
-    
+
     public static TMessage CreateMessage<TMessage>(this IMessageHub hub, Func<Cuid, DateTimeOffset, TMessage> createFunc)
         where TMessage : IMessage =>
         createFunc(hub.EventIdSupplier.Invoke(), hub.EventCreatedTimeProvider.GetUtcNow());
