@@ -9,12 +9,8 @@ public sealed class RequestHandlerAdapter<TRequest, TResult>(IRequestHandler<TRe
     private readonly IRequestHandler<TRequest, TResult> _requestHandler = requestHandler;
     private readonly IEnumerable<IRequestPipelineBehavior<TRequest, TResult>> _behaviors = behaviors.ToArray();
 
-    protected sealed override IObservable<ResposeMessage<TRequest, TResult>> InternalModify(IMessageHub hub, IObservable<CancellableRequest<TRequest>> messages)
-    {
-        var responses = base.InternalModify(hub, messages);
-        hub.Inject(responses);
-        return responses;
-    }
+    protected override IDisposable Subscribe(IMessageHub hub, IObservable<ResposeMessage<TRequest, TResult>> responses) =>
+        base.Subscribe(hub, responses.Do(r => hub.OnNext(r)));
 
     protected sealed override IObservable<ResposeMessage<TRequest, TResult>> HandleMessage(IMessageHub hub, CancellableRequest<TRequest> message) =>
         Observable.FromAsync(async () =>

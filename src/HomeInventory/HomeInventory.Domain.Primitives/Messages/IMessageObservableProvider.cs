@@ -1,6 +1,8 @@
-﻿namespace HomeInventory.Domain.Primitives.Messages;
+﻿using System.Reactive.Subjects;
+
+namespace HomeInventory.Domain.Primitives.Messages;
 
 public interface IMessageObservableProvider
 {
-    IObservable<TMessage> GetObservable<TMessage>(IMessageHub hub) where TMessage : IMessage;
+    ISubject<TMessage> GetSubject<TMessage>(IMessageHub hub) where TMessage : IMessage;
 }

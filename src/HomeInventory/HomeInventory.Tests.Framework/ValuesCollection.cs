@@ -7,7 +7,7 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
     private readonly List<ValueContainer> _values = [];
     private readonly Type _valueType = valueType;
 
-    public int Count => ((IReadOnlyCollection<ValueContainer>)_values).Count;
+    public int Count => _values.Count;
 
     public Optional<T> TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
@@ -75,10 +75,8 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
     }
 
     public IEnumerable<T> GetAll<T>()
-        where T : notnull
-    {
-        return _values.Select(x => x.Value).Cast<T>();
-    }
+        where T : notnull =>
+        _values.Select(x => x.Value).Cast<T>();
 
     public bool IsAsignable<T>() =>
         typeof(T).IsAssignableTo(_valueType);
@@ -91,14 +89,16 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
     }
 
     public IEnumerator<ValueContainer> GetEnumerator() =>
-        ((IEnumerable<ValueContainer>)_values).GetEnumerator();
+        _values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() =>
-        ((IEnumerable)_values).GetEnumerator();
+        _values.GetEnumerator();
 
     public async ValueTask DisposeAsync()
     {
-        foreach (var value in _values)
+        var values = _values.ToArray();
+        _values.Clear();
+        foreach (var value in values)
         {
             switch (value)
             {
@@ -110,6 +110,5 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
                     break;
             }
         }
-        _values.Clear();
     }
 }

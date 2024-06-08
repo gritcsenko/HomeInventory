@@ -2,7 +2,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-internal static class MediatRConfigurator
+internal static class MesssageHubConfigurator
 {
     public static IServiceCollection AddMessageHub(this IServiceCollection services, params Assembly[] serviceAssemblies)
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 
 namespace HomeInventory.Domain.Primitives.Messages;
@@ -13,15 +13,15 @@ public sealed class MessageObservableProvider(IServiceProvider serviceProvider) 
         .GetGenericMethodDefinition();
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly CompositeDisposable _disposables = [];
-    private bool _disposedValue;
+    private bool _isDisposed;
 
-    public IObservable<TMessage> GetObservable<TMessage>(IMessageHub hub)
+    public ISubject<TMessage> GetSubject<TMessage>(IMessageHub hub)
         where TMessage : IMessage
     {
         TryLinkMessages<TMessage>(hub);
         TryLinkRequests<TMessage>(hub);
 
-        return Observable.Never<TMessage>();
+        return new Subject<TMessage>();
     }
 
     private void TryLinkMessages<TMessage>(IMessageHub hub)
@@ -39,17 +39,16 @@ public sealed class MessageObservableProvider(IServiceProvider serviceProvider) 
     private void TryLinkRequests<TMessage>(IMessageHub hub)
         where TMessage : IMessage
     {
-        var template = typeof(IRequestMessage<>);
-        var requestType = typeof(TMessage);
-        var interfaces = requestType
-            .GetInterfaces()
-            .Where(i => i.IsGenericType).Where(i => i.GetGenericTypeDefinition() == template);
-        foreach (var iface in interfaces)
+        var messageType = typeof(TMessage);
+        if (!messageType.IsGenericType || messageType.GetGenericTypeDefinition() != typeof(CancellableRequest<,>)) // CancellableRequest<TRequest, TResponse>
         {
-            var responseType = iface.GetGenericArguments()[0];
-            var tryLink = _tryLinkRequests.MakeGenericMethod(requestType, responseType);
-            tryLink.Invoke(this, [hub]);
+            return;
         }
+
+        var requestType = messageType.GetGenericArguments()[0];
+        var responseType = messageType.GetGenericArguments()[1];
+        var tryLink = _tryLinkRequests.MakeGenericMethod(requestType, responseType);
+        tryLink.Invoke(this, [hub]);
     }
 
     private void TryLinkRequests<TRequest, TResponse>(IMessageHub hub)
@@ -80,14 +79,14 @@ public sealed class MessageObservableProvider(IServiceProvider serviceProvider) 
 
     private void Dispose(bool disposing)
     {
-        if (!_disposedValue)
+        if (!_isDisposed)
         {
             if (disposing)
             {
                 _disposables.Dispose();
             }
 
-            _disposedValue = true;
+            _isDisposed = true;
         }
     }
 }

@@ -6,7 +6,7 @@ public interface IMessageHub : IDisposable
 
     TimeProvider EventCreatedTimeProvider { get; }
 
-    void Inject<TMessage>(IObservable<TMessage> messages) where TMessage : IMessage;
+    void OnNext<TMessage>(TMessage message) where TMessage : IMessage;
 
     IObservable<TMessage> GetMessages<TMessage>() where TMessage : IMessage;
 }

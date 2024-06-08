@@ -5,11 +5,15 @@ namespace HomeInventory.Domain.Primitives.Messages;
 public abstract class MessageHandlerAdapterBase<TMessage, TResponse>() : IMessageHandlerAdapter
     where TMessage : IMessage
 {
-    public IDisposable Subscribe(IMessageHub hub) =>
-        InternalModify(hub, hub.GetMessages<TMessage>()).Subscribe();
+    public IDisposable Subscribe(IMessageHub hub)
+    {
+        var responses = hub
+            .GetMessages<TMessage>()
+            .SelectMany(e => HandleMessage(hub, e));
+        return Subscribe(hub, responses);
+    }
 
-    protected virtual IObservable<TResponse> InternalModify(IMessageHub hub, IObservable<TMessage> messages) =>
-        messages.SelectMany(e => HandleMessage(hub, e));
+    protected virtual IDisposable Subscribe(IMessageHub hub, IObservable<TResponse> responses) => responses.Subscribe();
 
     protected abstract IObservable<TResponse> HandleMessage(IMessageHub hub, TMessage message);
 }

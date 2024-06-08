@@ -29,16 +29,16 @@ public static class MessageHubExtensions
         var task = hub.GetMessages<ResposeMessage<TRequest, TResponse>>()
             .Where(e => ReferenceEquals(e.Request, request))
             .Select(e => e.Result)
-            .FirstAsync()
+            .Take(1)
             .ToTask(cancellationToken);
 
-        var @event = request.ToCancellable(cancellationToken);
-        hub.Inject(Observable.Return(@event));
+        var @event = request.ToCancellable<TRequest, TResponse>(cancellationToken);
+        hub.OnNext(@event);
 
         return task;
     }
 
-    private static CancellableRequest<TRequest> ToCancellable<TRequest>(this TRequest request, CancellationToken cancellationToken)
-        where TRequest : IMessage =>
+    private static CancellableRequest<TRequest, TResponse> ToCancellable<TRequest, TResponse>(this TRequest request, CancellationToken cancellationToken)
+        where TRequest : IRequestMessage<TResponse> =>
         new(request, cancellationToken);
 }

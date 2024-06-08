@@ -29,7 +29,7 @@ internal class PublishDomainEventsInterceptor(IMessageHub hub) : SaveChangesInte
         foreach (var domainEvent in domainEvents)
         {
             var notification = _hub.CreateDomainNotification(domainEvent);
-            _hub.Inject(Observable.Return(notification));
+            _hub.OnNext(notification);
         }
     }
 }

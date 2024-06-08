@@ -68,7 +68,7 @@ public static class WebServiceCollectionExtensions
 
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
         services.AddOptionsWithValidator<JwtOptions>();
-        services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
+        services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
     }
 
     private static void AddOpenApiDocs(this IServiceCollection services)

@@ -57,22 +57,22 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         });
 
     internal TGiven OnQueryReturn<TRequest, TResult>(IVariable<TRequest> request, IVariable<TResult> result)
-        where TRequest : notnull, IRequestMessage<TResult>
+        where TRequest : class, IRequestMessage<TResult>
         where TResult : notnull =>
         OnRequestReturnResult(request, result);
 
     internal TGiven OnCommandReturnSuccess<TRequest>(IVariable<TRequest> request)
-        where TRequest : notnull, IRequestMessage =>
+        where TRequest : class, IRequestMessage =>
         OnRequestReturnResult(request, new Success());
 
     internal TGiven OnQueryReturnError<TRequest, TResult, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : notnull, IRequestMessage<TResult>
+        where TRequest : class, IRequestMessage<TResult>
         where TResult : notnull
         where TError : notnull, IError =>
         OnRequestReturnError<TRequest, TResult, TError>(request, result);
 
     internal TGiven OnCommandReturnError<TRequest, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : notnull, IRequestMessage
+        where TRequest : class, IRequestMessage
         where TError : notnull, IError =>
     OnRequestReturnError<TRequest, Success, TError>(request, result);
 
@@ -121,29 +121,38 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     }
 
     private TGiven OnRequestReturnError<TRequest, TResponse, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : IRequestMessage<TResponse>
+        where TRequest : class, IRequestMessage<TResponse>
         where TResponse : notnull
         where TError : IError =>
         OnRequestReturn(request, OneOf<TResponse, IError>.FromT1(GetValue(result)));
 
     private TGiven OnRequestReturnResult<TRequest, TResponse>(IVariable<TRequest> request, IVariable<TResponse> result)
-        where TRequest : IRequestMessage<TResponse>
+        where TRequest : class, IRequestMessage<TResponse>
         where TResponse : notnull =>
         OnRequestReturnResult(request, GetValue(result));
 
     private TGiven OnRequestReturnResult<TRequest, TResponse>(IVariable<TRequest> request, TResponse resultValue)
-        where TRequest : IRequestMessage<TResponse>
+        where TRequest : class, IRequestMessage<TResponse>
         where TResponse : notnull =>
         OnRequestReturn(request, OneOf<TResponse, IError>.FromT0(resultValue));
 
     private TGiven OnRequestReturn<TRequest, TResponse>(IVariable<TRequest> request, OneOf<TResponse, IError> oneOf)
-        where TRequest : IRequestMessage<TResponse>
+        where TRequest : class, IRequestMessage<TResponse>
         where TResponse : notnull
     {
         var requestValue = GetValue(request);
-        var response = Hub.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, requestValue, oneOf));
-        Hub.Inject(Observable.Repeat(requestValue));
-        Hub.Inject(Observable.Repeat(response));
+
+        var subscription = Hub.GetMessages<CancellableRequest<TRequest, TResponse>>()
+            .Where(cr => cr.Message == requestValue)
+            .Take(1)
+            .Subscribe(cr =>
+            {
+                var response = Hub.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, cr.Message, oneOf));
+                Hub.OnNext(response);
+            });
+
+        AddDisposable(subscription);
+
         return This;
     }
 }

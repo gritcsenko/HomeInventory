@@ -55,7 +55,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.Should().ContainConfigureOptions<JwtOptions>(provider);
         Services.Should().ContainConfigureOptions<JwtBearerOptions>(provider);
         Services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
-        Services.Should().ContainSingleScoped<IAuthenticationTokenGenerator>(provider);
+        Services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
         Services.Should().ContainSingleSingleton<HealthCheckService>(provider);
         Services.Should().ContainSingleTransient<HomeInventoryProblemDetailsFactory>(provider);
         Services.Should().ContainSingleTransient<ProblemDetailsFactory>(provider);

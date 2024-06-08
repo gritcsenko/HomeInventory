@@ -7,3 +7,11 @@ public sealed record class CancellableRequest<TMessage>(TMessage Message, Cancel
 
     public DateTimeOffset CreatedOn => Message.CreatedOn;
 }
+
+public sealed record class CancellableRequest<TRequest, TResponse>(TRequest Message, CancellationToken CancellationToken) : IRequestMessage<TResponse>
+    where TRequest : IRequestMessage<TResponse>
+{
+    public Cuid Id => Message.Id;
+
+    public DateTimeOffset CreatedOn => Message.CreatedOn;
+}
