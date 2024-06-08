@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OneOf.Types;
+using System;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 
@@ -7,9 +10,9 @@ namespace HomeInventory.Domain.Primitives.Messages;
 
 public sealed class MessageObservableProvider(IServiceProvider serviceProvider) : IMessageObservableProvider, IDisposable
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Implementation details with generics")]
     private static readonly MethodInfo _tryLinkRequests = typeof(MessageObservableProvider)
-        .GetMethod(nameof(TryLinkRequests), 2, BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(IMessageHub)], null)!
+        .GetRuntimeMethods()
+        .First(m => m.Name == nameof(InternalTryLinkRequests))
         .GetGenericMethodDefinition();
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly CompositeDisposable _disposables = [];
@@ -18,13 +21,15 @@ public sealed class MessageObservableProvider(IServiceProvider serviceProvider) 
     public ISubject<TMessage> GetSubject<TMessage>(IMessageHub hub)
         where TMessage : IMessage
     {
-        TryLinkMessages<TMessage>(hub);
-        TryLinkRequests<TMessage>(hub);
+        var subject = new Subject<TMessage>();
 
-        return new Subject<TMessage>();
+        TryLinkMessages(hub, subject);
+        TryLinkRequests(hub, subject);
+
+        return subject;
     }
 
-    private void TryLinkMessages<TMessage>(IMessageHub hub)
+    private void TryLinkMessages<TMessage>(IMessageHub hub, IObservable<TMessage> observable)
         where TMessage : IMessage
     {
         if (_serviceProvider.GetService<IMessageHandler<TMessage>>() is null)
@@ -32,11 +37,11 @@ public sealed class MessageObservableProvider(IServiceProvider serviceProvider) 
             return;
         }
 
-        var link = LinkRequestsFor<MessageHandlerAdapter<TMessage>>(hub);
+        var link = LinkRequestsFor<MessageHandlerAdapter<TMessage>, TMessage>(hub, observable);
         _disposables.Add(link);
     }
 
-    private void TryLinkRequests<TMessage>(IMessageHub hub)
+    private void TryLinkRequests<TMessage>(IMessageHub hub, IObservable<TMessage> observable)
         where TMessage : IMessage
     {
         var messageType = typeof(TMessage);
@@ -48,10 +53,10 @@ public sealed class MessageObservableProvider(IServiceProvider serviceProvider) 
         var requestType = messageType.GetGenericArguments()[0];
         var responseType = messageType.GetGenericArguments()[1];
         var tryLink = _tryLinkRequests.MakeGenericMethod(requestType, responseType);
-        tryLink.Invoke(this, [hub]);
+        tryLink.Invoke(this, [hub, observable]);
     }
 
-    private void TryLinkRequests<TRequest, TResponse>(IMessageHub hub)
+    private void InternalTryLinkRequests<TRequest, TResponse>(IMessageHub hub, IObservable<CancellableRequest<TRequest, TResponse>> observable)
         where TRequest : IRequestMessage<TResponse>
     {
         if (_serviceProvider.GetService<IRequestHandler<TRequest, TResponse>>() is null)
@@ -59,15 +64,16 @@ public sealed class MessageObservableProvider(IServiceProvider serviceProvider) 
             return;
         }
 
-        var link = LinkRequestsFor<RequestHandlerAdapter<TRequest, TResponse>>(hub);
+        var link = LinkRequestsFor<RequestHandlerAdapter<TRequest, TResponse>, CancellableRequest<TRequest, TResponse>>(hub, observable);
         _disposables.Add(link);
     }
 
-    private IDisposable LinkRequestsFor<TAdapter>(IMessageHub hub)
-        where TAdapter : IMessageHandlerAdapter
+    private IDisposable LinkRequestsFor<TAdapter, TMessage>(IMessageHub hub, IObservable<TMessage> observable)
+        where TAdapter : IMessageHandlerAdapter<TMessage>
+        where TMessage : IMessage
     {
         var adapter = _serviceProvider.GetRequiredService<TAdapter>();
-        return adapter.Subscribe(hub);
+        return adapter.Subscribe(observable.Select(m => (hub, m)));
     }
 
     public void Dispose()

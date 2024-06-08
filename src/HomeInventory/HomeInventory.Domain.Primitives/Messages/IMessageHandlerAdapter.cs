@@ -1,6 +1,7 @@
 ﻿namespace HomeInventory.Domain.Primitives.Messages;
 
-public interface IMessageHandlerAdapter
+public interface IMessageHandlerAdapter<TMessage>
+    where TMessage : IMessage
 {
-    IDisposable Subscribe(IMessageHub hub);
+    IDisposable Subscribe(IObservable<(IMessageHub Hub, TMessage Message)> observable);
 }
