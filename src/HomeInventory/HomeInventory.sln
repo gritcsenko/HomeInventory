@@ -82,12 +82,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserManagement", "UserManag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.Domain.UserManagement", "HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj", "{58B39281-B654-45C7-BBD2-6CB5E3E06029}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "..\Build\Build.csproj", "{4CA5D320-E258-433A-B662-11BEDC0B2687}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4CA5D320-E258-433A-B662-11BEDC0B2687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CA5D320-E258-433A-B662-11BEDC0B2687}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4ACC06-21FE-4926-ACED-4F11370D533E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E4ACC06-21FE-4926-ACED-4F11370D533E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E4ACC06-21FE-4926-ACED-4F11370D533E}.Release|Any CPU.ActiveCfg = Release|Any CPU
