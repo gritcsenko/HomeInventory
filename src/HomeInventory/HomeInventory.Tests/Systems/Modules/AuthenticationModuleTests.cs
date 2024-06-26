@@ -35,15 +35,14 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
         Given
-            .HttpContext(out var context)
-            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
+            .Map<LoginRequest>(out var loginRequest).To<AuthenticateRequestMessage>(out var authenticateQuery)
             .Map<AuthenticateResult>(out var authenticateResult).To<LoginResponse>(out var loginResponse)
             .OnQueryReturn(authenticateQuery, authenticateResult)
             .Sut(out var sut);
 
 
         var then = await When
-            .InvokedAsync(sut, loginRequest, context, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
+            .InvokedAsync(sut, loginRequest, (sut, body, ct) => sut.LoginAsync(body, ct));
 
         then
             .Result(loginResponse, (actual, expected) =>
@@ -55,14 +54,13 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
         Given
-            .HttpContext(out var context)
-            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
+            .Map<LoginRequest>(out var loginRequest).To<AuthenticateRequestMessage>(out var authenticateQuery)
             .New<InvalidCredentialsError>(out var error)
-            .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(authenticateQuery, error)
+            .OnQueryReturnError<AuthenticateRequestMessage, AuthenticateResult, InvalidCredentialsError>(authenticateQuery, error)
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, loginRequest, context, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
+            .InvokedAsync(sut, loginRequest, (sut, body, ct) => sut.LoginAsync(body, ct));
 
         then
             .Result(error, (actual, error) =>

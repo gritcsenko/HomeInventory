@@ -1,10 +1,8 @@
-﻿using HomeInventory.Application;
-using HomeInventory.Application.Cqrs.Behaviors;
+﻿using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
-using MediatR;
-using MediatR.Registration;
+using HomeInventory.Domain.Primitives.Messages;
 using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
@@ -15,30 +13,27 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class UnitOfWorkBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>>> _logger = Substitute.For<TestingLogger<UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>>>>();
+    private readonly TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Success>> _logger = Substitute.For<TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Success>>>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ScopeAccessor _scopeAccessor = new();
+    private readonly ServiceProvider _services;
 
     public UnitOfWorkBehaviorTests()
     {
         Fixture.CustomizeCuid();
         AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
+        var services = new ServiceCollection();
+        services.AddSingleton<IScopeAccessor>(_scopeAccessor);
+        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddDomain();
+        services.AddMessageHub(AssemblyReference.Assembly);
+        _services = services.BuildServiceProvider();
     }
 
     [Fact]
     public void Should_BeResolvedForCommand()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IScopeAccessor>(_scopeAccessor);
-        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
-
-        var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
-            .AddUnitOfWorkBehavior();
-        ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
-        ServiceRegistrar.AddRequiredServices(services, serviceConfig);
-
-        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<RegisterCommand, OneOf<Success, IError>>>();
+        var behavior = _services.GetRequiredService<IRequestPipelineBehavior<RegisterUserRequestMessage, Success>>();
 
         behavior.Should().NotBeNull();
     }
@@ -47,10 +42,10 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public async Task Handle_Should_ReturnResponseFromNext()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
+        var _request = Fixture.Create<RegisterUserRequestMessage>();
         var _response = OneOf<Success, IError>.FromT0(new Success());
 
-        var response = await sut.Handle(_request, Handler, Cancellation.Token);
+        var response = await sut.OnRequest(Hub, _request, Handler, Cancellation.Token);
 
         response.Value.Should().Be(_response.Value);
 
@@ -61,10 +56,10 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public async Task Handle_Should_CallSave_When_Success()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
+        var _request = Fixture.Create<RegisterUserRequestMessage>();
         var _response = OneOf<Success, IError>.FromT0(new Success());
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.OnRequest(Hub, _request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(1)
@@ -77,10 +72,10 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public async Task Handle_Should_NotCallSave_When_Error()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
+        var _request = Fixture.Create<RegisterUserRequestMessage>();
         var _response = OneOf<Success, IError>.FromT1(new NotFoundError(Fixture.Create<string>()));
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.OnRequest(Hub, _request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(0)
@@ -89,5 +84,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
         Task<OneOf<Success, IError>> Handler() => Task.FromResult(_response);
     }
 
-    private UnitOfWorkBehavior<RegisterCommand, OneOf<Success, IError>> CreateSut() => new(_scopeAccessor, _logger);
+    private IMessageHub Hub => _services.GetRequiredService<IMessageHub>();
+
+    private UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Success> CreateSut() => new(_scopeAccessor, _logger);
 }

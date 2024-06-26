@@ -18,7 +18,7 @@ internal sealed class ParametersSwaggerOperationFilter(IOpenApiValueConverter co
         var parameterDescriptions = apiDescription.ParameterDescriptions;
         var parameters = operation.Parameters;
 
-        foreach (var parameter in parameters.EmptyIfNull<OpenApiParameter>())
+        foreach (var parameter in parameters.EmptyIfNull())
         {
             var parameterDescription = parameterDescriptions.First(p => p.Name == parameter.Name);
 

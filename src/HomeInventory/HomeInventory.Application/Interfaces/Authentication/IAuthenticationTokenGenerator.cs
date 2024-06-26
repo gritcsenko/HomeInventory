@@ -4,5 +4,5 @@ namespace HomeInventory.Application.Interfaces.Authentication;
 
 public interface IAuthenticationTokenGenerator
 {
-    ValueTask<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default);
+    Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default);
 }

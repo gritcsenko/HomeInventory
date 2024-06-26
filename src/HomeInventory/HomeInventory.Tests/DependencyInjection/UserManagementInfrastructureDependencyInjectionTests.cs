@@ -3,11 +3,9 @@ using AutoMapper;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.UserManagement;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
@@ -17,7 +15,7 @@ public class UserManagementInfrastructureDependencyInjectionTests : BaseDependen
     public UserManagementInfrastructureDependencyInjectionTests()
     {
         Services.AddSingleton(Substitute.For<IMapper>());
-        Services.AddSingleton(Substitute.For<IPublisher>());
+        Services.AddSingleton(Substitute.For<IMessageHub>());
         Services.AddSingleton(Substitute.For<IDatabaseContext>());
         Services.AddSingleton(Substitute.For<ISpecificationEvaluator>());
         Services.AddSingleton(Substitute.For<IEventsPersistenceService>());

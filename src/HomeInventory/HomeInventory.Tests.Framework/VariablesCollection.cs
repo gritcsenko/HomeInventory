@@ -29,7 +29,7 @@ public sealed class VariablesContainer : IAsyncDisposable
         where T : notnull
     {
         var collection = GetAllValues(variable);
-        return collection.TryGetOrAdd<T>(variable.Index, createValueFunc);
+        return collection.TryGetOrAdd(variable.Index, createValueFunc);
     }
 
     public IEnumerable<T> GetAll<T>(IVariable<T> variable)
