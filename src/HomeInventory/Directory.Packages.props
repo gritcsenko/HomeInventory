@@ -89,7 +89,7 @@
     <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.6" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6" />
-    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.27.0.93347" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
