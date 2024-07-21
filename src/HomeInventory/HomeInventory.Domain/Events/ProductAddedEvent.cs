@@ -1,12 +1,11 @@
-﻿using DotNext;
-using HomeInventory.Domain.Entities;
-using Visus.Cuid;
+﻿using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Domain.Events;
 
 public record ProductAddedEvent : DomainEvent
 {
-    public ProductAddedEvent(ISupplier<Cuid> supplier, TimeProvider dateTimeService, Product product)
+    public ProductAddedEvent(IDomainEventIdSupplier supplier, TimeProvider dateTimeService, Product product)
         : base(supplier, dateTimeService)
     {
         Product = product;

@@ -5,9 +5,7 @@ using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.UserManagement;
 using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
