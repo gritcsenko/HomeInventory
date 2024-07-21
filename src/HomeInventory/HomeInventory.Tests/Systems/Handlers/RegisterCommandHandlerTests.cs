@@ -7,7 +7,6 @@ using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -22,10 +21,10 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-        Fixture.CustomizeFromFactory<RegisterCommand, Email, ISupplier<Cuid>>((e, s) => new RegisterCommand(e, s.Invoke().ToString()));
+        Fixture.CustomizeFromFactory<RegisterCommand, Email, ISupplier<Ulid>>((e, s) => new RegisterCommand(e, s.Invoke().ToString()));
     }
 
-    private RegisterCommandHandler CreateSut() => new(_scopeAccessor, DateTime, _hasher, IdSuppliers.Cuid);
+    private RegisterCommandHandler CreateSut() => new(_scopeAccessor, DateTime, _hasher, IdSuppliers.Ulid);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()

@@ -1,11 +1,8 @@
-﻿using HomeInventory.Domain;
-using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
 using HomeInventory.Web.UserManagement;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -65,7 +62,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 
         var data = new TheoryData<object, Type>();
 
-        Add<UserId, Cuid>(fixture, data);
+        Add<UserId, Ulid>(fixture, data);
 
         Add<Email, string>(fixture, data);
 

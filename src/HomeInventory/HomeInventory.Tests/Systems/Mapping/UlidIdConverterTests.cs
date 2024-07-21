@@ -65,5 +65,5 @@ public sealed class UlidIdConverterTestsGivenContext : GivenContext<UlidIdConver
 
 public class TestId(Ulid value) : UlidIdentifierObject<TestId>(value), IUlidBuildable<TestId>
 {
-    public static Result<TestId> CreateFrom(Ulid value) => Result.FromValue(new TestId(value));
+    public static Optional<TestId> CreateFrom(Ulid value) => new TestId(value);
 }

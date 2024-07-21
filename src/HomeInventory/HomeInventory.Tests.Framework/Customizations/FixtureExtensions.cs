@@ -1,21 +1,20 @@
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Framework.Customizations;
 
 public static class FixtureExtensions
 {
     public static IFixture CustomizeId<TId>(this IFixture fixture)
-        where TId : class, ICuidBuildable<TId>, ICuidIdentifierObject<TId> =>
+        where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>, IValuableIdentifierObject<TId, Ulid> =>
         fixture
-            .CustomizeCuid()
-            .CustomizeFromFactory<TId, ISupplier<Cuid>>(s => TId.CreateBuilder().WithValue(s.Invoke()).Build().Value);
+            .CustomizeUlid()
+            .CustomizeFromFactory<TId, ISupplier<Ulid>>(s => TId.CreateBuilder().WithValue(s.Invoke()).Build().Value);
 
     public static IFixture CustomizeEmail(this IFixture fixture) =>
         fixture
-            .CustomizeCuid()
-            .CustomizeFromFactory<Email, ISupplier<Cuid>>(s => new Email(s.Invoke().ToString() + "@email.com"));
+            .CustomizeUlid()
+            .CustomizeFromFactory<Email, ISupplier<Ulid>>(s => new Email(s.Invoke().ToString() + "@email.com"));
 
     public static IFixture CustomizeFromFactory<TObject>(this IFixture fixture, Func<TObject> createFunc)
     {
@@ -43,9 +42,6 @@ public static class FixtureExtensions
 
     public static IFixture CustomizeUlid(this IFixture fixture) =>
         fixture.CustomizeIdSupply(IdSuppliers.Ulid);
-
-    public static IFixture CustomizeCuid(this IFixture fixture) =>
-        fixture.CustomizeIdSupply(IdSuppliers.Cuid);
 
     private static IFixture CustomizeIdSupply<TId>(this IFixture fixture, ISupplier<TId> supplier) =>
         fixture

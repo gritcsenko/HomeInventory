@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Domain.ValueObjects;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Modules;
 

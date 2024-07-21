@@ -10,5 +10,5 @@ public sealed class MaterialId : UlidIdentifierObject<MaterialId>, IUlidBuildabl
     {
     }
 
-    public static Result<MaterialId> CreateFrom(Ulid value) => Result.FromValue(new MaterialId(value));
+    public static Optional<MaterialId> CreateFrom(Ulid value) => new MaterialId(value);
 }

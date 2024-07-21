@@ -1,14 +1,13 @@
 ﻿using HomeInventory.Domain.Primitives.Ids;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Visus.Cuid;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
 public static class EntityTypeBuilderExtensions
 {
     public static PropertyBuilder<TId> HasIdConversion<TId>(this PropertyBuilder<TId> builder)
-        where TId : class, IValuableIdentifierObject<TId, Cuid> =>
-        builder.HasIdConversion<TId, Cuid>();
+        where TId : class, IValuableIdentifierObject<TId, Ulid> =>
+        builder.HasIdConversion<TId, Ulid>();
 
     public static PropertyBuilder<TId> HasIdConversion<TId, TValue>(this PropertyBuilder<TId> builder)
         where TId : class, IValuableIdentifierObject<TId, TValue>
