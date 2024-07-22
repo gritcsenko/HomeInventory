@@ -50,7 +50,7 @@ public class OutboxMessageConfigurationTests : BaseTest
         property.Should().NotBeNull();
         var converter = property!.GetValueConverter();
         converter.Should().NotBeNull();
-        var text = converter!.ConvertToProvider(new UserCreatedDomainEvent(IdSuppliers.Cuid, DateTime, Fixture.Create<User>()));
+        var text = converter!.ConvertToProvider(new UserCreatedDomainEvent(IdSuppliers.Ulid, DateTime, Fixture.Create<User>()));
         text.Should().NotBeNull();
     }
 

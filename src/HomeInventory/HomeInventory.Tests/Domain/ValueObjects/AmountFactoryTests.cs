@@ -12,7 +12,7 @@ public class AmountFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var value = 0m;
-        var unknownUnit = AmountUnit.Create(MeasurementType.Area, IdSuppliers.Cuid, Fixture.Create<string>());
+        var unknownUnit = AmountUnit.Create(MeasurementType.Area, IdSuppliers.Ulid, Fixture.Create<string>());
 
         var result = sut.Create(value, unknownUnit);
 
@@ -28,7 +28,7 @@ public class AmountFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var value = 0m;
-        var unknownUnit = AmountUnit.Create(MeasurementType.Create(IdSuppliers.Cuid, Fixture.Create<string>()), IdSuppliers.Cuid, Fixture.Create<string>());
+        var unknownUnit = AmountUnit.Create(MeasurementType.Create(IdSuppliers.Ulid, Fixture.Create<string>()), IdSuppliers.Ulid, Fixture.Create<string>());
 
         var result = sut.Create(value, unknownUnit);
 

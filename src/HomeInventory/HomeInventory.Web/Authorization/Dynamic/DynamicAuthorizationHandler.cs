@@ -4,7 +4,6 @@ using HomeInventory.Domain.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Visus.Cuid;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
@@ -30,7 +29,7 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
             return;
         }
 
-        if (!Cuid.TryParse(idText, out var id))
+        if (!Ulid.TryParse(idText, out var id))
         {
             context.Fail(new AuthorizationFailureReason(this, $"User has no valid id '{idText}'"));
             return;

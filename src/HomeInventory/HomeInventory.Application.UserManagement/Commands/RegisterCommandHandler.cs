@@ -5,17 +5,17 @@ using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
-using Visus.Cuid;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, ISupplier<Cuid> eventIdSupplier) : CommandHandler<RegisterCommand>
+internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, ISupplier<Ulid> eventIdSupplier) : CommandHandler<RegisterCommand>
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly TimeProvider _timeProvider = timeProvider;
     private readonly IPasswordHasher _hasher = hasher;
-    private readonly ISupplier<Cuid> _eventIdSupplier = eventIdSupplier;
+    private readonly ISupplier<Ulid> _eventIdSupplier = eventIdSupplier;
 
     protected override async Task<OneOf<Success, IError>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {

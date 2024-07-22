@@ -3,7 +3,6 @@ using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.UserManagement;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -29,7 +28,7 @@ public class UserManagementContractsMappingsTests : BaseMappingsTests
         fixture.CustomizeEmail();
         return new()
         {
-            { fixture.Create<UserId>(), typeof(Cuid) },
+            { fixture.Create<UserId>(), typeof(Ulid) },
             { fixture.Create<Email>(), typeof(string) },
             { fixture.Create<RegisterRequest>(), typeof(RegisterCommand) },
             { fixture.Create<RegisterRequest>(), typeof(UserIdQuery) },
