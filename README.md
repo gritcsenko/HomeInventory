@@ -42,7 +42,7 @@ If you like or are using this project please give it a star. Thanks!
 
 # How do I build this?
 
-Install Visual Studio 2022 17.0+ or Visual Studio Code. You will also need to have .NET 7.0 SDK installed. Check [global.json](src/HomeInventory/global.json) for the current minimum required version.
+Install latest Visual Studio 2022 or Visual Studio Code. You will also need to have .NET 8.0 SDK installed. Check [global.json](src/HomeInventory/global.json) for the current minimum required .NET SDK version.
 
 ## Contributions and Thanks
 

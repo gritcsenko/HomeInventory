@@ -1,15 +1,16 @@
 {
-    "cSpell.words": [
-        "cobertura",
-        "danielpalme",
-        "GHSA",
-        "ghsas",
-        "Globbing",
-        "irongut",
-        "lcov",
-        "marocchino",
-        "opencover",
-        "SonarQube",
-        "Specflow"
-    ]
+  "cSpell.words": [
+    "cobertura",
+    "danielpalme",
+    "GHSA",
+    "ghsas",
+    "Globbing",
+    "irongut",
+    "lcov",
+    "marocchino",
+    "opencover",
+    "Serilog",
+    "SonarQube",
+    "Specflow"
+  ]
 }
