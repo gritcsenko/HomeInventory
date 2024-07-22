@@ -5,5 +5,5 @@ namespace HomeInventory.Web.Infrastructure;
 
 public interface IProblemDetailsFactory
 {
-    ProblemDetails ConvertToProblem(IEnumerable<IError> errors, string? traceIdentifier = null);
+    ProblemDetails ConvertToProblem(IEnumerable<IError> errors);
 }

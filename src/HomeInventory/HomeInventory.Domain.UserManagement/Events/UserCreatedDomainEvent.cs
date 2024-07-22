@@ -1,6 +1,6 @@
 ﻿using DotNext;
 using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Domain.Events;
 

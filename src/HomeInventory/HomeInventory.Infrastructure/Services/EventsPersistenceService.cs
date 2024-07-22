@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models;
 
@@ -8,13 +8,12 @@ internal class EventsPersistenceService(IDatabaseContext context) : IEventsPersi
 {
     private readonly IDatabaseContext _context = context;
 
-    public ValueTask SaveEventsAsync(IHasDomainEvents entity, CancellationToken cancellationToken = default)
+    public async Task SaveEventsAsync(IHasDomainEvents entity, CancellationToken cancellationToken = default)
     {
-        var events = entity.GetDomainEvents();
+        var events = entity.DomainEvents;
         var messages = events.Select(CreateMessage);
-        _context.GetDbSet<OutboxMessage>().AddRange(messages);
+        await _context.GetDbSet<OutboxMessage>().AddRangeAsync(messages, cancellationToken);
         entity.ClearDomainEvents();
-        return ValueTask.CompletedTask;
     }
 
     private static OutboxMessage CreateMessage(IDomainEvent domainEvent) =>

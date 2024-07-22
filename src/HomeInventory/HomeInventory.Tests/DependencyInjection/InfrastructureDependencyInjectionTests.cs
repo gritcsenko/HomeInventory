@@ -3,12 +3,12 @@ using AutoMapper;
 using FluentAssertions.Execution;
 using HomeInventory.Application;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
-using MediatR;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.DependencyInjection;
@@ -20,7 +20,7 @@ public class InfrastructureDependencyInjectionTests : BaseDependencyInjectionTes
     {
         Services.AddSingleton(Substitute.For<IHostEnvironment>());
         Services.AddSingleton(Substitute.For<IMapper>());
-        Services.AddSingleton(Substitute.For<IPublisher>());
+        Services.AddSingleton(Substitute.For<IMessageHub>());
         Services.AddSingleton(Substitute.For<IAmountFactory>());
         AddDateTime();
     }

@@ -25,7 +25,7 @@ public class ArchitectureTests
     [Theory]
     [InlineData(typeof(HomeInventory.Domain.AssemblyReference), new[] { Namespaces.DomainPrimitives })]
     [InlineData(typeof(HomeInventory.Domain.Primitives.AssemblyReference), new[] { Namespaces.Core })]
-    [InlineData(typeof(HomeInventory.Core.AssemblyReference), new string[0])]
+    [InlineData(typeof(AssemblyReference), new string[0])]
     [InlineData(typeof(HomeInventory.Application.AssemblyReference), new[] { Namespaces.Domain })]
     [InlineData(typeof(Infrastructure.AssemblyReference), new[] { Namespaces.Application })]
     [InlineData(typeof(Contracts.AssemblyReference), new string[0])]

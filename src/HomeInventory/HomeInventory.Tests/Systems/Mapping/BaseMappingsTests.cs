@@ -6,13 +6,20 @@ public abstract class BaseMappingsTests : BaseTest
 {
     private readonly ServiceCollection _services = new();
     private readonly DefaultServiceProviderFactory _factory = new();
+    private readonly Lazy<IServiceProvider> _lazyServiceProvider;
 
     protected BaseMappingsTests()
     {
-        Services.AddMappingTypeConverter();
+        _services
+            .AddDomain()
+            .AddMessageHubCore()
+            .AddMappingTypeConverter();
+        _lazyServiceProvider = new Lazy<IServiceProvider>(() => _factory.CreateServiceProvider(_services));
     }
 
     public IServiceCollection Services => _services;
+
+    public IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
     protected IMapper CreateSut<TMapper>()
         where TMapper : Profile, new()
@@ -21,8 +28,7 @@ public abstract class BaseMappingsTests : BaseTest
         {
             x.AddProfile<TMapper>();
         });
-        var serviceProvider = _factory.CreateServiceProvider(_services);
-        return new Mapper(config, serviceProvider.GetService);
+        return new Mapper(config, ServiceProvider.GetService);
     }
 
     protected IMapper CreateSut<TMapper1, TMapper2>()
@@ -34,7 +40,6 @@ public abstract class BaseMappingsTests : BaseTest
             x.AddProfile<TMapper1>();
             x.AddProfile<TMapper2>();
         });
-        var serviceProvider = _factory.CreateServiceProvider(_services);
-        return new Mapper(config, serviceProvider.GetService);
+        return new Mapper(config, ServiceProvider.GetService);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DotNext;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Domain.Events;
 

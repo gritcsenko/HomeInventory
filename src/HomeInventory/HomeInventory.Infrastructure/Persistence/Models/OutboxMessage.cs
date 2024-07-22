@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Infrastructure.Persistence.Models;
 

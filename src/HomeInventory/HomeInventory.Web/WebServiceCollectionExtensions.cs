@@ -36,7 +36,11 @@ public static class WebServiceCollectionExtensions
 
         services.AddScoped<ICorrelationIdContainer, CorrelationIdContainer>();
         services.AddScoped<CorrelationIdMiddleware>();
+        services.AddScoped<MapperScopeInjectionMiddleware>();
+        services.AddScoped<UnitOfWorkScopeInjectionMiddleware>();
         services.AddScoped<ProblemTraceIdentifierMiddleware>();
+        services.AddScoped<MessageHubScopeInjectionMiddleware>();
+        services.AddScoped<ProblemDetailsFactoryScopeInjectionMiddleware>();
 
         services.AddMappingAssemblySource(moduleAssemblies);
         services.AddAutoMapper((sp, configExpression) =>
@@ -64,7 +68,7 @@ public static class WebServiceCollectionExtensions
 
         services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
         services.AddOptionsWithValidator<JwtOptions>();
-        services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
+        services.AddSingleton<IAuthenticationTokenGenerator, JwtTokenGenerator>();
     }
 
     private static void AddOpenApiDocs(this IServiceCollection services)
@@ -99,6 +103,10 @@ public static class WebServiceCollectionExtensions
 
         app.UseMiddleware<CorrelationIdMiddleware>();
         app.UseMiddleware<ProblemTraceIdentifierMiddleware>();
+        app.UseMiddleware<MapperScopeInjectionMiddleware>();
+        app.UseMiddleware<UnitOfWorkScopeInjectionMiddleware>();
+        app.UseMiddleware<MessageHubScopeInjectionMiddleware>();
+        app.UseMiddleware<ProblemDetailsFactoryScopeInjectionMiddleware>();
 
         app.UseHttpsRedirection();
 

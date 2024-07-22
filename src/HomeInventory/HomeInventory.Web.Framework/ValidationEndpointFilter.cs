@@ -19,10 +19,10 @@ internal sealed class ValidationEndpointFilter<T>(IValidationContextFactory<T> v
         var httpContext = context.HttpContext;
         var validator = httpContext.RequestServices.GetValidator<T>();
 
-        var optionalFirstInvalid = await ValidateArgumentAsync(validator, arguments, httpContext.RequestAborted).FirstOrNoneAsync<ValidationResult>(r => !r.IsValid);
+        var optionalFirstInvalid = await ValidateArgumentAsync(validator, arguments, httpContext.RequestAborted).FirstOrNoneAsync(r => !r.IsValid);
         if (optionalFirstInvalid.TryGet(out var result))
         {
-            var problem = _problemDetailsFactory.ConvertToProblem(result, httpContext.TraceIdentifier);
+            var problem = _problemDetailsFactory.ConvertToProblem(result);
             return TypedResults.Problem(problem);
         }
 

@@ -1,6 +1,4 @@
-﻿using HomeInventory.Application.Mapping;
-
-namespace HomeInventory.Domain.Primitives.Ids;
+﻿namespace HomeInventory.Domain.Primitives.Ids;
 
 public interface IValuableIdentifierObject<TSelf, TId> : IIdentifierObject<TSelf>
     where TSelf : IValuableIdentifierObject<TSelf, TId>
