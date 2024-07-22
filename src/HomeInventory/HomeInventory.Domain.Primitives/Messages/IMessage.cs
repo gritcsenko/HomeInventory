@@ -2,5 +2,5 @@
 
 public interface IMessage : IHasCreationAudit
 {
-    Cuid Id { get; }
+    Ulid Id { get; }
 }

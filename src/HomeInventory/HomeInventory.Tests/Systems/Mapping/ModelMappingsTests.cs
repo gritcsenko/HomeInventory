@@ -2,7 +2,6 @@
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -41,7 +40,7 @@ public class ModelMappingsTests : BaseMappingsTests
 
         var data = new TheoryData<object, Type>();
 
-        Add<ProductId, Cuid>(fixture, data);
+        Add<ProductId, Ulid>(fixture, data);
 
         Add<Amount, ProductAmountModel>(fixture, data);
 

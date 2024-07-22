@@ -1,6 +1,5 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Domain;
 
@@ -191,19 +190,19 @@ public sealed class EntityTestsGivenContext : GivenContext<EntityTestsGivenConte
     public EntityTestsGivenContext(BaseTest test)
         : base(test)
     {
-        test.Fixture.CustomizeCuid();
+        test.Fixture.CustomizeUlid();
     }
 
     internal EntityTestsGivenContext Id(out IVariable<TestEntityId> id, int count = 1) => New(out id, CreateTestEntityId, count);
 
     protected override TestEntity CreateSut(TestEntityId arg) => new(arg);
 
-    private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Cuid>()).Value;
+    private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
 }
 
-public class TestEntityId(Cuid value) : CuidIdentifierObject<TestEntityId>(value), ICuidBuildable<TestEntityId>
+public class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
 {
-    public static Result<TestEntityId> CreateFrom(Cuid value) => Result.FromValue(new TestEntityId(value));
+    public static Optional<TestEntityId> CreateFrom(Ulid value) => new TestEntityId(value);
 }
 
 public class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)

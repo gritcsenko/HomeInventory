@@ -3,14 +3,13 @@ using DotNext;
 using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
-using Visus.Cuid;
 
 namespace HomeInventory.Domain.ValueObjects;
-public sealed class AmountUnit : BaseEnumeration<AmountUnit, Cuid>
+public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 {
     private readonly decimal _metricUnitScale;
 
-    private AmountUnit(string name, ISupplier<Cuid> supplier, MeasurementType measurement, decimal metricUnitScale, bool isMetric)
+    private AmountUnit(string name, ISupplier<Ulid> supplier, MeasurementType measurement, decimal metricUnitScale, bool isMetric)
         : base(name, supplier.Invoke())
     {
         Measurement = measurement;
@@ -52,13 +51,13 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Cuid>
 
     public override string ToString() => Name;
 
-    internal static AmountUnit Create(MeasurementType measurement, [CallerMemberName] string name = "") => Create(measurement, IdSuppliers.Cuid, name);
+    internal static AmountUnit Create(MeasurementType measurement, [CallerMemberName] string name = "") => Create(measurement, IdSuppliers.Ulid, name);
 
-    internal static AmountUnit Create(AmountUnit baseUnit, decimal baseUnitScale, [CallerMemberName] string name = "") => Create(baseUnit, baseUnitScale, IdSuppliers.Cuid, name);
+    internal static AmountUnit Create(AmountUnit baseUnit, decimal baseUnitScale, [CallerMemberName] string name = "") => Create(baseUnit, baseUnitScale, IdSuppliers.Ulid, name);
 
-    internal static AmountUnit Create(MeasurementType measurement, ISupplier<Cuid> supplier, [CallerMemberName] string name = "") => new(name, supplier, measurement, 1m, true);
+    internal static AmountUnit Create(MeasurementType measurement, ISupplier<Ulid> supplier, [CallerMemberName] string name = "") => new(name, supplier, measurement, 1m, true);
 
-    internal static AmountUnit Create(AmountUnit baseUnit, decimal baseUnitScale, ISupplier<Cuid> supplier, [CallerMemberName] string name = "")
+    internal static AmountUnit Create(AmountUnit baseUnit, decimal baseUnitScale, ISupplier<Ulid> supplier, [CallerMemberName] string name = "")
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(baseUnitScale);
         return new(

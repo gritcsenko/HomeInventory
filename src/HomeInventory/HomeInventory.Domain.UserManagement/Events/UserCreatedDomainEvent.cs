@@ -1,13 +1,12 @@
 ﻿using DotNext;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives.Messages;
-using Visus.Cuid;
 
 namespace HomeInventory.Domain.Events;
 
 public sealed record UserCreatedDomainEvent : DomainEvent
 {
-    public UserCreatedDomainEvent(ISupplier<Cuid> supplier, TimeProvider dateTimeService, User user)
+    public UserCreatedDomainEvent(ISupplier<Ulid> supplier, TimeProvider dateTimeService, User user)
         : base(supplier, dateTimeService) =>
         User = user;
 

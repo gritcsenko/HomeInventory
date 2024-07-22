@@ -6,5 +6,5 @@ public interface IIdBuildable<TSelf, TId, TBuilder>
     where TId : notnull
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "As designed")]
-    abstract static Result<TSelf> CreateFrom(TId value);
+    abstract static Optional<TSelf> CreateFrom(TId value);
 }

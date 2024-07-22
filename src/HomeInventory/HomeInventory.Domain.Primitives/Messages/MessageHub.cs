@@ -4,12 +4,12 @@ using System.Reactive.Subjects;
 
 namespace HomeInventory.Domain.Primitives.Messages;
 
-public sealed class MessageHub(ISupplier<Cuid> supplier, TimeProvider timeProvider, IMessageObservableProvider observableProvider) : Disposable, IMessageHub
+public sealed class MessageHub(ISupplier<Ulid> supplier, TimeProvider timeProvider, IMessageObservableProvider observableProvider) : Disposable, IMessageHub
 {
     private readonly ConcurrentDictionary<Type, object> _observables = new();
     private readonly IMessageObservableProvider _observableProvider = observableProvider;
 
-    public ISupplier<Cuid> EventIdSupplier { get; } = supplier;
+    public ISupplier<Ulid> EventIdSupplier { get; } = supplier;
 
     public TimeProvider EventCreatedTimeProvider { get; } = timeProvider;
 

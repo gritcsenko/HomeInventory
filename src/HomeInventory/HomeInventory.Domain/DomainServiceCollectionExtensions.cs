@@ -10,7 +10,7 @@ public static class DomainServiceCollectionExtensions
 {
     public static IServiceCollection AddDomain(this IServiceCollection services)
     {
-        services.AddSingleton(IdSuppliers.Cuid);
+        services.AddSingleton(IdSuppliers.Ulid);
         services.TryAddSingleton<IScopeAccessor, ScopeAccessor>();
         services.AddSingleton<IAmountFactory, AmountFactory>();
         services.AddTransient<TimeProvider>(_ => new FixedTimeProvider(TimeProvider.System));

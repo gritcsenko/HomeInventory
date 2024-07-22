@@ -20,7 +20,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
 
     public UnitOfWorkBehaviorTests()
     {
-        Fixture.CustomizeCuid();
+        Fixture.CustomizeUlid();
         AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
         var services = new ServiceCollection();
         services.AddSingleton<IScopeAccessor>(_scopeAccessor);

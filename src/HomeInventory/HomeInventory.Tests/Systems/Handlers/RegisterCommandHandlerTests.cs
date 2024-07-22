@@ -1,4 +1,3 @@
-using FluentAssertions.Common;
 using FluentAssertions.Execution;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Interfaces.Authentication;
@@ -10,7 +9,6 @@ using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -26,7 +24,7 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-        Fixture.CustomizeFromFactory<RegisterUserRequestMessage, Email, ISupplier<Cuid>>((e, s) => new RegisterUserRequestMessage(IdSuppliers.Cuid.Invoke(), DateTime.GetUtcNow(), e, s.Invoke().ToString()));
+        Fixture.CustomizeFromFactory<RegisterUserRequestMessage, Email, ISupplier<Ulid>>((e, s) => new RegisterUserRequestMessage(IdSuppliers.Ulid.Invoke(), DateTime.GetUtcNow(), e, s.Invoke().ToString()));
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
         services.AddDomain();

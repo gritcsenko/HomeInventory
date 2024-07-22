@@ -2,7 +2,7 @@
 
 public interface IMessageHub : IDisposable
 {
-    ISupplier<Cuid> EventIdSupplier { get; }
+    ISupplier<Ulid> EventIdSupplier { get; }
 
     TimeProvider EventCreatedTimeProvider { get; }
 

@@ -2,13 +2,12 @@
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
 using System.Runtime.CompilerServices;
-using Visus.Cuid;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class MeasurementType : BaseEnumeration<MeasurementType, Cuid>
+public sealed class MeasurementType : BaseEnumeration<MeasurementType, Ulid>
 {
-    private MeasurementType(string name, ISupplier<Cuid> supplier)
+    private MeasurementType(string name, ISupplier<Ulid> supplier)
         : base(name, supplier.Invoke())
     {
     }
@@ -22,7 +21,7 @@ public sealed class MeasurementType : BaseEnumeration<MeasurementType, Cuid>
 
     public override string ToString() => Name;
 
-    internal static MeasurementType Create([CallerMemberName] string name = "") => Create(IdSuppliers.Cuid, name);
+    internal static MeasurementType Create([CallerMemberName] string name = "") => Create(IdSuppliers.Ulid, name);
 
-    internal static MeasurementType Create(ISupplier<Cuid> supplier, [CallerMemberName] string name = "") => new(name, supplier);
+    internal static MeasurementType Create(ISupplier<Ulid> supplier, [CallerMemberName] string name = "") => new(name, supplier);
 }
