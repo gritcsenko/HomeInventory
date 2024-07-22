@@ -6,7 +6,6 @@ using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using OneOf;
 using OneOf.Types;
-using Visus.Cuid;
 
 namespace HomeInventory.Domain.Aggregates;
 
@@ -18,7 +17,7 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
 
     public required StorageAreaName Name { get; init; }
 
-    public OneOf<Success, DuplicateProductError> Add(ISupplier<Cuid> supplier, Product item, TimeProvider dateTimeService)
+    public OneOf<Success, DuplicateProductError> Add(ISupplier<Ulid> supplier, Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);
@@ -33,7 +32,7 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
         return new Success();
     }
 
-    public OneOf<Success, NotFound> Remove(ISupplier<Cuid> supplier, Product item, TimeProvider dateTimeService)
+    public OneOf<Success, NotFound> Remove(ISupplier<Ulid> supplier, Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);

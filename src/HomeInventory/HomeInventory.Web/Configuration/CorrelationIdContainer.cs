@@ -1,14 +1,13 @@
 ﻿using DotNext;
 using HomeInventory.Web.Configuration.Interfaces;
-using Visus.Cuid;
 
 namespace HomeInventory.Web.Configuration;
 
 internal class CorrelationIdContainer : ICorrelationIdContainer
 {
-    private readonly ISupplier<Cuid> _supplier;
+    private readonly ISupplier<Ulid> _supplier;
 
-    public CorrelationIdContainer(ISupplier<Cuid> supplier)
+    public CorrelationIdContainer(ISupplier<Ulid> supplier)
     {
         _supplier = supplier;
         CorrelationId = CreateNewId();

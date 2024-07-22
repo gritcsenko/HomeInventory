@@ -6,7 +6,6 @@ using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Visus.Cuid;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -43,10 +42,10 @@ public class DbContextFactory
         return _factory.Create(options, interceptor, dateTimeService, appliers);
     }
 
-    public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Cuid? id = null)
+    public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Ulid? id = null)
         where TContext : DbContext =>
         new DbContextOptionsBuilder<TContext>()
-            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? IdSuppliers.Cuid.Invoke()))
+            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? IdSuppliers.Ulid.Invoke()))
             .EnableSensitiveDataLogging()
             .Options;
 }

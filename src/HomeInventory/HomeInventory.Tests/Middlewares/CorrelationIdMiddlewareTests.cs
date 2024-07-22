@@ -10,7 +10,7 @@ namespace HomeInventory.Tests.Middlewares;
 public class CorrelationIdMiddlewareTests : BaseTest
 {
     private readonly TestingLogger<CorrelationIdMiddleware> _logger = Substitute.For<TestingLogger<CorrelationIdMiddleware>>();
-    private readonly CorrelationIdContainer _container = new(IdSuppliers.Cuid);
+    private readonly CorrelationIdContainer _container = new(IdSuppliers.Ulid);
     private readonly DefaultHttpContext _httpContext = new();
     private readonly IHttpResponseFeature _httpResponseFeature = Substitute.For<IHttpResponseFeature>();
 

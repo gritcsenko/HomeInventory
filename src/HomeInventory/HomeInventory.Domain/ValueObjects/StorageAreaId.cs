@@ -1,15 +1,14 @@
 ﻿using DotNext;
 using HomeInventory.Domain.Primitives.Ids;
-using Visus.Cuid;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class StorageAreaId : CuidIdentifierObject<StorageAreaId>, ICuidBuildable<StorageAreaId>
+public sealed class StorageAreaId : UlidIdentifierObject<StorageAreaId>, IUlidBuildable<StorageAreaId>
 {
-    private StorageAreaId(Cuid value)
+    private StorageAreaId(Ulid value)
         : base(value)
     {
     }
 
-    public static Result<StorageAreaId> CreateFrom(Cuid value) => Result.FromValue(new StorageAreaId(value));
+    public static Optional<StorageAreaId> CreateFrom(Ulid value) => new StorageAreaId(value);
 }

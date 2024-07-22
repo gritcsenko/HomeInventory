@@ -5,7 +5,6 @@ using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;

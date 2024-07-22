@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Visus.Cuid;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
 
@@ -10,7 +9,7 @@ internal sealed class ProductAmountModelConfiguration : IEntityTypeConfiguration
     {
         builder.ToTable("Products");
 
-        builder.Property<Cuid>("Id");
+        builder.Property<Ulid>("Id");
         builder.HasKey("Id");
 
         builder.Property(x => x.Value)

@@ -1,11 +1,10 @@
 ﻿using DotNext;
-using Visus.Cuid;
 
 namespace HomeInventory.Web.Authentication;
 
-public class CuidJwtIdentityGenerator(ISupplier<Cuid> supplier) : IJwtIdentityGenerator
+public class CuidJwtIdentityGenerator(ISupplier<Ulid> supplier) : IJwtIdentityGenerator
 {
-    private readonly ISupplier<Cuid> _supplier = supplier;
+    private readonly ISupplier<Ulid> _supplier = supplier;
 
     public string GenerateNew() => _supplier.Invoke().ToString();
 }
