@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Cqrs.Queries.Areas;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.Mapping;
@@ -24,11 +25,14 @@ public class ContractsMappingsTests : BaseMappingsTests
     {
         var fixture = new Fixture();
         fixture.CustomizeId<UserId>();
+        fixture.CustomizeId<StorageAreaId>();
+        fixture.CustomizeFromFactory<StorageAreaName, string>(x => new(x));
         fixture.CustomizeEmail();
         return new()
         {
             { fixture.Create<LoginRequest>(), typeof(AuthenticateQuery) },
             { fixture.Create<AuthenticateResult>(), typeof(LoginResponse) },
+            { fixture.Create<AreasResult>(), typeof(AreaResponse[]) },
         };
     }
 }

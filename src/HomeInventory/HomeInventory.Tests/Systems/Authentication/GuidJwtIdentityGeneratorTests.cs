@@ -1,4 +1,5 @@
-﻿using HomeInventory.Web.Authentication;
+﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Web.Authentication;
 
 namespace HomeInventory.Tests.Systems.Authentication;
 
@@ -8,7 +9,7 @@ public class GuidJwtIdentityGeneratorTests : BaseTest
     [Fact]
     public void GenerateNew_Should_ReturnNotEmpty()
     {
-        var sut = new GuidJwtIdentityGenerator();
+        var sut = CreateSut();
 
         var actual = sut.GenerateNew();
 
@@ -18,11 +19,13 @@ public class GuidJwtIdentityGeneratorTests : BaseTest
     [Fact]
     public void GenerateNew_Should_ReturnNewValue_WhenCalledSecondTime()
     {
-        var sut = new GuidJwtIdentityGenerator();
+        var sut = CreateSut();
         var first = sut.GenerateNew();
 
         var actual = sut.GenerateNew();
 
         actual.Should().NotBe(first);
     }
+
+    private static CuidJwtIdentityGenerator CreateSut() => new(IdSuppliers.Ulid);
 }

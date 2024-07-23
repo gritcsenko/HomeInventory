@@ -62,7 +62,7 @@ public static class WebServiceCollectionExtensions
             .AddJwtBearer();
         services.ConfigureOptions<JwtBearerOptionsSetup>();
 
-        services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
+        services.AddSingleton<IJwtIdentityGenerator, CuidJwtIdentityGenerator>();
         services.AddOptionsWithValidator<JwtOptions>();
         services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
     }
