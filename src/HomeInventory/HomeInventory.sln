@@ -82,15 +82,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserManagement", "UserManag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeInventory.Domain.UserManagement", "HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj", "{58B39281-B654-45C7-BBD2-6CB5E3E06029}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI", "HomeInventory.UI\HomeInventory.UI\HomeInventory.UI.csproj", "{311EB037-6530-40BA-88D3-338C300F0A2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI", "HomeInventory.UI\HomeInventory.UI.csproj", "{311EB037-6530-40BA-88D3-338C300F0A2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.Android", "HomeInventory.UI\HomeInventory.UI.Android\HomeInventory.UI.Android.csproj", "{DCE517AE-60F3-47FB-B13F-9EB96B9BAF16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.Android", "HomeInventory.UI.Android\HomeInventory.UI.Android.csproj", "{DCE517AE-60F3-47FB-B13F-9EB96B9BAF16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.Desktop", "HomeInventory.UI\HomeInventory.UI.Desktop\HomeInventory.UI.Desktop.csproj", "{0FCED7AA-20F5-4B34-A011-5F9790EF2FF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.Desktop", "HomeInventory.UI.Desktop\HomeInventory.UI.Desktop.csproj", "{0FCED7AA-20F5-4B34-A011-5F9790EF2FF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.iOS", "HomeInventory.UI\HomeInventory.UI.iOS\HomeInventory.UI.iOS.csproj", "{92181CAE-569A-41F5-9055-CFD7461E31C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.iOS", "HomeInventory.UI.iOS\HomeInventory.UI.iOS.csproj", "{92181CAE-569A-41F5-9055-CFD7461E31C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.Browser", "HomeInventory.UI\HomeInventory.UI.Browser\HomeInventory.UI.Browser.csproj", "{1BA4235A-4F63-4EA4-9C55-D7955C6129BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeInventory.UI.Browser", "HomeInventory.UI.Browser\HomeInventory.UI.Browser.csproj", "{1BA4235A-4F63-4EA4-9C55-D7955C6129BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

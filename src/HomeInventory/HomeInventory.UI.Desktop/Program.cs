@@ -1,9 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using System;
 
 namespace HomeInventory.UI.Desktop;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "From project template")]
 internal sealed class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
