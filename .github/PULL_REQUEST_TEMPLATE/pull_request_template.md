@@ -1,8 +1,10 @@
+
 <!--
 Thank you good citizen for your hard work!
 
 Please read the contributing guide before raising a pull request.
 https://github.com/gritcsenko/HomeInventory/blob/main/.github/CONTRIBUTING.md
+https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/using-query-parameters-to-create-a-pull-request
 -->
 
 # Description

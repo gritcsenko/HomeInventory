@@ -1,6 +1,9 @@
 name: "Feature Request"
 description: "Suggest an idea for this project"
 labels: [enhancement]
+title: "[DATE]: [FEATURE NAME]"
+assignees:
+  - gritcsenko
 body:
   - type: textarea
     id: describe-the-feature
