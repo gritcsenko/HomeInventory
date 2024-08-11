@@ -2,7 +2,7 @@
 
 public static class VariablesCollectionExtensions
 {
-    public static T Get<T>(this VariablesContainer collection, IIndexedVariable<T> variable)
+    public static PropertyValue<T> Get<T>(this VariablesContainer collection, IIndexedVariable<T> variable)
         where T : notnull
     {
         var result = collection.TryGet(variable);
@@ -11,7 +11,7 @@ public static class VariablesCollectionExtensions
             throw new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}");
         }
 
-        return (T)result;
+        return (PropertyValue<T>)result;
     }
 
     public static IEnumerable<T> GetMany<T>(this VariablesContainer collection, IVariable<T> variable)

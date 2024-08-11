@@ -10,7 +10,7 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
 
     public int Count => ((IReadOnlyCollection<ValueContainer>)_values).Count;
 
-    public Option<T> TryAdd<T>(Func<T> createValueFunc)
+    public Option<PropertyValue<T>> TryAdd<T>(Func<T> createValueFunc)
         where T : notnull
     {
         if (!IsAsignable<T>())
@@ -21,7 +21,7 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
         return AddCore(createValueFunc()).ToSome();
     }
 
-    public async Task<Option<T>> TryAddAsync<T>(Func<Task<T>> createValueFunc)
+    public async Task<Option<PropertyValue<T>>> TryAddAsync<T>(Func<Task<T>> createValueFunc)
         where T : notnull
     {
         if (!IsAsignable<T>())
@@ -32,7 +32,7 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
         return AddCore(await createValueFunc());
     }
 
-    public Option<T> TrySet<T>(int index, Func<T> createValueFunc)
+    public Option<PropertyValue<T>> TrySet<T>(int index, Func<T> createValueFunc)
         where T : notnull
     {
         if (!IsAsignable<T>() || index < 0 || index >= _values.Count)
@@ -43,10 +43,10 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
         var container = _values[index];
         var value = createValueFunc();
         container.Update(value);
-        return value;
+        return (PropertyValue<T>)value;
     }
 
-    public Option<T> TryGet<T>(int index)
+    public Option<PropertyValue<T>> TryGet<T>(int index)
         where T : notnull
     {
         if (!IsAsignable<T>() || index < 0 || index >= _values.Count)
@@ -55,10 +55,10 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
         }
 
         var container = _values[index];
-        return (T)container.Value;
+        return (PropertyValue<T>)(T)container.Value;
     }
 
-    public Option<T> TryGetOrAdd<T>(int index, Func<T> createValueFunc)
+    public Option<PropertyValue<T>> TryGetOrAdd<T>(int index, Func<T> createValueFunc)
         where T : notnull
     {
         if (!IsAsignable<T>() || index < 0 || index > _values.Count)
@@ -72,7 +72,7 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
         }
 
         var container = _values[index];
-        return (T)container.Value;
+        return (PropertyValue<T>)(T)container.Value;
     }
 
     public IEnumerable<T> GetAll<T>()
@@ -84,7 +84,7 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
     public bool IsAsignable<T>() =>
         typeof(T).IsAssignableTo(_valueType);
 
-    private T AddCore<T>(T value)
+    private PropertyValue<T> AddCore<T>(T value)
         where T : notnull
     {
         _values.Add(new ValueContainer(value, _valueType));
@@ -113,4 +113,10 @@ public sealed class ValuesCollection(Type valueType) : IReadOnlyCollection<Value
         }
         _values.Clear();
     }
+}
+
+public record struct PropertyValue<T>(T Value)
+{
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2225:Operator overloads have named alternates", Justification = "Not needed")]
+    public static implicit operator PropertyValue<T>(T value) => new(value);
 }

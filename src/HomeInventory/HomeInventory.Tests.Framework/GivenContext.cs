@@ -69,7 +69,8 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         name ??= nameof(AddAllToHashCode);
         hash = new Variable<HashCode>(name);
         var hashValue = Variables.TryGetOrAdd(hash[0], () => new HashCode())
-            .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{name}' of type {typeof(HashCode)}"));
+            .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{name}' of type {typeof(HashCode)}"))
+            .Value;
 
         foreach (var value in Variables.GetMany(variable))
         {

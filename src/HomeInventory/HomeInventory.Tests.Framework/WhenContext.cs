@@ -49,14 +49,14 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
         where TSut : notnull
         where TArg : notnull
         where TResult : notnull =>
-        Invoked(sut, sutValue => invoke(sutValue, Variables.Get(arg)));
+        Invoked(sut, sutValue => invoke(sutValue, Variables.Get(arg).Value));
 
     public ThenContext<TResult> Invoked<TSut, TResult>(IIndexedVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
         where TResult : notnull
     {
         var variable = _result.OfType<TResult>();
-        Variables.TryAdd(variable, () => invoke(Variables.Get(sut)));
+        Variables.TryAdd(variable, () => invoke(Variables.Get(sut).Value));
         return new(Variables, variable);
     }
 
