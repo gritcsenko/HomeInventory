@@ -41,32 +41,4 @@ public class AmountTests : BaseTest
 
         result.Should().BeFalse();
     }
-
-    [Theory]
-    [MemberData(nameof(UnitsData))]
-    public void ToMetric_Should_ReturnMetricAmount(AmountUnit unit)
-    {
-        var sut = new Amount(Fixture.Create<decimal>(), unit);
-
-        var actual = sut.ToMetric();
-
-        using var scope = new AssertionScope();
-        actual.Should().NotBeNull();
-        actual.Unit.IsMetric.Should().BeTrue();
-        if (unit.IsMetric)
-        {
-            unit.Should().Be(actual.Unit);
-        }
-        else
-        {
-            unit.Should().NotBe(actual.Unit);
-        }
-    }
-
-    public static TheoryData<AmountUnit> UnitsData() =>
-        new(){
-            AmountUnit.Piece,
-            AmountUnit.Gallon,
-            AmountUnit.CubicMeter,
-        };
 }

@@ -8,7 +8,7 @@ internal static class EnumerationItemsCollection
     public static EnumerationItemsCollection<T> CreateFor<T>()
         where T : IEnumeration<T>
     {
-        var items = typeof(T).GetFieldsOfType<T>();
+        var items = typeof(T).GetFieldValuesOfType<T>();
         return new EnumerationItemsCollection<T>(items);
     }
 }

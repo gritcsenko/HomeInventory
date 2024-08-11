@@ -1,9 +1,23 @@
 ﻿using LanguageExt.SomeHelp;
+using System.Numerics;
 
 namespace HomeInventory.Core;
 
-public static class DecimalExtensions
+public static class PowerExtensions
 {
+    public static TBase AsPowerWithBase<TPower, TBase>(this TPower power, TBase @base)
+        where TPower : IAdditiveIdentity<TPower, TPower>, IComparisonOperators<TPower, TPower, bool>, IIncrementOperators<TPower>
+        where TBase : IMultiplyOperators<TBase, TBase, TBase>
+    {
+        var result = @base;
+        for (var i = TPower.AdditiveIdentity; i < power; i++)
+        {
+            result *= @base;
+        }
+
+        return result;
+    }
+
     public static bool IsPow10(this decimal d) => d.IsPowOf(power: 10);
 
     public static bool IsPowOf(this decimal d, int power) => decimal.Abs(d).GetBase().DividesBy(power);

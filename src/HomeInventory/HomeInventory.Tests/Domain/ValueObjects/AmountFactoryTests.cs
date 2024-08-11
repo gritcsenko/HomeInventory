@@ -50,47 +50,42 @@ public class AmountFactoryTests : BaseTest
         result.IsFail.Should().BeTrue();
     }
 
-    [Theory]
-    [MemberData(nameof(NonNegativeUnitsData))]
-    public void Create_Should_Return_Error_When_ValueIsNegative(AmountUnit unit)
+    [Fact]
+    public void Create_Should_Return_Error_When_ValueIsNegative()
     {
+        var units = typeof(AmountUnit).GetFieldValuesOfType<AmountUnit>()
+            .Except([AmountUnit.Celsius]);
+        using var scope = new AssertionScope();
         var sut = CreateSut();
         var value = -1m;
 
-        var result = sut.Create(value, unit);
+        foreach (var unit in units)
+        {
+            var result = sut.Create(value, unit);
 
-        result.IsFail.Should().BeTrue();
+            result.IsFail.Should().BeTrue(unit.Name);
+        }
     }
 
-    [Theory]
-    [MemberData(nameof(UnitsData))]
-    public void Create_Should_Return_Amount_When_ValueIsValid(AmountUnit unit)
+    [Fact]
+    public void Create_Should_Return_Amount_When_ValueIsValid()
     {
         var sut = CreateSut();
         var value = 1m;
 
-        var result = sut.Create(value, unit);
-
+        var units = typeof(AmountUnit).GetFieldValuesOfType<AmountUnit>();
         using var scope = new AssertionScope();
-        result.IsSuccess.Should().BeTrue();
-        var amount = (Amount)result;
-        amount.Value.Should().Be(value);
-        amount.Unit.Should().Be(unit);
+
+        foreach (var unit in units)
+        {
+            var result = sut.Create(value, unit);
+
+            result.IsSuccess.Should().BeTrue(unit.Name);
+            var amount = (Amount)result;
+            amount.Value.Should().Be(value, unit.Name);
+            amount.Unit.Should().Be(unit);
+        }
     }
 
     private static AmountFactory CreateSut() => new();
-
-    public static TheoryData<AmountUnit> NonNegativeUnitsData() =>
-        new(){
-            AmountUnit.Piece,
-            AmountUnit.Gallon,
-            AmountUnit.CubicMeter,
-        };
-
-    public static TheoryData<AmountUnit> UnitsData() =>
-        new(){
-            AmountUnit.Piece,
-            AmountUnit.Gallon,
-            AmountUnit.CubicMeter,
-        };
 }
