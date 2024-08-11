@@ -19,9 +19,6 @@ public static class VariablesCollectionExtensions
         collection.GetMany(variable, ..);
 
     public static IEnumerable<T> GetMany<T>(this VariablesContainer collection, IVariable<T> variable, Range range)
-        where T : notnull
-    {
-        var all = collection.GetAll(variable).ToArray();
-        return all[range];
-    }
+        where T : notnull =>
+        collection.GetAll(variable).ToArray()[range];
 }

@@ -42,7 +42,6 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject) : Referenc
 
     public AndConstraint<QueryResultAssertions<T>> Be(T expected, string because = "", params object[] becauseArgs)
     {
-        
         Execute.Assertion
             .BecauseOf(because, becauseArgs)
             .WithExpectation("Expected {context:validation} to be Success {0}{reason}, ", expected)
