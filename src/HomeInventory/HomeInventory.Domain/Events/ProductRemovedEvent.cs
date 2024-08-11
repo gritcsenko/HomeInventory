@@ -1,12 +1,12 @@
-﻿using DotNext;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Entities;
+using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Domain.Events;
 
 public record ProductRemovedEvent : DomainEvent
 {
-    public ProductRemovedEvent(ISupplier<Ulid> supplier, TimeProvider dateTimeService, StorageArea area, Product product)
+    public ProductRemovedEvent(IIdSupplier<Ulid> supplier, TimeProvider dateTimeService, StorageArea area, Product product)
         : base(supplier, dateTimeService)
     {
         Area = area;

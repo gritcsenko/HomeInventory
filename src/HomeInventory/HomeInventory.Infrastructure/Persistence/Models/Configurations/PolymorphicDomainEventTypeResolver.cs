@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using DotNext.Collections.Generic;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Framework;
 
@@ -30,7 +29,7 @@ internal sealed class PolymorphicDomainEventTypeResolver(IEnumerable<IJsonDerive
             IgnoreUnrecognizedTypeDiscriminators = true,
             UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
         };
-        polymorphismOptions.DerivedTypes.AddAll(derivedTypes);
+        polymorphismOptions.DerivedTypes.AddRange(derivedTypes);
         return polymorphismOptions;
     }
 }

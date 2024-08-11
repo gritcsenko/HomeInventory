@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
-using HomeInventory.Core;
 
 namespace HomeInventory.Contracts.Validations;
 
@@ -13,13 +12,14 @@ internal sealed class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> re
     public override bool IsValid(ValidationContext<T> context, string? value) =>
         value == null
         || _requiredSets
-            .FirstOrNone(set => !set.ContainsAny(value))
-            .Convert(set =>
+            .Where(set => !set.ContainsAny(value))
+            .HeadOrNone()
+            .Map(set =>
             {
                 context.MessageFormatter.AppendArgument("Category", set.Name);
                 return false;
             })
-            .Or(true);
+            .IfNone(true);
 
     protected override string GetDefaultMessageTemplate(string errorCode) => "{PropertyName} must contain {Category} characters";
 }

@@ -1,5 +1,4 @@
-﻿using DotNext;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace HomeInventory.Web.Framework;
 
@@ -7,10 +6,10 @@ public sealed class SectionPath(string path)
 {
     private readonly string _path = path;
 
-    public Optional<SectionPath> GetParentOptional()
+    public Option<SectionPath> GetParentOptional()
     {
         var parent = ConfigurationPath.GetParentPath(_path);
-        return parent is null ? Optional.None<SectionPath>() : (SectionPath)parent;
+        return parent is null ? OptionNone.Default : (SectionPath)parent;
     }
 
     public static implicit operator SectionPath(string path) => ToSectionPath(path);

@@ -1,12 +1,11 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.ValueObjects;
 using MediatR;
 using MediatR.Registration;
 using Microsoft.Extensions.Logging;
-using OneOf;
 using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -14,16 +13,16 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class LoggingBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>> _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>>>();
+    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>> _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>>>();
     private readonly AuthenticateQuery _request;
-    private readonly OneOf<AuthenticateResult, IError> _response;
+    private readonly IQueryResult<AuthenticateResult> _response;
 
     public LoggingBehaviorTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
         _request = Fixture.Create<AuthenticateQuery>();
-        _response = Fixture.Create<AuthenticateResult>();
+        _response = Substitute.For<IQueryResult<AuthenticateResult>>();
     }
 
     [Fact]
@@ -38,7 +37,7 @@ public class LoggingBehaviorTests : BaseTest
         ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
         ServiceRegistrar.AddRequiredServices(services, serviceConfig);
 
-        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>>>();
+        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>>();
 
         behavior.Should().NotBeNull();
     }
@@ -50,9 +49,9 @@ public class LoggingBehaviorTests : BaseTest
 
         var response = await sut.Handle(_request, Handler, Cancellation.Token);
 
-        response.Value.Should().Be(_response.Value);
+        response.Should().BeSameAs(_response);
 
-        Task<OneOf<AuthenticateResult, IError>> Handler()
+        Task<IQueryResult<AuthenticateResult>> Handler()
         {
             return Task.FromResult(_response);
         }
@@ -65,7 +64,7 @@ public class LoggingBehaviorTests : BaseTest
 
         _ = await sut.Handle(_request, Handler, Cancellation.Token);
 
-        Task<OneOf<AuthenticateResult, IError>> Handler()
+        Task<IQueryResult<AuthenticateResult>> Handler()
         {
             _logger
                 .Received(1)
@@ -78,6 +77,7 @@ public class LoggingBehaviorTests : BaseTest
     public async Task Handle_Should_LogAfterCallingNext()
     {
         var sut = CreateSut();
+        _response.IsSuccess.Returns(true);
 
         _ = await sut.Handle(_request, Handler, Cancellation.Token);
 
@@ -85,12 +85,12 @@ public class LoggingBehaviorTests : BaseTest
             .Received(1)
             .Log(LogLevel.Information, Arg.Any<EventId>(), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
 
-        Task<OneOf<AuthenticateResult, IError>> Handler()
+        Task<IQueryResult<AuthenticateResult>> Handler()
         {
             _logger.ClearReceivedCalls();
             return Task.FromResult(_response);
         }
     }
 
-    private LoggingBehavior<AuthenticateQuery, OneOf<AuthenticateResult, IError>> CreateSut() => new(_logger);
+    private LoggingBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>> CreateSut() => new(_logger);
 }

@@ -1,10 +1,10 @@
-﻿using DotNext;
+﻿using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Web.Authentication;
 
-public class CuidJwtIdentityGenerator(ISupplier<Ulid> supplier) : IJwtIdentityGenerator
+public class CuidJwtIdentityGenerator(IIdSupplier<Ulid> supplier) : IJwtIdentityGenerator
 {
-    private readonly ISupplier<Ulid> _supplier = supplier;
+    private readonly IIdSupplier<Ulid> _supplier = supplier;
 
-    public string GenerateNew() => _supplier.Invoke().ToString();
+    public string GenerateNew() => _supplier.Supply().ToString();
 }

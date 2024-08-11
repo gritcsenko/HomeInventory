@@ -1,11 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿namespace HomeInventory.Domain.Primitives.Errors;
 
-namespace HomeInventory.Domain.Primitives.Errors;
-
-public record ValidationError(string Message, IReadOnlyDictionary<string, object?> Metadata) : BaseError(Message, Metadata)
+public record ValidationError(string Message, object Value) : Exceptional(Message, -1_000_000_001)
 {
-    public ValidationError(string Message)
-        : this(Message, ReadOnlyDictionary<string, object?>.Empty)
-    {
-    }
+    public override Exception ToException() => new ValidationException(this);
 }

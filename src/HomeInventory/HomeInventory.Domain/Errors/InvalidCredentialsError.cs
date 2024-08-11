@@ -1,5 +1,3 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+﻿namespace HomeInventory.Domain.Errors;
 
-namespace HomeInventory.Domain.Errors;
-
-public record InvalidCredentialsError() : BaseError("Invalid credentials");
+public record InvalidCredentialsError() : Exceptional("Invalid credentials", -1_000_000_005);

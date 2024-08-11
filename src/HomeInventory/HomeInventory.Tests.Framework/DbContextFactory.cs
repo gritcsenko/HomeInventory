@@ -45,7 +45,7 @@ public class DbContextFactory
     public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Ulid? id = null)
         where TContext : DbContext =>
         new DbContextOptionsBuilder<TContext>()
-            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? IdSuppliers.Ulid.Invoke()))
+            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? IdSuppliers.Ulid.Supply()))
             .EnableSensitiveDataLogging()
             .Options;
 }

@@ -1,13 +1,13 @@
-﻿using DotNext;
+﻿using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Web.Configuration.Interfaces;
 
 namespace HomeInventory.Web.Configuration;
 
 internal class CorrelationIdContainer : ICorrelationIdContainer
 {
-    private readonly ISupplier<Ulid> _supplier;
+    private readonly IIdSupplier<Ulid> _supplier;
 
-    public CorrelationIdContainer(ISupplier<Ulid> supplier)
+    public CorrelationIdContainer(IIdSupplier<Ulid> supplier)
     {
         _supplier = supplier;
         CorrelationId = CreateNewId();
@@ -19,5 +19,5 @@ internal class CorrelationIdContainer : ICorrelationIdContainer
 
     public void SetExisting(string id) => CorrelationId = id;
 
-    private string CreateNewId() => _supplier.Invoke().ToString();
+    private string CreateNewId() => _supplier.Supply().ToString();
 }

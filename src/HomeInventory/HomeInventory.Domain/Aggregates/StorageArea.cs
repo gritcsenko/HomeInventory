@@ -1,11 +1,10 @@
-﻿using DotNext;
-using HomeInventory.Domain.Entities;
+﻿using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
-using OneOf;
-using OneOf.Types;
 
 namespace HomeInventory.Domain.Aggregates;
 
@@ -17,7 +16,7 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
 
     public required StorageAreaName Name { get; init; }
 
-    public OneOf<Success, DuplicateProductError> Add(ISupplier<Ulid> supplier, Product item, TimeProvider dateTimeService)
+    public Option<DuplicateProductError> Add(IIdSupplier<Ulid> supplier, Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);
@@ -29,21 +28,21 @@ public class StorageArea(StorageAreaId id) : AggregateRoot<StorageArea, StorageA
 
         _products.AddLast(item);
         AddDomainEvent(new ProductAddedEvent(supplier, dateTimeService, this, item));
-        return new Success();
+        return OptionNone.Default;
     }
 
-    public OneOf<Success, NotFound> Remove(ISupplier<Ulid> supplier, Product item, TimeProvider dateTimeService)
+    public Option<NotFoundError> Remove(IIdSupplier<Ulid> supplier, Product item, TimeProvider dateTimeService)
     {
         ArgumentNullException.ThrowIfNull(item);
         ArgumentNullException.ThrowIfNull(dateTimeService);
 
         if (!_products.Contains(item))
         {
-            return new NotFound();
+            return new NotFoundError($"Product with Id {item.Id} not found");
         }
 
         _products.Remove(item);
         AddDomainEvent(new ProductRemovedEvent(supplier, dateTimeService, this, item));
-        return new Success();
+        return OptionNone.Default;
     }
 }

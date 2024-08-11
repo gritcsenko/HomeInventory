@@ -1,4 +1,4 @@
-﻿using FluentAssertions.Execution;
+﻿using Execute = FluentAssertions.Execution.Execute;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 

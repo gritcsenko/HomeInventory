@@ -1,6 +1,5 @@
 using System.Globalization;
 using HomeInventory.Contracts;
-using HomeInventory.Core;
 using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
 using Humanizer;
