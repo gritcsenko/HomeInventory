@@ -4,7 +4,10 @@
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="FluentAssertions.Analyzers" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="FluentAssertions.LanguageExt" />
     <PackageReference Include="Flurl" />
+    <PackageReference Include="LanguageExt.AutoFixture" />
+    <PackageReference Include="LanguageExt.UnitTesting" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />

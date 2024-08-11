@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -37,10 +36,11 @@ internal static class ProblemDetailsExtensions
         return problemDetails;
     }
 
-    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, IEnumerable<IError> errors)
+    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, Seq<Error> errors)
         where TProblem : ProblemDetails
     {
         problemDetails.Extensions["errorCodes"] = errors.Select(e => e.GetType().Name).ToArray();
+        problemDetails.Extensions["errors"] = errors.ToArray();
         return problemDetails;
     }
 

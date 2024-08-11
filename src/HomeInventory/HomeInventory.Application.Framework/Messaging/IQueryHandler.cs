@@ -1,8 +1,7 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+﻿namespace HomeInventory.Application.Interfaces.Messaging;
 
-namespace HomeInventory.Application.Interfaces.Messaging;
-
-public interface IQueryHandler<TQuery, TResponse> : IRequestHandler<TQuery, OneOf<TResponse, IError>>
+public interface IQueryHandler<TQuery, TResponse> : IRequestHandler<TQuery, IQueryResult<TResponse>>
     where TQuery : IQuery<TResponse>
+    where TResponse : notnull
 {
 }

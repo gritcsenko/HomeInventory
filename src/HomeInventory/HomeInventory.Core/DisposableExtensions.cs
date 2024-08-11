@@ -3,17 +3,14 @@
 public static class DisposableExtensions
 {
     public static IAsyncDisposable ToAsyncDisposable<T>(this T subject)
-        where T : IDisposable
-    {
-        if (subject is IAsyncDisposable asyncDisposable)
+        where T : IDisposable =>
+        subject switch
         {
-            return asyncDisposable;
-        }
-
-        return new AnonymousAsyncDisposable(() =>
-        {
-            subject.Dispose();
-            return ValueTask.CompletedTask;
-        });
-    }
+            IAsyncDisposable asyncDisposable => asyncDisposable,
+            _ => new AnonymousAsyncDisposable(() =>
+            {
+                subject.Dispose();
+                return ValueTask.CompletedTask;
+            })
+        };
 }
