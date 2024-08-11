@@ -34,8 +34,6 @@ public static class AssertionExtensions
 
     public static RouteEndpointAssertions Should(this RouteEndpoint actualValue) => new(actualValue);
 
-    public static DictionaryAssertions ShouldBeDictionaryAnd(this IDictionary actualValue) => new(actualValue);
-
     public static AndWhichConstraint<ObjectAssertions, JsonElement> BeJsonElement(this ObjectAssertions assertions) =>
         new(assertions, assertions.BeAssignableTo<JsonElement>().Subject);
 
