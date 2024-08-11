@@ -69,7 +69,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         name ??= nameof(AddAllToHashCode);
         hash = new Variable<HashCode>(name);
         var hashValue = Variables.TryGetOrAdd(hash[0], () => new HashCode())
-            .OrThrow(() => throw new InvalidOperationException($"Failed to add variable '{name}' of type {typeof(HashCode)}"));
+            .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{name}' of type {typeof(HashCode)}"));
 
         foreach (var value in Variables.GetMany(variable))
         {
@@ -77,7 +77,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         }
 
         Variables.TryUpdate(hash[0], () => hashValue)
-            .OrThrow(() => throw new InvalidOperationException($"Failed to update variable '{name}' of type {typeof(HashCode)}"));
+            .ThrowIfNone(() => new InvalidOperationException($"Failed to update variable '{name}' of type {typeof(HashCode)}"));
 
         return This;
     }
@@ -88,7 +88,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         foreach (var value in createValues())
         {
             var result = Variables.TryAdd(variable, () => value);
-            if (result.IsUndefined)
+            if (result.IsNone)
             {
                 throw new InvalidOperationException($"Failed to add variable '{variable.Name}' of type {typeof(T)}");
             }

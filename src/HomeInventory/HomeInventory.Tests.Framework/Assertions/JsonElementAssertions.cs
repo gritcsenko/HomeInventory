@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using HomeInventory.Core;
 using HomeInventory.Tests.Framework.Assertions;
 
 namespace HomeInventory.Tests.Framework.Assertions;

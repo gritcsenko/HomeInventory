@@ -1,6 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using DotNext;
-using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
 
@@ -9,8 +7,8 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 {
     private readonly decimal _metricUnitScale;
 
-    private AmountUnit(string name, ISupplier<Ulid> supplier, MeasurementType measurement, decimal metricUnitScale, bool isMetric)
-        : base(name, supplier.Invoke())
+    private AmountUnit(string name, IIdSupplier<Ulid> supplier, MeasurementType measurement, decimal metricUnitScale, bool isMetric)
+        : base(name, supplier.Supply())
     {
         Measurement = measurement;
         _metricUnitScale = metricUnitScale;
@@ -55,9 +53,9 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 
     internal static AmountUnit Create(AmountUnit baseUnit, decimal baseUnitScale, [CallerMemberName] string name = "") => Create(baseUnit, baseUnitScale, IdSuppliers.Ulid, name);
 
-    internal static AmountUnit Create(MeasurementType measurement, ISupplier<Ulid> supplier, [CallerMemberName] string name = "") => new(name, supplier, measurement, 1m, true);
+    internal static AmountUnit Create(MeasurementType measurement, IIdSupplier<Ulid> supplier, [CallerMemberName] string name = "") => new(name, supplier, measurement, 1m, true);
 
-    internal static AmountUnit Create(AmountUnit baseUnit, decimal baseUnitScale, ISupplier<Ulid> supplier, [CallerMemberName] string name = "")
+    internal static AmountUnit Create(AmountUnit baseUnit, decimal baseUnitScale, IIdSupplier<Ulid> supplier, [CallerMemberName] string name = "")
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(baseUnitScale);
         return new(

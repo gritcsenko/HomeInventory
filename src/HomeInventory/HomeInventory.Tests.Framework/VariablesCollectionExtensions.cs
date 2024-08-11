@@ -6,12 +6,12 @@ public static class VariablesCollectionExtensions
         where T : notnull
     {
         var result = collection.TryGet(variable);
-        if (result.IsUndefined)
+        if (result.IsNone)
         {
             throw new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}");
         }
 
-        return result.ValueOrDefault!;
+        return (T)result;
     }
 
     public static IEnumerable<T> GetMany<T>(this VariablesContainer collection, IVariable<T> variable)

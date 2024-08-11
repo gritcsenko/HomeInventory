@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Text.Json;
+using FluentAssertions.LanguageExt;
+using HomeInventory.Application.Interfaces.Messaging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +22,11 @@ public static class AssertionExtensions
 
     public static OkResultAssertions<TValue> Should<TValue>(this Ok<TValue> actualValue) => new(actualValue);
 
-    public static OptionAssertions<T> Should<T>(this Optional<T> actualValue)
-        where T : notnull =>
-        new(actualValue);
+    public static LanguageExtOptionAssertions<T> Should<T>(this Option<T> actualValue) => new(actualValue);
+
+    public static LanguageExtValidationAssertions<Error, T> Should<T>(this Validation<Error, T> actualValue) => new(actualValue);
+
+    public static QueryResultAssertions<T> Should<T>(this IQueryResult<T> actualValue) where T : notnull => new(actualValue);
 
     public static GenericCollectionAssertions<EndpointMetadataCollection, object> Should(this EndpointMetadataCollection actualValue) => new(actualValue);
 

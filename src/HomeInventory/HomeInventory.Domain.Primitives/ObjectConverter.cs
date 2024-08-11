@@ -1,25 +1,12 @@
-using HomeInventory.Domain.Primitives.Errors;
-
 namespace HomeInventory.Application.Mapping;
 
 public abstract class ObjectConverter<TSource, TDestination>
 {
     public TDestination Convert(TSource source) =>
         TryConvert(source)
-            .Match(Func.Identity<TDestination>(), error => throw CreateException(error));
+            .Match(Functional.Identity<TDestination>(), seq => Error.Many(seq).Throw().Return(ShouldNotBeCalled));
 
-    public OneOf<TDestination, IError> TryConvert(TSource source) => TryConvertCore(source);
+    public abstract Validation<Error, TDestination> TryConvert(TSource source);
 
-    protected abstract OneOf<TDestination, IError> TryConvertCore(TSource source);
-
-    private static InvalidOperationException CreateException(IError error)
-    {
-        var exception = new InvalidOperationException($"Cannot convert '{typeof(TSource).FullName}' to '{typeof(TDestination).FullName}'. Reason: '{error.Message}'");
-        foreach (var (key, value) in error.Metadata)
-        {
-            exception.Data.Add(key, value);
-        }
-
-        return exception;
-    }
+    private TDestination ShouldNotBeCalled() => throw new ExceptionalException(nameof(ShouldNotBeCalled), -1_000_000_000);
 }

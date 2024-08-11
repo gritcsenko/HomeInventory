@@ -11,10 +11,12 @@ public sealed class JsonOpenApiValueConverter : IOpenApiValueConverter
 {
     public IOpenApiAny Convert(object? value, Type type)
     {
-        if (value is null || value is DBNull)
+#pragma warning disable CA1508 // Avoid dead conditional code
+        if (value is null || value is DBNull || value.Equals(null))
         {
             return new OpenApiNull();
         }
+#pragma warning restore CA1508 // Avoid dead conditional code
 
         var json = JsonSerializer.Serialize(value, type);
         return OpenApiAnyFactory.CreateFromJson(json);

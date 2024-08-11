@@ -1,5 +1,4 @@
 using HomeInventory.Api;
-using HomeInventory.Core;
 
 using var log = SerilogConfigurator.CreateBootstrapLogger();
 

@@ -9,12 +9,12 @@ public static class FixtureExtensions
         where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>, IValuableIdentifierObject<TId, Ulid> =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<TId, ISupplier<Ulid>>(s => TId.CreateBuilder().WithValue(s.Invoke()).Build().Value);
+            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(s => (TId)TId.CreateBuilder().WithValue(s.Supply()).Build());
 
     public static IFixture CustomizeEmail(this IFixture fixture) =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<Email, ISupplier<Ulid>>(s => new Email(s.Invoke().ToString() + "@email.com"));
+            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new Email(s.Supply().ToString() + "@email.com"));
 
     public static IFixture CustomizeFromFactory<TObject>(this IFixture fixture, Func<TObject> createFunc)
     {
@@ -43,8 +43,8 @@ public static class FixtureExtensions
     public static IFixture CustomizeUlid(this IFixture fixture) =>
         fixture.CustomizeIdSupply(IdSuppliers.Ulid);
 
-    private static IFixture CustomizeIdSupply<TId>(this IFixture fixture, ISupplier<TId> supplier) =>
+    private static IFixture CustomizeIdSupply<TId>(this IFixture fixture, IIdSupplier<TId> supplier) =>
         fixture
             .CustomizeFromFactory(() => supplier)
-            .CustomizeFromFactory<TId, ISupplier<TId>>(s => s.Invoke());
+            .CustomizeFromFactory<TId, IIdSupplier<TId>>(s => s.Supply());
 }
