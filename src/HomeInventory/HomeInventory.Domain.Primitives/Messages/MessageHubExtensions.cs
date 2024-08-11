@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Reflection;
 
@@ -12,18 +11,18 @@ public static class MessageHubExtensions
         .GetMethod(nameof(InternalRequestAsync), BindingFlags.NonPublic | BindingFlags.Static)!
         .GetGenericMethodDefinition();
 
-    public static Task<OneOf<TResponse, IError>> RequestAsync<TResponse>(this IMessageHub hub, IRequestMessage<TResponse> request, CancellationToken cancellationToken = default) =>
-        (Task<OneOf<TResponse, IError>>)_request.MakeGenericMethod(request.GetType(), typeof(TResponse)).Invoke(null, [hub, request, cancellationToken])!;
+    public static Task<TResponse> RequestAsync<TResponse>(this IMessageHub hub, IRequestMessage<TResponse> request, CancellationToken cancellationToken = default) =>
+        (Task<TResponse>)_request.MakeGenericMethod(request.GetType(), typeof(TResponse)).Invoke(null, [hub, request, cancellationToken])!;
 
-    public static ResposeMessage<TRequest, TResponse> CreateResponse<TRequest, TResponse>(this IMessageHub hub, TRequest request, OneOf<TResponse, IError> response)
+    public static ResposeMessage<TRequest, TResponse> CreateResponse<TRequest, TResponse>(this IMessageHub hub, TRequest request, TResponse response)
         where TRequest : IRequestMessage<TResponse> =>
         hub.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, request, response));
 
     public static TMessage CreateMessage<TMessage>(this IMessageHub hub, Func<Ulid, DateTimeOffset, TMessage> createFunc)
         where TMessage : IMessage =>
-        createFunc(hub.EventIdSupplier.Invoke(), hub.EventCreatedTimeProvider.GetUtcNow());
+        createFunc(hub.EventIdSupplier.Supply(), hub.EventCreatedTimeProvider.GetUtcNow());
 
-    private static Task<OneOf<TResponse, IError>> InternalRequestAsync<TRequest, TResponse>(this IMessageHub hub, TRequest request, CancellationToken cancellationToken)
+    private static Task<TResponse> InternalRequestAsync<TRequest, TResponse>(this IMessageHub hub, TRequest request, CancellationToken cancellationToken)
         where TRequest : class, IRequestMessage<TResponse>
     {
         var task = hub.GetMessages<ResposeMessage<TRequest, TResponse>>()

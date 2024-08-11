@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HomeInventory.Core;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Middleware;

@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using HomeInventory.Core;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
 

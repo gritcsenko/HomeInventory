@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Domain.Primitives.Messages;
+﻿using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
@@ -11,11 +10,11 @@ internal sealed class LoggingRequestBehavior<TRequest, TResponse>(ILogger<Loggin
 
     private readonly ILogger _logger = logger;
 
-    public async Task<OneOf<TResponse, IError>> OnRequest(IMessageHub hub, TRequest request, Func<Task<OneOf<TResponse, IError>>> handler, CancellationToken cancellationToken = default)
+    public async Task<TResponse> OnRequestAsync(IRequestContext<TRequest> context, Func<IRequestContext<TRequest>, Task<TResponse>> handler)
     {
         using var scope = _logger.LoggingBehaviorScope(_requestName, _responseName);
-        _logger.SendingRequest(request);
-        var response = await handler();
+        _logger.SendingRequest(context.Request);
+        var response = await handler(context);
 
         var consumer = GetResponseHandler(response);
         consumer.Invoke(_logger);
@@ -23,11 +22,13 @@ internal sealed class LoggingRequestBehavior<TRequest, TResponse>(ILogger<Loggin
         return response;
     }
 
-    private static Action<ILogger> GetResponseHandler(OneOf<TResponse, IError> response) =>
+    private static Action<ILogger> GetResponseHandler(TResponse response) =>
         response switch
         {
-            var oneOf when oneOf.Index == 0 => l => l.ValueReturned(oneOf.Value),
-            var oneOf when oneOf.Index == 1 => l => l.ErrorReturned(oneOf.Value),
+            Option<Error> option when option.IsNone => l => l.ValueReturned(Unit.Default),
+            Option<Error> option when option.IsSome => l => l.ErrorReturned(option),
+            IQueryResult result when result.IsSuccess => l => l.ValueReturned(result.Success),
+            IQueryResult result when result.IsFail => l => l.ErrorReturned(result.Fail),
             var unknown => l => l.UnknownReturned(unknown),
         };
 }

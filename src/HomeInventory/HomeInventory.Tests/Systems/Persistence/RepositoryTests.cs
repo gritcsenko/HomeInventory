@@ -81,9 +81,9 @@ public class RepositoryTests : BaseRepositoryTest
         await sut.AddAsync(entity, Cancellation.Token);
         await Context.SaveChangesAsync(Cancellation.Token);
 
-        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<UserModel, UserId>(entity.Id), Cancellation.Token);
+        var actual = await sut.FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(entity.Id), Cancellation.Token);
 
-        actual.Should().HaveSomeValue();
+        actual.Should().BeSome();
     }
 
     [Fact]
@@ -92,9 +92,9 @@ public class RepositoryTests : BaseRepositoryTest
         var id = Fixture.Create<UserId>();
         var sut = CreateSut();
 
-        var actual = await sut.FindFirstOptionalAsync(new ByIdFilterSpecification<UserModel, UserId>(id), Cancellation.Token);
+        var actual = await sut.FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(id), Cancellation.Token);
 
-        actual.Should().HaveNoValue();
+        actual.Should().BeNone();
     }
 
     [Fact]

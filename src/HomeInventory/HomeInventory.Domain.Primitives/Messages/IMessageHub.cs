@@ -1,8 +1,10 @@
-﻿namespace HomeInventory.Domain.Primitives.Messages;
+﻿using HomeInventory.Domain.Primitives.Ids;
+
+namespace HomeInventory.Domain.Primitives.Messages;
 
 public interface IMessageHub : IDisposable
 {
-    ISupplier<Ulid> EventIdSupplier { get; }
+    IIdSupplier<Ulid> EventIdSupplier { get; }
 
     TimeProvider EventCreatedTimeProvider { get; }
 

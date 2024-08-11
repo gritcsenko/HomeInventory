@@ -1,5 +1,4 @@
-﻿using HomeInventory.Core;
-using HomeInventory.Domain.Primitives.Messages;
+﻿using HomeInventory.Domain.Primitives.Messages;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Middleware;

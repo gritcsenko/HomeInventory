@@ -1,5 +1,5 @@
-﻿using System.Reactive;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
+using Unit = System.Reactive.Unit;
 
 namespace HomeInventory.Domain.Primitives.Messages;
 

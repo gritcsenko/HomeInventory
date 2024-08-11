@@ -1,9 +1,7 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-
-namespace HomeInventory.Domain.Primitives.Messages;
+﻿namespace HomeInventory.Domain.Primitives.Messages;
 
 public interface IRequestPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequestMessage<TResponse>
 {
-    Task<OneOf<TResponse, IError>> OnRequest(IMessageHub hub, TRequest request, Func<Task<OneOf<TResponse, IError>>> handler, CancellationToken cancellationToken = default);
+    Task<TResponse> OnRequestAsync(IRequestContext<TRequest> context, Func<IRequestContext<TRequest>, Task<TResponse>> handler);
 }

@@ -1,63 +1,58 @@
-﻿using DotNext;
-using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Core;
+﻿using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Commands.Register;
 
-internal sealed class RegisterUserRequestHandler(IScopeAccessor scopeAccessor, IPasswordHasher hasher) : IRequestHandler<RegisterUserRequestMessage, Success>
+internal sealed class RegisterUserRequestHandler(IScopeAccessor scopeAccessor, IPasswordHasher hasher, IIdSupplier<Ulid> eventIdSupplier, TimeProvider timeProvider) : IRequestHandler<RegisterUserRequestMessage, Option<Error>>
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly IPasswordHasher _hasher = hasher;
+    private readonly IIdSupplier<Ulid> _eventIdSupplier = eventIdSupplier;
+    private readonly TimeProvider _timeProvider = timeProvider;
 
-    public async Task<OneOf<Success, IError>> HandleAsync(IMessageHub hub, RegisterUserRequestMessage request, CancellationToken cancellationToken = default)
+    public async Task<Option<Error>> HandleAsync(IRequestContext<RegisterUserRequestMessage> context)
     {
-        var userRepository = _scopeAccessor.TryGet<IUserRepository>().OrThrow<InvalidOperationException>();
-        if (await userRepository.IsUserHasEmailAsync(request.Email, cancellationToken))
+        var userRepository = _scopeAccessor.GetRequiredContext<IUserRepository>();
+        if (await userRepository.IsUserHasEmailAsync(context.Request.Email, context.RequestAborted))
         {
             return new DuplicateEmailError();
         }
 
-        var userIdSupplier = UserId.IdSupplier;
-        var userId = UserId
-            .CreateBuilder()
-            .WithValue(userIdSupplier.Invoke())
-            .Build();
-        var user = await request.CreateUserAsync(userId, _hasher, cancellationToken)
-            .Tap(u => u.OnUserCreated(hub.EventIdSupplier, hub.EventCreatedTimeProvider))
-            .Tap(u => userRepository.AddAsync(u, cancellationToken));
-        return user.ToResultOrError(_ => new Success(), () => userId.CreateObjectValidationError().OrInvoke(() => new ObjectValidationError<string>("Failed to create new id")));
+        var userId = UserId.IdSupplier.Supply();
+        var user = await context.Request.CreateUserAsync(userId, _hasher, context.RequestAborted);
+        var result = await user
+            .MapAsync(async u =>
+            {
+                u.OnUserCreated(_eventIdSupplier, _timeProvider);
+                await userRepository.AddAsync(u, context.RequestAborted);
+                return Option<Error>.None;
+            });
+        return result.IfFail(errors => Error.Many(errors));
     }
 }
-
 
 file static class Extensions
 {
-    public static Optional<IError> CreateObjectValidationError<TId>(this Optional<TId> optional) =>
-        from id in optional
-        select (IError)new ObjectValidationError<TId>(id);
+    public static async Task<Validation<Error, User>> CreateUserAsync(this RegisterUserRequestMessage request, Ulid userId, IPasswordHasher hasher, CancellationToken cancellationToken = default) =>
+        await UserId
+            .CreateBuilder()
+            .WithValue(userId)
+            .Build()
+            .MapAsync(async id => await CreateUserAsync(request, hasher, id, cancellationToken));
 
-    public static Task<Optional<User>> CreateUserAsync(this RegisterUserRequestMessage request, Optional<UserId> userId, IPasswordHasher hasher, CancellationToken cancellationToken = default) =>
-        userId.CreateUserAsync(request.Email, request.Password, hasher, cancellationToken);
-
-    private static Task<Optional<User>> CreateUserAsync(this Optional<UserId> userId, Email email, string password, IPasswordHasher hasher, CancellationToken cancellationToken = default)
+    private static async Task<User> CreateUserAsync(RegisterUserRequestMessage request, IPasswordHasher hasher, UserId id, CancellationToken cancellationToken)
     {
-        return
-            from id in userId
-            let hash = hasher.HashAsync(password, cancellationToken)
-            select CreateUserAsync(id, hash);
-
-        async Task<User> CreateUserAsync(UserId id, Task<string> hash) =>
-            new User(id)
-            {
-                Email = email,
-                Password = await hash,
-            };
+        var password = await hasher.HashAsync(request.Password, cancellationToken);
+        var user = new User(id)
+        {
+            Email = request.Email,
+            Password = password,
+        };
+        return user;
     }
 }
-

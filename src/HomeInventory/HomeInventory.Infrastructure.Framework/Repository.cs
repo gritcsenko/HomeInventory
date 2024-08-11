@@ -1,7 +1,5 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
-using DotNext;
-using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Infrastructure.Framework.Mapping;
@@ -81,7 +79,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
         AsyncEnumerable.ToAsyncEnumerable(ToEntity(Set(), cancellationToken));
 
-    public async Task<Optional<TAggregateRoot>> FindFirstOptionalAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async Task<Option<TAggregateRoot>> FindFirstOptionAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query, cancellationToken);
@@ -90,7 +88,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
             return entity;
         }
 
-        return Optional.None<TAggregateRoot>();
+        return OptionNone.Default;
     }
 
     public async Task<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
@@ -137,7 +135,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
 
     private TModel ToModel(TAggregateRoot entity) =>
         _context.FindTracked<TModel>(m => m.Id.Equals(entity.Id))
-            .OrInvoke(() => _mapper.MapOrFail<TAggregateRoot, TModel>(entity));
+            .IfNone(() => _mapper.MapOrThrow<TAggregateRoot, TModel>(entity));
 
     private IQueryable<TAggregateRoot> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
         _mapper.ProjectTo<TAggregateRoot>(query, cancellationToken);

@@ -1,11 +1,9 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-using OneOf;
 using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -13,30 +11,35 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class LoggingBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<LoggingRequestBehavior<AuthenticateRequestMessage, AuthenticateResult>> _logger = Substitute.For<TestingLogger<LoggingRequestBehavior<AuthenticateRequestMessage, AuthenticateResult>>>();
-    private readonly AuthenticateRequestMessage _request;
-    private readonly OneOf<AuthenticateResult, IError> _response;
+    private readonly TestingLogger<LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>> _logger = Substitute.For<TestingLogger<LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>>();
+    private readonly IQueryResult<AuthenticateResult> _response = Substitute.For<IQueryResult<AuthenticateResult>>();
+    private readonly IRequestContext<AuthenticateRequestMessage> _context = Substitute.For<IRequestContext<AuthenticateRequestMessage>>();
     private readonly ServiceProvider _services;
 
     public LoggingBehaviorTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-        _request = Fixture.Create<AuthenticateRequestMessage>();
-        _response = Fixture.Create<AuthenticateResult>();
+
         var services = new ServiceCollection();
-        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        ////services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddSingleton<ILogger<LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>>(_logger);
         services.AddDomain();
-        services.AddMessageHub(AssemblyReference.Assembly);
+        services.AddMessageHub(
+            HomeInventory.Application.AssemblyReference.Assembly,
+            HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
+
+        _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
+        _context.RequestAborted.Returns(call => Cancellation.Token);
     }
 
     [Fact]
     public void Should_BeResolved()
     {
-        var behavior = _services.GetRequiredService<IRequestPipelineBehavior<AuthenticateRequestMessage, AuthenticateResult>>();
+        var sut = CreateSut();
 
-        behavior.Should().NotBeNull();
+        sut.Should().NotBeNull();
     }
 
     [Fact]
@@ -44,11 +47,11 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        var response = await sut.OnRequest(Hub, _request, Handler, Cancellation.Token);
+        var response = await sut.OnRequestAsync(_context, Handler);
 
-        response.Value.Should().Be(_response.Value);
+        response.Should().BeSameAs(_response);
 
-        Task<OneOf<AuthenticateResult, IError>> Handler()
+        Task<IQueryResult<AuthenticateResult>> Handler(IRequestContext<AuthenticateRequestMessage> context)
         {
             return Task.FromResult(_response);
         }
@@ -59,9 +62,9 @@ public class LoggingBehaviorTests : BaseTest
     {
         var sut = CreateSut();
 
-        _ = await sut.OnRequest(Hub, _request, Handler, Cancellation.Token);
+        _ = await sut.OnRequestAsync(_context, Handler);
 
-        Task<OneOf<AuthenticateResult, IError>> Handler()
+        Task<IQueryResult<AuthenticateResult>> Handler(IRequestContext<AuthenticateRequestMessage> context)
         {
             _logger
                 .Received(1)
@@ -74,21 +77,20 @@ public class LoggingBehaviorTests : BaseTest
     public async Task Handle_Should_LogAfterCallingNext()
     {
         var sut = CreateSut();
+        _response.IsSuccess.Returns(true);
 
-        _ = await sut.OnRequest(Hub, _request, Handler, Cancellation.Token);
+        _ = await sut.OnRequestAsync(_context, Handler);
 
         _logger
             .Received(1)
             .Log(LogLevel.Information, Arg.Any<EventId>(), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
 
-        Task<OneOf<AuthenticateResult, IError>> Handler()
+        Task<IQueryResult<AuthenticateResult>> Handler(IRequestContext<AuthenticateRequestMessage> context)
         {
             _logger.ClearReceivedCalls();
             return Task.FromResult(_response);
         }
     }
 
-    private IMessageHub Hub => _services.GetRequiredService<IMessageHub>();
-
-    private LoggingRequestBehavior<AuthenticateRequestMessage, AuthenticateResult> CreateSut() => new(_logger);
+    private IRequestPipelineBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>> CreateSut() => _services.GetRequiredService<IRequestPipelineBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>();
 }

@@ -1,10 +1,10 @@
 using FluentAssertions.Execution;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Domain;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
@@ -17,19 +17,26 @@ public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
-    private readonly ScopeAccessor _scopeAccessor = new();
+    private readonly IRequestContext<RegisterUserRequestMessage> _context = Substitute.For<IRequestContext<RegisterUserRequestMessage>>();
+    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
     private readonly ServiceProvider _services;
+    private readonly TimeProvider _timeProvider = new FixedTimeProvider(TimeProvider.System);
 
     public RegisterCommandHandlerTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-        Fixture.CustomizeFromFactory<RegisterUserRequestMessage, Email, ISupplier<Ulid>>((e, s) => new RegisterUserRequestMessage(IdSuppliers.Ulid.Invoke(), DateTime.GetUtcNow(), e, s.Invoke().ToString()));
+        Fixture.CustomizeFromFactory<RegisterUserRequestMessage, Email, IIdSupplier<Ulid>>((e, s) => new RegisterUserRequestMessage(IdSuppliers.Ulid.Supply(), DateTime.GetUtcNow(), e, s.Supply().ToString()));
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
         services.AddDomain();
-        services.AddMessageHub(AssemblyReference.Assembly);
+        services.AddMessageHub(
+            HomeInventory.Application.AssemblyReference.Assembly,
+            HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
+
+        _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
+        _context.RequestAborted.Returns(call => Cancellation.Token);
     }
 
     [Fact]
@@ -44,12 +51,13 @@ public class RegisterCommandHandlerTests : BaseTest
 #pragma warning restore CA2012 // Use ValueTasks correctly
 
         var sut = CreateSut();
+
         // When
-        var result = await sut.HandleAsync(Hub, command, Cancellation.Token);
+        var result = await sut.HandleAsync(_context);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(0);
-        result.Value.Should().NotBeNull();
+        result.Should().BeNone();
     }
 
     [Fact]
@@ -61,17 +69,15 @@ public class RegisterCommandHandlerTests : BaseTest
         _userRepository.IsUserHasEmailAsync(command.Email, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();
+
         // When
-        var result = await sut.HandleAsync(Hub, command, Cancellation.Token);
+        var result = await sut.HandleAsync(_context);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-            .Which.Should().BeOfType<DuplicateEmailError>();
+        result.Should().BeSome(error => error.Should().BeOfType<DuplicateEmailError>());
         await _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), Cancellation.Token);
     }
 
-    private IMessageHub Hub => _services.GetRequiredService<IMessageHub>();
-
-    private RegisterUserRequestHandler CreateSut() => new(_scopeAccessor, _hasher);
+    private RegisterUserRequestHandler CreateSut() => new(_scopeAccessor, _hasher, IdSuppliers.Ulid, _timeProvider);
 }

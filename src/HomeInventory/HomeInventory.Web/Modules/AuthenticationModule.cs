@@ -1,7 +1,6 @@
 using AutoMapper;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
-using HomeInventory.Core;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
@@ -25,9 +24,9 @@ public class AuthenticationModule(IScopeAccessor scopeAccessor) : ApiModule("/ap
 
     public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, CancellationToken cancellationToken = default)
     {
-        var mapper = _scopeAccessor.TryGet<IMapper>().OrThrow<InvalidOperationException>();
-        var hub = _scopeAccessor.TryGet<IMessageHub>().OrThrow<InvalidOperationException>();
-        var factory = _scopeAccessor.TryGet<IProblemDetailsFactory>().OrThrow<InvalidOperationException>();
+        var mapper = _scopeAccessor.GetRequiredContext<IMapper>();
+        var hub = _scopeAccessor.GetRequiredContext<IMessageHub>();
+        var factory = _scopeAccessor.GetRequiredContext<IProblemDetailsFactory>();
 
         var request = mapper.MapOrFail<AuthenticateRequestMessage>(body, o => o.State = hub);
         var response = await hub.RequestAsync(request, cancellationToken);

@@ -1,6 +1,5 @@
 ﻿using System.Transactions;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
@@ -13,16 +12,25 @@ internal sealed class UnitOfWorkRequestBehavior<TRequest, TResponse>(IScopeAcces
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly ILogger _logger = logger;
 
-    public async Task<OneOf<TResponse, IError>> OnRequest(IMessageHub hub, TRequest request, Func<Task<OneOf<TResponse, IError>>> handler, CancellationToken cancellationToken = default)
+    public async Task<TResponse> OnRequestAsync(IRequestContext<TRequest> context, Func<IRequestContext<TRequest>, Task<TResponse>> handler)
     {
         using var scope = new TransactionScope();
-        return await handler()
-            .OnResultAsync(() => SaveChangesAsync(scope, cancellationToken));
+
+        var response = await handler(context);
+        switch (response)
+        {
+            case Option<Error> option when option.IsNone:
+            case IQueryResult result when result.IsSuccess:
+                await SaveChangesAsync(scope, context.RequestAborted);
+                break;
+        }
+
+        return response;
     }
 
     private async Task SaveChangesAsync(TransactionScope transactionScope, CancellationToken cancellationToken)
     {
-        var unitOfWork = _scopeAccessor.TryGet<IUnitOfWork>().OrThrow<InvalidOperationException>();
+        var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
         var count = await unitOfWork.SaveChangesAsync(cancellationToken);
         transactionScope.Complete();
 

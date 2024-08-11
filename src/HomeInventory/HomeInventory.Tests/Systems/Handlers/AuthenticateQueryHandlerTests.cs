@@ -4,7 +4,6 @@ using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -17,7 +16,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IAuthenticationTokenGenerator _tokenGenerator = Substitute.For<IAuthenticationTokenGenerator>();
     private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
-    private readonly IScopeAccessor _scopeAccessor = new ScopeAccessor();
+    private readonly IRequestContext<AuthenticateRequestMessage> _context = Substitute.For<IRequestContext<AuthenticateRequestMessage>>();
+    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
     private readonly User _user;
     private readonly ServiceProvider _services;
 
@@ -30,15 +30,20 @@ public class AuthenticateQueryHandlerTests : BaseTest
         services.AddSingleton(_scopeAccessor);
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
         services.AddDomain();
-        services.AddMessageHub(AssemblyReference.Assembly);
+        services.AddMessageHub(
+            HomeInventory.Application.AssemblyReference.Assembly,
+            HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
+
+        _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
+        _context.RequestAborted.Returns(call => Cancellation.Token);
     }
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
     {
         // Given
-        var query = Hub.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, _user.Email, _user.Password));
+        var query = _context.Hub.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, _user.Email, _user.Password));
         var token = Fixture.Create<string>();
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
@@ -47,14 +52,13 @@ public class AuthenticateQueryHandlerTests : BaseTest
         using var _ = _scopeAccessor.Set(_userRepository);
 
         var sut = CreateSut();
+
         // When
-        var result = await sut.HandleAsync(Hub, query, Cancellation.Token);
+        var result = await sut.HandleAsync(_context);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(0);
-        var subject = result.Value
-            .Should().BeOfType<AuthenticateResult>()
-            .Subject;
+        var subject = result.Should().BeSuccess().Subject;
         subject.Id.Should().Be(_user.Id);
         subject.Token.Should().Be(token);
     }
@@ -64,17 +68,18 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<AuthenticateRequestMessage>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional.None<User>());
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
         using var _ = _scopeAccessor.Set(_userRepository);
 
         var sut = CreateSut();
+
         // When
-        var result = await sut.HandleAsync(Hub, query, Cancellation.Token);
+        var result = await sut.HandleAsync(_context);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-           .Which.Should().BeOfType<InvalidCredentialsError>();
+        result.Should().BeFail()
+            .Which.Head.Should().BeOfType<InvalidCredentialsError>();
         await _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
     }
 
@@ -82,23 +87,21 @@ public class AuthenticateQueryHandlerTests : BaseTest
     public async Task Handle_OnBadPassword_ReturnsError()
     {
         // Given
-        var query = Hub.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, _user.Email, Fixture.Create<string>()));
+        var query = _context.Hub.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, _user.Email, Fixture.Create<string>()));
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
         using var _ = _scopeAccessor.Set(_userRepository);
 
         var sut = CreateSut();
+
         // When
-        var result = await sut.HandleAsync(Hub, query, Cancellation.Token);
+        var result = await sut.HandleAsync(_context);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-           .Which.Should().BeOfType<InvalidCredentialsError>();
+        result.Should().BeFail()
+            .Which.Head.Should().BeOfType<InvalidCredentialsError>();
         await _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
     }
-
-
-    private IMessageHub Hub => _services.GetRequiredService<IMessageHub>();
 
     private AuthenticateRequestHandler CreateSut() => new(_tokenGenerator, _scopeAccessor, _hasher);
 }

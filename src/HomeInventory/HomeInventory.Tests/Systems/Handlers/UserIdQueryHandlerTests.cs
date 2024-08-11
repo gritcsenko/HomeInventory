@@ -13,7 +13,8 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class UserIdQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly ScopeAccessor _scopeAccessor = new();
+    private readonly IRequestContext<UserIdQueryMessage> _context = Substitute.For<IRequestContext<UserIdQueryMessage>>();
+    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
     private readonly ServiceProvider _services;
 
     public UserIdQueryHandlerTests()
@@ -23,8 +24,13 @@ public class UserIdQueryHandlerTests : BaseTest
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
         services.AddDomain();
-        services.AddMessageHub(AssemblyReference.Assembly);
+        services.AddMessageHub(
+            HomeInventory.Application.AssemblyReference.Assembly,
+            HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
+
+        _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
+        _context.RequestAborted.Returns(call => Cancellation.Token);
     }
 
     [Fact]
@@ -33,20 +39,18 @@ public class UserIdQueryHandlerTests : BaseTest
         // Given
         Fixture.CustomizeId<UserId>();
         var _user = Fixture.Create<User>();
-        var query = Hub.CreateMessage((id, on) => new UserIdQueryMessage(id, on, _user.Email));
+        var query = _context.Hub.CreateMessage((id, on) => new UserIdQueryMessage(id, on, _user.Email));
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
 
         var sut = CreateSut();
+
         // When
-        var result = await sut.HandleAsync(Hub, query, Cancellation.Token);
+        var result = await sut.HandleAsync(_context);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(0);
-        var subject = result.Value
-            .Should().BeOfType<UserIdResult>()
-            .Subject;
-        subject.UserId.Should().Be(_user.Id);
+        result.Should().BeSuccess(x => x.UserId.Should().Be(_user.Id));
     }
 
     [Fact]
@@ -54,20 +58,19 @@ public class UserIdQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<UserIdQueryMessage>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional.None<User>());
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
 
         var sut = CreateSut();
+
         // When
-        var result = await sut.HandleAsync(Hub, query, Cancellation.Token);
+        var result = await sut.HandleAsync(_context);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-           .Which.Should().BeOfType<NotFoundError>()
+        result.Should().BeFail()
+           .Which.Head.Should().BeOfType<NotFoundError>()
            .Which.Message.Should().Contain(query.Email.ToString());
     }
-
-    private IMessageHub Hub => _services.GetRequiredService<IMessageHub>();
 
     private UserIdQueryMessageHandler CreateSut() => new(_scopeAccessor);
 }

@@ -1,15 +1,16 @@
-﻿using System.Collections.Concurrent;
+﻿using HomeInventory.Domain.Primitives.Ids;
+using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace HomeInventory.Domain.Primitives.Messages;
 
-public sealed class MessageHub(ISupplier<Ulid> supplier, TimeProvider timeProvider, IMessageObservableProvider observableProvider) : Disposable, IMessageHub
+public sealed class MessageHub(IIdSupplier<Ulid> supplier, TimeProvider timeProvider, IMessageObservableProvider observableProvider) : DisposableBase, IMessageHub
 {
     private readonly ConcurrentDictionary<Type, object> _observables = new();
     private readonly IMessageObservableProvider _observableProvider = observableProvider;
 
-    public ISupplier<Ulid> EventIdSupplier { get; } = supplier;
+    public IIdSupplier<Ulid> EventIdSupplier { get; } = supplier;
 
     public TimeProvider EventCreatedTimeProvider { get; } = timeProvider;
 

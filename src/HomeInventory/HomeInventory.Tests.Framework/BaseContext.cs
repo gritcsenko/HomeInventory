@@ -22,7 +22,7 @@ public abstract class BaseContext(VariablesContainer variables) : IAsyncDisposab
 
     protected T GetValue<T>(IIndexedVariable<T> variable)
         where T : notnull =>
-        _variables.Get(variable);
+        _variables.Get(variable).Value;
 
     protected void AddDisposable(IDisposable disposable) => _compositeDisposable.Add(disposable);
 }

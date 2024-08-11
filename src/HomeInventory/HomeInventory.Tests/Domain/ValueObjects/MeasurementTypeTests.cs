@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
@@ -14,34 +15,40 @@ public class MeasurementTypeTests : BaseTest
         _items.Should().NotBeEmpty();
     }
 
-    [Theory]
-    [MemberData(nameof(Data))]
-    public void PropertiesShouldMatch(MeasurementType sut, string name)
+    [Fact]
+    public void CreateShouldPassTheCallerMemberName()
     {
-        sut.Name.Should().Be(name);
+        var sut = MeasurementType.Create();
+
+        sut.Name.Should().Be(nameof(CreateShouldPassTheCallerMemberName));
     }
 
-    [Theory]
-    [MemberData(nameof(Keys))]
-    public void CanBeUsedAsDictionaryKey(MeasurementType sut)
+    [Fact]
+    public void CreatedShouldContainSuppliedId()
+    {
+        var expected = Ulid.NewUlid();
+        var supplier = Substitute.For<IIdSupplier<Ulid>>();
+        supplier.Supply().Returns(expected);
+        var sut = MeasurementType.Create(supplier);
+
+        sut.Value.Should().Be(expected);
+    }
+
+    [Fact]
+    public void FieldsShoulHaveMatchedName()
+    {
+        var fields = typeof(MeasurementType).GetFieldsOfType<MeasurementType>().ToArray();
+
+        fields.Should().NotBeEmpty()
+            .And.AllSatisfy(t => t.Value!.Name.Should().Be(t.Field.Name));
+    }
+
+    [Fact]
+    public void CanBeUsedAsDictionaryKey()
     {
         var dictionary = _items.ToDictionary(x => x, x => x.Name);
+        var values = typeof(MeasurementType).GetFieldValuesOfType<MeasurementType>().ToArray();
 
-        var actual = dictionary.ContainsKey(sut);
-
-        actual.Should().BeTrue();
+        dictionary.Should().ContainKeys(values);
     }
-
-    public static TheoryData<MeasurementType, string> Data() =>
-        new()
-        {
-            { MeasurementType.Count, nameof(MeasurementType.Count) },
-            { MeasurementType.Length, nameof(MeasurementType.Length) },
-            { MeasurementType.Area, nameof(MeasurementType.Area) },
-            { MeasurementType.Volume, nameof(MeasurementType.Volume) },
-            { MeasurementType.Weight, nameof(MeasurementType.Weight) },
-            { MeasurementType.Temperature, nameof(MeasurementType.Temperature) },
-        };
-
-    public static TheoryData<MeasurementType> Keys() => new(_items);
 }

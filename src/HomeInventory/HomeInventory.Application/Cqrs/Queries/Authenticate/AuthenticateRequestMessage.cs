@@ -8,4 +8,4 @@ public sealed record class AuthenticateRequestMessage(
     DateTimeOffset CreatedOn,
     Email Email,
     string Password
-    ) : IRequestMessage<AuthenticateResult>;
+    ) : IRequestMessage<IQueryResult<AuthenticateResult>>;

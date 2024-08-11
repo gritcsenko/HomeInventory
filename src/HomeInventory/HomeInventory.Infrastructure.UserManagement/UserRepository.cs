@@ -1,6 +1,5 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
-using DotNext;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
@@ -15,13 +14,15 @@ internal sealed class UserRepository(IDatabaseContext context, IMapper mapper, I
     public async Task<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default) =>
         await HasAsync(new UserHasEmailSpecification(email), cancellationToken);
 
-    public async Task<Optional<User>> FindFirstByEmailUserOptionalAsync(Email email, CancellationToken cancellationToken = default) =>
-        await FindFirstOptionalAsync(new UserHasEmailSpecification(email), cancellationToken);
+    public async Task<Option<User>> FindFirstByEmailUserOptionalAsync(Email email, CancellationToken cancellationToken = default) =>
+        await FindFirstOptionAsync(new UserHasEmailSpecification(email), cancellationToken);
 
     public async Task<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
-        var userResult = await FindFirstOptionalAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken)
+        var userResult = await FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken)
             .Convert(x => true);
-        return userResult.Or(false);
+#pragma warning disable CA1849 // Call async methods when in an async method
+        return userResult.IfNone(false);
+#pragma warning restore CA1849 // Call async methods when in an async method
     }
 }

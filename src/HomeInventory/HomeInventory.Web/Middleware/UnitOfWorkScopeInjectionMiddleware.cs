@@ -1,5 +1,4 @@
-﻿using HomeInventory.Core;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Middleware;
