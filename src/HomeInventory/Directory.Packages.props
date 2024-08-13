@@ -78,7 +78,7 @@
     <PackageVersion Include="FluentAssertions.LanguageExt" Version="0.5.0" />
     <PackageVersion Include="LanguageExt.AutoFixture" Version="2.0.1" />
     <PackageVersion Include="LanguageExt.UnitTesting" Version="4.4.9.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.7" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
