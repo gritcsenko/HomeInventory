@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives.Ids;
 
-﻿namespace HomeInventory.Domain.Primitives.Messages;
+namespace HomeInventory.Domain.Primitives.Messages;
 
 public record DomainEvent(Ulid Id, DateTimeOffset CreatedOn) : IDomainEvent
 {

@@ -12,28 +12,28 @@ namespace HomeInventory.Core;
 [SuppressMessage("Major Code Smell", "S3881:\"IDisposable\" should be implemented correctly", Justification = "False positive")]
 public abstract class DisposableBase : IDisposable
 {
-    private const int NotDisposedState = 0;
-    private const int DisposingState = 1;
-    private const int DisposedState = 2;
+    private const int _notDisposedState = 0;
+    private const int _disposingState = 1;
+    private const int _disposedState = 2;
 
-    private volatile int state;
+    private volatile int _state;
 
     /// <summary>
     /// Indicates that this object is disposed.
     /// </summary>
-    protected bool IsDisposed => state is DisposedState;
+    protected bool IsDisposed => _state is _disposedState;
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called but not yet completed.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    protected bool IsDisposing => state is DisposingState;
+    protected bool IsDisposing => _state is _disposingState;
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    protected bool IsDisposingOrDisposed => state is not NotDisposedState;
+    protected bool IsDisposingOrDisposed => _state is not _notDisposedState;
 
     private string ObjectName => GetType().Name;
 
@@ -73,7 +73,7 @@ public abstract class DisposableBase : IDisposable
     /// </summary>
     /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
     protected virtual void Dispose(bool disposing)
-        => state = DisposedState;
+        => _state = _disposedState;
 
     /// <summary>
     /// Releases managed resources associated with this object asynchronously.
@@ -113,10 +113,10 @@ public abstract class DisposableBase : IDisposable
     /// can be trivially implemented through delegation of the call to this method.
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
-    protected ValueTask DisposeAsync() => Interlocked.CompareExchange(ref state, DisposingState, NotDisposedState) switch
+    protected ValueTask DisposeAsync() => Interlocked.CompareExchange(ref _state, _disposingState, _notDisposedState) switch
     {
-        NotDisposedState => DisposeAsyncImpl(),
-        DisposingState => DisposeAsyncCore(),
+        _notDisposedState => DisposeAsyncImpl(),
+        _disposingState => DisposeAsyncCore(),
         _ => ValueTask.CompletedTask,
     };
 
@@ -126,7 +126,7 @@ public abstract class DisposableBase : IDisposable
     /// <returns><see langword="true"/> if cleanup operations can be performed; <see langword="false"/> if the object is already disposing.</returns>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     protected bool TryBeginDispose()
-        => Interlocked.CompareExchange(ref state, DisposingState, NotDisposedState) is NotDisposedState;
+        => Interlocked.CompareExchange(ref _state, _disposingState, _notDisposedState) is _notDisposedState;
 
     /// <summary>
     /// Disposes many objects.
