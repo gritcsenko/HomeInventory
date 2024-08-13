@@ -5,7 +5,6 @@ using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
-using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -14,20 +13,17 @@ public class UserIdQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IRequestContext<UserIdQueryMessage> _context = Substitute.For<IRequestContext<UserIdQueryMessage>>();
-    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
     private readonly ServiceProvider _services;
 
     public UserIdQueryHandlerTests()
     {
         Fixture.CustomizeEmail();
-        AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));
         var services = new ServiceCollection();
-        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
         services.AddDomain();
-        services.AddMessageHub(
-            HomeInventory.Application.AssemblyReference.Assembly,
-            HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
+        services.AddMessageHub(HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
+
+        AddDisposable(_services.GetRequiredService<IScopeAccessor>().Set(_userRepository));
 
         _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
         _context.RequestAborted.Returns(call => Cancellation.Token);
@@ -40,6 +36,7 @@ public class UserIdQueryHandlerTests : BaseTest
         Fixture.CustomizeId<UserId>();
         var _user = Fixture.Create<User>();
         var query = _context.Hub.CreateMessage((id, on) => new UserIdQueryMessage(id, on, _user.Email));
+        _context.Request.Returns(query);
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
 
@@ -58,6 +55,7 @@ public class UserIdQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<UserIdQueryMessage>();
+        _context.Request.Returns(query);
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
 
         var sut = CreateSut();
@@ -72,5 +70,5 @@ public class UserIdQueryHandlerTests : BaseTest
            .Which.Message.Should().Contain(query.Email.ToString());
     }
 
-    private UserIdQueryMessageHandler CreateSut() => new(_scopeAccessor);
+    private IRequestHandler<UserIdQueryMessage, IQueryResult<UserIdResult>> CreateSut() => _services.GetRequiredService<IRequestHandler<UserIdQueryMessage, IQueryResult<UserIdResult>>>();
 }

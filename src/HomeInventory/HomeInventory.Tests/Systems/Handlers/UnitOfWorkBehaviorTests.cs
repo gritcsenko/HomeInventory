@@ -1,34 +1,32 @@
 ﻿using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Messages;
 using Microsoft.Extensions.Logging;
-using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
 [UnitTest]
 public class UnitOfWorkBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Option<Error>>> _logger = Substitute.For<TestingLogger<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Option<Error>>>>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IRequestContext<RegisterUserRequestMessage> _context = Substitute.For<IRequestContext<RegisterUserRequestMessage>>();
-    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
     private readonly ServiceProvider _services;
 
     public UnitOfWorkBehaviorTests()
     {
         Fixture.CustomizeUlid();
-        AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
         var services = new ServiceCollection();
-        services.AddSingleton<IScopeAccessor>(_scopeAccessor);
-        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddLoggerSubstitute<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Option<Error>>>();
+        services.AddLoggerSubstitute<LoggingRequestBehavior<RegisterUserRequestMessage, Option<Error>>>();
         services.AddDomain();
-        services.AddMessageHub(
-            HomeInventory.Application.AssemblyReference.Assembly,
-            HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
+        services.AddMessageHub(HomeInventory.Application.AssemblyReference.Assembly);
+
         _services = services.BuildServiceProvider();
+        AddAsyncDisposable(_services);
+        AddDisposable(_services.GetRequiredService<IScopeAccessor>().Set(_unitOfWork));
 
         _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
         _context.RequestAborted.Returns(call => Cancellation.Token);
@@ -85,5 +83,8 @@ public class UnitOfWorkBehaviorTests : BaseTest
         Task<Option<Error>> Handler(IRequestContext<RegisterUserRequestMessage> _) => Task.FromResult(_response);
     }
 
-    private UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Option<Error>> CreateSut() => new(_scopeAccessor, _logger);
+    private IRequestPipelineBehavior<RegisterUserRequestMessage, Option<Error>> CreateSut() =>
+        _services
+            .GetServices<IRequestPipelineBehavior<RegisterUserRequestMessage, Option<Error>>>()
+            .First(b => b is UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Option<Error>>);
 }

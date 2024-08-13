@@ -1,17 +1,17 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
-using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
 [UnitTest]
 public class LoggingBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>> _logger = Substitute.For<TestingLogger<LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>>();
+    private readonly TestingLogger<LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>> _logger;
     private readonly IQueryResult<AuthenticateResult> _response = Substitute.For<IQueryResult<AuthenticateResult>>();
     private readonly IRequestContext<AuthenticateRequestMessage> _context = Substitute.For<IRequestContext<AuthenticateRequestMessage>>();
     private readonly ServiceProvider _services;
@@ -23,15 +23,17 @@ public class LoggingBehaviorTests : BaseTest
 
         var services = new ServiceCollection();
         ////services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
-        services.AddSingleton<ILogger<LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>>(_logger);
+        services.AddLoggerSubstitute(out _logger);
+        services.AddLoggerSubstitute<UnitOfWorkRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>();
         services.AddDomain();
-        services.AddMessageHub(
-            HomeInventory.Application.AssemblyReference.Assembly,
-            HomeInventory.Application.UserManagement.AssemblyReference.Assembly);
+        services.AddMessageHub(HomeInventory.Application.AssemblyReference.Assembly);
         _services = services.BuildServiceProvider();
+
+        _services.GetRequiredService<IScopeAccessor>().Set(Substitute.For<IUnitOfWork>());
 
         _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
         _context.RequestAborted.Returns(call => Cancellation.Token);
+        _context.Request.Returns(Fixture.Create<AuthenticateRequestMessage>());
     }
 
     [Fact]
@@ -92,5 +94,8 @@ public class LoggingBehaviorTests : BaseTest
         }
     }
 
-    private IRequestPipelineBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>> CreateSut() => _services.GetRequiredService<IRequestPipelineBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>();
+    private IRequestPipelineBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>> CreateSut() =>
+        _services
+            .GetServices<IRequestPipelineBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>>()
+            .First(b => b is LoggingRequestBehavior<AuthenticateRequestMessage, IQueryResult<AuthenticateResult>>);
 }

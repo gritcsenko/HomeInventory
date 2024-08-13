@@ -44,6 +44,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = _context.Hub.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, _user.Email, _user.Password));
+        _context.Request.Returns(query);
         var token = Fixture.Create<string>();
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
@@ -68,6 +69,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<AuthenticateRequestMessage>();
+        _context.Request.Returns(query);
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
         using var _ = _scopeAccessor.Set(_userRepository);
 
@@ -88,6 +90,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = _context.Hub.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, _user.Email, Fixture.Create<string>()));
+        _context.Request.Returns(query);
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
         using var _ = _scopeAccessor.Set(_userRepository);
 
