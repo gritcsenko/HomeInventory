@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Core;
+﻿using LanguageExt.Pretty;
+
+namespace HomeInventory.Core;
 
 public static class ValidationExtensions
 {
@@ -14,4 +16,9 @@ public static class ValidationExtensions
 
         return (Seq<TFailure>)validation;
     }
+
+    public static TResult MatchOrThrow<TSuccess, TResult>(this Validation<Error, TSuccess> validation, Func<TSuccess, TResult> convert) =>
+        validation.Match(convert, seq => Error.Many(seq).Throw().Return(ShouldNotBeCalled<TResult>));
+
+    private static TResult ShouldNotBeCalled<TResult>() => throw new ExceptionalException(nameof(ShouldNotBeCalled), -1_000_000_000);
 }
