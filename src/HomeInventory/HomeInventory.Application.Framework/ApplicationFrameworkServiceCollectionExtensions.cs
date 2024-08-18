@@ -20,6 +20,7 @@ public static class ApplicationFrameworkServiceCollectionExtensions
     public static IServiceCollection AddMessageHubCore(this IServiceCollection services)
     {
         services.AddSingleton<IMessageObservableProvider, MessageObservableProvider>();
+        services.AddSingleton<IMessageHubContext, MessageHubContext>();
         services.AddSingleton<IMessageHub, MessageHub>();
         services.AddSingleton(typeof(RequestHandlerAdapter<,>));
         services.AddSingleton(typeof(MessageHandlerAdapter<>));

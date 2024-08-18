@@ -1,18 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Middleware;
 
-internal class MapperScopeInjectionMiddleware(IMapper mapper, IScopeAccessor scopeAccessor) : IMiddleware
+internal class MapperScopeInjectionMiddleware(IMapper mapper, IScopeAccessor scopeAccessor) : BaseScopeInjectionMiddleware<IMapper>(scopeAccessor)
 {
     private readonly IMapper _mapper = mapper;
-    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        using (_scopeAccessor.Set(_mapper))
-        {
-            await next(context);
-        }
-    }
+    protected override IMapper GetContext() => _mapper;
 }

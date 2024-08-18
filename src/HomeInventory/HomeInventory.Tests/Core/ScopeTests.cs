@@ -2,12 +2,10 @@
 
 public sealed class ScopeTests
 {
-    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
-
     [Fact]
     public void Get_ShouldReturnNull_WhenNothingIsSet()
     {
-        var sut = _scopeAccessor.GetScope<GetNullContext>();
+        var sut = CreateSut<GetNullContext>();
 
         var actual = sut.TryGet();
 
@@ -17,7 +15,7 @@ public sealed class ScopeTests
     [Fact]
     public void Get_ShouldReturnContext_WhenItIsSet()
     {
-        var sut = _scopeAccessor.GetScope<GetNotNullContext>();
+        var sut = CreateSut<GetNotNullContext>();
         var expected = new GetNotNullContext();
 
         sut.Set(expected);
@@ -29,7 +27,7 @@ public sealed class ScopeTests
     [Fact]
     public void Get_ShouldReturnNull_WhenResetIsCalled()
     {
-        var sut = _scopeAccessor.GetScope<ResetContext>();
+        var sut = CreateSut<ResetContext>();
         sut.Set(new ResetContext());
 
         sut.Reset();
@@ -41,7 +39,7 @@ public sealed class ScopeTests
     [Fact]
     public void Get_ShouldReturnNull_WhenSetAndDisposed()
     {
-        var sut = _scopeAccessor.GetScope<SetNullDisposedContext>();
+        var sut = CreateSut<SetNullDisposedContext>();
         var token = sut.Set(new SetNullDisposedContext());
 
         token.Dispose();
@@ -54,7 +52,7 @@ public sealed class ScopeTests
     [Fact]
     public void Get_ShouldReturnContext_WhenResetAndDisposed()
     {
-        var sut = _scopeAccessor.GetScope<ResetNullDisposedContext>();
+        var sut = CreateSut<ResetNullDisposedContext>();
         var expected = new ResetNullDisposedContext();
         sut.Set(expected);
         var token = sut.Reset();
@@ -68,7 +66,7 @@ public sealed class ScopeTests
     [Fact]
     public void Get_ShouldReturnLatestContext_WhenSetMultipleTimes()
     {
-        var sut = _scopeAccessor.GetScope<SetTwiceContext>();
+        var sut = CreateSut<SetTwiceContext>();
         var decoy = new SetTwiceContext();
         var expected = new SetTwiceContext();
 
@@ -82,7 +80,7 @@ public sealed class ScopeTests
     [Fact]
     public void Get_ShouldReturnContext_WhenSetMultipleTimesAndDisposed()
     {
-        var sut = _scopeAccessor.GetScope<SetTwiceDisposedContext>();
+        var sut = CreateSut<SetTwiceDisposedContext>();
         var decoy = new SetTwiceDisposedContext();
         var expected = new SetTwiceDisposedContext();
         sut.Set(expected);
@@ -92,6 +90,15 @@ public sealed class ScopeTests
         var actual = sut.TryGet();
 
         actual.Should().Be(expected);
+    }
+
+    private static IScope<TContext> CreateSut<TContext>()
+        where TContext : class
+    {
+        var collection = new ServiceCollection();
+        collection.AddDomain();
+        var accessor = collection.BuildServiceProvider().GetRequiredService<IScopeAccessor>();
+        return accessor.GetScope<TContext>();
     }
 
     private sealed class GetNullContext

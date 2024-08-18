@@ -1,12 +1,8 @@
-﻿using HomeInventory.Domain.Primitives.Ids;
-
-namespace HomeInventory.Domain.Primitives.Messages;
+﻿namespace HomeInventory.Domain.Primitives.Messages;
 
 public interface IMessageHub : IDisposable
 {
-    IIdSupplier<Ulid> EventIdSupplier { get; }
-
-    TimeProvider EventCreatedTimeProvider { get; }
+    IMessageHubContext Context { get; }
 
     void OnNext<TMessage>(TMessage message) where TMessage : IMessage;
 

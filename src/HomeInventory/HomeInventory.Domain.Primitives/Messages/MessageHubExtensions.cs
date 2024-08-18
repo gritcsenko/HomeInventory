@@ -14,13 +14,13 @@ public static class MessageHubExtensions
     public static Task<TResponse> RequestAsync<TResponse>(this IMessageHub hub, IRequestMessage<TResponse> request, CancellationToken cancellationToken = default) =>
         (Task<TResponse>)_request.MakeGenericMethod(request.GetType(), typeof(TResponse)).Invoke(null, [hub, request, cancellationToken])!;
 
-    public static ResposeMessage<TRequest, TResponse> CreateResponse<TRequest, TResponse>(this IMessageHub hub, TRequest request, TResponse response)
+    public static ResposeMessage<TRequest, TResponse> CreateResponse<TRequest, TResponse>(this IMessageHubContext context, TRequest request, TResponse response)
         where TRequest : IRequestMessage<TResponse> =>
-        hub.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, request, response));
+        context.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, request, response));
 
-    public static TMessage CreateMessage<TMessage>(this IMessageHub hub, Func<Ulid, DateTimeOffset, TMessage> createFunc)
+    public static TMessage CreateMessage<TMessage>(this IMessageHubContext context, Func<Ulid, DateTimeOffset, TMessage> createFunc)
         where TMessage : IMessage =>
-        createFunc(hub.EventIdSupplier.Supply(), hub.EventCreatedTimeProvider.GetUtcNow());
+        createFunc(context.EventIdSupplier.Supply(), context.EventCreatedTimeProvider.GetUtcNow());
 
     private static Task<TResponse> InternalRequestAsync<TRequest, TResponse>(this IMessageHub hub, TRequest request, CancellationToken cancellationToken)
         where TRequest : class, IRequestMessage<TResponse>

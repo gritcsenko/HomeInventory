@@ -4,7 +4,7 @@ namespace HomeInventory.Application.Cqrs.DomainEvents;
 
 public static class DomainEventNotification
 {
-    public static IMessage CreateDomainNotification(this IMessageHub hub, IDomainEvent domainEvent) =>
+    public static IMessage CreateDomainNotification(this IDomainEvent domainEvent) =>
         (IMessage)Activator.CreateInstance(typeof(DomainEventNotification<>).MakeGenericType(domainEvent.GetType()), domainEvent)!;
 }
 

@@ -32,7 +32,7 @@ public class UserManagementModule(IScopeAccessor scopeAccessor) : ApiModule("/ap
         var hub = _scopeAccessor.GetRequiredContext<IMessageHub>();
         var factory = _scopeAccessor.GetRequiredContext<IProblemDetailsFactory>();
 
-        var command = mapper.MapOrFail<RegisterUserRequestMessage>(body, o => o.State = hub);
+        var command = mapper.MapOrFail<RegisterUserRequestMessage>(body, o => o.State = hub.Context);
         var response = await hub.RequestAsync(command, cancellationToken);
 
         return await response.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
@@ -44,7 +44,7 @@ public class UserManagementModule(IScopeAccessor scopeAccessor) : ApiModule("/ap
             },
             async () =>
             {
-                var query = mapper.MapOrFail<UserIdQueryMessage>(body, o => o.State = hub);
+                var query = mapper.MapOrFail<UserIdQueryMessage>(body, o => o.State = hub.Context);
                 var queryResult = await hub.RequestAsync(query, cancellationToken);
                 return factory.MatchToOk(queryResult, mapper.MapOrFail<RegisterResponse>, context.TraceIdentifier);
             });

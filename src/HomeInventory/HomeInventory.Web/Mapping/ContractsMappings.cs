@@ -12,15 +12,22 @@ internal class ContractsMappings : BaseMappingsProfile
 {
     public ContractsMappings()
     {
-        CreateMap<LoginRequest>().Using(CreateAuthenticateRequestMessage);
+        CreateMap<LoginRequest>().With<IMessageHubContext>().Using(CreateAuthenticateRequestMessage);
         CreateMap<AuthenticateResult, LoginResponse>();
     }
 
-    private AuthenticateRequestMessage CreateAuthenticateRequestMessage(LoginRequest request, ResolutionContext ctx)
+    private static AuthenticateRequestMessage CreateAuthenticateRequestMessage(LoginRequest request, IMessageHubContext hubContext, IRuntimeMapper mapper)
     {
-        var email = ctx.Mapper.MapOrFail<Email>(request.Email);
+        var email = mapper.MapOrFail<Email>(request.Email);
         var password = request.Password;
-        var hub = (IMessageHub)ctx.State;
-        return hub.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, email, password));
+        return hubContext.CreateMessage((id, on) => new AuthenticateRequestMessage(id, on, email, password));
+    }
+}
+
+public sealed class LoginRequestConverter : ITypeConverter<LoginRequest, AuthenticateRequestMessage>
+{
+    public AuthenticateRequestMessage Convert(LoginRequest source, AuthenticateRequestMessage destination, ResolutionContext context)
+    {
+        throw new NotImplementedException();
     }
 }

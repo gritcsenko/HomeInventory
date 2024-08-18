@@ -16,7 +16,7 @@ public sealed class RequestHandlerAdapter<TRequest, TResponse>(IRequestHandler<T
         {
             var pipeline = _behaviors.Aggregate(Seed, (handler, behavior) => ctx => behavior.OnRequestAsync(ctx, handler));
             var result = await pipeline(new RequestContext(hub, message));
-            return hub.CreateResponse(message.Message, result);
+            return hub.Context.CreateResponse(message.Message, result);
 
             Task<TResponse> Seed(IRequestContext<TRequest> ctx) => _requestHandler.HandleAsync(ctx);
         });

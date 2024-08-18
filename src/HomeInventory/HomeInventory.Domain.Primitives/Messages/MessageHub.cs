@@ -1,18 +1,17 @@
 ﻿using HomeInventory.Domain.Primitives.Ids;
+using System;
 using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace HomeInventory.Domain.Primitives.Messages;
 
-public sealed class MessageHub(IIdSupplier<Ulid> supplier, TimeProvider timeProvider, IMessageObservableProvider observableProvider) : DisposableBase, IMessageHub
+public sealed class MessageHub(IMessageHubContext context, IMessageObservableProvider observableProvider) : DisposableBase, IMessageHub
 {
     private readonly ConcurrentDictionary<Type, object> _observables = new();
     private readonly IMessageObservableProvider _observableProvider = observableProvider;
 
-    public IIdSupplier<Ulid> EventIdSupplier { get; } = supplier;
-
-    public TimeProvider EventCreatedTimeProvider { get; } = timeProvider;
+    public IMessageHubContext Context { get; } = context;
 
     public void OnNext<TMessage>(TMessage message)
         where TMessage : IMessage =>
@@ -41,4 +40,11 @@ public sealed class MessageHub(IIdSupplier<Ulid> supplier, TimeProvider timeProv
     private ISubject<TMessage> CreateSubject<TMessage>(Type _)
         where TMessage : IMessage =>
         _observableProvider.GetSubject<TMessage>(this);
+}
+
+public sealed class MessageHubContext(IIdSupplier<Ulid> supplier, TimeProvider timeProvider) : IMessageHubContext
+{
+    public IIdSupplier<Ulid> EventIdSupplier { get; } = supplier;
+
+    public TimeProvider EventCreatedTimeProvider { get; } = timeProvider;
 }

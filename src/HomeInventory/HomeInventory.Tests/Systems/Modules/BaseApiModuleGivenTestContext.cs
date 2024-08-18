@@ -158,7 +158,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             .Take(1)
             .Subscribe(cr =>
             {
-                var response = Hub.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, cr.Message, result));
+                var response = Hub.Context.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, cr.Message, result));
                 Hub.OnNext(response);
             });
 

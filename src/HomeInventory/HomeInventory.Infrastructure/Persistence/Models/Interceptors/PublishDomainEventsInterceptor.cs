@@ -20,16 +20,10 @@ internal class PublishDomainEventsInterceptor(IMessageHub hub) : SaveChangesInte
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 
-    private void PublishEvents(DbContext context)
-    {
-        var domainEvents = context.ChangeTracker
+    private void PublishEvents(DbContext context) => 
+        context.ChangeTracker
             .Entries<OutboxMessage>()
-            .Select(e => e.Entity.Content);
-
-        foreach (var domainEvent in domainEvents)
-        {
-            var notification = _hub.CreateDomainNotification(domainEvent);
-            _hub.OnNext(notification);
-        }
-    }
+            .Select(e => e.Entity.Content)
+            .Select(e => e.CreateDomainNotification())
+            .Iter(e => _hub.OnNext(e));
 }

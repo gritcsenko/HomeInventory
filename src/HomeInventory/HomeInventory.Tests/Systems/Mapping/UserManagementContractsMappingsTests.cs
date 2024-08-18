@@ -17,7 +17,7 @@ public class UserManagementContractsMappingsTests : BaseMappingsTests
         var sut = CreateSut<UserManagementContractsMappings>();
         var source = instance.GetType();
 
-        var target = sut.Map(instance, source, destination, c => c.State = ServiceProvider.GetRequiredService<IMessageHub>());
+        var target = sut.Map(instance, source, destination, c => c.State = ServiceProvider.GetRequiredService<IMessageHubContext>());
 
         target.Should().BeAssignableTo(destination);
     }

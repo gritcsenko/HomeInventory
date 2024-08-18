@@ -35,7 +35,7 @@ public class UserIdQueryHandlerTests : BaseTest
         // Given
         Fixture.CustomizeId<UserId>();
         var _user = Fixture.Create<User>();
-        var query = _context.Hub.CreateMessage((id, on) => new UserIdQueryMessage(id, on, _user.Email));
+        var query = _context.Hub.Context.CreateMessage((id, on) => new UserIdQueryMessage(id, on, _user.Email));
         _context.Request.Returns(query);
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);

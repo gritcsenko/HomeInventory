@@ -10,5 +10,5 @@ public sealed class ScopeContainer(IScopeFactory factory) : IScopeContainer
 
     public IScope<TContext> GetOrAdd<TContext>()
         where TContext : class =>
-        (IScope<TContext>)_scopes.GetOrAdd(typeof(TContext), _ => _factory.Create<TContext>());
+        _scopes.GetOrAdd<Type, IScope, IScope<TContext>>(typeof(TContext), _ => _factory.Create<TContext>());
 }
