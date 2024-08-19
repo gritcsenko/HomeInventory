@@ -1,7 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net;
-using HomeInventory.Core;
-using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -52,12 +50,12 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             .ApplyErrors(modelStateDictionary)
             .AddProblemDetailsExtensions(httpContext.TraceIdentifier);
 
-    public ProblemDetails ConvertToProblem(IEnumerable<IError> errors, string? traceIdentifier = null) =>
+    public ProblemDetails ConvertToProblem(Seq<Error> errors, string? traceIdentifier = null) =>
         InternalConvertToProblem(errors)
-        .AddProblemDetailsExtensions(traceIdentifier)
-        .AddProblemDetailsExtensions(errors);
+            .AddProblemDetailsExtensions(traceIdentifier)
+            .AddProblemDetailsExtensions(errors);
 
-    private ProblemDetails InternalConvertToProblem(IEnumerable<IError> errors)
+    private ProblemDetails InternalConvertToProblem(IEnumerable<Error> errors)
     {
         var problems = errors.Select(InternalConvertToProblem).ToReadOnly();
         if (problems.Count <= 1)
@@ -74,10 +72,10 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             "There were multiple problems that have occurred.",
             instance: null,
             ReadOnlyDictionary<string, object?>.Empty)
-            .AddProblemsAndStatuses(problems);
+                .AddProblemsAndStatuses(problems);
     }
 
-    private ProblemDetails InternalConvertToProblem(IError error)
+    private ProblemDetails InternalConvertToProblem(Error error)
     {
         var errorType = error.GetType();
         var result = CreateProblem<ProblemDetails>(
@@ -86,7 +84,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             type: null,
             error.Message,
             instance: null,
-            error.Metadata);
+            ReadOnlyDictionary<string, object?>.Empty);
         return result;
     }
 

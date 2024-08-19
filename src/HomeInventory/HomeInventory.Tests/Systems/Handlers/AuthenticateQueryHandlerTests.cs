@@ -4,7 +4,6 @@ using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -42,10 +41,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(0);
-        var subject = result.Value
-            .Should().BeOfType<AuthenticateResult>()
-            .Subject;
+        var subject = result.Should().BeSuccess().Subject;
         subject.Id.Should().Be(_user.Id);
         subject.Token.Should().Be(token);
     }
@@ -55,16 +51,15 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<AuthenticateQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional.None<User>());
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
 
         var sut = CreateSut();
         // When
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-           .Which.Should().BeOfType<InvalidCredentialsError>();
+        result.Should().BeFail()
+            .Which.Head.Should().BeOfType<InvalidCredentialsError>();
 #pragma warning disable CA2012 // Use ValueTasks correctly
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
 #pragma warning restore CA2012 // Use ValueTasks correctly
@@ -82,9 +77,8 @@ public class AuthenticateQueryHandlerTests : BaseTest
         var result = await sut.Handle(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-           .Which.Should().BeOfType<InvalidCredentialsError>();
+        result.Should().BeFail()
+            .Which.Head.Should().BeOfType<InvalidCredentialsError>();
 #pragma warning disable CA2012 // Use ValueTasks correctly
         _ = _tokenGenerator.DidNotReceiveWithAnyArgs().GenerateTokenAsync(Arg.Any<User>(), Cancellation.Token);
 #pragma warning restore CA2012 // Use ValueTasks correctly

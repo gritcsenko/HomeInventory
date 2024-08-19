@@ -29,8 +29,11 @@
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="All" Condition="$(MSBuildProjectExtension) == '.csproj'"/>
+  <ItemGroup Condition="$(MSBuildProjectFile.EndsWith('.csproj'))">
+    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="All"/>
+    <Using Include="LanguageExt" Condition="$(MSBuildProjectName.Contains('Contracts')) != true"/>
+    <Using Include="LanguageExt.Common" Condition="$(MSBuildProjectName.Contains('Contracts')) != true"/>
+    <Using Include="HomeInventory.Core"  Condition="$(MSBuildProjectName.Contains('Contracts')) != true"/>
   </ItemGroup>
 
 </Project>

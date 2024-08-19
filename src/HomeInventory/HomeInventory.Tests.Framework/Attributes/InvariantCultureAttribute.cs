@@ -4,6 +4,7 @@ using Xunit.Sdk;
 
 namespace HomeInventory.Tests.Framework.Attributes;
 
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public sealed class InvariantCultureAttribute : BeforeAfterTestAttribute
 {
     private CultureInfo _originalCulture = CultureInfo.InvariantCulture;
