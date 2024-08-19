@@ -1,5 +1,4 @@
-﻿using DotNext.Collections.Generic;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
@@ -19,19 +18,19 @@ internal sealed class ValidationEndpointFilter<T>(IValidationContextFactory<T> v
         var httpContext = context.HttpContext;
         var validator = httpContext.RequestServices.GetValidator<T>();
 
-        var optionalFirstInvalid = await ValidateArgumentAsync(validator, arguments, httpContext.RequestAborted).FirstOrNoneAsync<ValidationResult>(r => !r.IsValid);
-        if (optionalFirstInvalid.TryGet(out var result))
+        var results = await ValidateArgumentAsync(validator, arguments, httpContext.RequestAborted).ToArrayAsync(httpContext.RequestAborted);
+        if (results.Length == 0 || Array.TrueForAll(results, r => r.IsValid))
         {
-            var problem = _problemDetailsFactory.ConvertToProblem(result, httpContext.TraceIdentifier);
-            return TypedResults.Problem(problem);
+            return await next(context);
         }
 
-        return await next(context);
+        var problem = _problemDetailsFactory.ConvertToProblem(results.Where(r => !r.IsValid), httpContext.TraceIdentifier);
+        return TypedResults.Problem(problem);
     }
 
     private async IAsyncEnumerable<ValidationResult> ValidateArgumentAsync(IValidator validator, IEnumerable<T> arguments, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        foreach (var argument in arguments)
+        foreach (var argument in arguments.WithCancellation(cancellationToken))
         {
             var context = _validationContextFactory.CreateContext(argument);
             yield return await validator.ValidateAsync(context, cancellationToken);

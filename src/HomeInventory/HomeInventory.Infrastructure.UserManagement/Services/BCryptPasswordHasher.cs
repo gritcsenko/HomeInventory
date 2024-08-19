@@ -11,11 +11,11 @@ internal sealed class BCryptPasswordHasher : IPasswordHasher
 
     public int WorkFactor { get; init; } = 13;
 
-    public ValueTask<string> HashAsync(string password, CancellationToken cancellationToken = default) =>
-        ValueTask.FromResult(InternalHash(password));
+    public Task<string> HashAsync(string password, CancellationToken cancellationToken = default) =>
+        Task.FromResult(InternalHash(password));
 
-    public ValueTask<bool> VarifyHashAsync(string password, string hash, CancellationToken cancellationToken = default) =>
-        ValueTask.FromResult(InternalVerify(password, hash));
+    public Task<bool> VarifyHashAsync(string password, string hash, CancellationToken cancellationToken = default) =>
+        Task.FromResult(InternalVerify(password, hash));
 
     private string InternalHash(string password)
     {

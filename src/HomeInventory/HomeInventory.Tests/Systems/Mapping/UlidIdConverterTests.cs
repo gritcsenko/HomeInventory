@@ -17,7 +17,7 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
             .Invoked(sut, id, (sut, id) => sut.TryConvert(id));
 
         then
-            .Result(id, (oneOf, id) => oneOf.AsT0.Value.Should().Be(id));
+            .Result(id, (oneOf, id) => oneOf.Should().BeSuccess(x => x.Value.Should().Be(id)));
     }
 
     [Fact]
@@ -31,9 +31,11 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
             .Invoked(sut, id, (sut, id) => sut.TryConvert(id));
 
         then
-            .Result(oneOf => oneOf.AsT1
-                .Should().BeOfType<ObjectValidationError<Ulid>>()
-                .Which.Value.Should().BeEmpty());
+            .Result(validation => validation
+                .Should().BeFail()
+                .Which.Head.Should().BeOfType<ValidationError>()
+                .Which.Value.Should().BeOfType<Ulid>()
+                .Which.Should().BeEmpty());
     }
 
     [Fact]
@@ -45,7 +47,7 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
 
         When
             .Catched(sut, id, (sut, id) => sut.Convert(id))
-            .Exception<InvalidOperationException>(ex => ex.Which.Data.ShouldBeDictionaryAnd().Contain(nameof(ObjectValidationError<Ulid>.Value), Ulid.Empty));
+            .Exception<ValidationException>(ex => ex.Which.Value.Should().Be(Ulid.Empty));
     }
 }
 
@@ -65,5 +67,5 @@ public sealed class UlidIdConverterTestsGivenContext : GivenContext<UlidIdConver
 
 public class TestId(Ulid value) : UlidIdentifierObject<TestId>(value), IUlidBuildable<TestId>
 {
-    public static Optional<TestId> CreateFrom(Ulid value) => new TestId(value);
+    public static TestId CreateFrom(Ulid value) => new(value);
 }

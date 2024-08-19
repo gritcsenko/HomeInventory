@@ -43,7 +43,7 @@ public class TypeExtensionsTests : BaseTest
         E._f3 = Fixture.Create<E>();
         var type = typeof(E);
 
-        var actual = type.GetFieldsOfType<E>().ToArray();
+        var actual = type.GetFieldValuesOfType<E>().ToArray();
 
         using var scope = new AssertionScope();
         actual.Should().HaveCount(2);

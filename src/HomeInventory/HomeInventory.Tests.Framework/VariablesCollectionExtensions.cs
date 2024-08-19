@@ -2,16 +2,16 @@
 
 public static class VariablesCollectionExtensions
 {
-    public static T Get<T>(this VariablesContainer collection, IIndexedVariable<T> variable)
+    public static PropertyValue<T> Get<T>(this VariablesContainer collection, IIndexedVariable<T> variable)
         where T : notnull
     {
         var result = collection.TryGet(variable);
-        if (result.IsUndefined)
+        if (result.IsNone)
         {
             throw new InvalidOperationException($"Failed to get {variable.Name} of type {typeof(T)} at index {variable.Index}");
         }
 
-        return result.ValueOrDefault!;
+        return (PropertyValue<T>)result;
     }
 
     public static IEnumerable<T> GetMany<T>(this VariablesContainer collection, IVariable<T> variable)
@@ -19,9 +19,6 @@ public static class VariablesCollectionExtensions
         collection.GetMany(variable, ..);
 
     public static IEnumerable<T> GetMany<T>(this VariablesContainer collection, IVariable<T> variable, Range range)
-        where T : notnull
-    {
-        var all = collection.GetAll(variable).ToArray();
-        return all[range];
-    }
+        where T : notnull =>
+        collection.GetAll(variable).ToArray()[range];
 }

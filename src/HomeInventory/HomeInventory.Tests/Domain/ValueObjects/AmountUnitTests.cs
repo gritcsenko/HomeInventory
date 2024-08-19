@@ -1,5 +1,5 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;
@@ -15,33 +15,58 @@ public class AmountUnitTests : BaseTest
         _items.Should().NotBeEmpty();
     }
 
-    [Theory]
-    [MemberData(nameof(Data))]
-    public void PropertiesShouldMatch(AmountUnit sut, string name, MeasurementType type, bool isMetric)
+    [Fact]
+    public void CreateShouldPassTheCallerMemberNameAndType()
     {
-        using var scope = new AssertionScope();
-        sut.Name.Should().Be(name);
-        sut.Measurement.Should().Be(type);
-        sut.IsMetric.Should().Be(isMetric);
+        var type = MeasurementType.Create();
+        var sut = AmountUnit.Create(type);
+
+        sut.Name.Should().Be(nameof(CreateShouldPassTheCallerMemberNameAndType));
+        sut.Measurement.Should().BeSameAs(type);
     }
 
-    [Theory]
-    [MemberData(nameof(Keys))]
-    public void CanBeUsedAsDictionaryKey(AmountUnit sut)
+    [Fact]
+    public void CreatedShouldContainSuppliedId()
+    {
+        var expected = Ulid.NewUlid();
+        var supplier = Substitute.For<IIdSupplier<Ulid>>();
+        supplier.Supply().Returns(expected);
+        var type = MeasurementType.Create();
+        var sut = AmountUnit.Create(type, supplier);
+
+        sut.Value.Should().Be(expected);
+    }
+
+    [Fact]
+    public void CreatedScaledShouldContainSuppliedId()
+    {
+        var scale = Fixture.Create<decimal>();
+        var expected = Ulid.NewUlid();
+        var supplier = Substitute.For<IIdSupplier<Ulid>>();
+        supplier.Supply().Returns(expected);
+        var type = MeasurementType.Create();
+        var baseUnit = AmountUnit.Create(type);
+        var sut = AmountUnit.Create(baseUnit, x => x * scale, supplier);
+
+        sut.Value.Should().Be(expected);
+    }
+
+    [Fact]
+    public void FieldsShoulHaveMatchedName()
+    {
+        var fields = typeof(AmountUnit).GetFieldsOfType<AmountUnit>().ToArray();
+
+        fields.Should().NotBeEmpty()
+            .And.AllSatisfy(t => t.Value!.Name.Should().Be(t.Field.Name));
+    }
+
+
+    [Fact]
+    public void CanBeUsedAsDictionaryKey()
     {
         var dictionary = _items.ToDictionary(x => x, x => x.Name);
+        var values = typeof(AmountUnit).GetFieldValuesOfType<AmountUnit>().ToArray();
 
-        dictionary.Should().ContainKey(sut);
+        dictionary.Should().ContainKeys(values);
     }
-
-    public static TheoryData<AmountUnit, string, MeasurementType, bool> Data() =>
-        new()
-        {
-            { AmountUnit.Piece, nameof(AmountUnit.Piece), MeasurementType.Count, true },
-            { AmountUnit.CubicMeter, nameof(AmountUnit.CubicMeter), MeasurementType.Volume, true },
-            { AmountUnit.Kelvin, nameof(AmountUnit.Kelvin), MeasurementType.Temperature, true },
-            { AmountUnit.Gallon, nameof(AmountUnit.Gallon), MeasurementType.Volume, false },
-        };
-
-    public static TheoryData<AmountUnit> Keys() => new(_items);
 }

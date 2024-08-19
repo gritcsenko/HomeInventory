@@ -6,13 +6,21 @@ public static class TypeExtensions
 {
     private const BindingFlags _getFieldBindingAttr = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 
-    public static IEnumerable<TFieldType> GetFieldsOfType<TFieldType>(this Type type)
+    public static IEnumerable<TFieldType> GetFieldValuesOfType<TFieldType>(this Type type)
     {
         var fieldType = typeof(TFieldType);
         return type.GetFields(_getFieldBindingAttr)
             .Where(field => fieldType.IsAssignableFrom(field.FieldType))
             .Select(field => field.GetValue(null))
             .Cast<TFieldType>();
+    }
+
+    public static IEnumerable<(FieldInfo Field, TFieldType? Value)> GetFieldsOfType<TFieldType>(this Type type)
+    {
+        var fieldType = typeof(TFieldType);
+        return type.GetFields(_getFieldBindingAttr)
+            .Where(field => fieldType.IsAssignableFrom(field.FieldType))
+            .Select(field => (field, (TFieldType?)field.GetValue(null)));
     }
 
     public static string GetFormattedName(this Type type) =>

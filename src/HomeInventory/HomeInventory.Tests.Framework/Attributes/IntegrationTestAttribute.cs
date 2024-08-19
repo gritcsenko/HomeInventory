@@ -3,6 +3,7 @@
 /// <summary>
 /// Indicates the test has external dependencies.
 /// </summary>
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public sealed class IntegrationTestAttribute : CategoryTraitAttribute
 {
     /// <summary>
