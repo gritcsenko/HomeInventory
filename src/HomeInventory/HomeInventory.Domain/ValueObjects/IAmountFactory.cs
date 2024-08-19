@@ -1,9 +1,6 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-using OneOf;
-
-namespace HomeInventory.Domain.ValueObjects;
+﻿namespace HomeInventory.Domain.ValueObjects;
 
 public interface IAmountFactory
 {
-    OneOf<Amount, IError> Create(decimal value, AmountUnit unit);
+    Validation<Error, Amount> Create(decimal value, AmountUnit unit);
 }

@@ -1,10 +1,10 @@
 ﻿namespace HomeInventory.Domain.Primitives.Ids;
 
-public interface IIdBuildable<TSelf, TId, TBuilder>
+public interface IIdBuildable<TSelf, in TId, TBuilder>
     where TSelf : class, IIdBuildable<TSelf, TId, TBuilder>, IBuildableIdentifierObject<TSelf, TId, TBuilder>, IValuableIdentifierObject<TSelf, TId>
-    where TBuilder : notnull, IOptionalBuilder<TSelf>, IResettable
+    where TBuilder : notnull, IObjectBuilder<TSelf>
     where TId : notnull
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "As designed")]
-    abstract static Optional<TSelf> CreateFrom(TId value);
+    abstract static TSelf CreateFrom(TId value);
 }

@@ -1,14 +1,8 @@
-﻿using DotNext;
-using HomeInventory.Domain.Primitives.Ids;
+﻿using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class MaterialId : UlidIdentifierObject<MaterialId>, IUlidBuildable<MaterialId>
+public sealed class MaterialId(Ulid value) : UlidIdentifierObject<MaterialId>(value), IUlidBuildable<MaterialId>
 {
-    private MaterialId(Ulid value)
-        : base(value)
-    {
-    }
-
-    public static Optional<MaterialId> CreateFrom(Ulid value) => new MaterialId(value);
+    public static MaterialId CreateFrom(Ulid value) => new(value);
 }

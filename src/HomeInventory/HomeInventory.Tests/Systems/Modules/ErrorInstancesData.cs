@@ -12,7 +12,6 @@ public sealed class ErrorInstancesData : TheoryData<Type?, HttpStatusCode>
         Add(typeof(ConflictError), HttpStatusCode.Conflict);
         Add(typeof(DuplicateEmailError), HttpStatusCode.Conflict);
         Add(typeof(ValidationError), HttpStatusCode.BadRequest);
-        Add(typeof(ObjectValidationError<string>), HttpStatusCode.BadRequest);
         Add(typeof(NotFoundError), HttpStatusCode.NotFound);
     }
 }

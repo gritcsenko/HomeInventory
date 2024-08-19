@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using DotNext;
-using HomeInventory.Core;
 
 namespace HomeInventory.Web.Infrastructure;
 
@@ -14,13 +12,13 @@ internal sealed class ErrorMapping(HttpStatusCode defaultError, HttpStatusCode d
 
     public HttpStatusCode GetDefaultValidationError() => _defaultValidationError;
 
-    public HttpStatusCode GetError(Type? errorType) => GetErrorCore(errorType).Or(_defaultError);
+    public HttpStatusCode GetError(Type? errorType) => GetErrorCore(errorType).IfNone(_defaultError);
 
-    private Optional<HttpStatusCode> GetErrorCore(Type? type)
+    private Option<HttpStatusCode> GetErrorCore(Type? type)
     {
         while (type is not null)
         {
-            if (_errorMapping.GetValueOptional(type) is { HasValue: true } result)
+            if (_errorMapping.TryGetValue(type) is { IsSome: true } result)
             {
                 return result;
             }
@@ -28,6 +26,6 @@ internal sealed class ErrorMapping(HttpStatusCode defaultError, HttpStatusCode d
             type = type.BaseType;
         }
 
-        return Optional<HttpStatusCode>.None;
+        return OptionNone.Default;
     }
 }

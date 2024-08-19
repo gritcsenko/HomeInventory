@@ -3,6 +3,7 @@
 /// <summary>
 /// Indicates a test is a unit test.
 /// </summary>
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public sealed class UnitTestAttribute : CategoryTraitAttribute
 {
     /// <summary>

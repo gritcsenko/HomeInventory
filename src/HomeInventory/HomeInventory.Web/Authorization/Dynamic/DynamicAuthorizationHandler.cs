@@ -36,7 +36,7 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
         }
 
         await UserId.Converter.TryConvert(id)
-            .Match(async userId =>
+            .MatchAsync(async userId =>
             {
                 using var scope = httpContext.RequestServices.CreateScope();
                 var provider = scope.ServiceProvider;
@@ -48,16 +48,17 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
                     if (await repository.HasPermissionAsync(userId, permission.ToString(), httpContext.RequestAborted))
                     {
                         context.Succeed(requirement);
-                        return;
+                        return Unit.Default;
                     }
                 }
 
                 context.Fail(new AuthorizationFailureReason(this, $"User has no permission"));
+                return Unit.Default;
             },
-            error =>
+            errors =>
             {
-                context.Fail(new AuthorizationFailureReason(this, $"User has invalid id: {error.Message}"));
-                return Task.CompletedTask;
+                context.Fail(new AuthorizationFailureReason(this, errors.Head.Message));
+                return Unit.Default;
             });
     }
 }

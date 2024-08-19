@@ -1,11 +1,10 @@
 ﻿using System.Transactions;
 using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
-internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scopeAccessor, ILogger<UnitOfWorkBehavior<TRequest, TIgnored>> logger) : IPipelineBehavior<TRequest, OneOf<Success, IError>>
+internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scopeAccessor, ILogger<UnitOfWorkBehavior<TRequest, TIgnored>> logger) : IPipelineBehavior<TRequest, Option<Error>>
     where TRequest : ICommand
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();
@@ -13,12 +12,12 @@ internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scop
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly ILogger _logger = logger;
 
-    public async Task<OneOf<Success, IError>> Handle(TRequest request, RequestHandlerDelegate<OneOf<Success, IError>> next, CancellationToken cancellationToken)
+    public async Task<Option<Error>> Handle(TRequest request, RequestHandlerDelegate<Option<Error>> next, CancellationToken cancellationToken)
     {
         using var scope = new TransactionScope();
 
         var result = await next();
-        if (result.IsT0)
+        if (result.IsNone)
         {
             await SaveChangesAsync(scope, cancellationToken);
         }
@@ -28,8 +27,8 @@ internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scop
 
     private async Task SaveChangesAsync(TransactionScope transactionScope, CancellationToken cancellationToken)
     {
-        var serviceScope = _scopeAccessor.GetScope<IUnitOfWork>();
-        var unitOfWork = serviceScope.Get().OrThrow<InvalidOperationException>();
+        var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
+
         var count = await unitOfWork.SaveChangesAsync(cancellationToken);
         switch (count)
         {

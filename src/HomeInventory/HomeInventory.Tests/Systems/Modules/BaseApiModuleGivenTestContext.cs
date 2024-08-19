@@ -2,15 +2,12 @@
 using AutoMapper;
 using Carter;
 using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using OneOf;
-using OneOf.Types;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;
@@ -71,18 +68,18 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     internal TGiven OnCommandReturnSuccess<TRequest>(IVariable<TRequest> request)
         where TRequest : notnull, ICommand =>
-        OnRequestReturnResult(request, new Success());
+        OnRequestReturnResult(request);
 
     internal TGiven OnQueryReturnError<TRequest, TResult, TError>(IVariable<TRequest> request, IVariable<TError> result)
         where TRequest : notnull, IQuery<TResult>
         where TResult : notnull
-        where TError : notnull, IError =>
+        where TError : notnull, Error =>
         OnRequestReturnError<TRequest, TResult, TError>(request, result);
 
     internal TGiven OnCommandReturnError<TRequest, TError>(IVariable<TRequest> request, IVariable<TError> result)
         where TRequest : notnull, ICommand
-        where TError : notnull, IError =>
-    OnRequestReturnError<TRequest, Success, TError>(request, result);
+        where TError : notnull, Error =>
+    OnRequestReturnError<TRequest, TError>(request, result);
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S3427:Method overloads with default parameter values should not overlap", Justification = "False positive")]
     internal IDestinationMapper Map<TSource>(out IVariable<TSource> source, [CallerArgumentExpression(nameof(source))] string? name = null)
@@ -123,27 +120,59 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     private DefaultHttpContext CreateHttpContext() => new() { RequestServices = ServiceProvider };
 
     private TGiven OnRequestReturnError<TRequest, TResult, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : IRequest<OneOf<TResult, IError>>
+        where TRequest : IRequest<IQueryResult<TResult>>
         where TResult : notnull
-        where TError : IError =>
-        OnRequestReturn(request, OneOf<TResult, IError>.FromT1(GetValue(result)));
+        where TError : Error =>
+        OnRequestReturn<TRequest, IQueryResult<TResult>>(request, new QueryResult<TResult>(GetValue(result)));
+
+    private TGiven OnRequestReturnError<TRequest, TError>(IVariable<TRequest> request, IVariable<TError> result)
+        where TRequest : IRequest<Option<Error>>
+        where TError : Error =>
+        OnRequestReturn(request, Option<Error>.Some(GetValue(result)));
 
     private TGiven OnRequestReturnResult<TRequest, TResult>(IVariable<TRequest> request, IVariable<TResult> result)
-        where TRequest : IRequest<OneOf<TResult, IError>>
+        where TRequest : IRequest<IQueryResult<TResult>>
         where TResult : notnull =>
-        OnRequestReturnResult(request, GetValue(result));
+        OnRequestReturnResult<TRequest, IQueryResult<TResult>>(request, new QueryResult<TResult>(GetValue(result)));
+
+    private TGiven OnRequestReturnResult<TRequest>(IVariable<TRequest> request)
+        where TRequest : IRequest<Option<Error>> =>
+        OnRequestReturnResult<TRequest, Option<Error>>(request, OptionNone.Default);
 
     private TGiven OnRequestReturnResult<TRequest, TResult>(IVariable<TRequest> request, TResult resultValue)
-        where TRequest : IRequest<OneOf<TResult, IError>>
+        where TRequest : IRequest<TResult>
         where TResult : notnull =>
-        OnRequestReturn(request, OneOf<TResult, IError>.FromT0(resultValue));
+        OnRequestReturn(request, resultValue);
 
-    private TGiven OnRequestReturn<TRequest, TResult>(IVariable<TRequest> request, OneOf<TResult, IError> oneOf)
-        where TRequest : IRequest<OneOf<TResult, IError>>
+    private TGiven OnRequestReturn<TRequest, TResult>(IVariable<TRequest> request, TResult result)
+        where TRequest : IRequest<TResult>
         where TResult : notnull
     {
         _mediator.Send(GetValue(request), _cancellation.Token)
-            .Returns(oneOf);
+            .Returns(result);
         return This;
+    }
+
+    private sealed class QueryResult<TResponse>(Validation<Error, TResponse> validation) : IQueryResult<TResponse>
+        where TResponse : notnull
+    {
+        private readonly Validation<Error, TResponse> _validation = validation;
+
+        public TResponse Success => (TResponse)_validation;
+        public bool IsFail => _validation.IsFail;
+        public bool IsSuccess => _validation.IsSuccess;
+        public Seq<Error> Fail => (Seq<Error>)_validation;
+        object IQueryResult.Success => Success;
+
+        public bool Equals(TResponse other) => _validation == other;
+
+        public Seq<Error> FailAsEnumerable() => _validation.FailAsEnumerable();
+
+        public LanguageExt.Unit IfSuccess(Action<TResponse> Success) => _validation.IfSuccess(Success);
+
+        public TResult Match<TResult>(Func<TResponse, TResult> Succ, Func<Seq<Error>, TResult> Fail) =>
+            _validation.Match(Succ, Fail);
+
+        public Seq<TResponse> SuccessAsEnumerable() => _validation.SuccessAsEnumerable();
     }
 }

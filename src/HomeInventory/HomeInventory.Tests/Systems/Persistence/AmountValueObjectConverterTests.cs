@@ -1,9 +1,7 @@
 ﻿using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
-using OneOf;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -30,16 +28,12 @@ internal class InternalAmountValueObjectConverterTests() : BaseTest<AmountValueO
             .SubstituteFor(out IVariable<IAmountFactory> factory, amount,
                 (factory, amount) => factory
                     .Create(Arg.Any<decimal>(), Arg.Any<AmountUnit>())
-                    .Returns(OneOf<Amount, IError>.FromT0(amount)))
+                    .Returns(amount))
             .Sut(out var sut, factory);
 
         When
             .Invoked(sut, amountModel, (sut, amount) => sut.TryConvert(amount))
-            .Result(amount, (r, a) =>
-            {
-                r.IsT0.Should().BeTrue();
-                r.AsT0.Should().BeSameAs(a);
-            });
+            .Result(amount, (r, a) => r.Should().BeSuccess(x => x.Should().BeSameAs(a)));
     }
 }
 
@@ -69,7 +63,7 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
         {
             var rnd = new Random();
             var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
-            fixture.Customize<AmountUnit>(c => c.FromFactory(() => rnd.Peek(items).Value));
+            fixture.Customize<AmountUnit>(c => c.FromFactory(() => (AmountUnit)rnd.Peek(items)));
         }
     }
 

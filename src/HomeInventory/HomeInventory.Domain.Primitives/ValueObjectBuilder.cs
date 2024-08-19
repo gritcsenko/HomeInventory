@@ -1,28 +1,34 @@
-﻿namespace HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives.Errors;
+using LanguageExt.SomeHelp;
+
+namespace HomeInventory.Domain.Primitives;
 
 public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectBuilder<TSelf, TObject, TValue>
     where TSelf : ValueObjectBuilder<TSelf, TObject, TValue>
     where TObject : notnull, IValueObject<TObject>
     where TValue : notnull
 {
-    private Optional<TValue> _value = Optional.None<TValue>();
+    private static readonly Seq<Error> _valueNotSpecified = Seq.create(new ValueNotSpecifiedError()).Cast<Error>();
+
+    private Option<TValue> _value = OptionNone.Default;
 
     public TSelf WithValue(TValue value)
     {
-        _value = Optional.Some(value);
+        _value = value.ToSome();
         return (TSelf)this;
     }
 
-    public Optional<TObject> Build() =>
+    public Validation<Error, TObject> Build() =>
         _value
-            .If(IsValueValid)
-            .Convert(ToObject);
+            .Map(Validate)
+            .Map(validation => validation.Map(ToObject))
+            .Match(static x => x, static () => _valueNotSpecified);
 
     public void Reset() =>
-        _value = Optional.None<TValue>();
+        _value = OptionNone.Default;
 
-    protected abstract Optional<TObject> ToObject(TValue value);
+    protected abstract TObject ToObject(TValue value);
 
-    protected virtual bool IsValueValid(TValue value) =>
-        value is not null;
+    protected virtual Validation<Error, TValue> Validate(TValue value) =>
+        value is null ? _valueNotSpecified : value;
 }

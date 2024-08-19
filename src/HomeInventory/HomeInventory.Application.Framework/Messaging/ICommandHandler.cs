@@ -1,8 +1,6 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+﻿namespace HomeInventory.Application.Interfaces.Messaging;
 
-namespace HomeInventory.Application.Interfaces.Messaging;
-
-public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, OneOf<Success, IError>>
+public interface ICommandHandler<TCommand> : IRequestHandler<TCommand, Option<Error>>
     where TCommand : ICommand
 {
 }

@@ -197,12 +197,12 @@ public sealed class EntityTestsGivenContext : GivenContext<EntityTestsGivenConte
 
     protected override TestEntity CreateSut(TestEntityId arg) => new(arg);
 
-    private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>()).Value;
+    private TestEntityId CreateTestEntityId() => TestEntityId.CreateFrom(Create<Ulid>());
 }
 
 public class TestEntityId(Ulid value) : UlidIdentifierObject<TestEntityId>(value), IUlidBuildable<TestEntityId>
 {
-    public static Optional<TestEntityId> CreateFrom(Ulid value) => new TestEntityId(value);
+    public static TestEntityId CreateFrom(Ulid value) => new(value);
 }
 
 public class TestEntity(TestEntityId id) : Entity<TestEntity, TestEntityId>(id)

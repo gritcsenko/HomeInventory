@@ -2,7 +2,6 @@
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Contracts;
-using HomeInventory.Core;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Web.Framework;
@@ -41,17 +40,17 @@ public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor
         var command = _mapper.MapOrFail<RegisterCommand>(body);
         var result = await _sender.Send(command, cancellationToken);
         return await result.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
-            async _ =>
+            async error =>
+            {
+                var problem = _problemDetailsFactory.ConvertToProblem(new Seq<Error>([error]), context.TraceIdentifier);
+                var result = TypedResults.Problem(problem);
+                return await ValueTask.FromResult(result);
+            },
+            async () =>
             {
                 var query = _mapper.MapOrFail<UserIdQuery>(body);
                 var queryResult = await _sender.Send(query, cancellationToken);
                 return _problemDetailsFactory.MatchToOk(queryResult, _mapper.MapOrFail<RegisterResponse>, context.TraceIdentifier);
-            },
-            async error =>
-            {
-                var problem = _problemDetailsFactory.ConvertToProblem([error], context.TraceIdentifier);
-                var result = TypedResults.Problem(problem);
-                return await ValueTask.FromResult(result);
             });
     }
 }

@@ -1,12 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿namespace HomeInventory.Core;
 
-namespace HomeInventory.Core;
-
-public sealed class ScopeAccessor : IScopeAccessor
+public sealed class ScopeAccessor(IScopeContainer container) : IScopeAccessor
 {
-    private readonly ConcurrentDictionary<Type, object> _scopes = new();
+    private readonly IScopeContainer _container = container;
 
     public IScope<TContext> GetScope<TContext>()
         where TContext : class =>
-        (Scope<TContext>)_scopes.GetOrAdd(typeof(TContext), _ => new Scope<TContext>());
+        _container.GetOrAdd<TContext>();
 }

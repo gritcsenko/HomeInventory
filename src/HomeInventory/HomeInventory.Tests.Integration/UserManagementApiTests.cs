@@ -71,5 +71,11 @@ public class UserManagementApiTests : BaseIntegrationTest
         body.Extensions.Should().ContainKey("errorCodes")
             .WhoseValue.Should().BeJsonElement()
             .Which.Should().BeArrayEqualTo([nameof(DuplicateEmailError)]);
+#pragma warning disable CA1308 // Normalize strings to uppercase
+        body.Extensions.Should().ContainKey("errors")
+            .WhoseValue.Should().BeJsonElement()
+            .Which.Should().BeArray(e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message).ToLowerInvariant())
+                .Which.Should().HaveValue(DuplicateEmailError.DefaultMessage));
+#pragma warning restore CA1308 // Normalize strings to uppercase
     }
 }

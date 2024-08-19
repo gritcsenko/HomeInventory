@@ -15,7 +15,7 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
     {
         var variable = _result.OfType<Action>();
         void action() => invoke(GetValue(sut));
-        Variables.TryAdd(variable, () => action);
+        Variables.Add(variable, () => action);
         return new(Variables, variable);
     }
 
@@ -49,14 +49,14 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
         where TSut : notnull
         where TArg : notnull
         where TResult : notnull =>
-        Invoked(sut, sutValue => invoke(sutValue, Variables.Get(arg)));
+        Invoked(sut, sutValue => invoke(sutValue, Variables.Get(arg).Value));
 
     public ThenContext<TResult> Invoked<TSut, TResult>(IIndexedVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
         where TResult : notnull
     {
         var variable = _result.OfType<TResult>();
-        Variables.TryAdd(variable, () => invoke(Variables.Get(sut)));
+        Variables.Add(variable, () => invoke(Variables.Get(sut).Value));
         return new(Variables, variable);
     }
 
@@ -88,7 +88,7 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
         where TResult : notnull
     {
         var variable = _result.OfType<TResult>();
-        await Variables.TryAddAsync(variable, () => invoke(_cancellation.Token));
+        await Variables.AddAsync(variable, () => invoke(_cancellation.Token));
         return new(Variables, variable);
     }
 }

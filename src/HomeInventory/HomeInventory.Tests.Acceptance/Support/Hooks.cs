@@ -17,7 +17,9 @@ public sealed class Hooks
 
     [AfterScenario(Order = 1)]
 #pragma warning disable CA1822 // Mark members as static
+#pragma warning disable IDE0060 // Remove unused parameter
     public void Cleanup(IObjectContainer objectContainer)
+#pragma warning restore IDE0060 // Remove unused parameter
 #pragma warning restore CA1822 // Mark members as static
     {
         // Nothing to clean up yet

@@ -1,14 +1,8 @@
-﻿using DotNext;
-using HomeInventory.Domain.Primitives.Ids;
+﻿using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Domain.ValueObjects;
 
-public sealed class UserId : UlidIdentifierObject<UserId>, IUlidBuildable<UserId>
+public sealed class UserId(Ulid value) : UlidIdentifierObject<UserId>(value), IUlidBuildable<UserId>
 {
-    private UserId(Ulid value)
-        : base(value)
-    {
-    }
-
-    public static Optional<UserId> CreateFrom(Ulid value) => Result.FromValue(new UserId(value));
+    public static UserId CreateFrom(Ulid value) => new(value);
 }

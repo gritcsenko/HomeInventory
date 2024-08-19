@@ -59,7 +59,7 @@ public class UserRepositoryTests : BaseRepositoryTest
 
         var result = await sut.FindFirstByEmailUserOptionalAsync(_user.Email, Cancellation.Token);
 
-        result.Should().HaveValue(_user);
+        result.Should().Be(_user);
     }
 
     [Fact]

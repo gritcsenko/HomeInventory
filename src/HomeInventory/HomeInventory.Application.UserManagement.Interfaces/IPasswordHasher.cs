@@ -2,7 +2,7 @@
 
 public interface IPasswordHasher
 {
-    ValueTask<string> HashAsync(string password, CancellationToken cancellationToken = default);
+    Task<string> HashAsync(string password, CancellationToken cancellationToken = default);
 
-    ValueTask<bool> VarifyHashAsync(string password, string hash, CancellationToken cancellationToken = default);
+    Task<bool> VarifyHashAsync(string password, string hash, CancellationToken cancellationToken = default);
 }

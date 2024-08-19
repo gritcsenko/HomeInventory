@@ -11,7 +11,7 @@ namespace HomeInventory.Tests.Systems.Handlers;
 public class UserIdQueryHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-    private readonly ScopeAccessor _scopeAccessor = new();
+    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
 
     public UserIdQueryHandlerTests()
     {
@@ -32,15 +32,13 @@ public class UserIdQueryHandlerTests : BaseTest
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
 
         var sut = CreateSut();
+
         // When
         var result = await sut.Handle(query, Cancellation.Token);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(0);
-        var subject = result.Value
-            .Should().BeOfType<UserIdResult>()
-            .Subject;
-        subject.UserId.Should().Be(_user.Id);
+        result.Should().BeSuccess(x => x.UserId.Should().Be(_user.Id));
     }
 
     [Fact]
@@ -48,16 +46,17 @@ public class UserIdQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<UserIdQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional.None<User>());
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
 
         var sut = CreateSut();
+
         // When
         var result = await sut.Handle(query, Cancellation.Token);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-           .Which.Should().BeOfType<NotFoundError>()
+        result.Should().BeFail()
+           .Which.Head.Should().BeOfType<NotFoundError>()
            .Which.Message.Should().Contain(query.Email.ToString());
     }
 }
