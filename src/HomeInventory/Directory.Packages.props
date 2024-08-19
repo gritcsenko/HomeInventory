@@ -17,19 +17,23 @@
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="Carter" Version="8.2.1" />
-    <PackageVersion Include="DotNext" Version="5.11.0" />
     <PackageVersion Include="FastExpressionCompiler" Version="4.2.1" />
     <PackageVersion Include="FluentValidation" Version="11.9.2" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
+    <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
+    <PackageVersion Include="LanguageExt.Core" Version="4.4.9" />
+    <PackageVersion Include="LanguageExt.Parsec" Version="4.4.9" />
+    <PackageVersion Include="LanguageExt.Rx" Version="4.4.9" />
+    <PackageVersion Include="LanguageExt.Sys" Version="4.4.9" />
+    <PackageVersion Include="LanguageExt.SysX" Version="4.4.8" />
+    <PackageVersion Include="LanguageExt.Transformers" Version="4.4.8" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
     <PackageVersion Include="MediatR" Version="12.4.0" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.10.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
     <PackageVersion Include="Microsoft.FeatureManagement" Version="3.5.0" />
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />
-    <PackageVersion Include="OneOf" Version="3.0.271" />
-    <PackageVersion Include="OneOf.SourceGenerator" Version="3.0.271" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
     <PackageVersion Include="Serilog" Version="4.0.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.2" />
@@ -39,7 +43,8 @@
     <PackageVersion Include="Serilog.Settings.Configuration" Version="8.0.2" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.7.1" />
+    <PackageVersion Include="System.Interactive.Async" Version="6.0.1" />
     <PackageVersion Include="System.Reactive" Version="6.0.1" />
     <PackageVersion Include="Ulid" Version="1.3.4" />
   </ItemGroup>
@@ -50,15 +55,15 @@
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="8.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
@@ -70,15 +75,18 @@
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.7" />
+    <PackageVersion Include="FluentAssertions.LanguageExt" Version="0.5.0" />
+    <PackageVersion Include="LanguageExt.AutoFixture" Version="2.0.1" />
+    <PackageVersion Include="LanguageExt.UnitTesting" Version="4.4.9.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
     <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.4.0" />
-    <PackageVersion Include="Verify.Xunit" Version="26.1.6" />
+    <PackageVersion Include="Verify.Xunit" Version="26.2.0" />
     <PackageVersion Include="xunit" Version="2.9.0" />
     <PackageVersion Include="xunit.core" Version="2.9.0" />
   </ItemGroup>
@@ -87,11 +95,11 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.33.0" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.30.0.95878" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
 </Project>

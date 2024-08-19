@@ -4,7 +4,6 @@ using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 
@@ -15,13 +14,13 @@ public class RegisterCommandHandlerTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
-    private readonly ScopeAccessor _scopeAccessor = new();
+    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
 
     public RegisterCommandHandlerTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-        Fixture.CustomizeFromFactory<RegisterCommand, Email, ISupplier<Ulid>>((e, s) => new RegisterCommand(e, s.Invoke().ToString()));
+        Fixture.CustomizeFromFactory<RegisterCommand, Email, IIdSupplier<Ulid>>((e, s) => new RegisterCommand(e, s.Supply().ToString()));
     }
 
     private RegisterCommandHandler CreateSut() => new(_scopeAccessor, DateTime, _hasher, IdSuppliers.Ulid);
@@ -34,16 +33,17 @@ public class RegisterCommandHandlerTests : BaseTest
         var command = Fixture.Create<RegisterCommand>();
         _userRepository.IsUserHasEmailAsync(command.Email, Cancellation.Token).Returns(false);
 #pragma warning disable CA2012 // Use ValueTasks correctly
-        _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(ValueTask.CompletedTask);
+        _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(Task.CompletedTask);
 #pragma warning restore CA2012 // Use ValueTasks correctly
 
         var sut = CreateSut();
+
         // When
         var result = await sut.Handle(command, Cancellation.Token);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(0);
-        result.Value.Should().NotBeNull();
+        result.Should().BeNone();
     }
 
     [Fact]
@@ -55,13 +55,13 @@ public class RegisterCommandHandlerTests : BaseTest
         _userRepository.IsUserHasEmailAsync(command.Email, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();
+
         // When
         var result = await sut.Handle(command, Cancellation.Token);
+
         // Then
         using var scope = new AssertionScope();
-        result.Index.Should().Be(1);
-        result.Value.Should().BeAssignableTo<IError>()
-            .Which.Should().BeOfType<DuplicateEmailError>();
+        result.Should().BeSome(error => error.Should().BeOfType<DuplicateEmailError>());
         await _userRepository.DidNotReceiveWithAnyArgs().AddAsync(Arg.Any<User>(), Cancellation.Token);
     }
 }

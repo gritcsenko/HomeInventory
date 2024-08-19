@@ -1,6 +1,4 @@
 ﻿using System.Linq.Expressions;
-using DotNext;
-using HomeInventory.Core;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +18,13 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    public Optional<TEntity> FindTracked<TEntity>(Func<TEntity, bool> condition)
+    public Option<TEntity> FindTracked<TEntity>(Func<TEntity, bool> condition)
         where TEntity : class =>
-        ChangeTracker.Entries<TEntity>().Select(e => e.Entity).FirstOrNone(condition);
+        ChangeTracker
+            .Entries<TEntity>()
+            .Select(e => e.Entity)
+            .Where(condition)
+            .HeadOrNone();
 
     public DbSet<TEntity> GetDbSet<TEntity>()
         where TEntity : class =>

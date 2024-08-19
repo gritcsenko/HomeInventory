@@ -1,9 +1,14 @@
 ﻿namespace HomeInventory.Core;
 
-public interface IScope<TContext>
+public interface IScope
+{
+    IDisposable Reset();
+}
+
+public interface IScope<TContext> : IScope
     where TContext : class
 {
     IDisposable Set(TContext context);
-    IDisposable Reset();
-    Optional<TContext> Get();
+
+    Option<TContext> Get();
 }

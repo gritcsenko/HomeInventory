@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Core;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
 
@@ -9,13 +8,13 @@ internal sealed class UserIdQueryHandler(IScopeAccessor scopeAccessor) : QueryHa
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
 
-    protected override async Task<OneOf<UserIdResult, IError>> InternalHandle(UserIdQuery query, CancellationToken cancellationToken)
+    protected override async Task<Validation<Error, UserIdResult>> InternalHandle(UserIdQuery query, CancellationToken cancellationToken)
     {
-        var scope = _scopeAccessor.GetScope<IUserRepository>();
-        var userRepository = scope.Get().OrThrow<InvalidOperationException>();
+        var userRepository = _scopeAccessor.GetRequiredContext<IUserRepository>();
+
         var result = await userRepository.FindFirstByEmailUserOptionalAsync(query.Email, cancellationToken);
         return result
-            .Convert<OneOf<UserIdResult, IError>>(user => new UserIdResult(user.Id))
-            .OrInvoke(() => new NotFoundError($"User with email {query.Email} was not found"));
+            .Map(user => (Validation<Error, UserIdResult>)new UserIdResult(user.Id))
+            .ErrorIfNone(() => new NotFoundError($"User with email {query.Email} was not found"));
     }
 }

@@ -1,6 +1,4 @@
-﻿using DotNext.Threading.Tasks;
-using HomeInventory.Application;
-using HomeInventory.Core;
+﻿using HomeInventory.Application;
 using HomeInventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,16 +34,17 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
 
         if (database.IsRelational())
         {
-            var pendingMigrations = await database.GetPendingMigrationsAsync(cancellationToken).Convert(x => x.ToReadOnly());
-            if (pendingMigrations.Count != 0)
+            var pendingMigrations = await database.GetPendingMigrationsAsync(cancellationToken);
+            var count = pendingMigrations.Count();
+            if (count != 0)
             {
                 return new HealthCheckStatus
                 {
                     IsFailed = true,
-                    Description = $"Database has {pendingMigrations.Count} pending migrations",
+                    Description = $"Database has {count} pending migrations",
                     Data = {
                         ["provider"] = ProviderName,
-                        ["migrations.count"] = pendingMigrations.Count,
+                        ["migrations.count"] = count,
                     },
                 };
             }

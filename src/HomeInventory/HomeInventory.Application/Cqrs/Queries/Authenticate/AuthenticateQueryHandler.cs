@@ -3,7 +3,6 @@ using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 
@@ -13,23 +12,23 @@ internal sealed class AuthenticateQueryHandler(IAuthenticationTokenGenerator tok
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IPasswordHasher _hasher = hasher;
 
-    protected override async Task<OneOf<AuthenticateResult, IError>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
+    protected override async Task<Validation<Error, AuthenticateResult>> InternalHandle(AuthenticateQuery query, CancellationToken cancellationToken)
     {
         var result = await TryFindUserAsync(query, cancellationToken)
             .IfAsync((user, t) => IsPasswordMatchAsync(user, query.Password, t), cancellationToken)
             .ConvertAsync(async (user, t) => (token: await _tokenGenerator.GenerateTokenAsync(user, t), id: user.Id), cancellationToken);
 
-        if (!result.HasValue)
+        if (!result.IsSome)
         {
             return new InvalidCredentialsError();
         }
 
-        return new AuthenticateResult(result.Value.id, result.Value.token);
+        return result.Map(t => new AuthenticateResult(t.id, t.token)).ErrorIfNone(() => new InvalidCredentialsError());
     }
 
-    private ValueTask<Optional<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
-        _userRepository.FindFirstByEmailUserOptionalAsync(request.Email, cancellationToken);
+    private async Task<Option<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>
+        await _userRepository.FindFirstByEmailUserOptionalAsync(request.Email, cancellationToken);
 
-    private async ValueTask<bool> IsPasswordMatchAsync(User user, string password, CancellationToken cancellationToken) =>
+    private async Task<bool> IsPasswordMatchAsync(User user, string password, CancellationToken cancellationToken) =>
         await _hasher.VarifyHashAsync(password, user.Password, cancellationToken);
 }

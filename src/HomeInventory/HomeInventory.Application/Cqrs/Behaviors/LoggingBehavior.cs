@@ -1,4 +1,8 @@
-﻿namespace HomeInventory.Application.Cqrs.Behaviors;
+﻿using HomeInventory.Application.Interfaces.Messaging;
+using LanguageExt;
+using Unit = LanguageExt.Unit;
+
+namespace HomeInventory.Application.Cqrs.Behaviors;
 
 internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
@@ -23,8 +27,10 @@ internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavi
     private static Action<ILogger> GetResponseHandler(TResponse response) =>
         response switch
         {
-            IOneOf oneOf when oneOf.Index == 0 => l => l.ValueReturned(oneOf.Value),
-            IOneOf oneOf when oneOf.Index == 1 => l => l.ErrorReturned(oneOf.Value),
+            Option<Error> option when option.IsNone => l => l.ValueReturned(Unit.Default),
+            Option<Error> option when option.IsSome => l => l.ErrorReturned(option),
+            IQueryResult result when result.IsSuccess => l => l.ValueReturned(result.Success),
+            IQueryResult result when result.IsFail => l => l.ErrorReturned(result.Fail),
             var unknown => l => l.UnknownReturned(unknown),
         };
 }
