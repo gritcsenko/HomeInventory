@@ -3,6 +3,7 @@
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
     <PackageReference Include="Carter" />
+    <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.AspNetCore" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
