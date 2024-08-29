@@ -6,9 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeInventory.UI\HomeInventory.UI.csproj"
-                      SetTargetFramework="TargetFramework=net8.0-browserwasm"
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\HomeInventory.Core\HomeInventory.Core.csproj" />
+    <ProjectReference Include="..\HomeInventory.UI\HomeInventory.UI.csproj" SetTargetFramework="TargetFramework=net8.0-browserwasm" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\HomeInventory.UI.DataContracts\HomeInventory.UI.DataContracts.csproj" />
   </ItemGroup>
 

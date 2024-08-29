@@ -49,8 +49,8 @@ public class TestBase
     public FileInfo TakeScreenshot(string stepName)
     {
         var title = $"{TestContext.CurrentContext.Test.Name}_{stepName}"
-            .Replace(" ", "_")
-            .Replace(".", "_");
+            .Replace(" ", "_", StringComparison.Ordinal)
+            .Replace(".", "_", StringComparison.Ordinal);
 
         var fileInfo = App.Screenshot(title);
 

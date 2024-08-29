@@ -59,6 +59,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Core\HomeInventory.Core.csproj" />
     <ProjectReference Include="..\HomeInventory.UI.DataContracts\HomeInventory.UI.DataContracts.csproj" />
   </ItemGroup>
 

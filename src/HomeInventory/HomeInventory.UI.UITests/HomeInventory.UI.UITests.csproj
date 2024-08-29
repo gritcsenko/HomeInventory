@@ -18,4 +18,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Core\HomeInventory.Core.csproj" />
+  </ItemGroup>
 </Project>
