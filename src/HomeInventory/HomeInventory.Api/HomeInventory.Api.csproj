@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
