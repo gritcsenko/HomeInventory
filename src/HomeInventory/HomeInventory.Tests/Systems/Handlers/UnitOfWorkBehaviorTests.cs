@@ -1,42 +1,41 @@
-﻿using HomeInventory.Application;
-using HomeInventory.Application.Cqrs.Behaviors;
+﻿using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
-using MediatR;
-using MediatR.Registration;
+using HomeInventory.Domain.Primitives.Messages;
 using Microsoft.Extensions.Logging;
-using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
 [UnitTest]
 public class UnitOfWorkBehaviorTests : BaseTest
 {
-    private readonly TestingLogger<UnitOfWorkBehavior<RegisterCommand, Option<Error>>> _logger = Substitute.For<TestingLogger<UnitOfWorkBehavior<RegisterCommand, Option<Error>>>>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
-    private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
+    private readonly IRequestContext<RegisterUserRequestMessage> _context = Substitute.For<IRequestContext<RegisterUserRequestMessage>>();
+    private readonly ServiceProvider _services;
 
     public UnitOfWorkBehaviorTests()
     {
         Fixture.CustomizeUlid();
-        AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
+        var services = new ServiceCollection();
+        services.AddLoggerSubstitute<UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Option<Error>>>();
+        services.AddLoggerSubstitute<LoggingRequestBehavior<RegisterUserRequestMessage, Option<Error>>>();
+        services.AddDomain();
+        services.AddMessageHub(HomeInventory.Application.AssemblyReference.Assembly);
+
+        _services = services.BuildServiceProvider();
+        AddAsyncDisposable(_services);
+        AddDisposable(_services.GetRequiredService<IScopeAccessor>().Set(_unitOfWork));
+
+        _context.Hub.Returns(call => _services.GetRequiredService<IMessageHub>());
+        _context.RequestAborted.Returns(call => Cancellation.Token);
     }
 
     [Fact]
     public void Should_BeResolvedForCommand()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IScopeAccessor>(_scopeAccessor);
-        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
-
-        var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
-            .AddUnitOfWorkBehavior();
-        ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
-        ServiceRegistrar.AddRequiredServices(services, serviceConfig);
-
-        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<RegisterCommand, Option<Error>>>();
+        var behavior = _services.GetRequiredService<IRequestPipelineBehavior<RegisterUserRequestMessage, Option<Error>>>();
 
         behavior.Should().NotBeNull();
     }
@@ -45,47 +44,47 @@ public class UnitOfWorkBehaviorTests : BaseTest
     public async Task Handle_Should_ReturnResponseFromNext()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
         var _response = Option<Error>.None;
 
-        var response = await sut.Handle(_request, Handler, Cancellation.Token);
+        var response = await sut.OnRequestAsync(_context, Handler);
 
         response.Should().BeNone();
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(IRequestContext<RegisterUserRequestMessage> _) => Task.FromResult(_response);
     }
 
     [Fact]
     public async Task Handle_Should_CallSave_When_Success()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
         var _response = Option<Error>.None;
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.OnRequestAsync(_context, Handler);
 
         _ = _unitOfWork
             .Received(1)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(IRequestContext<RegisterUserRequestMessage> _) => Task.FromResult(_response);
     }
 
     [Fact]
     public async Task Handle_Should_NotCallSave_When_Error()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
         var _response = Option<Error>.Some(new NotFoundError(Fixture.Create<string>()));
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.OnRequestAsync(_context, Handler);
 
         _ = _unitOfWork
             .Received(0)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(IRequestContext<RegisterUserRequestMessage> _) => Task.FromResult(_response);
     }
 
-    private UnitOfWorkBehavior<RegisterCommand, Option<Error>> CreateSut() => new(_scopeAccessor, _logger);
+    private IRequestPipelineBehavior<RegisterUserRequestMessage, Option<Error>> CreateSut() =>
+        _services
+            .GetServices<IRequestPipelineBehavior<RegisterUserRequestMessage, Option<Error>>>()
+            .First(b => b is UnitOfWorkRequestBehavior<RegisterUserRequestMessage, Option<Error>>);
 }

@@ -3,7 +3,7 @@ using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Domain.Primitives.Messages;
 
 namespace HomeInventory.Web.Infrastructure;
 
@@ -30,4 +30,14 @@ public static class ProblemDetailsFactoryExtensions
 
     private static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, IEnumerable<ValidationFailure> failures, string? traceIdentifier = null) =>
         factory.ConvertToProblem(failures.Select(x => new ValidationError(x.ErrorMessage, x.AttemptedValue)).Cast<Error>().ToSeq(), traceIdentifier);
+
+    public static Results<Ok<TResponse>, ProblemHttpResult> Unwrap<TResponse>(this Results<Ok<Results<Ok<TResponse>, ProblemHttpResult>>, ProblemHttpResult> wrapped)
+    {
+        if (wrapped.Result is Ok<Results<Ok<TResponse>, ProblemHttpResult>> result)
+        {
+            return (Ok<TResponse>)result.Value!.Result;
+        }
+
+        return (ProblemHttpResult)wrapped.Result;
+    }
 }

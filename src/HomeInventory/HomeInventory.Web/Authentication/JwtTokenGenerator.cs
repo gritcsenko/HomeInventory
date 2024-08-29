@@ -26,13 +26,13 @@ internal class JwtTokenGenerator : IAuthenticationTokenGenerator
         _header = new(signingCredentials);
     }
 
-    public ValueTask<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
+    public Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken = default)
     {
         var securityToken = CreateToken(user);
 
         var token = _handler.WriteToken(securityToken);
 
-        return ValueTask.FromResult(token);
+        return Task.FromResult(token);
     }
 
     private JwtSecurityToken CreateToken(User user)

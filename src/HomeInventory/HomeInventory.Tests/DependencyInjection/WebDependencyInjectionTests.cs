@@ -42,18 +42,20 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public void ShouldRegister()
     {
-        Services.AddWeb(
-            Web.AssemblyReference.Assembly,
-            Web.UserManagement.AssemblyReference.Assembly,
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
+        Services
+            .AddDomain()
+            .AddWeb(
+                Web.AssemblyReference.Assembly,
+                Web.UserManagement.AssemblyReference.Assembly,
+                Contracts.Validations.AssemblyReference.Assembly,
+                Contracts.UserManagement.Validators.AssemblyReference.Assembly);
         var provider = CreateProvider();
 
         using var scope = new AssertionScope();
         Services.Should().ContainConfigureOptions<JwtOptions>(provider);
         Services.Should().ContainConfigureOptions<JwtBearerOptions>(provider);
         Services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
-        Services.Should().ContainSingleScoped<IAuthenticationTokenGenerator>(provider);
+        Services.Should().ContainSingleSingleton<IAuthenticationTokenGenerator>(provider);
         Services.Should().ContainSingleSingleton<HealthCheckService>(provider);
         Services.Should().ContainSingleTransient<HomeInventoryProblemDetailsFactory>(provider);
         Services.Should().ContainSingleTransient<ProblemDetailsFactory>(provider);
@@ -84,7 +86,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     {
         Services
             .AddDomain()
-            .AddMediatR()
+            .AddMessageHubCore()
             .AddWeb(
             Web.AssemblyReference.Assembly,
             Web.UserManagement.AssemblyReference.Assembly,

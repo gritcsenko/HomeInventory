@@ -6,7 +6,8 @@ internal static partial class LogEvents
     internal static readonly EventId _sendingRequest = new(2, "Sending request");
     internal static readonly EventId _handleResponse = new(3, "Handle response");
 
-    private static readonly Func<ILogger, string, string, IDisposable?> _loggingBehaviorScope = LoggerMessage.DefineScope<string, string>("Got {Request} and will return {Response}");
+    private static readonly Func<ILogger, string, string, IDisposable?> _loggingBehaviorScopeOld = LoggerMessage.DefineScope<string, string>("Got {Request} and will return {Response}");
+    private static readonly Func<ILogger, string, IDisposable?> _loggingBehaviorScope = LoggerMessage.DefineScope<string>("Got {Request}");
 
     private static readonly Action<ILogger, string, Exception?> _loggingBehaviorSending = LoggerMessage.Define<string>(LogLevel.Information, _sendingRequest, "Sending {Request}");
 
@@ -19,7 +20,10 @@ internal static partial class LogEvents
     public static partial void HandleUnitOfWorkSaved(this ILogger logger, string request, int count);
 
     public static IDisposable? LoggingBehaviorScope(this ILogger logger, string requestName, string responseName) =>
-        _loggingBehaviorScope(logger, requestName, responseName);
+        _loggingBehaviorScopeOld(logger, requestName, responseName);
+
+    public static IDisposable? LoggingBehaviorScope(this ILogger logger, string requestName) =>
+        _loggingBehaviorScope(logger, requestName);
 
     public static void SendingRequest<TRequest>(this ILogger logger, TRequest request)
         where TRequest : notnull =>

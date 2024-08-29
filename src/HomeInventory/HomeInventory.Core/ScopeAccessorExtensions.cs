@@ -6,6 +6,10 @@ public static class ScopeAccessorExtensions
         where TContext : class =>
         scopeAccessor
             .GetScope<TContext>()
-            .Get()
+            .TryGet()
             .ThrowIfNone(() => new InvalidOperationException($"Required context of type {typeof(TContext).FullName} not found"));
+
+    public static IDisposable Set<TContext>(this IScopeAccessor accessor, TContext context)
+        where TContext : class =>
+        accessor.GetScope<TContext>().Set(context);
 }

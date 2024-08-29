@@ -29,4 +29,10 @@
     <Using Include="HomeInventory.Core"  Condition="$(MSBuildProjectName.Contains('Contracts')) != true"/>
   </ItemGroup>
 
+  <ItemGroup Condition="$(MSBuildProjectName.Contains('Contracts')) != true">
+    <Using Include="LanguageExt" />
+    <Using Include="LanguageExt.Common" />
+    <Using Include="HomeInventory.Core" />
+  </ItemGroup>
+
 </Project>

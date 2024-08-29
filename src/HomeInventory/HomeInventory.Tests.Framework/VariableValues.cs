@@ -41,7 +41,9 @@ public sealed class VariableValues<T>() : IVariableValues
 
     public async ValueTask DisposeAsync()
     {
-        foreach (var value in _values)
+        var values = _values.ToArray();
+        _values.Clear();
+        foreach (var value in values)
         {
             switch (value)
             {
@@ -53,6 +55,5 @@ public sealed class VariableValues<T>() : IVariableValues
                     break;
             }
         }
-        _values.Clear();
     }
 }

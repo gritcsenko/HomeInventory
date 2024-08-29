@@ -1,13 +1,13 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
 using Carter;
-using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;
@@ -18,22 +18,18 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 {
     private readonly IServiceCollection _services;
     private readonly Lazy<IServiceProvider> _lazyServiceProvider;
-    private readonly ISender _mediator;
     private readonly IMapper _mapper;
-    private readonly ICancellation _cancellation;
 
     public BaseApiModuleGivenTestContext(BaseTest test)
         : base(test)
     {
-        _cancellation = test.Cancellation;
-
         _services = new ServiceCollection()
             .AddDomain()
             .AddOptions(new ApiVersioningOptions())
             .AddSubstitute<IReportApiVersions>()
             .AddSubstitute<IApiVersionParameterSource>()
             .AddSubstitute<IValidatorLocator>()
-            .AddSubstitute(out _mediator)
+            .AddMessageHubCore()
             .AddSubstitute(out _mapper)
             .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
             .AddOptions(new ApiBehaviorOptions())
@@ -44,9 +40,9 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         _lazyServiceProvider = new Lazy<IServiceProvider>(() => _services.BuildServiceProvider());
     }
 
-    protected IServiceCollection Services => _services;
-
     protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
+
+    protected IMessageHub Hub => ServiceProvider.GetRequiredService<IMessageHub>();
 
     public TGiven HttpContext(out IVariable<HttpContext> context) =>
         New(out context, CreateHttpContext);
@@ -61,23 +57,23 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             b.DataSources.Returns(s);
         });
 
-    internal TGiven OnQueryReturn<TRequest, TResult>(IVariable<TRequest> request, IVariable<TResult> result)
-        where TRequest : notnull, IQuery<TResult>
-        where TResult : notnull =>
+    internal TGiven OnQueryReturn<TRequest, TResponse>(IVariable<TRequest> request, IVariable<TResponse> result)
+        where TRequest : class, IRequestMessage<IQueryResult<TResponse>>
+        where TResponse : notnull =>
         OnRequestReturnResult(request, result);
 
     internal TGiven OnCommandReturnSuccess<TRequest>(IVariable<TRequest> request)
-        where TRequest : notnull, ICommand =>
+        where TRequest : class, IRequestMessage<Option<Error>> =>
         OnRequestReturnResult(request);
 
-    internal TGiven OnQueryReturnError<TRequest, TResult, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : notnull, IQuery<TResult>
-        where TResult : notnull
+    internal TGiven OnQueryReturnError<TRequest, TResponse, TError>(IVariable<TRequest> request, IVariable<TError> result)
+        where TRequest : class, IRequestMessage<IQueryResult<TResponse>>
+        where TResponse : notnull
         where TError : notnull, Error =>
-        OnRequestReturnError<TRequest, TResult, TError>(request, result);
+        OnRequestReturnError<TRequest, TResponse, TError>(request, result);
 
     internal TGiven OnCommandReturnError<TRequest, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : notnull, ICommand
+        where TRequest : class, IRequestMessage<Option<Error>>
         where TError : notnull, Error =>
     OnRequestReturnError<TRequest, TError>(request, result);
 
@@ -110,46 +106,63 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             var sourceValue = _given.GetValue(_source);
             var destinationValue = _given.GetValue(destination);
             _given._mapper.Map<TDestination>(sourceValue).Returns(destinationValue);
+            _given._mapper.Map(sourceValue, Arg.Any<Action<IMappingOperationOptions<object, TDestination>>>()).Returns(destinationValue);
 
             return _given;
         }
     }
 
-    protected override TModule CreateSut() => ServiceProvider.GetRequiredService<TModule>();
+    protected override TModule CreateSut()
+    {
+        var accessor = ServiceProvider.GetRequiredService<IScopeAccessor>();
+        accessor.Set(ServiceProvider.GetRequiredService<IMapper>());
+        accessor.Set(ServiceProvider.GetRequiredService<IMessageHub>());
+        accessor.Set(ServiceProvider.GetRequiredService<IProblemDetailsFactory>());
+        return ServiceProvider.GetRequiredService<TModule>();
+    }
 
     private DefaultHttpContext CreateHttpContext() => new() { RequestServices = ServiceProvider };
 
-    private TGiven OnRequestReturnError<TRequest, TResult, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : IRequest<IQueryResult<TResult>>
-        where TResult : notnull
+    private TGiven OnRequestReturnError<TRequest, TResponse, TError>(IVariable<TRequest> request, IVariable<TError> result)
+        where TRequest : class, IRequestMessage<IQueryResult<TResponse>>
+        where TResponse : notnull
         where TError : Error =>
-        OnRequestReturn<TRequest, IQueryResult<TResult>>(request, new QueryResult<TResult>(GetValue(result)));
+        OnRequestReturn<TRequest, IQueryResult<TResponse>>(request, new QueryResult<TResponse>(GetValue(result)));
 
     private TGiven OnRequestReturnError<TRequest, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : IRequest<Option<Error>>
+        where TRequest : class, IRequestMessage<Option<Error>>
         where TError : Error =>
         OnRequestReturn(request, Option<Error>.Some(GetValue(result)));
 
-    private TGiven OnRequestReturnResult<TRequest, TResult>(IVariable<TRequest> request, IVariable<TResult> result)
-        where TRequest : IRequest<IQueryResult<TResult>>
-        where TResult : notnull =>
-        OnRequestReturnResult<TRequest, IQueryResult<TResult>>(request, new QueryResult<TResult>(GetValue(result)));
+    private TGiven OnRequestReturnResult<TRequest, TResponse>(IVariable<TRequest> request, IVariable<TResponse> result)
+        where TRequest : class, IRequestMessage<IQueryResult<TResponse>>
+        where TResponse : notnull =>
+        OnRequestReturnResult<TRequest, IQueryResult<TResponse>>(request, new QueryResult<TResponse>(GetValue(result)));
 
     private TGiven OnRequestReturnResult<TRequest>(IVariable<TRequest> request)
-        where TRequest : IRequest<Option<Error>> =>
+        where TRequest : class, IRequestMessage<Option<Error>> =>
         OnRequestReturnResult<TRequest, Option<Error>>(request, OptionNone.Default);
 
-    private TGiven OnRequestReturnResult<TRequest, TResult>(IVariable<TRequest> request, TResult resultValue)
-        where TRequest : IRequest<TResult>
-        where TResult : notnull =>
+    private TGiven OnRequestReturnResult<TRequest, TResponse>(IVariable<TRequest> request, TResponse resultValue)
+        where TRequest : class, IRequestMessage<TResponse>
+        where TResponse : notnull =>
         OnRequestReturn(request, resultValue);
 
-    private TGiven OnRequestReturn<TRequest, TResult>(IVariable<TRequest> request, TResult result)
-        where TRequest : IRequest<TResult>
-        where TResult : notnull
+    private TGiven OnRequestReturn<TRequest, TResponse>(IVariable<TRequest> request, TResponse result)
+        where TRequest : class, IRequestMessage<TResponse>
+        where TResponse : notnull
     {
-        _mediator.Send(GetValue(request), _cancellation.Token)
-            .Returns(result);
+        var requestValue = GetValue(request);
+        var subscription = Hub.GetMessages<CancellableRequest<TRequest, TResponse>>()
+            .Where(cr => cr.Message == requestValue)
+            .Take(1)
+            .Subscribe(cr =>
+            {
+                var response = Hub.Context.CreateMessage((id, on) => new ResposeMessage<TRequest, TResponse>(id, on, cr.Message, result));
+                Hub.OnNext(response);
+            });
+
+        AddDisposable(subscription);
         return This;
     }
 

@@ -36,16 +36,16 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         Given
-            .HttpContext(out var context)
-            .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
-            .Map(registerRequest).To<UserIdQuery>(out var userIdQuery)
+            .Map<RegisterRequest>(out var registerRequest).To<RegisterUserRequestMessage>(out var registerCommand)
+            .Map(registerRequest).To<UserIdQueryMessage>(out var userIdQuery)
             .Map<UserIdResult>(out var userIdResult).To<RegisterResponse>(out var registerResponse)
             .OnCommandReturnSuccess(registerCommand)
             .OnQueryReturn(userIdQuery, userIdResult)
+            .HttpContext(out var httpContext)
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sut, registerRequest, httpContext, (sut, body, ctx, ct) => sut.RegisterAsync(body, null!, ctx, ct));
 
         then
             .Result(registerResponse, (actual, expected) =>
@@ -57,14 +57,14 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         Given
-            .HttpContext(out var context)
-            .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
+            .Map<RegisterRequest>(out var registerRequest).To<RegisterUserRequestMessage>(out var registerCommand)
             .New<DuplicateEmailError>(out var error)
             .OnCommandReturnError(registerCommand, error)
+            .HttpContext(out var httpContext)
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sut, registerRequest, httpContext, (sut, body, ctx, ct) => sut.RegisterAsync(body, null!, ctx, ct));
 
         then
             .Result(error, (actual, error) =>

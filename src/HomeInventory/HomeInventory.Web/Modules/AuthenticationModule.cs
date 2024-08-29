@@ -1,22 +1,19 @@
 using AutoMapper;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetailsFactory problemDetailsFactory) : ApiModule("/api/authentication")
+public class AuthenticationModule(IScopeAccessor scopeAccessor) : ApiModule("/api/authentication")
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly ISender _sender = sender;
-    private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
 
     protected override void AddRoutes(RouteGroupBuilder group)
     {
@@ -25,10 +22,14 @@ public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetail
             .WithValidationOf<LoginRequest>(s => s.IncludeAllRuleSets());
     }
 
-    public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, HttpContext context, CancellationToken cancellationToken = default)
+    public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, CancellationToken cancellationToken = default)
     {
-        var query = _mapper.MapOrFail<AuthenticateQuery>(body);
-        var result = await _sender.Send(query, cancellationToken);
-        return _problemDetailsFactory.MatchToOk(result, _mapper.MapOrFail<LoginResponse>, context.TraceIdentifier);
+        var mapper = _scopeAccessor.GetRequiredContext<IMapper>();
+        var hub = _scopeAccessor.GetRequiredContext<IMessageHub>();
+        var factory = _scopeAccessor.GetRequiredContext<IProblemDetailsFactory>();
+
+        var request = mapper.MapOrFail<AuthenticateRequestMessage>(body, o => o.State = hub);
+        var response = await hub.RequestAsync(request, cancellationToken);
+        return factory.MatchToOk(response, mapper.MapOrFail<LoginResponse>);
     }
 }

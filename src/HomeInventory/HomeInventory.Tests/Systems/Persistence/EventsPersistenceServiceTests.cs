@@ -1,6 +1,5 @@
-﻿using HomeInventory.Domain.Events;
-using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.Primitives.Ids;
+﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Messages;
 using HomeInventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +24,7 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
             .Sut(out var sut, dbContext)
             .New(out var eventsCount, () => 3)
             .New<IDomainEvent>(out var domainEvent, () => new DomainEvent(IdSuppliers.Ulid, DateTime), eventsCount)
-            .SubstituteFor(out IVariable<IHasDomainEvents> entity, e => e.GetDomainEvents().Returns(Given.Variables.GetMany(domainEvent).ToReadOnly()));
+            .SubstituteFor(out IVariable<IHasDomainEvents> entity, e => e.DomainEvents.Returns(Given.Variables.GetMany(domainEvent).ToReadOnly()));
 
         var then = await When
             .InvokedAsync(sut, entity, dbContext, async (sut, entity, db, t) =>
