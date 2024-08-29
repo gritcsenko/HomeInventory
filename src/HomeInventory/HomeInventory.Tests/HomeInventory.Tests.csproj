@@ -7,7 +7,10 @@
   <ItemGroup>
     <PackageReference Include="AutoBogus.Conventions" />
     <PackageReference Include="AutoBogus.NSubstitute" />
+    <PackageReference Include="AutoFixture.Idioms.FsCheck" />
+    <PackageReference Include="Bogus" />
     <PackageReference Include="FluentAssertions.Analyzers" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="FsCheck.Xunit" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NetArchTest.Rules" />
     <PackageReference Include="NSubstitute" />

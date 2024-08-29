@@ -13,3 +13,4 @@ internal sealed class OutboxDatabaseConfigurationApplier(PolymorphicDomainEventT
             TypeInfoResolver = typeResolver,
         };
 }
+

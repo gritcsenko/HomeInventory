@@ -1,4 +1,5 @@
-﻿using HomeInventory.Web.Configuration;
+﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Web.Configuration;
 
 namespace HomeInventory.Tests.Middlewares;
 
@@ -8,7 +9,7 @@ public class CorrelationIdContainerTests : BaseTest
     [Fact]
     public void CorrelationId_Should_NotBeEmpty_When_Created()
     {
-        var sut = new CorrelationIdContainer();
+        var sut = CreateSut();
 
         var actual = sut.CorrelationId;
 
@@ -18,7 +19,7 @@ public class CorrelationIdContainerTests : BaseTest
     [Fact]
     public void GenerateNew_Should_UpdateCorrelationId()
     {
-        var sut = new CorrelationIdContainer();
+        var sut = CreateSut();
         var original = sut.CorrelationId;
 
         sut.GenerateNew();
@@ -30,7 +31,7 @@ public class CorrelationIdContainerTests : BaseTest
     [Fact]
     public void SetExisting_Should_UpdateCorrelationId()
     {
-        var sut = new CorrelationIdContainer();
+        var sut = CreateSut();
         var expected = Fixture.Create<string>();
 
         sut.SetExisting(expected);
@@ -38,4 +39,6 @@ public class CorrelationIdContainerTests : BaseTest
         var actual = sut.CorrelationId;
         actual.Should().Be(expected);
     }
+
+    private static CorrelationIdContainer CreateSut() => new(IdSuppliers.Ulid);
 }

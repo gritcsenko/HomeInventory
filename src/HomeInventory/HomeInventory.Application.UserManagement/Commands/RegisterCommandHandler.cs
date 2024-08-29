@@ -18,7 +18,6 @@ internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeP
     protected override async Task<Option<Error>> InternalHandle(RegisterCommand command, CancellationToken cancellationToken)
     {
         var userRepository = _scopeAccessor.GetRequiredContext<IUserRepository>();
-
         if (await userRepository.IsUserHasEmailAsync(command.Email, cancellationToken))
         {
             return new DuplicateEmailError();
@@ -38,7 +37,7 @@ internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeP
     }
 }
 
-file static class Extensions
+file static class SupplierExtensions
 {
     public static async Task<Validation<Error, User>> CreateUserAsync(this RegisterCommand command, Ulid userId, IPasswordHasher hasher, CancellationToken cancellationToken = default) =>
         await UserId

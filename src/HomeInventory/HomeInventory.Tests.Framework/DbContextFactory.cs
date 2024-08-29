@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Domain.Events;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
@@ -31,7 +32,7 @@ public class DbContextFactory
         CreateInMemory(
             dateTimeService,
             options,
-            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent)) })),
+            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver([new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent))])),
             new UserModelDatabaseConfigurationApplier());
 
     public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
@@ -44,7 +45,7 @@ public class DbContextFactory
     public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Ulid? id = null)
         where TContext : DbContext =>
         new DbContextOptionsBuilder<TContext>()
-            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? Ulid.NewUlid()))
+            .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? IdSuppliers.Ulid.Supply()))
             .EnableSensitiveDataLogging()
             .Options;
 }

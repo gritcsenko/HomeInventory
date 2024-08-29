@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Application;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
@@ -20,11 +21,15 @@ public static class InfrastructureServiceCollectionExtensions
     {
         services.AddDatabase();
         services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
+        services.AddRepository<StorageArea, HomeInventory.Domain.Persistence.IStorageAreaRepository, StorageAreaRepository>();
         services.AddMappingAssemblySource(HomeInventory.Infrastructure.AssemblyReference.Assembly);
 
         services.AddSingleton<AmountObjectConverter>();
         services.AddScoped<IEventsPersistenceService, EventsPersistenceService>();
         services.AddScoped<IDatabaseConfigurationApplier, OutboxDatabaseConfigurationApplier>();
+        services.AddScoped<IDatabaseConfigurationApplier, ProductAmountModelConfigurationApplier>();
+        services.AddScoped<IDatabaseConfigurationApplier, ProductModelConfigurationApplier>();
+        services.AddScoped<IDatabaseConfigurationApplier, StorageAreaModelConfigurationApplier>();
         services.AddScoped<PolymorphicDomainEventTypeResolver>();
 
         services.AddHealthChecks()
