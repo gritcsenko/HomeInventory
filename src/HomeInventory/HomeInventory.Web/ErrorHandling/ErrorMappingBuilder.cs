@@ -2,7 +2,7 @@
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Primitives.Errors;
 
-namespace HomeInventory.Web.Infrastructure;
+namespace HomeInventory.Web.ErrorHandling;
 
 internal sealed class ErrorMappingBuilder
 {

@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Domain.Primitives.Ids;
+﻿using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 

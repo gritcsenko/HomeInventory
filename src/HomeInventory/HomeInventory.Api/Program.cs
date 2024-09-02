@@ -1,6 +1,6 @@
 using HomeInventory.Api;
 
-using var log = SerilogConfigurator.CreateBootstrapLogger();
+using var log = LoggingModule.CreateBootstrapLogger();
 
 var builder = new AppBuilder(args);
 await Execute.AndCatchAsync(

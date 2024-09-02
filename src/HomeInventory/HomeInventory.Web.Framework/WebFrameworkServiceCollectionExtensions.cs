@@ -1,25 +1,11 @@
 ﻿using FluentValidation.Internal;
-using HomeInventory.Web;
-using HomeInventory.Web.Framework;
-using HomeInventory.Web.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Web.Framework;
 
 public static class WebFrameworkServiceCollectionExtensions
 {
-    public static IServiceCollection AddWebFramework(this IServiceCollection services)
-    {
-        services.AddSingleton(ErrorMappingBuilder.CreateDefault());
-        services.AddSingleton(sp => sp.GetRequiredService<ErrorMappingBuilder>().Build());
-        services.AddTransient<HomeInventoryProblemDetailsFactory>();
-        services.AddTransient<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
-        services.AddTransient<IProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
-
-        return services;
-    }
-
     public static OptionsBuilder<TOptions> AddOptionsWithValidator<TOptions>(this IServiceCollection services, Action<ValidationStrategy<TOptions>>? validationOptions = null)
         where TOptions : class, IOptions =>
         services

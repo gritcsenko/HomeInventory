@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
-using HomeInventory.Contracts;
+using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Web.Framework;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.Framework.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

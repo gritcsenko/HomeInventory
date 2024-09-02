@@ -20,7 +20,7 @@ public static class InfrastructureServiceCollectionExtensions
     {
         services.AddDatabase();
         services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
-        services.AddMappingAssemblySource(HomeInventory.Infrastructure.AssemblyReference.Assembly);
+        services.AddMappingAssemblySource(new HomeInventory.Infrastructure.AssemblyReference().Assembly);
 
         services.AddSingleton<AmountObjectConverter>();
         services.AddScoped<IEventsPersistenceService, EventsPersistenceService>();

@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.ErrorHandling;
 
 namespace HomeInventory.Tests.Systems.Modules;
 

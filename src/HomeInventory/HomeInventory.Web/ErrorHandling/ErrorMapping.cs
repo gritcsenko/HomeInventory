@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace HomeInventory.Web.Infrastructure;
+namespace HomeInventory.Web.ErrorHandling;
 
 internal sealed class ErrorMapping(HttpStatusCode defaultError, HttpStatusCode defaultValidationError, IReadOnlyDictionary<Type, HttpStatusCode> errorMapping)
 {

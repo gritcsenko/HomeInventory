@@ -1,12 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net;
+using HomeInventory.Web.Framework.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 
-namespace HomeInventory.Web.Infrastructure;
+namespace HomeInventory.Web.ErrorHandling;
 
 internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMapping, IOptions<ApiBehaviorOptions> options) : ProblemDetailsFactory, IProblemDetailsFactory
 {

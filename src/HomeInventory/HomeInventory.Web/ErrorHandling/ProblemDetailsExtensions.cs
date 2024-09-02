@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
+using HomeInventory.Web.ErrorHandling;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace HomeInventory.Web.Infrastructure;
+namespace HomeInventory.Web.ErrorHandling;
 
 internal static class ProblemDetailsExtensions
 {

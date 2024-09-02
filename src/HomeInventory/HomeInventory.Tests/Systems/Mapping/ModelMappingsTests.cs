@@ -1,16 +1,32 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Api;
+using HomeInventory.Domain;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Modules;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class ModelMappingsTests : BaseMappingsTests
 {
+    private readonly ModulesCollection _modules = [
+        new DomainModule(),
+        new LoggingModule(),
+    ];
+
     public ModelMappingsTests()
     {
-        Services.AddDomain();
+        var builder = Substitute.For<IHostApplicationBuilder>();
+        builder.Services.Returns(Services);
+#pragma warning disable CA2000 // Dispose objects before losing scope
+        builder.Configuration.Returns(new ConfigurationManager());
+#pragma warning restore CA2000 // Dispose objects before losing scope
+        _modules.InjectTo(builder);
+
         Services.AddInfrastructure();
     }
 

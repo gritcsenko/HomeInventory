@@ -13,19 +13,21 @@ public abstract class BaseDependencyInjectionTest : BaseTest
 
     protected ServiceProvider CreateProvider(ServiceProviderOptions? options = null) => _services.BuildServiceProvider(options ?? DefaultOptions);
 
-    protected void AddConfiguration(IEnumerable<KeyValuePair<string, string?>> inlineData)
+    protected IConfigurationManager AddConfiguration(IEnumerable<KeyValuePair<string, string?>> inlineData)
     {
         var source = new MemoryConfigurationSource
         {
             InitialData = inlineData,
         };
-        var providers = new IConfigurationProvider[]
-        {
-            new MemoryConfigurationProvider(source)
-        };
+
 #pragma warning disable CA2000 // Dispose objects before losing scope
-        Services.AddSingleton<IConfiguration>(new ConfigurationRoot(providers));
+        var manager = new ConfigurationManager();
 #pragma warning restore CA2000 // Dispose objects before losing scope
+        manager.Sources.Add(source);
+
+        Services.AddSingleton<IConfiguration>(_ => ((IConfigurationBuilder)manager).Build());
+
+        return manager;
     }
 
     protected void AddDateTime() => Services.AddScoped(_ => DateTime);

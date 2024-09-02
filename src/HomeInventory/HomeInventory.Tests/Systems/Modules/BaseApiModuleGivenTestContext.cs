@@ -1,13 +1,19 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
 using Carter;
+using HomeInventory.Api;
 using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Web.Infrastructure;
-using HomeInventory.Web.Modules;
+using HomeInventory.Domain;
+using HomeInventory.Modules;
+using HomeInventory.Web.ErrorHandling;
+using HomeInventory.Web.Framework;
+using HomeInventory.Web.Framework.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;
@@ -16,6 +22,10 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     where TGiven : BaseApiModuleGivenTestContext<TGiven, TModule>
     where TModule : ApiModule
 {
+    private readonly ModulesCollection _modules = [
+        new DomainModule(),
+        new LoggingModule(),
+    ];
     private readonly IServiceCollection _services;
     private readonly Lazy<IServiceProvider> _lazyServiceProvider;
     private readonly ISender _mediator;
@@ -27,8 +37,16 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     {
         _cancellation = test.Cancellation;
 
-        _services = new ServiceCollection()
-            .AddDomain()
+        _services = new ServiceCollection();
+
+       var builder = Substitute.For<IHostApplicationBuilder>();
+        builder.Services.Returns(_services);
+#pragma warning disable CA2000 // Dispose objects before losing scope
+        builder.Configuration.Returns(new ConfigurationManager());
+#pragma warning restore CA2000 // Dispose objects before losing scope
+        _modules.InjectTo(builder);
+
+        _services
             .AddOptions(new ApiVersioningOptions())
             .AddSubstitute<IReportApiVersions>()
             .AddSubstitute<IApiVersionParameterSource>()

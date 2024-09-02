@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace HomeInventory.Web.Infrastructure;
+namespace HomeInventory.Web.Framework.Infrastructure;
 
 public interface IProblemDetailsFactory
 {

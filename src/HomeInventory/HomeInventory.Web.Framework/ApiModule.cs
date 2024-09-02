@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 
-namespace HomeInventory.Web.Modules;
+namespace HomeInventory.Web.Framework;
 
 public abstract class ApiModule : CarterModule
 {

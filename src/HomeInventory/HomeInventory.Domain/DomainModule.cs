@@ -1,12 +1,14 @@
-﻿using HomeInventory.Domain;
-using HomeInventory.Domain.Primitives.Ids;
+﻿using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Modules.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Domain;
 
-public static class DomainServiceCollectionExtensions
+public sealed class DomainModule : BaseModule
 {
-    public static IServiceCollection AddDomain(this IServiceCollection services)
+    public override void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton(IdSuppliers.Ulid);
         services.AddSingleton<IScopeFactory, ScopeFactory>();
@@ -14,6 +16,5 @@ public static class DomainServiceCollectionExtensions
         services.AddSingleton<IScopeAccessor, ScopeAccessor>();
         services.AddSingleton<IAmountFactory, AmountFactory>();
         services.AddTransient<TimeProvider>(_ => new FixedTimeProvider(TimeProvider.System));
-        return services;
     }
 }

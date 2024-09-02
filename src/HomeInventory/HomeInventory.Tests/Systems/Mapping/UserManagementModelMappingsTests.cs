@@ -1,17 +1,33 @@
-﻿using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Api;
+using HomeInventory.Domain;
+using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
+using HomeInventory.Modules;
 using HomeInventory.Web.UserManagement;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class UserManagementModelMappingsTests : BaseMappingsTests
 {
+    private readonly ModulesCollection _modules = [
+        new DomainModule(),
+        new LoggingModule(),
+    ];
+
     public UserManagementModelMappingsTests()
     {
-        Services.AddDomain();
+        var builder = Substitute.For<IHostApplicationBuilder>();
+        builder.Services.Returns(Services);
+#pragma warning disable CA2000 // Dispose objects before losing scope
+        builder.Configuration.Returns(new ConfigurationManager());
+#pragma warning restore CA2000 // Dispose objects before losing scope
+        _modules.InjectTo(builder);
+
         Services.AddInfrastructure();
         Fixture.CustomizeId<UserId>();
     }

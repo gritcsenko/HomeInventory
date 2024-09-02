@@ -1,11 +1,19 @@
 ﻿using AutoMapper;
 using FluentAssertions.Execution;
+using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Contracts.UserManagement.Validators;
+using HomeInventory.Contracts.Validations;
+using HomeInventory.Domain;
+using HomeInventory.Modules;
+using HomeInventory.Tests.Architecture;
+using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.ErrorHandling;
+using HomeInventory.Web.Framework.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
@@ -23,9 +31,17 @@ namespace HomeInventory.Tests.DependencyInjection;
 [UnitTest]
 public class WebDependencyInjectionTests : BaseDependencyInjectionTest
 {
+    private readonly ModulesCollection _modules = [
+        new DomainModule(),
+        new LoggingModule(),
+        new ContractsValidationsModule(),
+        new ContractsUserManagementValidatorsModule(),
+        new WebAuthenticationModule(),
+    ];
+
     public WebDependencyInjectionTests()
     {
-        AddConfiguration(new Dictionary<string, string?>
+        var configuration = AddConfiguration(new Dictionary<string, string?>
         {
             [JwtOptions.Section / nameof(JwtOptions.Secret)] = "Some Secret",
             [JwtOptions.Section / nameof(JwtOptions.Issuer)] = "HomeInventory",
@@ -37,16 +53,19 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         env.WebRootFileProvider.Returns(new NullFileProvider());
         Services.AddSingleton(env);
         Services.AddSingleton<IHostEnvironment>(env);
+
+        var builder = Substitute.For<IHostApplicationBuilder>();
+        builder.Services.Returns(Services);
+        builder.Configuration.Returns(configuration);
+        _modules.InjectTo(builder);
     }
 
     [Fact]
     public void ShouldRegister()
     {
         Services.AddWeb(
-            Web.AssemblyReference.Assembly,
-            Web.UserManagement.AssemblyReference.Assembly,
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
+            AssemblyReferences.Web.Assembly,
+            AssemblyReferences.WebUserManagement.Assembly);
         var provider = CreateProvider();
 
         using var scope = new AssertionScope();
@@ -83,13 +102,10 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     public void ShouldUse()
     {
         Services
-            .AddDomain()
             .AddMediatR()
             .AddWeb(
-            Web.AssemblyReference.Assembly,
-            Web.UserManagement.AssemblyReference.Assembly,
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
+            AssemblyReferences.Web.Assembly,
+            AssemblyReferences.WebUserManagement.Assembly);
         var appBuilder = new TestAppBuilder(Services);
 
         Action action = () => appBuilder.UseWeb();

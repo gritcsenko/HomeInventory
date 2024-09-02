@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj" />
+    <ProjectReference Include="..\HomeInventory.Modules.Interfaces\HomeInventory.Modules.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

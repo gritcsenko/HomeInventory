@@ -1,8 +1,6 @@
-﻿using System.Reflection;
+﻿namespace HomeInventory.Infrastructure;
 
-namespace HomeInventory.Infrastructure;
-
-public static class AssemblyReference
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "As designed")]
+public class AssemblyReference : BaseAssemblyReference
 {
-    public static readonly Assembly Assembly = typeof(AssemblyReference).Assembly;
 }
