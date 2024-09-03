@@ -4,8 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Modules;
 
-public abstract class BaseModuleTestGivenContext<TGiven, TModule>(BaseTest test) : GivenContext<TGiven, TModule>(test)
-    where TGiven : BaseModuleTestGivenContext<TGiven, TModule>
+public abstract class BaseModuleTestGivenContext<TGiven, TModule>(BaseTest test) : GivenContext<TGiven, TModule>(test), IModuleTestGivenContext<TGiven>
+    where TGiven : BaseModuleTestGivenContext<TGiven, TModule>, IModuleTestGivenContext<TGiven>
     where TModule : IModule
 {
     public TGiven Services(out IVariable<IServiceCollection> services, int count = 1, [CallerArgumentExpression(nameof(services))] string? name = null) =>

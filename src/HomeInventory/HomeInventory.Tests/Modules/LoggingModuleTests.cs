@@ -4,7 +4,7 @@ using Serilog;
 
 namespace HomeInventory.Tests.Modules;
 
-public sealed class LoggingModuleTests() : BaseModuleTest<LoggingModuleTestsGivenContext, LoggingModule>(t => new(t))
+public sealed class LoggingModuleTests() : BaseModuleTest<LoggingModuleTestsGivenContext>(t => new(t))
 {
     [Fact]
     public void ShouldRegisterServices()

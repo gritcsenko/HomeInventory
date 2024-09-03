@@ -27,6 +27,7 @@ public sealed class ApplicationModules : ModulesCollection
         Add(new DynamicWebAuthorizationModule());
         Add(new WebSwaggerModule());
         Add(new WebMappingModule());
+        Add(new WebUserManagementModule());
         Add(new WebUerManagementMappingModule());
         Add(new WebHealthCheckModule());
         Add(new WebCarterSupportModule());

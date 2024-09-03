@@ -4,7 +4,7 @@ using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Modules;
 
-public sealed class DomainModuleTests() : BaseModuleTest<DomainModuleTestsGivenContext, DomainModule>(t => new(t))
+public sealed class DomainModuleTests() : BaseModuleTest<DomainModuleTestsGivenContext>(t => new(t))
 {
     [Fact]
     public void ShouldRegisterServices()

@@ -16,7 +16,7 @@ using System.Reactive.Disposables;
 
 namespace HomeInventory.Web.UserManagement;
 
-public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/users/manage")
+public class UserManagementCarterModule(IMapper mapper, ISender sender, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/users/manage")
 {
     private readonly IMapper _mapper = mapper;
     private readonly ISender _sender = sender;

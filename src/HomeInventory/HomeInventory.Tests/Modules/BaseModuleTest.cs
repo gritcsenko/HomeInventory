@@ -2,8 +2,8 @@
 
 namespace HomeInventory.Tests.Modules;
 
-public abstract class BaseModuleTest<TGiven, TModule>(Func<BaseTest, TGiven> createGiven) : BaseTest<TGiven>(createGiven)
-    where TGiven : BaseModuleTestGivenContext<TGiven, TModule>
-    where TModule : IModule
+[UnitTest]
+public abstract class BaseModuleTest<TGiven>(Func<BaseTest, TGiven> createGiven) : BaseTest<TGiven>(createGiven)
+    where TGiven : GivenContext<TGiven>, IModuleTestGivenContext<TGiven>
 {
 }
