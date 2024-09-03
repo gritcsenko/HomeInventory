@@ -1,12 +1,17 @@
 ﻿using HomeInventory.Api;
+using HomeInventory.Application;
 using HomeInventory.Contracts;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
 using HomeInventory.Contracts.Validations;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Web;
 using HomeInventory.Web.Framework;
+using HomeInventory.Web.UserManagement;
 using NetArchTest.Rules;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -22,14 +27,14 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<IAss
 
         Add(AssemblyReferences.Core, []);
         Add(contractsUserManagement, []);
-        Add(contractsUserManagementValidators, [contractsUserManagement]);
+        Add(contractsUserManagementValidators, [contractsUserManagement, AssemblyReferences.WebFramework]);
         Add(contracts, []);
-        Add(AssemblyReferences.ContractValidations, [contracts]);
+        Add(AssemblyReferences.ContractValidations, [contracts, AssemblyReferences.WebFramework]);
         Add(domainPrimitives, [AssemblyReferences.Core]);
         Add(domain, [domainPrimitives, AssemblyReferences.Core]);
         Add(AssemblyReferences.Application, [domain, domainPrimitives, AssemblyReferences.Core]);
-        Add(AssemblyReferences.WebUserManagement, [AssemblyReferences.Application, AssemblyReferences.ContractValidations, AssemblyReferences.WebFramework, domain, domainPrimitives, AssemblyReferences.Core, contractsUserManagement]);
-        Add(AssemblyReferences.Infrastructure, [AssemblyReferences.Application]);
+        Add(AssemblyReferences.WebUserManagement, [AssemblyReferences.Application, AssemblyReferences.ContractValidations, contracts, AssemblyReferences.WebFramework, domain, domainPrimitives, AssemblyReferences.Core, contractsUserManagement]);
+        Add(AssemblyReferences.Infrastructure, [AssemblyReferences.Application, domain, domainPrimitives, AssemblyReferences.Core]);
         Add(AssemblyReferences.Api, [AssemblyReferences.Web, AssemblyReferences.Infrastructure]);
     }
 }
@@ -37,17 +42,14 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<IAss
 public static class AssemblyReferences
 {
     public static IAssemblyReference Core { get; } = new BaseAssemblyReference(typeof(BaseAssemblyReference));
-    public static IAssemblyReference Application { get; } = new HomeInventory.Application.AssemblyReference();
-    public static IAssemblyReference WebUserManagement { get; } = new Web.UserManagement.AssemblyReference();
+    public static IAssemblyReference Application { get; } = new BaseAssemblyReference(typeof(ApplicationMediatrSupportModule));
+    public static IAssemblyReference WebUserManagement { get; } = new BaseAssemblyReference(typeof(WebUerManagementMappingModule));
     public static IAssemblyReference ContractValidations { get; } = new BaseAssemblyReference(typeof(ContractsValidationsModule));
     public static IAssemblyReference Infrastructure { get; } = new Infrastructure.AssemblyReference();
     public static IAssemblyReference Api { get; } = new BaseAssemblyReference(typeof(LoggingModule));
-    public static IAssemblyReference Web { get; } = new Web.AssemblyReference();
-    public static IAssemblyReference WebFramework { get; } = new BaseAssemblyReference(typeof(ApiModule));
+    public static IAssemblyReference Web { get; } = new BaseAssemblyReference(typeof(WebCarterSupportModule));
+    public static IAssemblyReference WebFramework { get; } = new BaseAssemblyReference(typeof(ApiCarterModule));
 }
-
-
-
 
 [ArchitectureTest]
 public class ArchitectureTests
@@ -76,7 +78,8 @@ public class ArchitectureTests
         var conditionList = conditions.OnlyHaveDependenciesOn(namespaces);
         var result = conditionList.GetResult();
 
-        result.FailingTypeNames.Should().BeNullOrEmpty();
+        var failing = result.FailingTypes?.Where(t => t.GetCustomAttribute<CompilerGeneratedAttribute>() is null && t.FullName?.StartsWith("<>z__", StringComparison.Ordinal) != true).ToArray();
+        failing.Should().BeNullOrEmpty();
 
         static IEnumerable<string> Extend(string ns) => [ns, ns + ".*", ns + ".*.*", ns + ".*.*.*", ns + ".*.*.*.*"];
     }

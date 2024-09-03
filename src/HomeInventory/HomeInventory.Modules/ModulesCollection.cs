@@ -1,5 +1,4 @@
-﻿using Carter;
-using HomeInventory.Modules.Interfaces;
+﻿using HomeInventory.Modules.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;

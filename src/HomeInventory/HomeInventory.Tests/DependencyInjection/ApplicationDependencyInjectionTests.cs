@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HomeInventory.Application;
+using Microsoft.Extensions.Configuration;
 using Microsoft.FeatureManagement;
 
 namespace HomeInventory.Tests.DependencyInjection;

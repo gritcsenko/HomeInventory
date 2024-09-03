@@ -20,7 +20,7 @@ namespace HomeInventory.Tests.Systems.Modules;
 
 public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGiven, TModule>
     where TGiven : BaseApiModuleGivenTestContext<TGiven, TModule>
-    where TModule : ApiModule
+    where TModule : ApiCarterModule
 {
     private readonly ModulesCollection _modules = [
         new DomainModule(),

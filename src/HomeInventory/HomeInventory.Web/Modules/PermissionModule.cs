@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class PermissionModule : ApiModule
+public class PermissionModule : ApiCarterModule
 {
     public PermissionModule()
         : base("/api/permissions")

@@ -10,6 +10,10 @@ public sealed class ServiceCollectionAssertions(IServiceCollection value) : Gene
         where TOptions : class =>
         ContainSingleTransient<IConfigureOptions<TOptions>>(provider);
 
+    public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainConfigureOptions<TOptions>()
+        where TOptions : class =>
+        ContainSingleTransient<IConfigureOptions<TOptions>>();
+
     public AndWhichConstraint<ObjectAssertions, T> ContainSingleTransient<T>(IServiceProvider provider)
         where T : class =>
         ContainSingle<T>(provider, ServiceLifetime.Transient);
@@ -34,13 +38,29 @@ public sealed class ServiceCollectionAssertions(IServiceCollection value) : Gene
         where T : class =>
         ContainSingle<T>(ServiceLifetime.Scoped);
 
+    public AndConstraint<ServiceCollectionAssertions> ContainSingleton<T>(IServiceProvider provider)
+        where T : class =>
+        Contain<T>(provider, ServiceLifetime.Singleton);
+
+    public AndConstraint<ServiceCollectionAssertions> ContainSingleton<T>()
+        where T : class =>
+        Contain<T>(ServiceLifetime.Singleton);
+
     public AndConstraint<ServiceCollectionAssertions> ContainTransient<T>(IServiceProvider provider)
         where T : class =>
         Contain<T>(provider, ServiceLifetime.Transient);
 
+    public AndConstraint<ServiceCollectionAssertions> ContainTransient<T>()
+        where T : class =>
+        Contain<T>(ServiceLifetime.Transient);
+
     public AndConstraint<ServiceCollectionAssertions> ContainScoped<T>(IServiceProvider provider)
         where T : class =>
         Contain<T>(provider, ServiceLifetime.Scoped);
+
+    public AndConstraint<ServiceCollectionAssertions> ContainScoped<T>()
+        where T : class =>
+        Contain<T>(ServiceLifetime.Scoped);
 
     private AndWhichConstraint<ObjectAssertions, T> ContainSingle<T>(IServiceProvider provider, ServiceLifetime lifetime)
         where T : class =>

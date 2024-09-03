@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Routing.Patterns;
 
 namespace HomeInventory.Web.Framework;
 
-public abstract class ApiModule : CarterModule
+public abstract class ApiCarterModule : CarterModule
 {
     private readonly RoutePattern _groupPrefix;
     private ApiVersion _version = new(1);
 
-    protected ApiModule(string groupPrefix)
+    protected ApiCarterModule(string groupPrefix)
     {
         IncludeInOpenApi();
         _groupPrefix = RoutePatternFactory.Parse(groupPrefix);

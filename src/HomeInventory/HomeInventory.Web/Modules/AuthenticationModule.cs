@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetailsFactory problemDetailsFactory) : ApiModule("/api/authentication")
+public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/authentication")
 {
     private readonly IMapper _mapper = mapper;
     private readonly ISender _sender = sender;
