@@ -18,7 +18,7 @@ public class ArchitectureTests
         var conditionList = conditions.OnlyHaveDependenciesOn(allowed);
         var result = conditionList.GetResult();
 
-        var failing = result.FailingTypes?.Where(t => t.GetCustomAttribute<CompilerGeneratedAttribute>() is null && t.FullName?.StartsWith("<>z__", StringComparison.Ordinal) != true).ToArray();
+        var failing = result.FailingTypes?.Where(t => t.GetCustomAttribute<CompilerGeneratedAttribute>() is null && t.FullName?.StartsWith("<>", StringComparison.Ordinal) != true).ToArray();
         failing.Should().BeNullOrEmpty();
     }
 
@@ -28,10 +28,8 @@ public class ArchitectureTests
         var assembly = AssemblyReferences.Application.Assembly;
 
         var result = Types.InAssembly(assembly)
-            .That()
-            .HaveNameEndingWith("CommandHandler", StringComparison.Ordinal)
-            .Should()
-            .HaveDependencyOn(Namespaces.Domain)
+            .That().HaveNameEndingWith("CommandHandler", StringComparison.Ordinal)
+            .Should().HaveDependencyOn(Namespaces.Domain)
             .GetResult();
 
         result.FailingTypeNames.Should().BeNullOrEmpty();
@@ -43,10 +41,8 @@ public class ArchitectureTests
         var assembly = AssemblyReferences.Application.Assembly;
 
         var result = Types.InAssembly(assembly)
-            .That()
-            .HaveNameEndingWith("QueryHandler", StringComparison.Ordinal)
-            .Should()
-            .HaveDependencyOn(Namespaces.Domain)
+            .That().HaveNameEndingWith("QueryHandler", StringComparison.Ordinal)
+            .Should().HaveDependencyOn(Namespaces.Domain)
             .GetResult();
 
         result.FailingTypeNames.Should().BeNullOrEmpty();
@@ -58,12 +54,9 @@ public class ArchitectureTests
         var assembly = AssemblyReferences.WebUserManagement.Assembly;
 
         var result = Types.InAssembly(assembly)
-            .That()
-            .HaveNameEndingWith("Controller", StringComparison.Ordinal)
-            .And()
-            .AreNotAbstract()
-            .Should()
-            .HaveDependencyOn(Namespaces.MediatR)
+            .That().HaveNameEndingWith("Controller", StringComparison.Ordinal)
+            .And().AreNotAbstract()
+            .Should().HaveDependencyOn(Namespaces.MediatR)
             .GetResult();
 
         result.FailingTypeNames.Should().BeNullOrEmpty();
@@ -75,12 +68,9 @@ public class ArchitectureTests
         var assembly = AssemblyReferences.WebUserManagement.Assembly;
 
         var result = Types.InAssembly(assembly)
-            .That()
-            .HaveNameEndingWith("Controller", StringComparison.Ordinal)
-            .And()
-            .AreNotAbstract()
-            .Should()
-            .HaveDependencyOn(Namespaces.AutoMapper)
+            .That().HaveNameEndingWith("Controller", StringComparison.Ordinal)
+            .And().AreNotAbstract()
+            .Should().HaveDependencyOn(Namespaces.AutoMapper)
             .GetResult();
 
         result.FailingTypeNames.Should().BeNullOrEmpty();

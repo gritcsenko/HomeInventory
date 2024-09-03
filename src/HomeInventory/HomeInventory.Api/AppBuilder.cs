@@ -18,8 +18,6 @@ internal class AppBuilder(string[] args)
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
 
-        AddServices(builder.Services);
-
         _modules.InjectTo(builder);
 
         var app = builder.Build();
@@ -30,10 +28,4 @@ internal class AppBuilder(string[] args)
 
         return app;
     }
-
-    private static void AddServices(IServiceCollection services) =>
-        services
-            .AddInfrastructure()
-            .AddApplication()
-            .AddUserManagementInfrastructure();
 }

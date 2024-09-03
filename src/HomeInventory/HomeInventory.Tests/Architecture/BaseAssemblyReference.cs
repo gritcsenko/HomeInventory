@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace HomeInventory.Core;
+namespace HomeInventory.Tests.Architecture;
 
 public class BaseAssemblyReference : IAssemblyReference
 {

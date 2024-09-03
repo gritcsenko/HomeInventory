@@ -3,6 +3,7 @@ using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
 using HomeInventory.Contracts.Validations;
 using HomeInventory.Domain;
+using HomeInventory.Infrastructure;
 using HomeInventory.Modules;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
@@ -31,8 +32,16 @@ public sealed class ApplicationModules : ModulesCollection
         Add(new WebUerManagementMappingModule());
         Add(new WebHealthCheckModule());
         Add(new WebCarterSupportModule());
+        Add(new ApplicationFeaturesModule());
         Add(new ApplicationMediatrSupportModule());
         Add(new ApplicationMediatrModule());
         Add(new ApplicationUserManagementMediatrModule());
+        Add(new InfrastructureMappingModule());
+        Add(new InfrastructureDatabaseModule());
+        Add(new InfrastructurePersistenceHealthCheckModule());
+        Add(new InfrastructureSpecificationModule());
+        Add(new InfrastructureUserManagementMappingModule());
+        Add(new InfrastructureUserManagementDatabaseModule());
+        Add(new InfrastructureUserManagementModule());
     }
 }

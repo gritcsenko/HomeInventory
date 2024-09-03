@@ -61,8 +61,8 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
 
     private void Add(IAssemblyReference reference, params IAssemblyReference[] allowed)
     {
-        var explicitNamespaces = allowed.Concat(reference).SelectMany(r => Extend(r.Namespace)).ToArray();
-        var implicitNamespaces = _allowedNamespaces.SelectMany(Extend).ToArray();
+        var explicitNamespaces = allowed.Concat(reference).SelectMany(r => Extend(r.Namespace));
+        var implicitNamespaces = _allowedNamespaces.SelectMany(Extend);
         var namespaces = explicitNamespaces.Concat(implicitNamespaces).ToArray();
 
         var name = _references.First(p => p.Value == reference).Key;
