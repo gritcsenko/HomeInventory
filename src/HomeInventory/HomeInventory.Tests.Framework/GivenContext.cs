@@ -128,18 +128,3 @@ public abstract class GivenContext<TGiven, TSut, TArg>(BaseTest test) : GivenCon
 
     protected abstract TSut CreateSut(TArg arg);
 }
-
-public abstract class GivenContext<TGiven, TSut, TArg1, TArg2>(BaseTest test) : GivenContext<TGiven>(test)
-    where TGiven : GivenContext<TGiven, TSut, TArg1, TArg2>
-    where TSut : notnull
-    where TArg1 : notnull
-    where TArg2 : notnull
-{
-    public TGiven Sut(out IVariable<TSut> sut, IVariable<TArg1> arg1, IVariable<TArg2> arg2, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
-        New(out sut, i => CreateSut(GetValue(arg1[i]), GetValue(arg2[i])), count, name);
-
-    public TGiven Sut(out IVariable<TSut> sut, IIndexedVariable<TArg1> arg1 , IIndexedVariable<TArg2> arg2, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
-        New(out sut, () => CreateSut(GetValue(arg1), GetValue(arg2)), name: name);
-
-    protected abstract TSut CreateSut(TArg1 arg1, TArg2 arg2);
-}
