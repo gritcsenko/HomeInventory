@@ -17,7 +17,6 @@ internal class AppBuilder(string[] args)
     {
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
-        builder.Services.AddSingleton(_modules);
 
         AddServices(builder.Services);
 

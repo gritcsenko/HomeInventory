@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Modules;
+﻿using HomeInventory.Web.UserManagement;
 
 namespace HomeInventory.Tests.Systems.Modules;
 

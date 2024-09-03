@@ -11,19 +11,3 @@ public interface IModule
 
     void BuildApp(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder);
 }
-
-public interface IAttachableModule : IModule
-{
-    void OnAttached(IReadOnlyCollection<IModule> modules);
-}
-
-public abstract class BaseModule : IModule
-{
-    public virtual void AddServices(IServiceCollection services, IConfiguration configuration)
-    {
-    }
-
-    public virtual void BuildApp(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder)
-    {
-    }
-}

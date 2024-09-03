@@ -8,19 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web;
 
-public sealed class WebCarterSupportModule : BaseModule, IAttachableModule
+public sealed class WebCarterSupportModule : BaseAttachableModule
 {
-    private IReadOnlyCollection<IModule> _modules = [];
-
-    public void OnAttached(IReadOnlyCollection<IModule> modules)
-    {
-        _modules = modules;
-    }
-
     public override void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddCarter(assemblyCatalog: null, configurator => {
-            foreach (var module in _modules.OfType<IModuleWithCarter>())
+            foreach (var module in FindModules<IModuleWithCarter>())
             {
                 module.Configure(configurator);
             }

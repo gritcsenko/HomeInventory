@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.Reactive.Disposables;
 
-namespace HomeInventory.Web.Modules;
+namespace HomeInventory.Web.UserManagement;
 
 public class UserManagementModule(IMapper mapper, ISender sender, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/users/manage")
 {
