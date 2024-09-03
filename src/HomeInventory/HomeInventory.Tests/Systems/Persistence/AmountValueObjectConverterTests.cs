@@ -42,9 +42,9 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
     public AmountValueObjectConverterTestsGivenContext(BaseTest test)
         : base(test)
     {
-        Customize(new AmountUnitCustomization());
-        Customize(new ProductAmountModelCustomization());
-        Customize(new AmountCustomization());
+        Customize<AmountUnitCustomization>();
+        Customize<ProductAmountModelCustomization>();
+        Customize<AmountCustomization>();
     }
 
     protected override AmountObjectConverter CreateSut(IAmountFactory factory) => new(factory);

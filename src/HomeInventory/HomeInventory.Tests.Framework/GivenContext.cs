@@ -10,7 +10,11 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
 
     protected TContext This => (TContext)this;
 
-    public TContext Customize(ICustomization customization)
+    protected TContext Customize<TCustomization>()
+        where TCustomization : ICustomization, new() =>
+        Customize(new TCustomization());
+
+    protected TContext Customize(ICustomization customization)
     {
         _fixture.Customize(customization);
         return This;
@@ -18,7 +22,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
 
     public TContext New<T>(out IVariable<T> variable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
-        New(out variable, () => _fixture.CreateMany<T>(count), name);
+        New(out variable, () => CreateMany<T>(count), name);
 
     public TContext New<T>(out IVariable<T> variable, Func<T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
@@ -27,14 +31,6 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     public TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
         New(out variable, () => Enumerable.Range(0, count).Select(create), name);
-
-    public TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull
-    {
-        variable = new Variable<T>(name ?? typeof(T).Name);
-
-        return Add(variable, createMany);
-    }
 
     public TContext EmptyHashCode(out IVariable<HashCode> emptyHash) =>
         New(out emptyHash, () => new HashCode());
@@ -95,6 +91,18 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     }
 
     protected T Create<T>() => _fixture.Create<T>();
+
+    protected IEnumerable<T> CreateMany<T>() => _fixture.CreateMany<T>();
+
+    protected IEnumerable<T> CreateMany<T>(int count) => _fixture.CreateMany<T>(count);
+
+    private TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : notnull
+    {
+        variable = new Variable<T>(name ?? typeof(T).Name);
+
+        return Add(variable, createMany);
+    }
 }
 
 public abstract class GivenContext<TGiven, TSut>(BaseTest test) : GivenContext<TGiven>(test)
@@ -119,4 +127,19 @@ public abstract class GivenContext<TGiven, TSut, TArg>(BaseTest test) : GivenCon
         New(out sut, () => CreateSut(GetValue(arg)), name: name);
 
     protected abstract TSut CreateSut(TArg arg);
+}
+
+public abstract class GivenContext<TGiven, TSut, TArg1, TArg2>(BaseTest test) : GivenContext<TGiven>(test)
+    where TGiven : GivenContext<TGiven, TSut, TArg1, TArg2>
+    where TSut : notnull
+    where TArg1 : notnull
+    where TArg2 : notnull
+{
+    public TGiven Sut(out IVariable<TSut> sut, IVariable<TArg1> arg1, IVariable<TArg2> arg2, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        New(out sut, i => CreateSut(GetValue(arg1[i]), GetValue(arg2[i])), count, name);
+
+    public TGiven Sut(out IVariable<TSut> sut, IIndexedVariable<TArg1> arg1 , IIndexedVariable<TArg2> arg2, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        New(out sut, () => CreateSut(GetValue(arg1), GetValue(arg2)), name: name);
+
+    protected abstract TSut CreateSut(TArg1 arg1, TArg2 arg2);
 }
