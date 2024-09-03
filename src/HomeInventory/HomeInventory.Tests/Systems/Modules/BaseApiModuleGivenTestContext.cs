@@ -39,7 +39,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
         _services = new ServiceCollection();
 
-       var builder = Substitute.For<IHostApplicationBuilder>();
+        var builder = Substitute.For<IHostApplicationBuilder>();
         builder.Services.Returns(_services);
 #pragma warning disable CA2000 // Dispose objects before losing scope
         builder.Configuration.Returns(new ConfigurationManager());

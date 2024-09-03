@@ -18,7 +18,8 @@ public sealed class DomainModuleTests() : BaseModuleTest<DomainModuleTestsGivenC
             .Invoked(sut, services, configuration, (sut, services, configuration) => sut.AddServices(services, configuration));
 
         then
-            .Ensure(services, services => {
+            .Ensure(services, services =>
+            {
                 services.Should().ContainSingleSingleton<IIdSupplier<Ulid>>()
                     .And.ContainSingleSingleton<IScopeFactory>()
                     .And.ContainSingleSingleton<IScopeContainer>()

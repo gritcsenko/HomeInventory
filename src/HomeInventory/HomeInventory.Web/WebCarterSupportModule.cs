@@ -12,7 +12,8 @@ public sealed class WebCarterSupportModule : BaseAttachableModule
 {
     public override void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddCarter(assemblyCatalog: null, configurator => {
+        services.AddCarter(assemblyCatalog: null, configurator =>
+        {
             foreach (var module in FindModules<IModuleWithCarter>())
             {
                 module.Configure(configurator);

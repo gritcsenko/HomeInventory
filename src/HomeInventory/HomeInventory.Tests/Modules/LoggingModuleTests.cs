@@ -18,7 +18,8 @@ public sealed class LoggingModuleTests() : BaseModuleTest<LoggingModuleTestsGive
             .Invoked(sut, services, configuration, (sut, services, configuration) => sut.AddServices(services, configuration));
 
         then
-            .Ensure(services, services => {
+            .Ensure(services, services =>
+            {
                 services.Should().ContainSingleSingleton<Serilog.ILogger>()
                     .And.ContainSingleSingleton<ILoggerFactory>()
                     .And.ContainSingleSingleton<IDiagnosticContext>();
