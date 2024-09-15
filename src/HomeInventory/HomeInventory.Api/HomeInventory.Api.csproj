@@ -4,7 +4,7 @@
     <UserSecretsId>abc8e7e8-eab5-4b38-8be1-62a2270484f4</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <PublishProfile>DefaultContainer</PublishProfile>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:8.0</ContainerBaseImage>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0</ContainerBaseImage>
     <!--<ContainerRegistry>registry.mycorp.com:1234</ContainerRegistry>-->
     <ContainerImageTag>0.0.1-alpha1</ContainerImageTag>
     <ContainerImageTags>0.0.1-alpha1;latest</ContainerImageTags>
