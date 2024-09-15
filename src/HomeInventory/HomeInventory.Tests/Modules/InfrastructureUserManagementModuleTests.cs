@@ -7,7 +7,7 @@ public class InfrastructureUserManagementModuleTests() : BaseModuleTest<Infrastr
 {
     protected override void EnsureRegistered(IServiceCollection services)
     {
-        services.Should().ContainSingleScoped<IPasswordHasher>()
+        services.Should().ContainSingleSingleton<IPasswordHasher>()
             .And.ContainSingleSingleton<IJsonDerivedTypeInfo>();
     }
 }

@@ -2,7 +2,6 @@
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
-using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Modules;
 
@@ -16,7 +15,6 @@ public class InfrastructureDatabaseModuleTests() : BaseModuleTest<Infrastructure
             .And.ContainSingleScoped<IUnitOfWork>()
             .And.ContainSingleScoped<PolymorphicDomainEventTypeResolver>()
             .And.ContainSingleScoped<PublishDomainEventsInterceptor>()
-            .And.ContainSingleScoped<DatabaseContext>()
-            .And.ContainSingleSingleton<IDbContextFactory<DatabaseContext>>();
+            .And.ContainSingleScoped<DatabaseContext>();
     }
 }
