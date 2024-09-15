@@ -1,8 +1,6 @@
 ﻿using HomeInventory.Contracts;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
-using HomeInventory.Domain;
-using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -18,8 +16,8 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         [nameof(AssemblyReferences.Api)] = AssemblyReferences.Api,
         [nameof(AssemblyReferences.Web)] = AssemblyReferences.Web,
         [nameof(AssemblyReferences.WebFramework)] = AssemblyReferences.WebFramework,
-        ["DomainPrimitives"] = new BaseAssemblyReference(typeof(ValueObject<>)),
-        ["Domain"] = new BaseAssemblyReference(typeof(DomainModule)),
+        [nameof(AssemblyReferences.DomainPrimitives)] = AssemblyReferences.DomainPrimitives,
+        [nameof(AssemblyReferences.Domain)] = AssemblyReferences.Domain,
         ["Contracts"] = new BaseAssemblyReference(typeof(LoginRequest)),
         ["ContractsUserManagement"] = new BaseAssemblyReference(typeof(RegisterRequest)),
         ["ContractsUserManagementValidators"] = new BaseAssemblyReference(typeof(ContractsUserManagementValidatorsModule)),
@@ -40,8 +38,6 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
 
     public ArchitectureExpectedDependenciesTheoryData()
     {
-        var domainPrimitives = _references["DomainPrimitives"];
-        var domain = _references["Domain"];
         var contracts = _references["Contracts"];
         var contractsUserManagement = _references["ContractsUserManagement"];
         var contractsUserManagementValidators = _references["ContractsUserManagementValidators"];
@@ -51,12 +47,12 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         Add(contractsUserManagementValidators, contractsUserManagement, AssemblyReferences.WebFramework);
         Add(contracts);
         Add(AssemblyReferences.ContractValidations, contracts, AssemblyReferences.WebFramework);
-        Add(domainPrimitives, AssemblyReferences.Core);
-        Add(domain, domainPrimitives, AssemblyReferences.Core);
-        Add(AssemblyReferences.Application, domain, domainPrimitives, AssemblyReferences.Core);
-        Add(AssemblyReferences.WebUserManagement, AssemblyReferences.Application, AssemblyReferences.ContractValidations, contracts, AssemblyReferences.WebFramework, domain, domainPrimitives, AssemblyReferences.Core, contractsUserManagement);
-        Add(AssemblyReferences.Infrastructure, AssemblyReferences.Application, domain, domainPrimitives, AssemblyReferences.Core);
-        Add(AssemblyReferences.Api, AssemblyReferences.Web, AssemblyReferences.Infrastructure, AssemblyReferences.Application, AssemblyReferences.WebUserManagement, AssemblyReferences.WebFramework, contractsUserManagementValidators, AssemblyReferences.ContractValidations, domain, domainPrimitives, AssemblyReferences.Core);
+        Add(AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
+        Add(AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
+        Add(AssemblyReferences.Application, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
+        Add(AssemblyReferences.WebUserManagement, AssemblyReferences.Application, AssemblyReferences.ContractValidations, contracts, AssemblyReferences.WebFramework, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core, contractsUserManagement);
+        Add(AssemblyReferences.Infrastructure, AssemblyReferences.Application, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
+        Add(AssemblyReferences.Api, AssemblyReferences.Web, AssemblyReferences.Infrastructure, AssemblyReferences.Application, AssemblyReferences.WebUserManagement, AssemblyReferences.WebFramework, contractsUserManagementValidators, AssemblyReferences.ContractValidations, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
     }
 
     private void Add(IAssemblyReference reference, params IAssemblyReference[] allowed)

@@ -1,6 +1,8 @@
 ﻿using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Contracts.Validations;
+using HomeInventory.Domain;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure;
 using HomeInventory.Web;
 using HomeInventory.Web.Framework;
@@ -10,7 +12,9 @@ namespace HomeInventory.Tests.Architecture;
 
 public static class AssemblyReferences
 {
-    public static IAssemblyReference Core { get; } = new BaseAssemblyReference(typeof(BaseAssemblyReference));
+    public static IAssemblyReference Core { get; } = new BaseAssemblyReference(typeof(Execute));
+    public static IAssemblyReference DomainPrimitives { get; } = new BaseAssemblyReference(typeof(ValueObject<>));
+    public static IAssemblyReference Domain { get; } = new BaseAssemblyReference(typeof(DomainModule));
     public static IAssemblyReference Application { get; } = new BaseAssemblyReference(typeof(ApplicationMediatrSupportModule));
     public static IAssemblyReference WebUserManagement { get; } = new BaseAssemblyReference(typeof(WebUerManagementMappingModule));
     public static IAssemblyReference ContractValidations { get; } = new BaseAssemblyReference(typeof(ContractsValidationsModule));
