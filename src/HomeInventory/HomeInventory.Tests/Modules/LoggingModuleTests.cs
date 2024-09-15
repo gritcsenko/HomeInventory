@@ -4,25 +4,12 @@ using Serilog;
 
 namespace HomeInventory.Tests.Modules;
 
-public sealed class LoggingModuleTests() : BaseModuleTest<LoggingModuleTestsGivenContext>(t => new(t))
+public sealed class LoggingModuleTests() : BaseModuleTest<LoggingModule>(() => new())
 {
-    [Fact]
-    public void ShouldRegisterServices()
+    protected override void EnsureRegistered(IServiceCollection services)
     {
-        Given
-            .Services(out var services)
-            .Configuration(out var configuration)
-            .Sut(out var sut);
-
-        var then = When
-            .Invoked(sut, services, configuration, (sut, services, configuration) => sut.AddServices(services, configuration));
-
-        then
-            .Ensure(services, services =>
-            {
-                services.Should().ContainSingleSingleton<Serilog.ILogger>()
-                    .And.ContainSingleSingleton<ILoggerFactory>()
-                    .And.ContainSingleSingleton<IDiagnosticContext>();
-            });
+        services.Should().ContainSingleSingleton<Serilog.ILogger>()
+            .And.ContainSingleSingleton<ILoggerFactory>()
+            .And.ContainSingleSingleton<IDiagnosticContext>();
     }
 }

@@ -4,7 +4,14 @@ using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Modules;
 
-public abstract class BaseModuleTestGivenContext<TGiven, TModule>(BaseTest test) : GivenContext<TGiven, TModule>(test), IModuleTestGivenContext<TGiven>
+public static class BaseModuleTestGivenContext
+{
+    public static FunctionalModuleTestGivenContext<TModule> Create<TModule>(BaseModuleTest<FunctionalModuleTestGivenContext<TModule>, TModule> test, Func<TModule> createModuleFunc)
+        where TModule : IModule =>
+        new(test, createModuleFunc);
+}
+
+public abstract class BaseModuleTestGivenContext<TGiven, TModule>(BaseModuleTest<TGiven, TModule> test) : GivenContext<TGiven, TModule>(test), IModuleTestGivenContext<TGiven>
     where TGiven : BaseModuleTestGivenContext<TGiven, TModule>, IModuleTestGivenContext<TGiven>
     where TModule : IModule
 {

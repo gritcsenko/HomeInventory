@@ -2,6 +2,7 @@
 using HomeInventory.Domain;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
 using HomeInventory.Modules;
@@ -17,6 +18,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     private readonly ModulesCollection _modules = [
         new DomainModule(),
         new LoggingModule(),
+        new InfrastructureMappingModule(),
     ];
 
     public UserManagementModelMappingsTests()
@@ -28,7 +30,6 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 #pragma warning restore CA2000 // Dispose objects before losing scope
         _modules.InjectTo(builder);
 
-        Services.AddInfrastructure();
         Fixture.CustomizeId<UserId>();
     }
 
@@ -72,9 +73,10 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 
     public static TheoryData<object, Type> MapData()
     {
+        var timestamp = new DateTimeOffset(new DateOnly(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
         var fixture = new Fixture();
-        fixture.CustomizeId<UserId>();
-        fixture.CustomizeEmail();
+        fixture.CustomizeId<UserId>(timestamp);
+        fixture.CustomizeEmail(timestamp);
 
         var data = new TheoryData<object, Type>();
 
