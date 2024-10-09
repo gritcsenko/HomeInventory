@@ -34,6 +34,15 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
         return new(Variables);
     }
 
+    internal ThenContext Invoked<TSut, TArg1, TArg2>(IVariable<TSut> sut, IVariable<TArg1> arg1, IVariable<TArg2> arg2, Action<TSut, TArg1, TArg2> invoke)
+        where TSut : notnull
+        where TArg1 : notnull
+        where TArg2 : notnull
+    {
+        invoke(GetValue(sut), GetValue(arg1), GetValue(arg2));
+        return new(Variables);
+    }
+
     internal ThenContext<TResult> Invoked<TSut, TResult>(IVariable<TSut> sut, Func<TSut, TResult> invoke)
         where TSut : notnull
         where TResult : notnull =>

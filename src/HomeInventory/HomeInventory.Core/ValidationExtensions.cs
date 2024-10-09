@@ -1,6 +1,4 @@
-﻿using LanguageExt.Pretty;
-
-namespace HomeInventory.Core;
+﻿namespace HomeInventory.Core;
 
 public static class ValidationExtensions
 {

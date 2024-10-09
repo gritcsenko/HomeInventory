@@ -1,5 +1,6 @@
 ﻿namespace HomeInventory.Tests.Core;
 
+[UnitTest]
 public sealed class ScopeTests
 {
     private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
 
-namespace HomeInventory.Contracts.Validations;
+namespace HomeInventory.Contracts.UserManagement.Validators;
 
 internal sealed class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> requiredSets) : PropertyValidator<T, string?>
 {

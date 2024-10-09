@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text.Json;
+﻿using System.Text.Json;
 using FluentAssertions.LanguageExt;
 using HomeInventory.Application.Interfaces.Messaging;
 using Microsoft.AspNetCore.Http;

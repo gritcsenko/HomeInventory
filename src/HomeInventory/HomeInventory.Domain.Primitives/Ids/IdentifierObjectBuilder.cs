@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-
-namespace HomeInventory.Domain.Primitives.Ids;
+﻿namespace HomeInventory.Domain.Primitives.Ids;
 
 public abstract class IdentifierObjectBuilder<TSelf, TObject, TId>(Func<TId, TObject> objectFactoryFunc) : ValueObjectBuilder<TSelf, TObject, TId>
     where TSelf : IdentifierObjectBuilder<TSelf, TObject, TId>

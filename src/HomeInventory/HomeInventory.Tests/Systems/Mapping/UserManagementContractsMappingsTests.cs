@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
-using HomeInventory.Contracts;
+using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Web.UserManagement;
 
