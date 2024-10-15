@@ -8,13 +8,6 @@ namespace HomeInventory.Web.Framework;
 
 internal static class FluentOptionsValidator
 {
-    public static IValidateOptions<TOptions> Create<TOptions>(string name, IValidatorLocator validatorLocator, Action<ValidationStrategy<TOptions>>? validationOptions = null)
-        where TOptions : class
-    {
-        var validator = validatorLocator.GetValidator<TOptions>();
-        return Create(name, validator, validationOptions);
-    }
-
     public static IValidateOptions<TOptions> Create<TOptions>(string name, IValidator validator, Action<ValidationStrategy<TOptions>>? validationOptions = null)
         where TOptions : class
     {

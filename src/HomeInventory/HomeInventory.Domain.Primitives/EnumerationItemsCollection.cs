@@ -1,5 +1,4 @@
-﻿using HomeInventory.Core;
-using System.Collections;
+﻿using System.Collections;
 
 namespace HomeInventory.Domain.Primitives;
 

@@ -9,7 +9,7 @@ namespace HomeInventory.Tests.Framework.Attributes;
 /// This class is referenced for example by the Visual Studio test explorer to discover test traits such as unit tests or integration tests.
 /// Originally derived from the <a href="https://github.com/xunit/samples.xunit/tree/master/TraitExtensibility">xUnit TraitExtensibility Sample</a>.
 /// </summary>
-public class CategoryTraitDiscoverer : ITraitDiscoverer
+public class CategoryTraitDiscoverer(IMessageSink sink) : ITraitDiscoverer
 {
     /// <summary>
     /// The namespace of this class
@@ -20,6 +20,8 @@ public class CategoryTraitDiscoverer : ITraitDiscoverer
     /// The fully qualified name of this class
     /// </summary>
     internal const string _fullyQualifiedName = _assemblyName + "." + nameof(Attributes) + "." + nameof(CategoryTraitDiscoverer);
+
+    public IMessageSink Sink { get; } = sink;
 
     /// <summary>
     /// Gets the trait values from the Category attribute.

@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Application.Cqrs.Queries.UserId;
-using HomeInventory.Contracts;
+using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Domain.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
