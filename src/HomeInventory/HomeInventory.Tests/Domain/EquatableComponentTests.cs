@@ -92,7 +92,7 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
     }
 }
 
-public sealed class EquatableComponentTestsGivenContext : GivenContext<EquatableComponentTestsGivenContext, EquatableComponent<string>>
+public sealed class EquatableComponentTestsGivenContext : GivenContext<EquatableComponentTestsGivenContext, EquatableComponent<string>, Ulid>
 {
     public EquatableComponentTestsGivenContext(BaseTest test)
         : base(test)
@@ -100,20 +100,20 @@ public sealed class EquatableComponentTestsGivenContext : GivenContext<Equatable
         test.Fixture.CustomizeUlid();
     }
 
-    public new EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+    public EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
         Sut(out sut, new Variable<Ulid>("none"), count, name);
 
-    public EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+    public new EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
         Sut(out sut, variable, name ?? "sut", Enumerable.Repeat(.., count).ToArray());
 
     public EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, params Range[] ranges) =>
         Sut(out sut, variable, "sut", ranges);
-
-    protected override EquatableComponent<string> CreateSut() => throw new NotImplementedException();
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3236:Caller information arguments should not be provided explicitly", Justification = "By design")]
     private EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, string name, params Range[] ranges) =>
         New(out sut, i => CreateSut(variable, ranges[i]), ranges.Length, name);
 
     private EquatableComponent<string> CreateSut(IVariable<Ulid> variable, Range range) => new(Array.ConvertAll(Variables.GetMany(variable, range).ToArray(), x => (object)x));
+
+    protected override EquatableComponent<string> CreateSut(Ulid arg) => throw new NotImplementedException();
 }

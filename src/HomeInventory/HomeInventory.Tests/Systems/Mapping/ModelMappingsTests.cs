@@ -1,17 +1,33 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Api;
+using HomeInventory.Domain;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Modules;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class ModelMappingsTests : BaseMappingsTests
 {
+    private readonly ModulesCollection _modules = [
+        new DomainModule(),
+        new LoggingModule(),
+        new InfrastructureMappingModule(),
+    ];
+
     public ModelMappingsTests()
     {
-        Services.AddDomain();
-        Services.AddInfrastructure();
+        var builder = Substitute.For<IHostApplicationBuilder>();
+        builder.Services.Returns(Services);
+#pragma warning disable CA2000 // Dispose objects before losing scope
+        builder.Configuration.Returns(new ConfigurationManager());
+#pragma warning restore CA2000 // Dispose objects before losing scope
+        _modules.InjectTo(builder);
     }
 
     [Theory]
@@ -28,8 +44,9 @@ public class ModelMappingsTests : BaseMappingsTests
 
     public static TheoryData<object, Type> MapData()
     {
+        var timestamp = new DateTimeOffset(new DateOnly(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
         var fixture = new Fixture();
-        fixture.CustomizeId<ProductId>();
+        fixture.CustomizeId<ProductId>(timestamp);
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
         fixture.CustomizeFromFactory<AmountUnit, int>(i => items.ElementAt(i % items.Count));
