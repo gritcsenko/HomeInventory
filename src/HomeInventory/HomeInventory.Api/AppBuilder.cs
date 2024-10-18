@@ -13,16 +13,18 @@ internal class AppBuilder(string[] args)
     {
     }
 
-    public WebApplication Build()
+    public async Task<WebApplication> BuildAsync()
     {
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
 
-        _modules.InjectTo(builder);
+        var modulesHost = new ModulesHost(_modules);
+
+        await modulesHost.InjectToAsync(builder);
 
         var app = builder.Build();
 
-        _modules.BuildInto(app, app);
+        await modulesHost.BuildIntoAsync(app, app);
 
         app.UseHttpsRedirection();
 

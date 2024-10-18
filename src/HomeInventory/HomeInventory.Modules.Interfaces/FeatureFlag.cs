@@ -1,6 +1,6 @@
 ﻿using Microsoft.FeatureManagement;
 
-namespace HomeInventory.Application.Framework;
+namespace HomeInventory.Modules.Interfaces;
 
 public class FeatureFlag : IFeatureFlag
 {

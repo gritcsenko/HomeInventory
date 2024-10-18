@@ -15,7 +15,7 @@ public partial class Program
         await Execute.AndCatchAsync(
             async () =>
             {
-                await using var app = builder.Build();
+                await using var app = await builder.BuildAsync();
                 await app.RunAsync();
             },
             (Exception ex) => log.Fatal(ex, "An unhandled exception occurred during bootstrapping"));

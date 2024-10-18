@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework;
+﻿using HomeInventory.Modules.Interfaces;
 using Microsoft.FeatureManagement;
 
 namespace HomeInventory.Tests.Application;
