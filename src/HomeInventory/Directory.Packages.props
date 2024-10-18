@@ -22,10 +22,10 @@
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
     <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
-    <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-28" />
-    <PackageVersion Include="LanguageExt.Parsec" Version="5.0.0-beta-28" />
-    <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-28" />
-    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-28" />
+    <PackageVersion Include="LanguageExt.Core" Version="4.4.9" />
+    <PackageVersion Include="LanguageExt.Parsec" Version="4.4.9" />
+    <PackageVersion Include="LanguageExt.Rx" Version="4.4.9" />
+    <PackageVersion Include="LanguageExt.Sys" Version="4.4.9" />
     <PackageVersion Include="LanguageExt.SysX" Version="4.4.8" />
     <PackageVersion Include="LanguageExt.Transformers" Version="4.4.8" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
