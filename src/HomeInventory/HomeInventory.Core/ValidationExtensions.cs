@@ -8,7 +8,7 @@ public static class ValidationExtensions
         await validation.MapAsync(async s => Validation<TFailure, TResult>.Success(await f(s)));
 
     public static async Task<Validation<TFailure, TResult>> MapAsync<TFailure, TSuccess, TResult>(this Validation<TFailure, TSuccess> validation, Func<TSuccess, Task<Validation<TFailure, TResult>>> f)
-        //where TFailure : LanguageExt.Traits.Monoid<TFailure>
+    //where TFailure : LanguageExt.Traits.Monoid<TFailure>
     {
         if (validation.IsSuccess)
         {

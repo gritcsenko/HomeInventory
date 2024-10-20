@@ -100,7 +100,7 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
 
     public int Count => _metadata.Count;
 
-    public void Add(IModule module) 
+    public void Add(IModule module)
     {
         _metadata.Add(new ModuleMetadata(module));
     }

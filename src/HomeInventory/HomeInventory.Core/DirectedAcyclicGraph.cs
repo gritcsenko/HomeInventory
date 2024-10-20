@@ -39,7 +39,8 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         var lookup = Nodes.ToLookup(n => n.Incoming.Count);
         var inDegree = lookup.SelectMany(g => g.Select(node => (g.Key, Node: node))).ToDictionary(x => x.Node, x => x.Key);
 
-        foreach (var n in lookup[0]) {
+        foreach (var n in lookup[0])
+        {
             nodesToSort.Enqueue(n);
             inDegree.Remove(n);
         }
