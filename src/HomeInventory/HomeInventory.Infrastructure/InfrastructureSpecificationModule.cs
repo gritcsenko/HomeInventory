@@ -1,15 +1,16 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Modules.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Infrastructure;
 
 public sealed class InfrastructureSpecificationModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
+        await base.AddServicesAsync(context);
+
+        context.Services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
     }
 }

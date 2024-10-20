@@ -1,10 +1,9 @@
 ﻿using HomeInventory.Api;
-using HomeInventory.Application;
+using HomeInventory.Application.Framework;
 using HomeInventory.Contracts.Validations;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure;
-using HomeInventory.Web;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.UserManagement;
 

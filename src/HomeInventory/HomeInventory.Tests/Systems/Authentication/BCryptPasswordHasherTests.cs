@@ -1,5 +1,5 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Infrastructure.Services;
+﻿using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Infrastructure.UserManagement.Services;
 
 namespace HomeInventory.Tests.Systems.Authentication;
 

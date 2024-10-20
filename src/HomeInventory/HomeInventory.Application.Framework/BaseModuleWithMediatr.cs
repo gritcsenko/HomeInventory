@@ -5,10 +5,12 @@ namespace HomeInventory.Application.Framework;
 
 public abstract class BaseModuleWithMediatr : BaseModule, IModuleWithMediatr
 {
-    public abstract void Configure(MediatRServiceConfiguration configuration);
-
-    protected void RegisterServicesFromCurrentAssembly(MediatRServiceConfiguration configuration)
+    protected BaseModuleWithMediatr()
     {
-        configuration.RegisterServicesFromAssembly(GetType().Assembly);
+        DependsOn<ApplicationMediatrSupportModule>();
+    }
+
+    public virtual void Configure(MediatRServiceConfiguration configuration)
+    {
     }
 }

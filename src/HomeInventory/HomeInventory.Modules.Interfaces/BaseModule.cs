@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace HomeInventory.Modules.Interfaces;
+﻿namespace HomeInventory.Modules.Interfaces;
 
 public abstract class BaseModule : IModule
 {
@@ -11,12 +6,14 @@ public abstract class BaseModule : IModule
 
     public IReadOnlyCollection<Type> Dependencies => _dependencies;
 
-    public virtual void AddServices(IServiceCollection services, IConfiguration configuration)
+    public virtual Task AddServicesAsync(ModuleServicesContext context)
     {
+        return Task.CompletedTask;
     }
 
-    public virtual void BuildApp(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder)
+    public virtual Task BuildAppAsync(ModuleBuildContext context)
     {
+        return Task.CompletedTask;
     }
 
     protected void DependsOn<TModule>()

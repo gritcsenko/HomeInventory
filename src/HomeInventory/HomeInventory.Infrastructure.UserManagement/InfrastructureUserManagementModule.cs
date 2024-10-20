@@ -1,18 +1,21 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain.Events;
+﻿using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Domain.UserManagement.Events;
 using HomeInventory.Infrastructure.Framework;
-using HomeInventory.Infrastructure.Services;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
+using HomeInventory.Infrastructure.UserManagement.Services;
 using HomeInventory.Modules.Interfaces;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Infrastructure.UserManagement;
 
 public sealed class InfrastructureUserManagementModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
-        services.AddSingleton<IJsonDerivedTypeInfo>(_ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
+        await base.AddServicesAsync(context);
+
+        context.Services
+            .AddSingleton<IPasswordHasher, BCryptPasswordHasher>()
+            .AddSingleton<IJsonDerivedTypeInfo>(_ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
     }
 }

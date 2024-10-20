@@ -2,31 +2,47 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Collections;
-using System.Reflection;
 using Microsoft.FeatureManagement;
+using Microsoft.Extensions.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HomeInventory.Modules;
 
 public class ModulesCollection : IReadOnlyCollection<IModule>
 {
-    private readonly List<IModule> _modules = [];
+    private readonly System.Collections.Generic.HashSet<IModule> _modules = new(new ModuleEqualityComparer());
 
     public int Count => _modules.Count;
 
     public void Add(IModule module)
     {
         _modules.Add(module);
-        if (module is IAttachableModule attachable)
-        {
-            attachable.OnAttached(this);
-        }
     }
 
     public IEnumerator<IModule> GetEnumerator() => _modules.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    private sealed class ModuleEqualityComparer : IEqualityComparer<IModule>
+    {
+        public bool Equals(IModule? x, IModule? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (x is null || y is null)
+            {
+                return false;
+            }
+
+            return x.GetType().Equals(y.GetType());
+        }
+
+        public int GetHashCode([DisallowNull] IModule obj) => obj.GetType().GetHashCode();
+    }
 }
 
 public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
@@ -35,12 +51,9 @@ public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
     private readonly ModuleMetadataCollection _metadata = [];
     private IModule[] _availableModules = [];
 
-    public async Task InjectToAsync(IHostApplicationBuilder builder)
+    public async Task InjectToAsync(IServiceCollection services, IConfiguration configuration)
     {
-        var services = builder.Services;
         AddFeatures(services);
-
-        var configuration = builder.Configuration;
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(configuration);
@@ -51,30 +64,23 @@ public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
 
         foreach (var module in _modules)
         {
-            var moduleType = module.GetType();
-            var feature = FeatureFlag.Create(moduleType.FullName ?? moduleType.Name);
-            if (await feature.IsEnabledAsync(featureManager)) 
-            {
-                _metadata.Add(module);
-            }
+            _metadata.Add(module);
         }
 
-        var graph = _metadata.CreateDependencyGraph();
-        var result = graph.DeepFirstTraversalKahnTopologicalSort();
-        if (!result.IsAcrylic)
-        {
-            var cycles = result.DetectedCycles;
-        }
+        var graph = await _metadata.CreateDependencyGraph(m => m.Flag.IsEnabledAsync(featureManager));
+        var nodes = graph.KahnTopologicalSort();
 
-        var sorted = result.Sorted.Select(n => n.Value).ToArray();
+        var sorted = nodes.Select(n => n.Value).ToArray();
 
         _availableModules = sorted.Select(m => m.Module).ToArray();
-        await Task.WhenAll(_modules.Select(async m => await m.AddServicesAsync(services, configuration, featureManager, _availableModules)));
+        var context = new ModuleServicesContext(services, configuration, featureManager, _availableModules);
+        await Task.WhenAll(_availableModules.Select(async m => await m.AddServicesAsync(context)));
     }
 
     public async Task BuildIntoAsync(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder)
     {
-        await Task.WhenAll(_availableModules.Select(async m => await m.BuildAppAsync(applicationBuilder, endpointRouteBuilder)));
+        var context = new ModuleBuildContext(applicationBuilder, endpointRouteBuilder);
+        await Task.WhenAll(_availableModules.Select(async m => await m.BuildAppAsync(context)));
     }
 
     private static void AddFeatures(IServiceCollection services)
@@ -96,26 +102,87 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
 
     public void Add(IModule module) 
     {
-        _metadata.Add(new ModuleMetadata(module, this));
+        _metadata.Add(new ModuleMetadata(module));
     }
 
     public IEnumerator<ModuleMetadata> GetEnumerator() => _metadata.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public DirectedAcyclicGraph<ModuleMetadata, Type> CreateDependencyGraph()
+    public async Task<DirectedAcyclicGraph<ModuleMetadata, Type>> CreateDependencyGraph(Func<ModuleMetadata, Task<bool>> canLoadAsync)
     {
+        var graph = new DirectedAcyclicGraph<ModuleMetadata, Type>();
+        var loadable = await GetLoadableModules(canLoadAsync);
 
+        foreach (var meta in loadable)
+        {
+            var source = graph.GetOrAdd(meta, static (n, v) => n.Value == v);
+            foreach (var reference in meta.GetDependencies(loadable))
+            {
+                reference.Do(r =>
+                {
+                    var target = graph.GetOrAdd(r, static (n, v) => n.Value == v);
+                    graph.AddEdge(source, target, r.ModuleType);
+                });
+            }
+        }
+
+        return graph;
+    }
+
+    private async Task<List<ModuleMetadata>> GetLoadableModules(Func<ModuleMetadata, Task<bool>> canLoadAsync)
+    {
+        var loadable = _metadata.ToList();
+        var canLoadCache = new Dictionary<Type, bool>();
+        while (true)
+        {
+            var count = loadable.Count;
+            foreach (var meta in loadable.Memo())
+            {
+                if (!await CanLoadAsync(meta))
+                {
+                    loadable.Remove(meta);
+                    continue;
+                }
+
+                foreach (var optional in meta.GetDependencies(_metadata))
+                {
+                    if (optional.IsNone || !await CanLoadAsync((ModuleMetadata)optional))
+                    {
+                        loadable.Remove(meta);
+                        break;
+                    }
+                }
+            }
+
+            if (loadable.Count == count)
+            {
+                return loadable;
+            }
+        }
+
+        ValueTask<bool> CanLoadAsync(ModuleMetadata metadata)
+        {
+            return canLoadCache.GetOrAddAsync(metadata.ModuleType, _ => canLoadAsync(metadata));
+        }
     }
 }
 
-public sealed class ModuleMetadata(IModule module, ModuleMetadataCollection container)
+public sealed class ModuleMetadata
 {
-    private readonly ModuleMetadataCollection _container = container;
+    public ModuleMetadata(IModule module)
+    {
+        ModuleType = module.GetType();
+        Module = module;
+        Flag = FeatureFlag.Create(ModuleType.FullName ?? ModuleType.Name);
+    }
 
-    public Type ModuleType { get; } = module.GetType();
+    public Type ModuleType { get; }
 
-    public IModule Module { get; } = module;
+    public IModule Module { get; }
 
-    public IEnumerable<Option<ModuleMetadata>> GetDependencies() => Module.Dependencies.Select(d => _container.Find(m => m.ModuleType == d));
+    public IFeatureFlag Flag { get; }
+
+    public IEnumerable<Option<ModuleMetadata>> GetDependencies(IReadOnlyCollection<ModuleMetadata> container) =>
+        Module.Dependencies.Select(d => container.Find(m => m.ModuleType == d));
 }

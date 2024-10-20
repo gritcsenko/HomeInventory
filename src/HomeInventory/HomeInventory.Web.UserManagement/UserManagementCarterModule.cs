@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using HomeInventory.Application.Cqrs.Commands.Register;
-using HomeInventory.Application.Cqrs.Queries.UserId;
+using HomeInventory.Application.UserManagement.Interfaces.Commands;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts.UserManagement;
-using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.UserManagement.Persistence;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Framework.Infrastructure;
 using MediatR;

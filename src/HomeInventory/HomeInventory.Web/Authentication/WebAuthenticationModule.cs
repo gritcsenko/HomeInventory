@@ -1,28 +1,29 @@
 ﻿using Carter;
 using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Modules.Interfaces;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.Framework;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web.Authentication;
 
 public sealed class WebAuthenticationModule : BaseModuleWithCarter
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        base.AddServices(services, configuration);
+        await base.AddServicesAsync(context);
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        context.Services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
-        services.ConfigureOptions<JwtBearerOptionsSetup>();
-
-        services.AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>();
-        services.AddOptionsWithValidator<JwtOptions>();
-        services.AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
+        context.Services
+            .ConfigureOptions<JwtBearerOptionsSetup>()
+            .AddSingleton<IJwtIdentityGenerator, GuidJwtIdentityGenerator>()
+            .AddOptionsWithValidator<JwtOptions>();
+        context.Services
+            .AddScoped<IAuthenticationTokenGenerator, JwtTokenGenerator>();
     }
 
     public override void Configure(CarterConfigurator configurator)
@@ -31,8 +32,10 @@ public sealed class WebAuthenticationModule : BaseModuleWithCarter
         AddCarterModulesFromCurrentAssembly(configurator);
     }
 
-    public override void BuildApp(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder)
+    public override async Task BuildAppAsync(ModuleBuildContext context)
     {
-        applicationBuilder.UseAuthentication();
+        await base.BuildAppAsync(context);
+
+        context.ApplicationBuilder.UseAuthentication();
     }
 }

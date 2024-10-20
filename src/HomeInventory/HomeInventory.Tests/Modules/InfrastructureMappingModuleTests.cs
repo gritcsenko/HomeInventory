@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application;
+﻿using HomeInventory.Application.Framework;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 

@@ -1,7 +1,7 @@
-﻿using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Events;
-using HomeInventory.Domain.Primitives.Ids;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Events;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;

@@ -1,10 +1,10 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Specifications;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure.Framework;
+using HomeInventory.Infrastructure.Framework.Specifications;
+using HomeInventory.Infrastructure.UserManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;

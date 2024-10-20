@@ -13,10 +13,11 @@ public abstract class BaseModuleTest<TGiven, TSut>(Func<BaseModuleTest<TGiven, T
         Given
             .Services(out var services)
             .Configuration(out var configuration)
+            .FeatureManager(out var featureManager)
             .Sut(out var sut);
 
         var then = When
-            .Invoked(sut, services, configuration, (sut, services, configuration) => sut.AddServices(services, configuration));
+            .Invoked(sut, services, configuration, featureManager, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new ModuleServicesContext(services, configuration, featureManager, [])));
 
         then
             .Ensure(services, services =>

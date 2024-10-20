@@ -1,9 +1,9 @@
-﻿using HomeInventory.Domain.Events;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Events;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
-namespace HomeInventory.Domain.Aggregates;
+namespace HomeInventory.Domain.UserManagement.Aggregates;
 
 public class User(UserId id) : AggregateRoot<User, UserId>(id)
 {

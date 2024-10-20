@@ -3,34 +3,36 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
 public sealed class DynamicWebAuthorizationModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.AddSingleton<PermissionList>();
-        services.AddTransient<IAuthorizationHandler, DynamicAuthorizationHandler>();
+        await base.AddServicesAsync(context);
 
-        services.AddAuthorizationBuilder()
+        context.Services
+            .AddSingleton<PermissionList>()
+            .AddTransient<IAuthorizationHandler, DynamicAuthorizationHandler>()
+            .AddAuthorizationBuilder()
             .AddPolicy(AuthorizationPolicyNames.Dynamic, pb => pb
             .RequireAuthenticatedUser()
             .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
             .AddRequirements(new DynamicPermissionRequirement(GetPermissions)));
     }
 
-    public override void BuildApp(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder)
+    public override async Task BuildAppAsync(ModuleBuildContext context)
     {
-        var permissionList = applicationBuilder.ApplicationServices.GetRequiredService<PermissionList>();
-        permissionList.AddRange(endpointRouteBuilder.DataSources.SelectMany(s => s.Endpoints).SelectMany(GetPermissions));
+        await base.BuildAppAsync(context);
 
-        applicationBuilder.UseAuthorization();
+        var permissionList = context.GetRequiredService<PermissionList>();
+        permissionList.AddRange(context.EndpointRouteBuilder.DataSources.SelectMany(s => s.Endpoints).SelectMany(GetPermissions));
+
+        context.ApplicationBuilder.UseAuthorization();
     }
 
     private static IEnumerable<PermissionType> GetPermissions(Endpoint endpoint) =>
-       endpoint.Metadata.GetOrderedMetadata<PermissionMetadata>().SelectMany(a => a.Permissions);
+        endpoint.Metadata.GetOrderedMetadata<PermissionMetadata>().SelectMany(a => a.Permissions);
 }

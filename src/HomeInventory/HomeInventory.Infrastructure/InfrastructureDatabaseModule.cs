@@ -1,33 +1,36 @@
 ﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Framework;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.Services;
 using HomeInventory.Modules.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Infrastructure;
 
 public sealed class InfrastructureDatabaseModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.AddScoped<IEventsPersistenceService, EventsPersistenceService>();
-        services.AddScoped<IDatabaseConfigurationApplier, OutboxDatabaseConfigurationApplier>();
-        services.AddScoped<PolymorphicDomainEventTypeResolver>();
+        await base.AddServicesAsync(context);
 
-        services.AddScoped<PublishDomainEventsInterceptor>();
-        services.AddDbContext<DatabaseContext>((sp, builder) =>
+        context.Services
+            .AddScoped<IEventsPersistenceService, EventsPersistenceService>()
+            .AddScoped<IDatabaseConfigurationApplier, OutboxDatabaseConfigurationApplier>()
+            .AddScoped<PolymorphicDomainEventTypeResolver>()
+            .AddScoped<PublishDomainEventsInterceptor>()
+            .AddDbContext<DatabaseContext>((sp, builder) =>
             {
                 var env = sp.GetRequiredService<IHostEnvironment>();
                 builder.UseInMemoryDatabase("HomeInventory");
                 builder.EnableDetailedErrors(!env.IsProduction());
                 builder.EnableSensitiveDataLogging(!env.IsProduction());
-            });
-        services.AddScoped<IDatabaseContext>(sp => sp.GetRequiredService<DatabaseContext>());
-        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<DatabaseContext>());
-
+            })
+            .AddScoped<IDatabaseContext>(sp => sp.GetRequiredService<DatabaseContext>())
+            .AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<DatabaseContext>());
     }
 }

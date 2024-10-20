@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Modules.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.FeatureManagement;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Modules;
@@ -21,7 +22,12 @@ public abstract class BaseModuleTestGivenContext<TGiven, TModule>(BaseModuleTest
     public TGiven Configuration(out IVariable<IConfiguration> configuration, int count = 1, [CallerArgumentExpression(nameof(configuration))] string? name = null) =>
         New(out configuration, CreateConfiguration, count, name);
 
+    public TGiven FeatureManager(out IVariable<IFeatureManager> manager, int count = 1, [CallerArgumentExpression(nameof(manager))] string? name = null) =>
+        New(out manager, CreateFeatureManager, count, name);
+
     protected virtual IServiceCollection CreateServiceCollection() => new ServiceCollection();
 
     protected virtual IConfiguration CreateConfiguration() => new ConfigurationBuilder().Build();
+
+    protected virtual IFeatureManager CreateFeatureManager() => Substitute.For<IFeatureManager>();
 }

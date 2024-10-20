@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Cqrs.DomainEvents;
+﻿using HomeInventory.Application.Framework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

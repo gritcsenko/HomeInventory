@@ -1,8 +1,8 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Tests.Architecture;
 using MediatR;
 using MediatR.Registration;

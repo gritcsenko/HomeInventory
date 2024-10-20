@@ -1,4 +1,7 @@
 ﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure;
+using HomeInventory.Infrastructure.Framework;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;

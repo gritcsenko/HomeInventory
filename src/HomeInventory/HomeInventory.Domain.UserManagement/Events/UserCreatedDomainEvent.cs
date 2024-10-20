@@ -1,8 +1,8 @@
-﻿using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.UserManagement.Aggregates;
 
-namespace HomeInventory.Domain.Events;
+namespace HomeInventory.Domain.UserManagement.Events;
 
 public sealed record UserCreatedDomainEvent : DomainEvent
 {

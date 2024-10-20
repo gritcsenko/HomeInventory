@@ -1,5 +1,6 @@
-﻿using HomeInventory.Domain.Persistence;
-using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
+using HomeInventory.Infrastructure.UserManagement;
 
 namespace HomeInventory.Tests.Modules;
 

@@ -1,14 +1,14 @@
-﻿using HomeInventory.Modules.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+﻿using HomeInventory.Application.Framework;
+using HomeInventory.Modules.Interfaces;
 
 namespace HomeInventory.Web.UserManagement;
 
 public sealed class WebUerManagementMappingModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.AddMappingAssemblySource(Assembly.GetExecutingAssembly());
+        await base.AddServicesAsync(context);
+
+        context.Services.AddMappingAssemblySource(GetType().Assembly);
     }
 }

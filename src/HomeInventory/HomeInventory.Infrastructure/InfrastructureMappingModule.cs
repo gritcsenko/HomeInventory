@@ -1,16 +1,18 @@
-﻿using HomeInventory.Infrastructure.Persistence.Mapping;
+﻿using HomeInventory.Application.Framework;
+using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Modules.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace HomeInventory.Infrastructure;
 
 public sealed class InfrastructureMappingModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.AddSingleton<AmountObjectConverter>();
-        services.AddMappingAssemblySource(Assembly.GetExecutingAssembly());
+        await base.AddServicesAsync(context);
+
+        context.Services
+            .AddSingleton<AmountObjectConverter>()
+            .AddMappingAssemblySource(GetType().Assembly);
     }
 }

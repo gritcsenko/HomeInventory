@@ -2,7 +2,6 @@
 using HomeInventory.Modules.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -10,29 +9,35 @@ namespace HomeInventory.Web.OpenApi;
 
 public sealed class WebSwaggerModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        services.AddEndpointsApiExplorer();
-        services.ConfigureOptions<ConfigureSwaggerOptions>();
-        services.AddSingleton<IOpenApiValueConverter, JsonOpenApiValueConverter>();
-        services.AddSingleton<ISwaggerOperationFilter, DeprecatedSwaggerOperationFilter>();
-        services.AddSingleton<ISwaggerOperationFilter, ResponsesSwaggerOperationFilter>();
-        services.AddSingleton<ISwaggerOperationFilter, ParametersSwaggerOperationFilter>();
-        services.AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>());
+        await base.AddServicesAsync(context);
 
-        services.AddApiVersioning(options =>
-        {
-            options.DefaultApiVersion = new ApiVersion(1);
-            options.AssumeDefaultVersionWhenUnspecified = true;
-            options.ApiVersionReader = new QueryStringApiVersionReader();
-        }).AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        context.Services
+            .AddEndpointsApiExplorer()
+            .ConfigureOptions<ConfigureSwaggerOptions>()
+            .AddSingleton<IOpenApiValueConverter, JsonOpenApiValueConverter>()
+            .AddSingleton<ISwaggerOperationFilter, DeprecatedSwaggerOperationFilter>()
+            .AddSingleton<ISwaggerOperationFilter, ResponsesSwaggerOperationFilter>()
+            .AddSingleton<ISwaggerOperationFilter, ParametersSwaggerOperationFilter>()
+            .AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>())
+            .AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ApiVersionReader = new QueryStringApiVersionReader();
+            })
+            .AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
     }
 
-    public override void BuildApp(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder)
+    public override async Task BuildAppAsync(ModuleBuildContext context)
     {
-        applicationBuilder.UseSwagger();
-        applicationBuilder.UseSwaggerUI(options => ConfigureSwaggerUI(endpointRouteBuilder, options));
+        await base.BuildAppAsync(context);
+
+        context.ApplicationBuilder
+            .UseSwagger()
+            .UseSwaggerUI(options => ConfigureSwaggerUI(context.EndpointRouteBuilder, options));
     }
 
     private static void ConfigureSwaggerUI(IEndpointRouteBuilder builder, SwaggerUIOptions options)

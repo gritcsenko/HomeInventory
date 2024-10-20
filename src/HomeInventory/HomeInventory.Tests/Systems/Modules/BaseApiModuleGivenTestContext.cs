@@ -2,7 +2,7 @@
 using AutoMapper;
 using Carter;
 using HomeInventory.Api;
-using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain;
 using HomeInventory.Modules;
 using HomeInventory.Web.ErrorHandling;
@@ -22,11 +22,9 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     where TGiven : BaseApiModuleGivenTestContext<TGiven, TModule>
     where TModule : ApiCarterModule
 {
-    private readonly ModulesCollection _modules = [
-        new DomainModule(),
-        new LoggingModule(),
-    ];
-    private readonly IServiceCollection _services;
+    private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule()]);
+    private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IServiceCollection _services = new ServiceCollection();
     private readonly Lazy<IServiceProvider> _lazyServiceProvider;
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
@@ -36,15 +34,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         : base(test)
     {
         _cancellation = test.Cancellation;
-
-        _services = new ServiceCollection();
-
-        var builder = Substitute.For<IHostApplicationBuilder>();
-        builder.Services.Returns(_services);
-#pragma warning disable CA2000 // Dispose objects before losing scope
-        builder.Configuration.Returns(new ConfigurationManager());
-#pragma warning restore CA2000 // Dispose objects before losing scope
-        _modules.InjectTo(builder);
 
         _services
             .AddOptions(new ApiVersioningOptions())
@@ -66,11 +55,17 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
+    public async Task<TGiven> InitializeHostAsync()
+    {
+        await _host.InjectToAsync(_services, _configuration);
+        return This;
+    }
+
     public TGiven HttpContext(out IVariable<HttpContext> context) =>
         New(out context, CreateHttpContext);
 
     public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources) =>
-        New(out dataSources, () => new List<EndpointDataSource>());
+        New(out dataSources, () => []);
 
     public TGiven RouteBuilder(out IVariable<IEndpointRouteBuilder> routeBuilder, IVariable<List<EndpointDataSource>> dataSources) =>
         SubstituteFor(out routeBuilder, dataSources, (b, s) =>

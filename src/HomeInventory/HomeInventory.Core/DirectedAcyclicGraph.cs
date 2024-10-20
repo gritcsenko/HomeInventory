@@ -16,6 +16,9 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         return node;
     }
 
+    public Node GetOrAdd(TNode nodeValue, Func<Node, TNode, bool> filter) =>
+        Nodes.FirstOrDefault(n => filter(n, nodeValue)) ?? AddNode(nodeValue);
+
     public Edge AddEdge(Node from, Node to, TEdge edgeValue)
     {
         var edge = new Edge(edgeValue)

@@ -1,6 +1,6 @@
-﻿using HomeInventory.Domain.Events;
-using HomeInventory.Domain.Primitives;
-using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.UserManagement.Events;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;

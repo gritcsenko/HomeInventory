@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain;
-using HomeInventory.Tests.Framework.Attributes;
+﻿using HomeInventory.Tests.Framework.Attributes;
 
 namespace HomeInventory.Tests.Framework;
 

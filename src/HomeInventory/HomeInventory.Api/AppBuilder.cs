@@ -20,7 +20,7 @@ internal class AppBuilder(string[] args)
 
         var modulesHost = new ModulesHost(_modules);
 
-        await modulesHost.InjectToAsync(builder);
+        await modulesHost.InjectToAsync(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 

@@ -1,13 +1,8 @@
 ﻿using AutoMapper;
 using FluentAssertions.Execution;
-using HomeInventory.Api;
-using HomeInventory.Application;
+using HomeInventory.Application.Framework;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Contracts.UserManagement.Validators;
-using HomeInventory.Contracts.Validations;
-using HomeInventory.Domain;
 using HomeInventory.Modules;
-using HomeInventory.Tests.Architecture;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
@@ -19,6 +14,7 @@ using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -30,11 +26,12 @@ namespace HomeInventory.Tests.DependencyInjection;
 [UnitTest]
 public class WebDependencyInjectionTests : BaseDependencyInjectionTest
 {
-    private readonly ModulesCollection _modules = new ApplicationModules();
+    private readonly ModulesHost _host;
+    private readonly IConfiguration _configuration;
 
     public WebDependencyInjectionTests()
     {
-        var configuration = AddConfiguration(new Dictionary<string, string?>
+        _configuration = AddConfiguration(new Dictionary<string, string?>
         {
             [JwtOptions.Section / nameof(JwtOptions.Secret)] = "Some Secret",
             [JwtOptions.Section / nameof(JwtOptions.Issuer)] = "HomeInventory",
@@ -47,15 +44,14 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.AddSingleton(env);
         Services.AddSingleton<IHostEnvironment>(env);
 
-        var builder = Substitute.For<IHostApplicationBuilder>();
-        builder.Services.Returns(Services);
-        builder.Configuration.Returns(configuration);
-        _modules.InjectTo(builder);
+        _host = new ModulesHost([]);
     }
 
     [Fact]
-    public void ShouldRegister()
+    public async Task ShouldRegister()
     {
+        await _host.InjectToAsync(Services, _configuration);
+
         using var scope = new AssertionScope();
         Services.Should().ContainConfigureOptions<JwtOptions>();
         Services.Should().ContainConfigureOptions<JwtBearerOptions>();

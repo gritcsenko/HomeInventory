@@ -1,7 +1,7 @@
-﻿using HomeInventory.Application.Cqrs.Commands.Register;
-using HomeInventory.Application.Cqrs.Queries.UserId;
+﻿using HomeInventory.Application.UserManagement.Interfaces.Commands;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts.UserManagement;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.UserManagement.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -12,12 +12,13 @@ namespace HomeInventory.Tests.Systems.Modules;
 public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModuleTestContext>(t => new(t))
 {
     [Fact]
-    public void AddRoutes_ShouldRegister()
+    public async Task AddRoutes_ShouldRegister()
     {
-        Given
+        await Given
             .DataSources(out var dataSources)
             .RouteBuilder(out var routeBuilder, dataSources)
-            .Sut(out var sut);
+            .Sut(out var sut)
+            .InitializeHostAsync();
 
         var then = When
             .Invoked(sut, routeBuilder, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
@@ -35,14 +36,15 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     [Fact]
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
-        Given
+        await Given
             .HttpContext(out var context)
             .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
             .Map(registerRequest).To<UserIdQuery>(out var userIdQuery)
             .Map<UserIdResult>(out var userIdResult).To<RegisterResponse>(out var registerResponse)
             .OnCommandReturnSuccess(registerCommand)
             .OnQueryReturn(userIdQuery, userIdResult)
-            .Sut(out var sut);
+            .Sut(out var sut)
+            .InitializeHostAsync();
 
         var then = await When
             .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
@@ -56,12 +58,13 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     [Fact]
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
-        Given
+        await Given
             .HttpContext(out var context)
             .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
             .New<DuplicateEmailError>(out var error)
             .OnCommandReturnError(registerCommand, error)
-            .Sut(out var sut);
+            .Sut(out var sut)
+            .InitializeHostAsync();
 
         var then = await When
             .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));

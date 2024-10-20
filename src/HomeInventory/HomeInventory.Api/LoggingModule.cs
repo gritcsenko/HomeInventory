@@ -13,16 +13,20 @@ public sealed class LoggingModule : BaseModule
             .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture, theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
             .CreateLogger();
 
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.AddSerilog((IServiceProvider provider, LoggerConfiguration loggerConfiguration) =>
+        await base.AddServicesAsync(context);
+
+        context.Services.AddSerilog((IServiceProvider provider, LoggerConfiguration loggerConfiguration) =>
             loggerConfiguration
-                .ReadFrom.Configuration(configuration)
+                .ReadFrom.Configuration(context.Configuration)
                 .ReadFrom.Services(provider));
     }
 
-    public override void BuildApp(IApplicationBuilder applicationBuilder, IEndpointRouteBuilder endpointRouteBuilder)
+    public override async Task BuildAppAsync(ModuleBuildContext context)
     {
-        applicationBuilder.UseSerilogRequestLogging(options => options.IncludeQueryInRequestPath = true);
+        await base.BuildAppAsync(context);
+
+        context.ApplicationBuilder.UseSerilogRequestLogging(options => options.IncludeQueryInRequestPath = true);
     }
 }

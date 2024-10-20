@@ -1,14 +1,17 @@
 ﻿using HomeInventory.Application;
+using HomeInventory.Application.Framework;
 using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
 using HomeInventory.Contracts.Validations;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
+using HomeInventory.Infrastructure.UserManagement;
 using HomeInventory.Modules;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.ErrorHandling;
+using HomeInventory.Web.Framework;
 using HomeInventory.Web.Mapping;
 using HomeInventory.Web.OpenApi;
 using HomeInventory.Web.UserManagement;
@@ -32,7 +35,6 @@ public sealed class ApplicationModules : ModulesCollection
         Add(new WebUerManagementMappingModule());
         Add(new WebHealthCheckModule());
         Add(new WebCarterSupportModule());
-        Add(new ApplicationFeaturesModule());
         Add(new ApplicationMediatrSupportModule());
         Add(new ApplicationMediatrModule());
         Add(new ApplicationUserManagementMediatrModule());

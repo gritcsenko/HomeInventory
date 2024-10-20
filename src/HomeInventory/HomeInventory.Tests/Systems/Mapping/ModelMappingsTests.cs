@@ -7,33 +7,21 @@ using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Modules;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class ModelMappingsTests : BaseMappingsTests
 {
-    private readonly ModulesCollection _modules = [
-        new DomainModule(),
-        new LoggingModule(),
-        new InfrastructureMappingModule(),
-    ];
-
-    public ModelMappingsTests()
-    {
-        var builder = Substitute.For<IHostApplicationBuilder>();
-        builder.Services.Returns(Services);
-#pragma warning disable CA2000 // Dispose objects before losing scope
-        builder.Configuration.Returns(new ConfigurationManager());
-#pragma warning restore CA2000 // Dispose objects before losing scope
-        _modules.InjectTo(builder);
-    }
+    private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule()]);
+    private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IServiceCollection _services = new ServiceCollection();
 
     [Theory]
     [MemberData(nameof(MapData))]
-    public void ShouldMap(object instance, Type destination)
+    public async Task ShouldMap(object instance, Type destination)
     {
+        await _host.InjectToAsync(_services, _configuration);
         var sut = CreateSut<ModelMappings>();
         var source = instance.GetType();
 

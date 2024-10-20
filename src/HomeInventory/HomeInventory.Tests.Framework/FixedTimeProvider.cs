@@ -1,6 +1,6 @@
-﻿namespace HomeInventory.Domain;
+﻿namespace HomeInventory.Tests.Framework;
 
-internal class FixedTimeProvider(TimeProvider parent) : TimeProvider
+public class FixedTimeProvider(TimeProvider parent) : TimeProvider
 {
     private readonly DateTimeOffset _now = parent.GetUtcNow();
 

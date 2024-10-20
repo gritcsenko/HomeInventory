@@ -1,20 +1,21 @@
-﻿using HomeInventory.Application;
+﻿using HomeInventory.Application.Framework;
 using HomeInventory.Modules.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace HomeInventory.Web.Mapping;
 
 public sealed class WebMappingModule : BaseModule
 {
-    public override void AddServices(IServiceCollection services, IConfiguration configuration)
+    public override async Task AddServicesAsync(ModuleServicesContext context)
     {
-        services.AddMappingAssemblySource(Assembly.GetExecutingAssembly());
-        services.AddAutoMapper((sp, configExpression) =>
-        {
-            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(s => s.GetAssemblies()));
-            configExpression.ConstructServicesUsing(sp.GetService);
-        }, Type.EmptyTypes);
+        await base.AddServicesAsync(context);
+
+        context.Services
+            .AddMappingAssemblySource(GetType().Assembly)
+            .AddAutoMapper((sp, configExpression) =>
+            {
+                configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(s => s.GetAssemblies()));
+                configExpression.ConstructServicesUsing(sp.GetRequiredService);
+            }, Type.EmptyTypes);
     }
 }

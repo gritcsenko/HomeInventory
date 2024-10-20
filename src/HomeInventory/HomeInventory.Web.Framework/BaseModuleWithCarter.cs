@@ -6,6 +6,11 @@ namespace HomeInventory.Web.Framework;
 
 public abstract class BaseModuleWithCarter : BaseModule, IModuleWithCarter
 {
+    protected BaseModuleWithCarter()
+    {
+        DependsOn<WebCarterSupportModule>();
+    }
+
     public abstract void Configure(CarterConfigurator configurator);
 
     protected void AddValidatorsFromCurrentAssembly(CarterConfigurator configurator)

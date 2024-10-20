@@ -52,9 +52,11 @@ public class PasswordValidatorTests : BaseTest
         public string? Password { get; set; }
     }
 
+#pragma warning disable IDE0028 // Simplify collection initialization
     private static InlineValidator<Container> CreateSut() =>
         new()
         {
             v => v.RuleFor(x => x.Password).Password()
         };
+#pragma warning restore IDE0028 // Simplify collection initialization
 }

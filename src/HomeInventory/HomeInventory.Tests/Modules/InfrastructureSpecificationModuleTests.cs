@@ -1,4 +1,5 @@
 ﻿using Ardalis.Specification;
+using HomeInventory.Infrastructure;
 
 namespace HomeInventory.Tests.Modules;
 

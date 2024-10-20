@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace HomeInventory.Application;
+namespace HomeInventory.Application.Framework;
 
 internal sealed class MappingAssemblySource(IReadOnlyCollection<Assembly> assemblies) : IMappingAssemblySource
 {

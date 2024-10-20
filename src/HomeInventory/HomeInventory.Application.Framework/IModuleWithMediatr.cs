@@ -1,6 +1,5 @@
 ﻿using HomeInventory.Modules.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace HomeInventory.Application.Framework;
 

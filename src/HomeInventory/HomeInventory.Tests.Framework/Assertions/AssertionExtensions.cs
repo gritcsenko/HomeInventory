@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using FluentAssertions.LanguageExt;
-using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
 using HomeInventory.Web.UserManagement;
