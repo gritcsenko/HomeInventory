@@ -1,4 +1,4 @@
-﻿using HomeInventory.Contracts;
+﻿using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
 

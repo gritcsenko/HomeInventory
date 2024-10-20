@@ -1,19 +1,21 @@
 ﻿using System.Linq.Expressions;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Framework;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, TimeProvider dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
+internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, TimeProvider timeProvider, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
 {
     private readonly PublishDomainEventsInterceptor _interceptor = interceptor;
-    private readonly TimeProvider _dateTimeService = dateTimeService;
+    private readonly TimeProvider _timeProvider = timeProvider;
     private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = configurationAppliers.ToArray();
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        UpdateAuditableEntities(_dateTimeService.GetUtcNow());
+        UpdateAuditableEntities(_timeProvider.GetUtcNow());
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }

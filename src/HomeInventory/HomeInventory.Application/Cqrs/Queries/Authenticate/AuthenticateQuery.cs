@@ -1,5 +1,5 @@
-﻿using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 

@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Application.Interfaces.Messaging;
+﻿namespace HomeInventory.Application.Framework.Messaging;
 
 public abstract class QueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TResponse>
     where TQuery : IQuery<TResponse>

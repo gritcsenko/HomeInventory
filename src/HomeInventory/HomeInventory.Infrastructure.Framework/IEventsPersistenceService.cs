@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Infrastructure.Persistence;
+namespace HomeInventory.Infrastructure.Framework;
 
 public interface IEventsPersistenceService
 {

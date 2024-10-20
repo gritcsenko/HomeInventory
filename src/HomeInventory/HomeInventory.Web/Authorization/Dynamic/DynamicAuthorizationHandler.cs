@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
-using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

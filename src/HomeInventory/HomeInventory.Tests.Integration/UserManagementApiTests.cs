@@ -2,8 +2,8 @@
 using System.Net.Http.Json;
 using FluentAssertions.Execution;
 using Flurl;
-using HomeInventory.Contracts;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Domain.UserManagement.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

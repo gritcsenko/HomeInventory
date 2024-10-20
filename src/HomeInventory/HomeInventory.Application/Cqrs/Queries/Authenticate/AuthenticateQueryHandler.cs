@@ -1,8 +1,9 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Persistence;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 

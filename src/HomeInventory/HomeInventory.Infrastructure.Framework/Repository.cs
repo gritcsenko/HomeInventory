@@ -3,11 +3,11 @@ using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Infrastructure.Framework.Mapping;
-using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Infrastructure.Framework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace HomeInventory.Infrastructure.Persistence;
+namespace HomeInventory.Infrastructure.Framework;
 
 public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService) : IRepository<TAggregateRoot>
     where TModel : class, IPersistentModel<TIdentifier>
@@ -77,7 +77,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         await Set().AnyAsync(cancellationToken);
 
     public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
-        AsyncEnumerable.ToAsyncEnumerable(ToEntity(Set(), cancellationToken));
+        ToEntity(Set(), cancellationToken).ToAsyncEnumerable();
 
     public async Task<Option<TAggregateRoot>> FindFirstOptionAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
     {

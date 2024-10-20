@@ -11,12 +11,13 @@ namespace HomeInventory.Tests.Systems.Modules;
 public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModuleTestContext>(t => new(t))
 {
     [Fact]
-    public void AddRoutes_ShouldRegister()
+    public async Task AddRoutes_ShouldRegister()
     {
-        Given
+        await Given
             .DataSources(out var dataSources)
             .RouteBuilder(out var routeBuilder, dataSources)
-            .Sut(out var sut);
+            .Sut(out var sut)
+            .InitializeHostAsync();
 
         var then = When
             .Invoked(sut, routeBuilder, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
@@ -34,12 +35,13 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     [Fact]
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
-        Given
+        await Given
             .HttpContext(out var context)
             .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
             .Map<AuthenticateResult>(out var authenticateResult).To<LoginResponse>(out var loginResponse)
             .OnQueryReturn(authenticateQuery, authenticateResult)
-            .Sut(out var sut);
+            .Sut(out var sut)
+            .InitializeHostAsync();
 
 
         var then = await When
@@ -54,12 +56,13 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     [Fact]
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
-        Given
+        await Given
             .HttpContext(out var context)
             .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
             .New<InvalidCredentialsError>(out var error)
             .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(authenticateQuery, error)
-            .Sut(out var sut);
+            .Sut(out var sut)
+            .InitializeHostAsync();
 
         var then = await When
             .InvokedAsync(sut, loginRequest, context, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));

@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HomeInventory.Infrastructure.Framework.Models.Configuration;
+using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
+namespace HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 
 internal sealed class UserModelDatabaseConfigurationApplier : IDatabaseConfigurationApplier
 {

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using HomeInventory.Application.Cqrs.Commands.Register;
-using HomeInventory.Application.Cqrs.Queries.UserId;
 using HomeInventory.Application.Framework.Mapping;
-using HomeInventory.Contracts;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Application.UserManagement.Interfaces.Commands;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
+using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Web.Framework;
 
 namespace HomeInventory.Web.UserManagement;

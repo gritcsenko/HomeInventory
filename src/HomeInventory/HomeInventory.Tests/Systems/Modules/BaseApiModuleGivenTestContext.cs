@@ -1,22 +1,30 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
 using Carter;
-using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Web.Infrastructure;
-using HomeInventory.Web.Modules;
+using HomeInventory.Api;
+using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Domain;
+using HomeInventory.Modules;
+using HomeInventory.Web.ErrorHandling;
+using HomeInventory.Web.Framework;
+using HomeInventory.Web.Framework.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
 public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGiven, TModule>
     where TGiven : BaseApiModuleGivenTestContext<TGiven, TModule>
-    where TModule : ApiModule
+    where TModule : ApiCarterModule
 {
-    private readonly IServiceCollection _services;
+    private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule()]);
+    private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IServiceCollection _services = new ServiceCollection();
     private readonly Lazy<IServiceProvider> _lazyServiceProvider;
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
@@ -27,8 +35,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     {
         _cancellation = test.Cancellation;
 
-        _services = new ServiceCollection()
-            .AddDomain()
+        _services
             .AddOptions(new ApiVersioningOptions())
             .AddSubstitute<IReportApiVersions>()
             .AddSubstitute<IApiVersionParameterSource>()
@@ -48,11 +55,17 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
+    public async Task<TGiven> InitializeHostAsync()
+    {
+        await _host.InjectToAsync(_services, _configuration);
+        return This;
+    }
+
     public TGiven HttpContext(out IVariable<HttpContext> context) =>
         New(out context, CreateHttpContext);
 
     public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources) =>
-        New(out dataSources, () => new List<EndpointDataSource>());
+        New(out dataSources, () => []);
 
     public TGiven RouteBuilder(out IVariable<IEndpointRouteBuilder> routeBuilder, IVariable<List<EndpointDataSource>> dataSources) =>
         SubstituteFor(out routeBuilder, dataSources, (b, s) =>

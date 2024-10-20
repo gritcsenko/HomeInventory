@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Application.Framework.Mapping;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Infrastructure.UserManagement.Models;
 
 namespace HomeInventory.Infrastructure.UserManagement.Mapping;
 

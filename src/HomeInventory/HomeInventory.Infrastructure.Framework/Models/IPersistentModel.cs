@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Infrastructure.Persistence.Models;
+﻿namespace HomeInventory.Infrastructure.Framework.Models;
 
 public interface IPersistentModel : IPersistentModel<Ulid>
 {

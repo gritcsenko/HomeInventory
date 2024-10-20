@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Contracts;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Web.Mapping;
 
 namespace HomeInventory.Tests.Systems.Mapping;

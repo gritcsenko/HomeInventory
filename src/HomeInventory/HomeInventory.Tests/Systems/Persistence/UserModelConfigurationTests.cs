@@ -1,5 +1,5 @@
-﻿using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Persistence.Models.Configurations;
+﻿using HomeInventory.Infrastructure.UserManagement.Models;
+using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;

@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Interfaces.Messaging;
+﻿using HomeInventory.Application.Framework.Messaging;
 using Execute = FluentAssertions.Execution.Execute;
 
 namespace HomeInventory.Tests.Framework.Assertions;

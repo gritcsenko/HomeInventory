@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HomeInventory.Application.Framework;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -9,7 +10,7 @@ public abstract class BaseMappingsTests : BaseTest
 
     protected BaseMappingsTests()
     {
-        Services.AddMappingTypeConverter();
+        Services.AddMappingAssemblySource();
     }
 
     public IServiceCollection Services => _services;
