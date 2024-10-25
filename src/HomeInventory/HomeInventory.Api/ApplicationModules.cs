@@ -36,6 +36,7 @@ public sealed class ApplicationModules : ModulesCollection
         Add(new WebHealthCheckModule());
         Add(new WebCarterSupportModule());
         Add(new ApplicationMediatrSupportModule());
+        Add(new ApplicationMappingModule());
         Add(new ApplicationMediatrModule());
         Add(new ApplicationUserManagementMediatrModule());
         Add(new InfrastructureMappingModule());

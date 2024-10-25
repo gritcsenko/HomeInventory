@@ -9,7 +9,7 @@ public static class ApplicationFrameworkServiceCollectionExtensions
 {
     public static IServiceCollection AddMappingAssemblySource(this IServiceCollection services, params Assembly[] assemblies)
     {
-        services.TryAddSingleton(typeof(TypeConverterAdapter<,,>));
+        ////services.TryAddSingleton(typeof(TypeConverterAdapter<,,>));
         services.AddSingleton<IMappingAssemblySource>(sp => new MappingAssemblySource(assemblies));
         return services;
     }

@@ -52,7 +52,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
 
             foreach (var outgoing in node.Outgoing.Select(e => e.Destination))
             {
-                if (inDegree[outgoing]-- == 0)
+                if (--inDegree[outgoing] == 0)
                 {
                     nodesToSort.Enqueue(outgoing);
                     inDegree.Remove(outgoing);
@@ -86,7 +86,17 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
             _incoming.Add(edge);
         }
 
-        internal void OnOutgoing(Edge edge) => _incoming.Add(edge);
+        internal void OnOutgoing(Edge edge)
+        {
+            if (edge.Source != this)
+            {
+                throw new ArgumentException("Invalid edge's source");
+            }
+
+            _outgoing.Add(edge);
+        }
+
+        public override string ToString() => $"[{Value}]";
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]
@@ -96,6 +106,8 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         required public Node Destination { get; init; }
 
         public TEdge Value { get; } = value;
+
+        public override string ToString() => $"{Source} -> [{Value}] -> {Destination}";
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]

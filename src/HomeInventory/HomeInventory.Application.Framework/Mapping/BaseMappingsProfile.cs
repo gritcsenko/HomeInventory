@@ -59,6 +59,7 @@ public abstract class BaseMappingsProfile : Profile
             _profile.CreateMap<TSource, TDestination>()
                 .ConvertUsing(convertTo);
             _profile.CreateMap<TDestination, TSource>()
+                .ConvertUsing((d, s, ctx) => ctx.State s);
                 .ConvertUsing<TypeConverterAdapter<TDestination, TSource, TFromValueConverter>>();
         }
     }

@@ -67,7 +67,7 @@ public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
             _metadata.Add(module);
         }
 
-        var graph = await _metadata.CreateDependencyGraph(m => m.Flag.IsEnabledAsync(featureManager));
+        var graph = await _metadata.CreateDependencyGraph(m => m.Module.Flag.IsEnabledAsync(featureManager));
         var nodes = graph.KahnTopologicalSort();
 
         var sorted = nodes.Select(n => n.Value).ToArray();
@@ -168,21 +168,14 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
     }
 }
 
-public sealed class ModuleMetadata
+public sealed class ModuleMetadata(IModule module)
 {
-    public ModuleMetadata(IModule module)
-    {
-        ModuleType = module.GetType();
-        Module = module;
-        Flag = FeatureFlag.Create(ModuleType.FullName ?? ModuleType.Name);
-    }
+    public Type ModuleType { get; } = module.GetType();
 
-    public Type ModuleType { get; }
-
-    public IModule Module { get; }
-
-    public IFeatureFlag Flag { get; }
+    public IModule Module { get; } = module;
 
     public IEnumerable<Option<ModuleMetadata>> GetDependencies(IReadOnlyCollection<ModuleMetadata> container) =>
         Module.Dependencies.Select(d => container.Find(m => m.ModuleType == d));
+
+    public override string ToString() => $"{ModuleType.Name}{(Module.Dependencies.Count == 0 ? "" : ":" + string.Join(',', Module.Dependencies.Select(d => d.Name)))}";
 }
