@@ -6,10 +6,6 @@ namespace HomeInventory.Application.Framework.Mapping;
 
 public abstract class BaseMappingsProfile : Profile
 {
-    protected BaseMappingsProfile()
-    {
-    }
-
     protected IObjectMap<TSource> CreateMap<TSource>() => new ObjectMap<TSource>(this);
 
     protected interface IObjectMap<TSource>
@@ -59,7 +55,6 @@ public abstract class BaseMappingsProfile : Profile
             _profile.CreateMap<TSource, TDestination>()
                 .ConvertUsing(convertTo);
             _profile.CreateMap<TDestination, TSource>()
-                .ConvertUsing((d, s, ctx) => ctx.State s);
                 .ConvertUsing<TypeConverterAdapter<TDestination, TSource, TFromValueConverter>>();
         }
     }

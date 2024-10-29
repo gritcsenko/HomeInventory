@@ -21,7 +21,7 @@ public class RegisterCommandHandlerTests : BaseTest
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-        Fixture.CustomizeFromFactory<RegisterCommand, Email, IIdSupplier<Ulid>>((e, s) => new RegisterCommand(e, s.Supply().ToString()));
+        Fixture.CustomizeFromFactory<RegisterCommand, Email, IIdSupplier<Ulid>>((e, s) => new(e, s.Supply().ToString()));
     }
 
     private RegisterCommandHandler CreateSut() => new(_scopeAccessor, DateTime, _hasher, IdSuppliers.Ulid);

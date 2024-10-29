@@ -66,7 +66,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 
     public static TheoryData<object, Type> MapData()
     {
-        var timestamp = new DateTimeOffset(new DateOnly(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
+        var timestamp = new DateTimeOffset(new(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
         var fixture = new Fixture();
         fixture.CustomizeId<UserId>(timestamp);
         fixture.CustomizeEmail(timestamp);

@@ -4,10 +4,6 @@ public abstract class QueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TR
     where TQuery : IQuery<TResponse>
     where TResponse : notnull
 {
-    protected QueryHandler()
-    {
-    }
-
     public async Task<IQueryResult<TResponse>> Handle(TQuery request, CancellationToken cancellationToken)
     {
         var validation = await InternalHandle(request, cancellationToken);

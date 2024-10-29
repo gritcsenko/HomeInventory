@@ -23,7 +23,7 @@ public class UserHasEmailSpecificationTests : BaseTest
             .With(x => x.Email, email)
             .Create();
         var query = new[] { user }.AsQueryable();
-        var sut = new UserHasEmailSpecification(new Email(email));
+        var sut = new UserHasEmailSpecification(new(email));
 
         var actual = _evaluator.GetQuery(query, sut).Any();
 
@@ -37,7 +37,7 @@ public class UserHasEmailSpecificationTests : BaseTest
             .With(x => x.Email, Fixture.Create<string>())
             .CreateMany()
             .AsQueryable();
-        var sut = new UserHasEmailSpecification(new Email(Fixture.Create<string>()));
+        var sut = new UserHasEmailSpecification(new(Fixture.Create<string>()));
 
         var actual = _evaluator.GetQuery(query, sut).Any();
 

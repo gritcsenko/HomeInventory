@@ -9,11 +9,11 @@ public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValue
     public void Convert_ShouldReturnNull_WhenValueIsNull()
     {
         Given
-            .NullValue(out var value)
-            .Sut(out var sut);
+            .NullValue(out var valueVar)
+            .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sut, value, (sut, value) => sut.Convert(value, typeof(object)));
+            .Invoked(sutVar, valueVar, (sut, value) => sut.Convert(value, typeof(object)));
 
         then
             .Result(any => any.Should().BeOfType<OpenApiNull>());
@@ -23,11 +23,11 @@ public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValue
     public void Convert_ShouldReturnOpenApiNull_WhenValueIsDbNull()
     {
         Given
-            .DbNullValue(out var value)
-            .Sut(out var sut);
+            .DbNullValue(out var valueVar)
+            .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sut, value, (sut, value) => sut.Convert(value, value.GetType()));
+            .Invoked(sutVar, valueVar, (sut, value) => sut.Convert(value, value.GetType()));
 
         then
             .Result(any => any.Should().BeOfType<OpenApiNull>());
@@ -39,11 +39,11 @@ public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValue
     public void Convert_ShouldReturnNull_WhenValueIsDbNull(bool expected)
     {
         Given
-            .Value(out var value, expected)
-            .Sut(out var sut);
+            .Value(out var valueVar, expected)
+            .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sut, value, (sut, value) => sut.Convert(value, value.GetType()));
+            .Invoked(sutVar, valueVar, (sut, value) => sut.Convert(value, value.GetType()));
 
         then
             .Result(any => any.Should().BeOfType<OpenApiBoolean>()

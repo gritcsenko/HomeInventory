@@ -18,7 +18,7 @@ public class UlidAssertions<TAssertions>(Ulid actualValue)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:Ulid} to be empty{reason}, but found {0}.", Subject);
 
-        return new AndConstraint<TAssertions>((TAssertions)this);
+        return new((TAssertions)this);
     }
 
     public AndConstraint<TAssertions> NotBeEmpty(string because = "", params object[] becauseArgs)
@@ -28,7 +28,7 @@ public class UlidAssertions<TAssertions>(Ulid actualValue)
             .BecauseOf(because, becauseArgs)
             .FailWith("Did not expect {context:Ulid} to be empty{reason}.");
 
-        return new AndConstraint<TAssertions>((TAssertions)this);
+        return new((TAssertions)this);
     }
 
     public AndConstraint<TAssertions> Be(string expected, string because = "", params object[] becauseArgs)
@@ -48,7 +48,7 @@ public class UlidAssertions<TAssertions>(Ulid actualValue)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:Ulid} to be {0}{reason}, but found {1}.", expected, Subject);
 
-        return new AndConstraint<TAssertions>((TAssertions)this);
+        return new((TAssertions)this);
     }
 
     public AndConstraint<TAssertions> NotBe(string unexpected, string because = "", params object[] becauseArgs)
@@ -68,6 +68,6 @@ public class UlidAssertions<TAssertions>(Ulid actualValue)
             .BecauseOf(because, becauseArgs)
             .FailWith("Did not expect {context:Ulid} to be {0}{reason}.", Subject);
 
-        return new AndConstraint<TAssertions>((TAssertions)this);
+        return new((TAssertions)this);
     }
 }

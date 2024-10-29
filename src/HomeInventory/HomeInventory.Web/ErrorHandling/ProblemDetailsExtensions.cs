@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using HomeInventory.Web.ErrorHandling;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 

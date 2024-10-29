@@ -13,25 +13,25 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
     {
         if (context.Resource is not HttpContext httpContext)
         {
-            context.Fail(new AuthorizationFailureReason(this, "Context has invalid resource"));
+            context.Fail(new(this, "Context has invalid resource"));
             return;
         }
 
-        if (httpContext.GetEndpoint() is not Endpoint endpoint)
+        if (httpContext.GetEndpoint() is not { } endpoint)
         {
-            context.Fail(new AuthorizationFailureReason(this, "HTTP context has ho endpoint"));
+            context.Fail(new(this, "HTTP context has ho endpoint"));
             return;
         }
 
-        if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) is not string idText)
+        if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) is not { } idText)
         {
-            context.Fail(new AuthorizationFailureReason(this, "User has no id"));
+            context.Fail(new(this, "User has no id"));
             return;
         }
 
         if (!Ulid.TryParse(idText, out var id))
         {
-            context.Fail(new AuthorizationFailureReason(this, $"User has no valid id '{idText}'"));
+            context.Fail(new(this, $"User has no valid id '{idText}'"));
             return;
         }
 
@@ -52,12 +52,12 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
                     }
                 }
 
-                context.Fail(new AuthorizationFailureReason(this, $"User has no permission"));
+                context.Fail(new(this, $"User has no permission"));
                 return Unit.Default;
             },
             errors =>
             {
-                context.Fail(new AuthorizationFailureReason(this, errors.Head.Message));
+                context.Fail(new(this, errors.Head.Message));
                 return Unit.Default;
             });
     }

@@ -20,12 +20,12 @@ public static class FixtureExtensions
     public static IFixture CustomizeEmail(this IFixture fixture) =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new Email(s.Supply().ToString() + "@email.com"));
+            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new(s.Supply().ToString() + "@email.com"));
 
     public static IFixture CustomizeEmail(this IFixture fixture, DateTimeOffset timeStamp, Random? random = null) =>
         fixture
             .CustomizeUlid(timeStamp, random)
-            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new Email(s.Supply().ToString() + "@email.com"));
+            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new(s.Supply().ToString() + "@email.com"));
 
     public static IFixture CustomizeFromFactory<TObject>(this IFixture fixture, Func<TObject> createFunc)
     {
@@ -52,24 +52,24 @@ public static class FixtureExtensions
         fixture.Customize(new RegisterRequestCustomization());
 
     public static IFixture CustomizeUlid(this IFixture fixture) =>
-        fixture.CustomizeIdSupply(PredictibleUlidSupplier.Instance);
+        fixture.CustomizeIdSupply(PredictableUlidSupplier.Instance);
 
-    public static IFixture CustomizeUlid(this IFixture fixture, DateTimeOffset timeStamp, Random? random = null) =>
-        fixture.CustomizeIdSupply(new PredictibleUlidSupplier(timeStamp, random ?? new Random((int)(timeStamp.UtcTicks % int.MaxValue))));
+    private static IFixture CustomizeUlid(this IFixture fixture, DateTimeOffset timeStamp, Random? random = null) =>
+        fixture.CustomizeIdSupply(new PredictableUlidSupplier(timeStamp, random ?? new Random((int)(timeStamp.UtcTicks % int.MaxValue))));
 
     private static IFixture CustomizeIdSupply<TId>(this IFixture fixture, IIdSupplier<TId> supplier) =>
         fixture
             .CustomizeFromFactory(() => supplier)
             .CustomizeFromFactory<TId, IIdSupplier<TId>>(s => s.Supply());
 
-    private sealed class PredictibleUlidSupplier(DateTimeOffset timeStamp, Random random) : IIdSupplier<Ulid>
+    private sealed class PredictableUlidSupplier(DateTimeOffset timeStamp, Random random) : IIdSupplier<Ulid>
     {
         private readonly DateTimeOffset _timeStamp = timeStamp;
         private readonly Random _random = random;
 
-        public static IIdSupplier<Ulid> Instance { get; } = new PredictibleUlidSupplier(DateTimeOffset.MinValue, new Random());
-
         public static DateTimeOffset TimeStamp { get; } = DateTimeOffset.MinValue;
+
+        public static IIdSupplier<Ulid> Instance { get; } = new PredictableUlidSupplier(TimeStamp, new());
 
         public Ulid Supply()
         {

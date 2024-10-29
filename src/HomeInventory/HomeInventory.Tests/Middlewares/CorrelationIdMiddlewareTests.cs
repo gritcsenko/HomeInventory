@@ -22,35 +22,36 @@ public class CorrelationIdMiddlewareTests : BaseTest
     public async Task InvokeAsync_Should_CallNext()
     {
         HttpContext? actualContext = null;
-        Task next(HttpContext ctx)
+
+        var sut = CreateSut();
+
+        await sut.InvokeAsync(_httpContext, CaptureContext);
+
+        actualContext.Should().BeSameAs(_httpContext);
+
+        Task CaptureContext(HttpContext ctx)
         {
             actualContext = ctx;
             return Task.CompletedTask;
         }
-
-        var sut = CreateSut();
-
-        await sut.InvokeAsync(_httpContext, next);
-
-        actualContext.Should().BeSameAs(_httpContext);
     }
 
     [Fact]
     public async Task InvokeAsync_Should_AwaitNext()
     {
-        static Task next(HttpContext ctx)
+        var sut = CreateSut();
+
+        Func<Task> invocation = async () => await sut.InvokeAsync(_httpContext, SetException);
+
+        await invocation.Should().ThrowExactlyAsync<InvalidOperationException>();
+
+        static Task SetException(HttpContext ctx)
         {
             var source = new TaskCompletionSource();
             var exception = new InvalidOperationException();
             source.SetException(exception);
             return source.Task;
         }
-
-        var sut = CreateSut();
-
-        Func<Task> invocation = async () => await sut.InvokeAsync(_httpContext, next);
-
-        await invocation.Should().ThrowExactlyAsync<InvalidOperationException>();
     }
 
     [Fact]
@@ -72,10 +73,9 @@ public class CorrelationIdMiddlewareTests : BaseTest
     public async Task InvokeAsync_Should_NotSetCorrelationIdFromHeaders_When_ValueIsWrong(string? unexpectedId)
     {
         _httpContext.Features.Get<IHttpRequestFeature>()!.Headers[HeaderNames.CorrelationId] = unexpectedId;
-        static Task next(HttpContext ctx) => Task.CompletedTask;
         var sut = CreateSut();
 
-        await sut.InvokeAsync(_httpContext, next);
+        await sut.InvokeAsync(_httpContext, Next);
 
         _container.CorrelationId.Should().NotBe(unexpectedId);
     }
@@ -83,11 +83,10 @@ public class CorrelationIdMiddlewareTests : BaseTest
     [Fact]
     public async Task InvokeAsync_Should_CreateCorrelationId_When_HeaderIsNotSet()
     {
-        static Task next(HttpContext ctx) => Task.CompletedTask;
         var sut = CreateSut();
         var original = _container.CorrelationId;
 
-        await sut.InvokeAsync(_httpContext, next);
+        await sut.InvokeAsync(_httpContext, Next);
 
         _container.CorrelationId.Should().NotBe(original);
     }
@@ -97,24 +96,23 @@ public class CorrelationIdMiddlewareTests : BaseTest
     {
         _httpResponseFeature
             .When(f => f.OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>()))
-            .Do(async ci =>
+            .Do(ci =>
             {
                 var func = ci.Arg<Func<object, Task>>();
                 var state = ci.Arg<object>();
-                await func(state);
+                func(state);
             });
 
-        static Task next(HttpContext ctx) => Task.CompletedTask;
         var sut = CreateSut();
 
-        await sut.InvokeAsync(_httpContext, next);
+        await sut.InvokeAsync(_httpContext, Next);
 
         _httpResponseFeature.Received(1).OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>());
         _httpResponseFeature.Headers[HeaderNames.CorrelationId].Should().BeEquivalentTo(_container.CorrelationId);
+
     }
 
-    private CorrelationIdMiddleware CreateSut()
-    {
-        return new(_container, _logger);
-    }
+    private CorrelationIdMiddleware CreateSut() => new(_container, _logger);
+
+    private static Task Next(HttpContext ctx) => Task.CompletedTask;
 }

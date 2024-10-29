@@ -34,8 +34,6 @@ public sealed class VariablesContainer : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        GC.SuppressFinalize(this);
-
         foreach (var collection in _variables.Values)
         {
             await collection.DisposeAsync();

@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public sealed class VariableValues<T>() : IVariableValues
+public sealed class VariableValues<T> : IVariableValues
     where T : notnull
 {
     private readonly List<PropertyValue<T>> _values = [];

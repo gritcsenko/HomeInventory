@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Modules.Interfaces;
 
-public sealed record class ModuleBuildContext(IApplicationBuilder ApplicationBuilder, IEndpointRouteBuilder EndpointRouteBuilder)
+public sealed record ModuleBuildContext(IApplicationBuilder ApplicationBuilder, IEndpointRouteBuilder EndpointRouteBuilder)
 {
     public T GetRequiredService<T>()
         where T : notnull =>

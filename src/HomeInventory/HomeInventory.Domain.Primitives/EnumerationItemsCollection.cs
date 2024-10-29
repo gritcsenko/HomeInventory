@@ -8,7 +8,7 @@ internal static class EnumerationItemsCollection
         where T : IEnumeration<T>
     {
         var items = typeof(T).GetFieldValuesOfType<T>();
-        return new EnumerationItemsCollection<T>(items);
+        return new(items);
     }
 }
 

@@ -33,7 +33,7 @@ public class RepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task AddRangeAsync_ShouldAdd()
     {
-        var entities = Fixture.CreateMany<User>();
+        var entities = Fixture.CreateMany<User>().ToArray();
         var sut = CreateSut();
 
         await sut.AddRangeAsync(entities, Cancellation.Token);
@@ -61,7 +61,7 @@ public class RepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task DeleteRangeAsync_ShouldRemoveExisting()
     {
-        var entities = Fixture.CreateMany<User>();
+        var entities = Fixture.CreateMany<User>().ToArray();
         var sut = CreateSut();
         await sut.AddRangeAsync(entities, Cancellation.Token);
         await Context.SaveChangesAsync(Cancellation.Token);

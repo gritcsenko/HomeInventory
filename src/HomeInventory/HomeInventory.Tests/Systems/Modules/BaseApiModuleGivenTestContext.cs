@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;
@@ -30,7 +29,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     private readonly IMapper _mapper;
     private readonly ICancellation _cancellation;
 
-    public BaseApiModuleGivenTestContext(BaseTest test)
+    protected BaseApiModuleGivenTestContext(BaseTest test)
         : base(test)
     {
         _cancellation = test.Cancellation;
@@ -48,12 +47,10 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             .AddSingleton<IProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
             .AddSingleton<TModule>();
 
-        _lazyServiceProvider = new Lazy<IServiceProvider>(() => _services.BuildServiceProvider());
+        _lazyServiceProvider = new(() => _services.BuildServiceProvider());
     }
 
-    protected IServiceCollection Services => _services;
-
-    protected IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
+    private IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
     public async Task<TGiven> InitializeHostAsync()
     {
@@ -75,24 +72,24 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         });
 
     internal TGiven OnQueryReturn<TRequest, TResult>(IVariable<TRequest> request, IVariable<TResult> result)
-        where TRequest : notnull, IQuery<TResult>
+        where TRequest : IQuery<TResult>
         where TResult : notnull =>
         OnRequestReturnResult(request, result);
 
     internal TGiven OnCommandReturnSuccess<TRequest>(IVariable<TRequest> request)
-        where TRequest : notnull, ICommand =>
+        where TRequest : ICommand =>
         OnRequestReturnResult(request);
 
     internal TGiven OnQueryReturnError<TRequest, TResult, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : notnull, IQuery<TResult>
+        where TRequest : IQuery<TResult>
         where TResult : notnull
-        where TError : notnull, Error =>
+        where TError : Error =>
         OnRequestReturnError<TRequest, TResult, TError>(request, result);
 
     internal TGiven OnCommandReturnError<TRequest, TError>(IVariable<TRequest> request, IVariable<TError> result)
-        where TRequest : notnull, ICommand
-        where TError : notnull, Error =>
-    OnRequestReturnError<TRequest, TError>(request, result);
+        where TRequest : ICommand
+        where TError : Error =>
+    OnRequestReturnError(request, result);
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S3427:Method overloads with default parameter values should not overlap", Justification = "False positive")]
     internal IDestinationMapper Map<TSource>(out IVariable<TSource> source, [CallerArgumentExpression(nameof(source))] string? name = null)

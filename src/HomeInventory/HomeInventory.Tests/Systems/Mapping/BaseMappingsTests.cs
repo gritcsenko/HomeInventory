@@ -6,7 +6,7 @@ namespace HomeInventory.Tests.Systems.Mapping;
 public abstract class BaseMappingsTests : BaseTest
 {
     private readonly ServiceCollection _services = new();
-    private readonly DefaultServiceProviderFactory _factory = new(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+    private readonly DefaultServiceProviderFactory _factory = new(new() { ValidateOnBuild = true, ValidateScopes = true });
 
     protected BaseMappingsTests()
     {

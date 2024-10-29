@@ -3,7 +3,6 @@ using HealthChecks.UI.Client;
 using HomeInventory.Application;
 using HomeInventory.Modules.Interfaces;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web;
@@ -29,19 +28,19 @@ public sealed class WebHealthCheckModule : BaseModule
         await base.BuildAppAsync(context);
 
         context.EndpointRouteBuilder
-            .MapHealthChecks("/health", new HealthCheckOptions
+            .MapHealthChecks("/health", new()
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
         context.EndpointRouteBuilder
-            .MapHealthChecks("/health/ready", new HealthCheckOptions
+            .MapHealthChecks("/health/ready", new()
             {
                 Predicate = x => x.Tags.Contains(HealthCheckTags.Ready),
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
         context.EndpointRouteBuilder
-            .MapHealthChecks("/health/live", new HealthCheckOptions
+            .MapHealthChecks("/health/live", new()
             {
                 Predicate = _ => false,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,

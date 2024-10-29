@@ -5,7 +5,7 @@ public interface IPersistentModel : IPersistentModel<Ulid>
 }
 
 public interface IPersistentModel<out TId>
-    where TId : notnull, IEquatable<TId>
+    where TId : IEquatable<TId>
 {
     TId Id { get; }
 }

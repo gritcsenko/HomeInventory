@@ -83,7 +83,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query, cancellationToken);
-        if (await projected.FirstOrDefaultAsync(cancellationToken) is TAggregateRoot entity)
+        if (await projected.FirstOrDefaultAsync(cancellationToken) is { } entity)
         {
             return entity;
         }
@@ -98,7 +98,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     }
 
     /// <summary>
-    /// Filters the entities  of <typeparamref name="T"/>, to those that match the encapsulated query logic of the
+    /// Filters the entities  of <typeparamref name="TModel"/>, to those that match the encapsulated query logic of the
     /// <paramref name="specification"/>.
     /// </summary>
     /// <param name="specification">The encapsulated query logic.</param>
@@ -107,7 +107,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         _evaluator.GetQuery(inputQuery, specification, evaluateCriteriaOnly);
 
     /// <summary>
-    /// Filters all entities of <typeparamref name="T" />, that matches the encapsulated query logic of the
+    /// Filters all entities of <typeparamref name="TModel" />, that matches the encapsulated query logic of the
     /// <paramref name="specification"/>, from the database.
     /// <para>
     /// Projects each entity into a new form, being <typeparamref name="TResult" />.

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using HomeInventory.Tests.Framework.Assertions;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
@@ -13,7 +12,7 @@ public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonEle
         if (items is null)
         {
             Subject.ValueKind.Should().Be(JsonValueKind.Null, because, becauseArgs);
-            return new AndConstraint<JsonElementAssertions>(this);
+            return new(this);
         }
 
         ShouldBeArray(because, becauseArgs);
@@ -21,7 +20,7 @@ public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonEle
 
         Subject.EnumerateArray().Zip(items).Iter(tuple => assert(tuple.Item1, tuple.Item2));
 
-        return new AndConstraint<JsonElementAssertions>(this);
+        return new(this);
     }
 
     public AndConstraint<JsonElementAssertions> BeArray(Action<JsonElement> assert, string because = "", params object[] becauseArgs)
@@ -29,14 +28,14 @@ public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonEle
         ShouldBeArray(because, becauseArgs);
         Subject.EnumerateArray().Iter(assert);
 
-        return new AndConstraint<JsonElementAssertions>(this);
+        return new(this);
     }
 
     public AndWhichConstraint<JsonElementAssertions, JsonElement> BeObject(string because = "", params object[] becauseArgs)
     {
         ShouldBeOfKind(JsonValueKind.Object, because, becauseArgs);
 
-        return new AndWhichConstraint<JsonElementAssertions, JsonElement>(this, Subject);
+        return new(this, Subject);
     }
 
     public AndWhichConstraint<JsonElementAssertions, JsonElement> HaveProperty(string propertyName, string because = "", params object[] becauseArgs)
@@ -47,7 +46,7 @@ public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonEle
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context} to contain {0} property{reason}.", propertyName);
 
-        return new AndWhichConstraint<JsonElementAssertions, JsonElement>(this, propertyValue);
+        return new(this, propertyValue);
     }
 
     public AndWhichConstraint<JsonElementAssertions, string> HaveValue(string value, string because = "", params object[] becauseArgs)
@@ -60,7 +59,7 @@ public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonEle
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context} to contain {0} value{reason}, but found {1}.", Subject.GetString());
 
-        return new AndWhichConstraint<JsonElementAssertions, string>(this, value);
+        return new(this, value);
     }
 
     private void ShouldHanveCount(int expectedCount, string because, object[] becauseArgs)

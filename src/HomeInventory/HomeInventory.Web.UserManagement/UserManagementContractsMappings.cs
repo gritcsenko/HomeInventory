@@ -13,7 +13,7 @@ internal sealed class UserManagementContractsMappings : BaseMappingsProfile
     public UserManagementContractsMappings()
     {
         CreateMap<UserId>().Using(x => x.Value, UserId.Converter);
-        CreateMap<Email>().Using(x => x.Value, x => new Email(x));
+        CreateMap<Email>().Using(x => x.Value, x => new(x));
 
         CreateMap<RegisterRequest>().Using(CreateRegisterCommand);
 
@@ -25,6 +25,6 @@ internal sealed class UserManagementContractsMappings : BaseMappingsProfile
     {
         var email = ctx.Mapper.MapOrFail<Email>(c.Email);
         var password = c.Password;
-        return new RegisterCommand(email, password);
+        return new(email, password);
     }
 }

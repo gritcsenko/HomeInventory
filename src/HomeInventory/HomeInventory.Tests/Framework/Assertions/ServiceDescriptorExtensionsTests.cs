@@ -5,10 +5,6 @@ public class ServiceDescriptorExtensionsTests : BaseTest
 {
     private readonly IServiceProvider _serviceProvider = Substitute.For<IServiceProvider>();
 
-    public ServiceDescriptorExtensionsTests()
-    {
-    }
-
     [Fact]
     public void GetInstance_ShouldReturnFromImplementationInstance()
     {

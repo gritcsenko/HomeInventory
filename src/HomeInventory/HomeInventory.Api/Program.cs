@@ -9,7 +9,7 @@ public partial class Program
 
     public static async Task Main(string[] args)
     {
-        using var log = LoggingModule.CreateBootstrapLogger();
+        await using var log = LoggingModule.CreateBootstrapLogger();
 
         var builder = new AppBuilder(args);
         await Execute.AndCatchAsync(

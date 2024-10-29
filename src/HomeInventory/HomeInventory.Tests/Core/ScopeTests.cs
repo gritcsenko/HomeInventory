@@ -31,7 +31,7 @@ public sealed class ScopeTests
     public void Get_ShouldReturnNull_WhenResetIsCalled()
     {
         var sut = _scopeAccessor.GetScope<ResetContext>();
-        sut.Set(new ResetContext());
+        sut.Set(new());
 
         sut.Reset();
         var actual = sut.Get();
@@ -43,7 +43,7 @@ public sealed class ScopeTests
     public void Get_ShouldReturnNull_WhenSetAndDisposed()
     {
         var sut = _scopeAccessor.GetScope<SetNullDisposedContext>();
-        var token = sut.Set(new SetNullDisposedContext());
+        var token = sut.Set(new());
 
         token.Dispose();
         var actual = sut.Get();
@@ -97,36 +97,29 @@ public sealed class ScopeTests
 
     private sealed class GetNullContext
     {
-        public GetNullContext() { }
     };
 
     private sealed class GetNotNullContext
     {
-        public GetNotNullContext() { }
     };
 
     private sealed class ResetContext
     {
-        public ResetContext() { }
     };
 
     private sealed class SetNullDisposedContext
     {
-        public SetNullDisposedContext() { }
     };
 
     private sealed class ResetNullDisposedContext
     {
-        public ResetNullDisposedContext() { }
     };
 
     private sealed class SetTwiceContext
     {
-        public SetTwiceContext() { }
     };
 
     private sealed class SetTwiceDisposedContext
     {
-        public SetTwiceDisposedContext() { }
     };
 }

@@ -40,7 +40,7 @@ public class CategoryTraitDiscoverer(IMessageSink sink) : ITraitDiscoverer
 
         if (!string.IsNullOrWhiteSpace(categoryValue))
         {
-            yield return new KeyValuePair<string, string>("Category", categoryValue);
+            yield return new("Category", categoryValue);
         }
     }
 }

@@ -18,9 +18,9 @@ public class UserModelConfigurationTests : BaseTest
         var model = builder.FinalizeModel();
         var type = model.FindRuntimeEntityType(typeof(UserModel));
         type.Should().NotBeNull();
-        var primaryKey = type!.FindPrimaryKey();
+        var primaryKey = type.FindPrimaryKey();
         primaryKey.Should().NotBeNull();
-        primaryKey!.Properties.Should().ContainSingle(x => x.Name == nameof(UserModel.Id));
+        primaryKey.Properties.Should().ContainSingle(x => x.Name == nameof(UserModel.Id));
     }
 
     private static UserModelConfiguration CreateSut() => new();

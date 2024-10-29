@@ -3,7 +3,6 @@ using System.Reflection;
 using Asp.Versioning;
 using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
@@ -24,12 +23,12 @@ public class SwaggerDefaultValuesTests : BaseTest
     {
         var apiDescription = new ApiDescription
         {
-            ActionDescriptor = new ActionDescriptor()
+            ActionDescriptor = new()
         };
         var schemaRegistry = Substitute.For<ISchemaGenerator>();
         var schemaRepository = new SchemaRepository();
         var methodInfo = Substitute.For<MethodInfo>();
-        _context = new OperationFilterContext(apiDescription, schemaRegistry, schemaRepository, methodInfo);
+        _context = new(apiDescription, schemaRegistry, schemaRepository, methodInfo);
         _childFilters =
         [
             new DeprecatedSwaggerOperationFilter(),
@@ -47,7 +46,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         };
         var sut = CreateSut();
         var deprecated = new ApiVersion(1, 0);
-        _context.ApiDescription.ActionDescriptor.EndpointMetadata = [new ApiVersionMetadata(ApiVersionModel.Empty, new ApiVersionModel([new ApiVersion(2, 0)], [deprecated]))];
+        _context.ApiDescription.ActionDescriptor.EndpointMetadata = [new ApiVersionMetadata(ApiVersionModel.Empty, new([new(2, 0)], [deprecated]))];
         _context.ApiDescription.Properties[typeof(ApiVersion)] = deprecated;
 
         sut.Apply(operation, _context);
@@ -65,7 +64,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         var sut = CreateSut();
         var supported = new[] { new ApiVersion(2, 0) };
         var deprecated = new[] { new ApiVersion(1, 0) };
-        _context.ApiDescription.ActionDescriptor.EndpointMetadata = [new ApiVersionMetadata(ApiVersionModel.Empty, new ApiVersionModel(supported, deprecated))];
+        _context.ApiDescription.ActionDescriptor.EndpointMetadata = [new ApiVersionMetadata(ApiVersionModel.Empty, new(supported, deprecated))];
         _context.ApiDescription.Properties[typeof(ApiVersion)] = new ApiVersion(2, 0);
 
         sut.Apply(operation, _context);
@@ -87,7 +86,7 @@ public class SwaggerDefaultValuesTests : BaseTest
             StatusCode = statusCode.GetValueOrDefault(),
             ApiResponseFormats =
             {
-                new ApiResponseFormat
+                new()
                 {
                     MediaType = supportedMediaType,
                 }
@@ -97,11 +96,11 @@ public class SwaggerDefaultValuesTests : BaseTest
         {
             Responses =
             {
-                [responseKey] = new OpenApiResponse
+                [responseKey] = new()
                 {
                     Content =
                     {
-                        [notSupportedMediaType] = new OpenApiMediaType(),
+                        [notSupportedMediaType] = new(),
                     }
                 },
             }
@@ -128,7 +127,7 @@ public class SwaggerDefaultValuesTests : BaseTest
             Parameters = { parameter, },
         };
         var sut = CreateSut();
-        _context.ApiDescription.ParameterDescriptions.Add(new ApiParameterDescription { Name = name, IsRequired = true });
+        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, IsRequired = true });
 
         sut.Apply(operation, _context);
 
@@ -149,7 +148,7 @@ public class SwaggerDefaultValuesTests : BaseTest
             Parameters = { parameter, },
         };
         var sut = CreateSut();
-        _context.ApiDescription.ParameterDescriptions.Add(new ApiParameterDescription { Name = name, IsRequired = false });
+        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, IsRequired = false });
 
         sut.Apply(operation, _context);
 
@@ -177,13 +176,13 @@ public class SwaggerDefaultValuesTests : BaseTest
         var attributes = ModelAttributes.GetAttributesForType(GetType());
         var details = new DefaultMetadataDetails(identity, attributes)
         {
-            DisplayMetadata = new DisplayMetadata
+            DisplayMetadata = new()
             {
                 Description = () => description,
             },
         };
         var metadata = new DefaultModelMetadata(metadataProvider, detailsProvider, details);
-        _context.ApiDescription.ParameterDescriptions.Add(new ApiParameterDescription { Name = name, ModelMetadata = metadata });
+        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, ModelMetadata = metadata });
 
         sut.Apply(operation, _context);
 
@@ -211,13 +210,13 @@ public class SwaggerDefaultValuesTests : BaseTest
         var attributes = ModelAttributes.GetAttributesForType(GetType());
         var details = new DefaultMetadataDetails(identity, attributes)
         {
-            DisplayMetadata = new DisplayMetadata
+            DisplayMetadata = new()
             {
                 Description = () => Fixture.Create<string>(),
             },
         };
         var metadata = new DefaultModelMetadata(metadataProvider, detailsProvider, details);
-        _context.ApiDescription.ParameterDescriptions.Add(new ApiParameterDescription { Name = name, ModelMetadata = metadata });
+        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, ModelMetadata = metadata });
 
         sut.Apply(operation, _context);
 
@@ -234,7 +233,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         var parameter = new OpenApiParameter
         {
             Name = name,
-            Schema = new OpenApiSchema
+            Schema = new()
             {
                 Default = null,
             }
@@ -251,13 +250,13 @@ public class SwaggerDefaultValuesTests : BaseTest
         var attributes = ModelAttributes.GetAttributesForType(GetType());
         var details = new DefaultMetadataDetails(identity, attributes)
         {
-            DisplayMetadata = new DisplayMetadata
+            DisplayMetadata = new()
             {
                 Description = () => description,
             },
         };
         var metadata = new DefaultModelMetadata(metadataProvider, detailsProvider, details);
-        _context.ApiDescription.ParameterDescriptions.Add(new ApiParameterDescription { Name = name, ModelMetadata = metadata, DefaultValue = defautValue });
+        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, ModelMetadata = metadata, DefaultValue = defautValue });
 
         sut.Apply(operation, _context);
 
@@ -274,7 +273,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         var parameter = new OpenApiParameter
         {
             Name = name,
-            Schema = new OpenApiSchema
+            Schema = new()
             {
                 Default = expected,
             }
@@ -291,13 +290,13 @@ public class SwaggerDefaultValuesTests : BaseTest
         var attributes = ModelAttributes.GetAttributesForType(GetType());
         var details = new DefaultMetadataDetails(identity, attributes)
         {
-            DisplayMetadata = new DisplayMetadata
+            DisplayMetadata = new()
             {
                 Description = () => description,
             },
         };
         var metadata = new DefaultModelMetadata(metadataProvider, detailsProvider, details);
-        _context.ApiDescription.ParameterDescriptions.Add(new ApiParameterDescription { Name = name, ModelMetadata = metadata, DefaultValue = defautValue });
+        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, ModelMetadata = metadata, DefaultValue = defautValue });
 
         sut.Apply(operation, _context);
 

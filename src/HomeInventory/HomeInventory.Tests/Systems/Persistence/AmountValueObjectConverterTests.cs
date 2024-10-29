@@ -23,17 +23,17 @@ internal class InternalAmountValueObjectConverterTests() : BaseTest<AmountValueO
     public void TryConvert()
     {
         Given
-            .New<Amount>(out var amount)
-            .New<ProductAmountModel>(out var amountModel)
-            .SubstituteFor(out IVariable<IAmountFactory> factory, amount,
+            .New<Amount>(out var amountVar)
+            .New<ProductAmountModel>(out var amountModelVar)
+            .SubstituteFor(out IVariable<IAmountFactory> factoryVar, amountVar,
                 (factory, amount) => factory
                     .Create(Arg.Any<decimal>(), Arg.Any<AmountUnit>())
                     .Returns(amount))
-            .Sut(out var sut, factory);
+            .Sut(out var sutVar, factoryVar);
 
         When
-            .Invoked(sut, amountModel, (sut, amount) => sut.TryConvert(amount))
-            .Result(amount, (r, a) => r.Should().BeSuccess(x => x.Should().BeSameAs(a)));
+            .Invoked(sutVar, amountModelVar, (sut, amount) => sut.TryConvert(amount))
+            .Result(amountVar, (r, a) => r.Should().BeSuccess(x => x.Should().BeSameAs(a)));
     }
 }
 
@@ -42,9 +42,9 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
     public AmountValueObjectConverterTestsGivenContext(BaseTest test)
         : base(test)
     {
-        Customize<AmountUnitCustomization>();
-        Customize<ProductAmountModelCustomization>();
-        Customize<AmountCustomization>();
+        Customize<AmountUnitCustomization>()
+            .Customize<ProductAmountModelCustomization>()
+            .Customize<AmountCustomization>();
     }
 
     protected override AmountObjectConverter CreateSut(IAmountFactory factory) => new(factory);
@@ -71,7 +71,7 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
     {
         public void Customize(IFixture fixture)
         {
-            fixture.Customize<Amount>(c => c.FromFactory<decimal, AmountUnit>((v, u) => new Amount(v, u)));
+            fixture.Customize<Amount>(c => c.FromFactory<decimal, AmountUnit>((v, u) => new(v, u)));
         }
     }
 }

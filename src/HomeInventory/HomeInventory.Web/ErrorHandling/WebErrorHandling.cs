@@ -33,7 +33,7 @@ public sealed class WebErrorHandling : BaseModule
 
         context.ApplicationBuilder.UseMiddleware<CorrelationIdMiddleware>();
         context.ApplicationBuilder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
-        context.EndpointRouteBuilder.Map("/error", (HttpContext context) => Results.Problem(detail: GetFeature<IExceptionHandlerPathFeature>(context)?.Error?.Message));
+        context.EndpointRouteBuilder.Map("/error", (HttpContext ctx) => Results.Problem(detail: GetFeature<IExceptionHandlerPathFeature>(ctx)?.Error.Message));
     }
 
     private static TFeature? GetFeature<TFeature>(HttpContext context) =>

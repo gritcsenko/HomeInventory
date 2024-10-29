@@ -17,7 +17,7 @@ public sealed class LoggingModule : BaseModule
     {
         await base.AddServicesAsync(context);
 
-        context.Services.AddSerilog((IServiceProvider provider, LoggerConfiguration loggerConfiguration) =>
+        context.Services.AddSerilog((provider, loggerConfiguration) =>
             loggerConfiguration
                 .ReadFrom.Configuration(context.Configuration)
                 .ReadFrom.Services(provider));

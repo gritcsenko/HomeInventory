@@ -24,7 +24,7 @@ public sealed class WebSwaggerModule : BaseModule
             .AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>())
             .AddApiVersioning(options =>
             {
-                options.DefaultApiVersion = new ApiVersion(1);
+                options.DefaultApiVersion = new(1);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ApiVersionReader = new QueryStringApiVersionReader();
             })

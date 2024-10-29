@@ -22,5 +22,5 @@ internal sealed class Scope<TContext> : IScope<TContext>
         return System.Reactive.Disposables.Disposable.Create(() => stack.Pop());
     }
 
-    private Stack<Option<TContext>> GetStack() => _stack.Value ??= new Stack<Option<TContext>>();
+    private Stack<Option<TContext>> GetStack() => _stack.Value ??= new();
 }

@@ -30,9 +30,9 @@ public class OutboxMessageConfigurationTests : BaseTest
         var model = builder.FinalizeModel();
         var type = model.FindRuntimeEntityType(typeof(OutboxMessage));
         type.Should().NotBeNull();
-        var primaryKey = type!.FindPrimaryKey();
+        var primaryKey = type.FindPrimaryKey();
         primaryKey.Should().NotBeNull();
-        primaryKey!.Properties.Should().ContainSingle(x => x.Name == nameof(OutboxMessage.Id));
+        primaryKey.Properties.Should().ContainSingle(x => x.Name == nameof(OutboxMessage.Id));
     }
 
     [Fact]
@@ -46,11 +46,11 @@ public class OutboxMessageConfigurationTests : BaseTest
         var model = builder.FinalizeModel();
         var type = model.FindRuntimeEntityType(typeof(OutboxMessage));
         type.Should().NotBeNull();
-        var property = type!.FindProperty(nameof(OutboxMessage.Content));
+        var property = type.FindProperty(nameof(OutboxMessage.Content));
         property.Should().NotBeNull();
-        var converter = property!.GetValueConverter();
+        var converter = property.GetValueConverter();
         converter.Should().NotBeNull();
-        var text = converter!.ConvertToProvider(new UserCreatedDomainEvent(IdSuppliers.Ulid, DateTime, Fixture.Create<User>()));
+        var text = converter.ConvertToProvider(new UserCreatedDomainEvent(IdSuppliers.Ulid, DateTime, Fixture.Create<User>()));
         text.Should().NotBeNull();
     }
 

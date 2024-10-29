@@ -23,12 +23,12 @@ public class ModelMappingsTests : BaseMappingsTests
     {
         _services.AddSingleton(_configuration);
 
-        var timestamp = new DateTimeOffset(new DateOnly(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
+        var timestamp = new DateTimeOffset(new(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
         Fixture.CustomizeId<ProductId>(timestamp);
 
         var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
         Fixture.CustomizeFromFactory<AmountUnit, int>(i => items.ElementAt(i % items.Count));
-        Fixture.CustomizeFromFactory<Amount, (decimal value, AmountUnit unit)>(x => new Amount(x.value, x.unit));
+        Fixture.CustomizeFromFactory<Amount, (decimal value, AmountUnit unit)>(x => new(x.value, x.unit));
 
         Fixture.Customize<ProductAmountModel>(builder => builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));
     }

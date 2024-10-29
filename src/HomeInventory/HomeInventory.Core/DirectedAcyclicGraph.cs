@@ -102,8 +102,8 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]
     public sealed class Edge(TEdge value)
     {
-        required public Node Source { get; init; }
-        required public Node Destination { get; init; }
+        public required Node Source { get; init; }
+        public required Node Destination { get; init; }
 
         public TEdge Value { get; } = value;
 
@@ -111,7 +111,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]
-    public sealed record class TopologicalSortResult(IReadOnlyCollection<Node> Sorted, IReadOnlyCollection<IReadOnlyCollection<Node>> DetectedCycles)
+    public sealed record TopologicalSortResult(IReadOnlyCollection<Node> Sorted, IReadOnlyCollection<IReadOnlyCollection<Node>> DetectedCycles)
     {
         public bool IsAcrylic => DetectedCycles.Count == 0;
     }
@@ -150,7 +150,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
             state.MakeSorted(node);
         }
 
-        private sealed record class State(List<Node> Path, List<Node> Sorted, List<IReadOnlyCollection<Node>> Cycles)
+        private sealed record State(List<Node> Path, List<Node> Sorted, List<IReadOnlyCollection<Node>> Cycles)
         {
             public bool PathContains(Node node) => Path.Contains(node);
 

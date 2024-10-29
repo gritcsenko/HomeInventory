@@ -11,16 +11,16 @@ public abstract class BaseModuleTest<TGiven, TSut>(Func<BaseModuleTest<TGiven, T
     public void ShouldRegisterServices()
     {
         Given
-            .Services(out var services)
-            .Configuration(out var configuration)
-            .FeatureManager(out var featureManager)
-            .Sut(out var sut);
+            .Services(out var servicesVar)
+            .Configuration(out var configurationVar)
+            .FeatureManager(out var featureManagerVar)
+            .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sut, services, configuration, featureManager, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new ModuleServicesContext(services, configuration, featureManager, [])));
+            .Invoked(sutVar, servicesVar, configurationVar, featureManagerVar, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new(services, configuration, featureManager, [])));
 
         then
-            .Ensure(services, services =>
+            .Ensure(servicesVar, services =>
             {
                 services.Should().NotBeNullOrEmpty();
                 EnsureRegistered(services);

@@ -3,7 +3,7 @@
 namespace HomeInventory.Tests.Framework;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
-public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesContainer())
+public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     where TContext : GivenContext<TContext>
 {
     private readonly IFixture _fixture = test.Fixture;
@@ -14,12 +14,6 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         where TCustomization : ICustomization, new() =>
         Customize(new TCustomization());
 
-    protected TContext Customize(ICustomization customization)
-    {
-        _fixture.Customize(customization);
-        return This;
-    }
-
     public TContext New<T>(out IVariable<T> variable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
         New(out variable, () => CreateMany<T>(count), name);
@@ -28,12 +22,8 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         where T : notnull =>
         New(out variable, _ => create(), count, name);
 
-    public TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull =>
-        New(out variable, () => Enumerable.Range(0, count).Select(create), name);
-
     public TContext EmptyHashCode(out IVariable<HashCode> emptyHash) =>
-        New(out emptyHash, () => new HashCode());
+        New(out emptyHash, () => new());
 
     public TContext SubstituteFor<T, TArg1, TArg2>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, Action<T, TArg1, TArg2> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : class
@@ -49,9 +39,9 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     public TContext SubstituteFor<T>(out IVariable<T> variable, Action<T> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : class
     {
-        return New(out variable, () => Create(setup), name: name);
+        return New(out variable, () => CreateAndSetup(setup), name: name);
 
-        static T Create(Action<T> setup)
+        static T CreateAndSetup(Action<T> setup)
         {
             var value = Substitute.For<T>();
             setup(value);
@@ -64,7 +54,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     {
         name ??= nameof(AddAllToHashCode);
         hash = new Variable<HashCode>(name);
-        var hashValue = Variables.TryGetOrAdd(hash[0], () => new HashCode())
+        var hashValue = Variables.TryGetOrAdd(hash[0], () => new())
             .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{name}' of type {typeof(HashCode)}"))
             .Value;
 
@@ -79,7 +69,19 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         return This;
     }
 
-    protected TContext Add<T>(IVariable<T> variable, Func<IEnumerable<T>> createValues)
+    protected T Create<T>() => _fixture.Create<T>();
+    
+    protected TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : notnull =>
+        New(out variable, () => Enumerable.Range(0, count).Select(create), name);
+
+    private TContext Customize(ICustomization customization)
+    {
+        _fixture.Customize(customization);
+        return This;
+    }
+
+    private TContext Add<T>(IVariable<T> variable, Func<IEnumerable<T>> createValues)
         where T : notnull
     {
         foreach (var value in createValues())
@@ -90,11 +92,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         return This;
     }
 
-    protected T Create<T>() => _fixture.Create<T>();
-
-    protected IEnumerable<T> CreateMany<T>() => _fixture.CreateMany<T>();
-
-    protected IEnumerable<T> CreateMany<T>(int count) => _fixture.CreateMany<T>(count);
+    private IEnumerable<T> CreateMany<T>(int count) => _fixture.CreateMany<T>(count);
 
     private TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull

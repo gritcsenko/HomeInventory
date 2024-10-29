@@ -15,16 +15,16 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task AddRoutes_ShouldRegister()
     {
         await Given
-            .DataSources(out var dataSources)
-            .RouteBuilder(out var routeBuilder, dataSources)
-            .Sut(out var sut)
+            .DataSources(out var dataSourcesVar)
+            .RouteBuilder(out var routeBuilderVar, dataSourcesVar)
+            .Sut(out var sutVar)
             .InitializeHostAsync();
 
         var then = When
-            .Invoked(sut, routeBuilder, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
+            .Invoked(sutVar, routeBuilderVar, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
 
         then
-            .Ensure(sut, dataSources, (module, dataSources) =>
+            .Ensure(sutVar, dataSourcesVar, (module, dataSources) =>
                 dataSources.Should().ContainSingle()
                     .Which.Endpoints.OfType<RouteEndpoint>().Should().ContainSingle()
                     .Which.Should().HaveRoutePattern(module.GroupPrefix, RoutePatternFactory.Parse("register"))
@@ -37,20 +37,20 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         await Given
-            .HttpContext(out var context)
-            .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
-            .Map(registerRequest).To<UserIdQuery>(out var userIdQuery)
-            .Map<UserIdResult>(out var userIdResult).To<RegisterResponse>(out var registerResponse)
-            .OnCommandReturnSuccess(registerCommand)
-            .OnQueryReturn(userIdQuery, userIdResult)
-            .Sut(out var sut)
+            .HttpContext(out var contextVar)
+            .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
+            .Map(registerRequestVar).To<UserIdQuery>(out var userIdQueryVar)
+            .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
+            .OnCommandReturnSuccess(registerCommandVar)
+            .OnQueryReturn(userIdQueryVar, userIdResultVar)
+            .Sut(out var sutVar)
             .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, contextVar, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
 
         then
-            .Result(registerResponse, (actual, expected) =>
+            .Result(registerResponseVar, (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<RegisterResponse>>()
                     .Which.Should().HaveValue(expected));
     }
@@ -59,18 +59,18 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         await Given
-            .HttpContext(out var context)
-            .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
-            .New<DuplicateEmailError>(out var error)
-            .OnCommandReturnError(registerCommand, error)
-            .Sut(out var sut)
+            .HttpContext(out var contextVar)
+            .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
+            .New<DuplicateEmailError>(out var errorVar)
+            .OnCommandReturnError(registerCommandVar, errorVar)
+            .Sut(out var sutVar)
             .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, contextVar, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
 
         then
-            .Result(error, (actual, error) =>
+            .Result(errorVar, (actual, error) =>
                 actual.Result.Should().BeOfType<ProblemHttpResult>()
                     .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
                     .And.Match(x => x.Detail == error.Message));

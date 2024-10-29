@@ -7,25 +7,25 @@ namespace HomeInventory.Tests.Systems.Modules;
 public class ErrorMappingTests() : BaseTest<ErrorMappingTests.ErrorMappingTestsGivenContext>(t => new(t))
 {
     [Fact]
-    public void GetDefaultError_Shoud_Return500()
+    public void GetDefaultError_Should_Return500()
     {
         Given
-            .Sut(out var sut);
+            .Sut(out var sutVar);
 
         When
-            .Invoked(sut, sut => sut.GetDefaultError())
+            .Invoked(sutVar, sut => sut.GetDefaultError())
             .Result(actual => actual.Should().Be(HttpStatusCode.InternalServerError));
     }
 
     [Theory]
     [ClassData<ErrorInstancesData>]
-    public void GetError_Shoud_ReturnExpected_When_Error(Type? errorType, HttpStatusCode expected)
+    public void GetError_Should_ReturnExpected_When_Error(Type? errorType, HttpStatusCode expected)
     {
         Given
-            .Sut(out var sut);
+            .Sut(out var sutVar);
 
         When
-            .Invoked(sut, sut => sut.GetError(errorType))
+            .Invoked(sutVar, sut => sut.GetError(errorType))
             .Result(actual => actual.Should().Be(expected));
     }
 

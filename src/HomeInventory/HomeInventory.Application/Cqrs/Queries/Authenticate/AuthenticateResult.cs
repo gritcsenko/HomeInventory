@@ -2,4 +2,4 @@
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 
-public record class AuthenticateResult(UserId Id, string Token);
+public record AuthenticateResult(UserId Id, string Token);

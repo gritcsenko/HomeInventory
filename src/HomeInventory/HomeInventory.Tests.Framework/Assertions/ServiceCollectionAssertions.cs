@@ -1,5 +1,4 @@
-﻿using HomeInventory.Tests.Framework.Assertions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Tests.Framework.Assertions;

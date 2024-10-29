@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
 using Microsoft.FeatureManagement;
 using Microsoft.Extensions.Configuration;
-using System.Diagnostics.CodeAnalysis;
 
 namespace HomeInventory.Modules;
 
@@ -38,10 +37,10 @@ public class ModulesCollection : IReadOnlyCollection<IModule>
                 return false;
             }
 
-            return x.GetType().Equals(y.GetType());
+            return x.GetType() == y.GetType();
         }
 
-        public int GetHashCode([DisallowNull] IModule obj) => obj.GetType().GetHashCode();
+        public int GetHashCode(IModule obj) => obj.GetType().GetHashCode();
     }
 }
 
@@ -102,7 +101,7 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
 
     public void Add(IModule module)
     {
-        _metadata.Add(new ModuleMetadata(module));
+        _metadata.Add(new(module));
     }
 
     public IEnumerator<ModuleMetadata> GetEnumerator() => _metadata.GetEnumerator();

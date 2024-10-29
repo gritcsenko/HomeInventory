@@ -9,29 +9,29 @@ public sealed class SectionPathTests() : BaseTest<SectionPathTestsGivenContext>(
     public void ToString_Should_ReturnPath()
     {
         Given
-            .New<string>(out var path)
-            .Sut(out var sut, path);
+            .New<string>(out var pathVar)
+            .Sut(out var sutVar, pathVar);
 
         var then = When
-            .Invoked(sut, sut => sut.ToString());
+            .Invoked(sutVar, sut => sut.ToString());
 
         then
-            .Result(path, (actual, expected) => actual.Should().Be(expected));
+            .Result(pathVar, (actual, expected) => actual.Should().Be(expected));
     }
 
     [Fact]
     public void Divide_Should_ReturnCombinedPath()
     {
         Given
-            .New<string>(out var path)
-            .New<string>(out var subPath)
-            .Sut(out var sut, path);
+            .New<string>(out var pathVar)
+            .New<string>(out var subPathVar)
+            .Sut(out var sutVar, pathVar);
 
         var then = When
-            .Invoked(sut, subPath, (sut, subPath) => SectionPath.Divide(sut, subPath).ToString());
+            .Invoked(sutVar, subPathVar, (sut, subPath) => SectionPath.Divide(sut, subPath).ToString());
 
         then
-            .Result(path, subPath, (actual, path, subPath) => actual.Should().Be($"{path}:{subPath}"));
+            .Result(pathVar, subPathVar, (actual, path, subPath) => actual.Should().Be($"{path}:{subPath}"));
     }
 }
 

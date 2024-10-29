@@ -64,7 +64,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var statusCode = StatusCodes.Status501NotImplemented;
-        _options.ClientErrorMapping[statusCode] = new ClientErrorData { Title = _title, Link = _type };
+        _options.ClientErrorMapping[statusCode] = new() { Title = _title, Link = _type };
 
         var details = sut.CreateProblemDetails(_context, statusCode, title: null, type: null);
 
@@ -224,7 +224,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var statusCode = StatusCodes.Status402PaymentRequired;
         var title = new HttpValidationProblemDetails().Title;
-        _options.ClientErrorMapping[statusCode] = new ClientErrorData { Title = Fixture.Create<string>(), Link = _type };
+        _options.ClientErrorMapping[statusCode] = new() { Title = Fixture.Create<string>(), Link = _type };
 
         var details = sut.CreateValidationProblemDetails(_context, _state, statusCode, title: null, type: null);
 

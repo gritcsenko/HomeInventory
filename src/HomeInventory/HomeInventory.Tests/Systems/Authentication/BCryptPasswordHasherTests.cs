@@ -10,14 +10,14 @@ public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGiv
     public async Task HashAsync_ShouldReturnSomethingDifferentFromInput()
     {
         Given
-            .New<string>(out var password)
-            .Sut(out var sut);
+            .New<string>(out var passwordVar)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, password, async (sut, password, ct) => await sut.HashAsync(password, ct));
+            .InvokedAsync(sutVar, passwordVar, async (sut, password, ct) => await sut.HashAsync(password, ct));
 
         then
-            .Result(password, (actual, password) =>
+            .Result(passwordVar, (actual, password) =>
                 actual.Should().NotBe(password));
     }
 
@@ -25,11 +25,11 @@ public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGiv
     public async Task HashAsync_ShouldReturnDifferentHashesForDifferentInputs()
     {
         Given
-            .New<string>(out var password, 2)
-            .Sut(out var sut);
+            .New<string>(out var passwordVar, 2)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, password[0], password[1], async (sut, password1, password2, ct) =>
+            .InvokedAsync(sutVar, passwordVar[0], passwordVar[1], async (sut, password1, password2, ct) =>
             {
                 return new[] { await sut.HashAsync(password1, ct), await sut.HashAsync(password2, ct) };
             });
@@ -43,11 +43,11 @@ public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGiv
     public async Task VerifyAsync_ShouldConfirmHashed()
     {
         Given
-            .New<string>(out var password)
-            .Sut(out var sut);
+            .New<string>(out var passwordVar)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, password, async (sut, password, ct) =>
+            .InvokedAsync(sutVar, passwordVar, async (sut, password, ct) =>
             {
                 var hash = await sut.HashAsync(password, ct);
                 return await sut.VarifyHashAsync(password, hash, ct);

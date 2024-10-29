@@ -44,7 +44,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.AddSingleton(env);
         Services.AddSingleton<IHostEnvironment>(env);
 
-        _host = new ModulesHost([]);
+        _host = new([]);
     }
 
     [Fact]

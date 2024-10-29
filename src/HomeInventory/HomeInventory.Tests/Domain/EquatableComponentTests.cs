@@ -7,41 +7,41 @@ namespace HomeInventory.Tests.Domain;
 public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenContext>(t => new(t))
 {
     [Fact]
-    public void GetHashCode_ShoudReturnZero_WhenNoComponents()
+    public void GetHashCode_ShouldReturnZero_WhenNoComponents()
     {
         Given
-            .Sut(out var sut)
-            .EmptyHashCode(out var hash);
+            .Sut(out var sutVar)
+            .EmptyHashCode(out var hashVar);
 
         When
-            .Invoked(sut, sut => sut.GetHashCode())
-            .Result(hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sutVar, sut => sut.GetHashCode())
+            .Result(hashVar, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Theory]
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void GetHashCode_ShoudReturnCombinedComponentsHash_WhenManyComponents(int count)
+    public void GetHashCode_ShouldReturnCombinedComponentsHash_WhenManyComponents(int count)
     {
         Given
-            .New<Ulid>(out var component, count)
-            .AddAllToHashCode(out var hash, component)
-            .Sut(out var sut, component);
+            .New<Ulid>(out var componentVar, count)
+            .AddAllToHashCode(out var hashVar, componentVar)
+            .Sut(out var sutVar, componentVar);
 
         When
-            .Invoked(sut, sut => sut.GetHashCode())
-            .Result(hash, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sutVar, sut => sut.GetHashCode())
+            .Result(hashVar, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
-    public void Equals_ShoudBeEqualToEmpty_WhenNoComponents()
+    public void Equals_ShouldBeEqualToEmpty_WhenNoComponents()
     {
         Given
-            .Sut(out var sut, 2);
+            .Sut(out var sutVar, 2);
 
         When
-            .Invoked(sut[0], sut[1], (sut, other) => sut.Equals(other))
+            .Invoked(sutVar[0], sutVar[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -49,15 +49,15 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void Equals_ShoudNotBeEqualToEmpty_WhenManyComponents(int count)
+    public void Equals_ShouldNotBeEqualToEmpty_WhenManyComponents(int count)
     {
         Given
-            .New<Ulid>(out var component, count)
-            .Sut(out var sut1, component)
-            .Sut(out var sut2);
+            .New<Ulid>(out var componentVar, count)
+            .Sut(out var sutVar1, componentVar)
+            .Sut(out var sutVar2);
 
         When
-            .Invoked(sut1, sut2, (sut, other) => sut.Equals(other))
+            .Invoked(sutVar1, sutVar2, (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
 
@@ -65,14 +65,14 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void Equals_ShoudBeEqualToComponentWithSameItems_WhenManyComponents(int count)
+    public void Equals_ShouldBeEqualToComponentWithSameItems_WhenManyComponents(int count)
     {
         Given
-            .New<Ulid>(out var component, count)
-            .Sut(out var sut, component, 2);
+            .New<Ulid>(out var componentVar, count)
+            .Sut(out var sutVar, componentVar, 2);
 
         When
-            .Invoked(sut[0], sut[1], (sut, other) => sut.Equals(other))
+            .Invoked(sutVar[0], sutVar[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeTrue());
     }
 
@@ -80,14 +80,14 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void Equals_ShoudNotBeEqualToComponentWithDifferentItems_WhenManyComponents(int count)
+    public void Equals_ShouldNotBeEqualToComponentWithDifferentItems_WhenManyComponents(int count)
     {
         Given
-            .New<Ulid>(out var component, count * 2)
-            .Sut(out var sut, component, ..count, count..);
+            .New<Ulid>(out var componentVar, count * 2)
+            .Sut(out var sutVar, componentVar, ..count, count..);
 
         When
-            .Invoked(sut[0], sut[1], (sut, other) => sut.Equals(other))
+            .Invoked(sutVar[0], sutVar[1], (sut, other) => sut.Equals(other))
             .Result(actual => actual.Should().BeFalse());
     }
 }

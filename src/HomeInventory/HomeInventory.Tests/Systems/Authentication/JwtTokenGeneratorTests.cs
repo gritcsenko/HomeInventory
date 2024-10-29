@@ -25,7 +25,7 @@ public class JwtTokenGeneratorTests : BaseTest
                 .With(x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
                 .With(x => x.Algorithm, SecurityAlgorithms.HmacSha256)
                 .Create();
-        _expectedHeader = new JwtHeader(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
+        _expectedHeader = new(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
         _user = Fixture.Create<User>();
     }
 

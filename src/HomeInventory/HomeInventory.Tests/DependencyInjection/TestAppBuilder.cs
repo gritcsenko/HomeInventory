@@ -22,7 +22,7 @@ public class TestAppBuilder : IApplicationBuilder, IEndpointRouteBuilder
     public IServiceProvider ServiceProvider { get; }
     public ICollection<EndpointDataSource> DataSources { get; } = [];
 
-    public RequestDelegate Build() => (HttpContext ctx) => Task.CompletedTask;
+    public RequestDelegate Build() => _ => Task.CompletedTask;
 
     public IApplicationBuilder CreateApplicationBuilder() => this;
 

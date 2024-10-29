@@ -6,35 +6,29 @@ using Microsoft.EntityFrameworkCore;
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
-public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTestsGivenContext>
+public class EventsPersistenceServiceTests() : BaseTest<EventsPersistenceServiceTestsGivenContext>(t => new(t))
 {
-    private readonly DbContextOptions<DatabaseContext> _options;
-
-    public EventsPersistenceServiceTests()
-        : base(t => new(t))
-    {
-        _options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
-    }
+    private readonly DbContextOptions<DatabaseContext> _options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
 
     [Fact]
     public async Task SaveEvents_ShouldPersistDomainEvents()
     {
         Given
-            .New(out var dbContext, () => DbContextFactory.Default.CreateInMemory(DateTime, _options))
-            .Sut(out var sut, dbContext)
-            .New(out var eventsCount, () => 3)
-            .New<IDomainEvent>(out var domainEvent, () => new DomainEvent(IdSuppliers.Ulid, DateTime), eventsCount)
-            .SubstituteFor(out IVariable<IHasDomainEvents> entity, e => e.GetDomainEvents().Returns(Given.Variables.GetMany(domainEvent).ToReadOnly()));
+            .New(out var dbContextVar, () => DbContextFactory.Default.CreateInMemory(DateTime, _options))
+            .Sut(out var sutVar, dbContextVar)
+            .New(out var eventsCountVar, () => 3)
+            .New<IDomainEvent>(out var domainEventVar, () => new DomainEvent(IdSuppliers.Ulid, DateTime), eventsCountVar)
+            .SubstituteFor(out IVariable<IHasDomainEvents> entityVar, e => e.GetDomainEvents().Returns(Given.Variables.GetMany(domainEventVar).ToReadOnly()));
 
         var then = await When
-            .InvokedAsync(sut, entity, dbContext, async (sut, entity, db, t) =>
+            .InvokedAsync(sutVar, entityVar, dbContextVar, async (sut, entity, db, t) =>
             {
                 await sut.SaveEventsAsync(entity, Cancellation.Token);
                 return await db.SaveChangesAsync(t);
             });
 
         then
-            .Result(eventsCount, entity, (actual, expected, entity) =>
+            .Result(eventsCountVar, entityVar, (actual, expected, entity) =>
             {
                 actual.Should().Be(expected);
                 entity.Received().ClearDomainEvents();

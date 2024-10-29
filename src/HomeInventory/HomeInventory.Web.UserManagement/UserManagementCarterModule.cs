@@ -32,19 +32,17 @@ public class UserManagementCarterModule(IMapper mapper, ISender sender, IScopeAc
 
     public async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
     {
-        using var _ = new CompositeDisposable {
+        using var scopes = new CompositeDisposable(
             _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
-            _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork),
-        };
+            _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
         var command = _mapper.MapOrFail<RegisterCommand>(body);
         var result = await _sender.Send(command, cancellationToken);
         return await result.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
             async error =>
             {
-                var problem = _problemDetailsFactory.ConvertToProblem(new Seq<Error>([error]), context.TraceIdentifier);
-                var result = TypedResults.Problem(problem);
-                return await ValueTask.FromResult(result);
+                var problem = _problemDetailsFactory.ConvertToProblem(new([error]), context.TraceIdentifier);
+                return await Task.FromResult(TypedResults.Problem(problem));
             },
             async () =>
             {

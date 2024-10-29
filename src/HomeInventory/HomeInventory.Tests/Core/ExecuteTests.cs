@@ -25,7 +25,7 @@ public class ExecuteTests
         Exception? actual = null;
         Task asyncAction()
         {
-            throw expected!;
+            throw expected;
         }
 
         await Execute.AndCatchAsync(asyncAction, (Exception ex) => actual = ex);
@@ -52,7 +52,7 @@ public class ExecuteTests
         Exception? actual = null;
         Task<Guid> asyncAction()
         {
-            throw expected!;
+            throw expected;
         }
 
         var actualResult = await Execute.AndCatchAsync(asyncAction, (Exception ex) => { actual = ex; return expectedResult; });
@@ -77,7 +77,7 @@ public class ExecuteTests
         var expected = new InvalidOperationException();
         var expectedResult = Guid.NewGuid();
         Exception? actual = null;
-        Guid asyncAction() => throw expected!;
+        Guid asyncAction() => throw expected;
 
         var actualResult = Execute.AndCatch(asyncAction, (Exception ex) => { actual = ex; return expectedResult; });
 

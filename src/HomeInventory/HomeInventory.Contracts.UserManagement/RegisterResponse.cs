@@ -1,4 +1,4 @@
 ﻿namespace HomeInventory.Contracts.UserManagement;
 
-public record class RegisterResponse(
+public record RegisterResponse(
     string UserId);

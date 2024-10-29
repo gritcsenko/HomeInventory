@@ -14,7 +14,7 @@ internal sealed class ErrorMappingBuilder
     {
         _default = @default;
         _defaultValidation = validation;
-        _mapping = new Dictionary<Type, HttpStatusCode>(mapping);
+        _mapping = new(mapping);
     }
 
     public ErrorMappingBuilder Add<TError>(HttpStatusCode statusCode) => new(_default, _defaultValidation, _mapping.Concat(MapError<TError>(statusCode)));

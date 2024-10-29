@@ -19,7 +19,7 @@ internal class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) 
         {
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }
-        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new()
         {
             In = ParameterLocation.Header,
             Description = "Please enter token",
@@ -28,11 +28,11 @@ internal class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) 
             BearerFormat = "JWT",
             Scheme = JwtBearerDefaults.AuthenticationScheme,
         });
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        options.AddSecurityRequirement(new()
         {
-            [new OpenApiSecurityScheme
+            [new()
             {
-                Reference = new OpenApiReference
+                Reference = new()
                 {
                     Type = ReferenceType.SecurityScheme,
                     Id = JwtBearerDefaults.AuthenticationScheme,

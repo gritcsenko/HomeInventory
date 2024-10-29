@@ -17,7 +17,7 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject) : Referenc
             .ForCondition(subject => subject.IsFail)
             .FailWith("but found to be {0}.", Subject);
 
-        return new AndWhichConstraint<QueryResultAssertions<T>, Seq<Error>>(this, Subject.FailAsEnumerable());
+        return new(this, Subject.FailAsEnumerable());
     }
 
     public AndWhichConstraint<QueryResultAssertions<T>, T> BeSuccess(string because = "", params object[] becauseArgs)
@@ -29,7 +29,7 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject) : Referenc
             .ForCondition(subject => subject.IsSuccess)
             .FailWith("but found to be {0}.", Subject);
 
-        return new AndWhichConstraint<QueryResultAssertions<T>, T>(this, Subject.SuccessAsEnumerable());
+        return new(this, Subject.SuccessAsEnumerable());
     }
 
     public AndConstraint<QueryResultAssertions<T>> BeSuccess(Action<T> action, string because = "", params object[] becauseArgs)
@@ -37,7 +37,7 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject) : Referenc
         BeSuccess(because, becauseArgs);
         Subject.IfSuccess(action);
 
-        return new AndConstraint<QueryResultAssertions<T>>(this);
+        return new(this);
     }
 
     public AndConstraint<QueryResultAssertions<T>> Be(T expected, string because = "", params object[] becauseArgs)
@@ -50,6 +50,6 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject) : Referenc
             .ForCondition(subject => subject.Equals(expected))
             .FailWith("but found to be {0}", Subject);
 
-        return new AndConstraint<QueryResultAssertions<T>>(this);
+        return new(this);
     }
 }
