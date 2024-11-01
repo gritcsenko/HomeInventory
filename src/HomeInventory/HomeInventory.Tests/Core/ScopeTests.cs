@@ -95,6 +95,7 @@ public sealed class ScopeTests
         actual.Should().Be(expected);
     }
 
+#pragma warning disable S2094
     private sealed class GetNullContext
     {
     };
@@ -122,4 +123,5 @@ public sealed class ScopeTests
     private sealed class SetTwiceDisposedContext
     {
     };
+#pragma warning restore S2094
 }

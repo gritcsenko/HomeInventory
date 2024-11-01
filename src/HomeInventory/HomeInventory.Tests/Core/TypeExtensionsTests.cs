@@ -62,9 +62,11 @@ public class TypeExtensionsTests : BaseTest
     {
     }
 
+#pragma warning disable S2094
     private class NonGenericClass
     {
     }
+#pragma warning restore S2094
 
     private class E
     {
