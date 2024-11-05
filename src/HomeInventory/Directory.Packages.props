@@ -51,7 +51,7 @@
   <ItemGroup>
     <!--System packages-->
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.2.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
