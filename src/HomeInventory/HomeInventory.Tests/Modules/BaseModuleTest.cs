@@ -1,4 +1,5 @@
-﻿using HomeInventory.Modules.Interfaces;
+﻿using HomeInventory.Modules;
+using HomeInventory.Modules.Interfaces;
 
 namespace HomeInventory.Tests.Modules;
 
@@ -17,7 +18,7 @@ public abstract class BaseModuleTest<TGiven, TSut>(Func<BaseModuleTest<TGiven, T
             .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sutVar, servicesVar, configurationVar, featureManagerVar, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new(services, configuration, featureManager, [])));
+            .Invoked(sutVar, servicesVar, configurationVar, featureManagerVar, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new ModuleServicesContext(services, configuration, featureManager, [])));
 
         then
             .Ensure(servicesVar, services =>

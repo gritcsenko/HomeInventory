@@ -20,11 +20,11 @@ internal class AppBuilder(string[] args)
 
         var modulesHost = new ModulesHost(_modules);
 
-        await modulesHost.InjectToAsync(builder.Services, builder.Configuration);
+        await modulesHost.AddModulesAsync(builder.Services, builder.Configuration);
 
         var app = builder.Build();
 
-        await modulesHost.BuildIntoAsync(app, app);
+        await modulesHost.BuildModulesAsync(app);
 
         app.UseHttpsRedirection();
 

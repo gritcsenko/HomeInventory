@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using HomeInventory.Modules;
 using HomeInventory.Modules.Interfaces;
 using Serilog;
 using Serilog.Core;
@@ -13,7 +14,7 @@ public sealed class LoggingModule : BaseModule
             .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture, theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
             .CreateLogger();
 
-    public override async Task AddServicesAsync(ModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context)
     {
         await base.AddServicesAsync(context);
 
@@ -23,7 +24,7 @@ public sealed class LoggingModule : BaseModule
                 .ReadFrom.Services(provider));
     }
 
-    public override async Task BuildAppAsync(ModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context)
     {
         await base.BuildAppAsync(context);
 

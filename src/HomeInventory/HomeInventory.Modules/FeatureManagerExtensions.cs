@@ -1,6 +1,7 @@
-﻿using Microsoft.FeatureManagement;
+﻿using HomeInventory.Modules.Interfaces;
+using Microsoft.FeatureManagement;
 
-namespace HomeInventory.Modules.Interfaces;
+namespace HomeInventory.Modules;
 
 public static class FeatureManagerExtensions
 {

@@ -13,7 +13,7 @@ namespace HomeInventory.Web.ErrorHandling;
 
 public sealed class WebErrorHandling : BaseModule
 {
-    public override async Task AddServicesAsync(ModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context)
     {
         await base.AddServicesAsync(context);
 
@@ -27,7 +27,7 @@ public sealed class WebErrorHandling : BaseModule
             .AddScoped<CorrelationIdMiddleware>();
     }
 
-    public override async Task BuildAppAsync(ModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context)
     {
         await base.BuildAppAsync(context);
 

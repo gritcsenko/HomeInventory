@@ -6,7 +6,7 @@ public interface IModule
 
     IFeatureFlag Flag { get; }
 
-    Task AddServicesAsync(ModuleServicesContext context);
+    Task AddServicesAsync(IModuleServicesContext context);
 
-    Task BuildAppAsync(ModuleBuildContext context);
+    Task BuildAppAsync(IModuleBuildContext context);
 }

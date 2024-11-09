@@ -8,7 +8,7 @@ namespace HomeInventory.Domain;
 
 public sealed class DomainModule : BaseModule
 {
-    public override async Task AddServicesAsync(ModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context)
     {
         await base.AddServicesAsync(context);
 

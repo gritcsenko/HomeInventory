@@ -11,7 +11,7 @@ namespace HomeInventory.Web.Authentication;
 
 public sealed class WebAuthenticationModule : BaseModuleWithCarter
 {
-    public override async Task AddServicesAsync(ModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context)
     {
         await base.AddServicesAsync(context);
 
@@ -32,7 +32,7 @@ public sealed class WebAuthenticationModule : BaseModuleWithCarter
         AddCarterModulesFromCurrentAssembly(configurator);
     }
 
-    public override async Task BuildAppAsync(ModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context)
     {
         await base.BuildAppAsync(context);
 

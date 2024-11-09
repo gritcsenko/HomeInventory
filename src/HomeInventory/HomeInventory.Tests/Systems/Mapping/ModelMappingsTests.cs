@@ -37,7 +37,7 @@ public class ModelMappingsTests : BaseMappingsTests
     [MemberData(nameof(MapData))]
     public async Task ShouldMap(Type sourceType, Type destinationType)
     {
-        await _host.InjectToAsync(_services, _configuration);
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<ModelMappings>();
         var source = new SpecimenContext(Fixture).Resolve(new SeededRequest(sourceType, null));
 

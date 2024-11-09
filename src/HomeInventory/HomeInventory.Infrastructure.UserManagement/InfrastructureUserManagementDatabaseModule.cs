@@ -10,7 +10,7 @@ namespace HomeInventory.Infrastructure.UserManagement;
 
 public sealed class InfrastructureUserManagementDatabaseModule : BaseModule
 {
-    public override async Task AddServicesAsync(ModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context)
     {
         await base.AddServicesAsync(context);
 

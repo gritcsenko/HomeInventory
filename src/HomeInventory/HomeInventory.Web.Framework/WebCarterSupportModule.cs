@@ -5,7 +5,7 @@ namespace HomeInventory.Web.Framework;
 
 public sealed class WebCarterSupportModule : BaseModule
 {
-    public override async Task AddServicesAsync(ModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context)
     {
         await base.AddServicesAsync(context);
 
@@ -20,7 +20,7 @@ public sealed class WebCarterSupportModule : BaseModule
             });
     }
 
-    public override async Task BuildAppAsync(ModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context)
     {
         await base.BuildAppAsync(context);
 

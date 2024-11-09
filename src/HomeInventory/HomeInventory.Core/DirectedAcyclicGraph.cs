@@ -52,11 +52,13 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
 
             foreach (var outgoing in node.Outgoing.Select(e => e.Destination))
             {
-                if (--inDegree[outgoing] == 0)
+                if (--inDegree[outgoing] <= 0)
                 {
-                    nodesToSort.Enqueue(outgoing);
-                    inDegree.Remove(outgoing);
+                    continue;
                 }
+
+                nodesToSort.Enqueue(outgoing);
+                inDegree.Remove(outgoing);
             }
         }
 
@@ -126,7 +128,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
                 Visit(state with { Path = [node] });
             }
 
-            return state.CreareResult();
+            return state.CreateResult();
         }
 
         private static void Visit(State state)
@@ -156,7 +158,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
 
             public void AddCycle(Node node)
             {
-                int index = Path.IndexOf(node);
+                var index = Path.IndexOf(node);
                 var cycle = Path.GetRange(index, Path.Count - index);
                 Cycles.Add(cycle);
             }
@@ -174,7 +176,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
                 Path.RemoveAt(Path.Count - 1);
             }
 
-            public TopologicalSortResult CreareResult()
+            public TopologicalSortResult CreateResult()
             {
                 if (Cycles.Count > 0)
                 {

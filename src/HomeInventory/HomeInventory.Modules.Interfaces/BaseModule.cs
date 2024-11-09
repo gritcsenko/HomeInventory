@@ -10,9 +10,9 @@ public abstract class BaseModule : IModule
 
     public virtual IFeatureFlag Flag { get; } = new AlwaysEnabledFlag("<Always Enabled>");
 
-    public virtual Task AddServicesAsync(ModuleServicesContext context) => Task.CompletedTask;
+    public virtual Task AddServicesAsync(IModuleServicesContext context) => Task.CompletedTask;
 
-    public virtual Task BuildAppAsync(ModuleBuildContext context) => Task.CompletedTask;
+    public virtual Task BuildAppAsync(IModuleBuildContext context) => Task.CompletedTask;
 
     protected void DependsOn<TModule>()
         where TModule : class, IModule =>

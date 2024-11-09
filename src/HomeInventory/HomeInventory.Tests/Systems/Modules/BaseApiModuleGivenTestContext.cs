@@ -54,7 +54,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     public async Task<TGiven> InitializeHostAsync()
     {
-        await _host.InjectToAsync(_services, _configuration);
+        await _host.AddModulesAsync(_services, _configuration);
         return This;
     }
 

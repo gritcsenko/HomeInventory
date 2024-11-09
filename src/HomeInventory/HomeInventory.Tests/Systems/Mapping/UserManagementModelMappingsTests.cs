@@ -27,7 +27,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     [MemberData(nameof(MapData))]
     public async Task ShouldMap(object instance, Type destination)
     {
-        await _host.InjectToAsync(_services, _configuration);
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
         var source = instance.GetType();
 
@@ -39,7 +39,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     [Fact]
     public async Task ShouldMapUserModelToUser()
     {
-        await _host.InjectToAsync(_services, _configuration);
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
 
@@ -54,7 +54,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     [Fact]
     public async Task ShouldProjectUserModelToUser()
     {
-        await _host.InjectToAsync(_services, _configuration);
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
         var source = new[] { instance }.AsQueryable();

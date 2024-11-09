@@ -9,7 +9,7 @@ namespace HomeInventory.Web;
 
 public sealed class WebHealthCheckModule : BaseModule
 {
-    public override async Task AddServicesAsync(ModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context)
     {
         await base.AddServicesAsync(context);
 
@@ -23,7 +23,7 @@ public sealed class WebHealthCheckModule : BaseModule
             .AddInMemoryStorage();
     }
 
-    public override async Task BuildAppAsync(ModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context)
     {
         await base.BuildAppAsync(context);
 

@@ -50,7 +50,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public async Task ShouldRegister()
     {
-        await _host.InjectToAsync(Services, _configuration);
+        await _host.AddModulesAsync(Services, _configuration);
 
         using var scope = new AssertionScope();
         Services.Should().ContainConfigureOptions<JwtOptions>();
