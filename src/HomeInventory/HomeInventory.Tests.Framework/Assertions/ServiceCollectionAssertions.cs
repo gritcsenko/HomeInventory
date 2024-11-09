@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentAssertions.Execution;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public sealed class ServiceCollectionAssertions(IServiceCollection value) : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>(value)
+public sealed class ServiceCollectionAssertions(IServiceCollection value, AssertionChain assertionChain) : GenericCollectionAssertions<IServiceCollection, ServiceDescriptor, ServiceCollectionAssertions>(value, assertionChain)
 {
     public AndWhichConstraint<ObjectAssertions, IConfigureOptions<TOptions>> ContainConfigureOptions<TOptions>(IServiceProvider provider)
         where TOptions : class =>

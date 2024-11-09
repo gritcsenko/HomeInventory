@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using FluentAssertions.Execution;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public sealed class OkResultAssertions<TValue>(Ok<TValue> value) : ObjectAssertions<Ok<TValue>, OkResultAssertions<TValue>>(value)
+public sealed class OkResultAssertions<TValue>(Ok<TValue> value, AssertionChain assertionChain) : ObjectAssertions<Ok<TValue>, OkResultAssertions<TValue>>(value, assertionChain)
 {
     public AndWhichConstraint<OkResultAssertions<TValue>, TValue> HaveValue(TValue expectedValue)
     {
