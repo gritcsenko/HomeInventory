@@ -35,7 +35,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.12.0-3.final" />
     <PackageVersion Include="Microsoft.FeatureManagement" Version="4.0.0" />
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.0.0" />
-    <PackageVersion Include="Scrutor" Version="5.0.1" />
+    <PackageVersion Include="Scrutor" Version="5.0.2" />
     <PackageVersion Include="Serilog" Version="4.1.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
     <PackageVersion Include="Serilog.Enrichers.Demystifier" Version="1.0.3" />
@@ -76,7 +76,7 @@
     <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
     <PackageVersion Include="AutoFixture" Version="5.0.0-preview0011" />
-    <PackageVersion Include="FluentAssertions" Version="7.0.0-alpha.4" />
+    <PackageVersion Include="FluentAssertions" Version="7.0.0-alpha.5" />
     <PackageVersion Include="FluentAssertions.LanguageExt" Version="0.5.0" />
     <PackageVersion Include="LanguageExt.AutoFixture" Version="2.0.1" />
     <PackageVersion Include="LanguageExt.UnitTesting" Version="4.4.9.1" />
