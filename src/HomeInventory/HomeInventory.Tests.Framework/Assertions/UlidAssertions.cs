@@ -38,7 +38,7 @@ public class UlidAssertions<TAssertions>(Ulid actualValue, AssertionChain assert
 
         return Be(expectedUlid, because, becauseArgs);
     }
-    
+
     public AndConstraint<TAssertions> NotBe(string unexpected, string because = "", params object[] becauseArgs)
     {
         if (!Ulid.TryParse(unexpected, out var unexpectedGuid))

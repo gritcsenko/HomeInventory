@@ -70,7 +70,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     }
 
     protected T Create<T>() => _fixture.Create<T>();
-    
+
     protected TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
         New(out variable, () => Enumerable.Range(0, count).Select(create), name);
