@@ -52,7 +52,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
 
             foreach (var outgoing in node.Outgoing.Select(e => e.Destination))
             {
-                if (--inDegree[outgoing] <= 0)
+                if (--inDegree[outgoing] > 0)
                 {
                     continue;
                 }
