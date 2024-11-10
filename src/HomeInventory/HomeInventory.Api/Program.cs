@@ -1,7 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace HomeInventory.Api;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "By design")]
-public partial class Program
+[SuppressMessage("Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "By design")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public class Program
 {
     protected Program()
     {
