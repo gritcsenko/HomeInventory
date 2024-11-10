@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using HomeInventory.Modules;
 using HomeInventory.Modules.Interfaces;
 using Serilog;
 using Serilog.Core;
