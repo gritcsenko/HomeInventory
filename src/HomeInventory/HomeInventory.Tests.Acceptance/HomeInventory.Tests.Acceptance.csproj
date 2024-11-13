@@ -7,8 +7,6 @@
     <PackageReference Include="Throw" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="System.Net.Http"/>
-    <PackageReference Include="System.Text.RegularExpressions"/>
   </ItemGroup>
 
   <ItemGroup>
