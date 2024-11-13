@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <NoWarn>$(NoWarn);CA1707;AD0001</NoWarn>
@@ -16,6 +16,8 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="coverlet.collector" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="System.Net.Http"/>
+    <PackageReference Include="System.Text.RegularExpressions"/>
   </ItemGroup>
 
   <ItemGroup>
