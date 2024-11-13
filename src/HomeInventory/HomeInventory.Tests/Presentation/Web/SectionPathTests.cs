@@ -3,7 +3,7 @@
 namespace HomeInventory.Tests.Presentation.Web;
 
 [UnitTest]
-public sealed class SectionPathTests() : BaseTest<SectionPathTestsGivenContext>(t => new(t))
+public sealed class SectionPathTests() : BaseTest<SectionPathTestsGivenContext>(static t => new(t))
 {
     [Fact]
     public void ToString_Should_ReturnPath()
@@ -13,10 +13,10 @@ public sealed class SectionPathTests() : BaseTest<SectionPathTestsGivenContext>(
             .Sut(out var sut, path);
 
         var then = When
-            .Invoked(sut, sut => sut.ToString());
+            .Invoked(sut, static sut => sut.ToString());
 
         then
-            .Result(path, (actual, expected) => actual.Should().Be(expected));
+            .Result(path, static (actual, expected) => actual.Should().Be(expected));
     }
 
     [Fact]
@@ -28,10 +28,10 @@ public sealed class SectionPathTests() : BaseTest<SectionPathTestsGivenContext>(
             .Sut(out var sut, path);
 
         var then = When
-            .Invoked(sut, subPath, (sut, subPath) => SectionPath.Divide(sut, subPath).ToString());
+            .Invoked(sut, subPath, static (sut, subPath) => SectionPath.Divide(sut, subPath).ToString());
 
         then
-            .Result(path, subPath, (actual, path, subPath) => actual.Should().Be($"{path}:{subPath}"));
+            .Result(path, subPath, static (actual, path, subPath) => actual.Should().Be($"{path}:{subPath}"));
     }
 }
 

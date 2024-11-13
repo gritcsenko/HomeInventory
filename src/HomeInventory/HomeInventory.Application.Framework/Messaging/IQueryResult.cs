@@ -1,5 +1,4 @@
-﻿using LanguageExt.Pretty;
-using Unit = LanguageExt.Unit;
+﻿using Unit = LanguageExt.Unit;
 
 namespace HomeInventory.Application.Interfaces.Messaging;
 

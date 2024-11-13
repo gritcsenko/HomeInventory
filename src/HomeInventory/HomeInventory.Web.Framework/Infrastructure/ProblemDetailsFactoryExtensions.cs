@@ -13,7 +13,7 @@ public static class ProblemDetailsFactoryExtensions
         factory.ConvertToProblem(result.Errors, traceIdentifier);
 
     public static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, IEnumerable<ValidationResult> results, string? traceIdentifier = null) =>
-        factory.ConvertToProblem(results.SelectMany(r => r.Errors), traceIdentifier);
+        factory.ConvertToProblem(results.SelectMany(static r => r.Errors), traceIdentifier);
 
     public static Results<Ok<TResponse>, ProblemHttpResult> MatchToOk<T, TResponse>(this IProblemDetailsFactory factory, IQueryResult<T> errorOrResult, Func<T, TResponse> onValue, string? traceIdentifier = null)
         where T : notnull =>
@@ -29,5 +29,5 @@ public static class ProblemDetailsFactoryExtensions
             });
 
     private static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, IEnumerable<ValidationFailure> failures, string? traceIdentifier = null) =>
-        factory.ConvertToProblem(failures.Select(x => new ValidationError(x.ErrorMessage, x.AttemptedValue)).Cast<Error>().ToSeq(), traceIdentifier);
+        factory.ConvertToProblem(failures.Select(static x => new ValidationError(x.ErrorMessage, x.AttemptedValue)).Cast<Error>().ToSeq(), traceIdentifier);
 }

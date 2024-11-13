@@ -2,6 +2,7 @@
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Application;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
@@ -35,13 +36,13 @@ public static class InfrastructureServiceCollectionExtensions
     private static IServiceCollection AddDatabase(this IServiceCollection services) =>
         services
             .AddScoped<PublishDomainEventsInterceptor>()
-            .AddDbContext<DatabaseContext>((sp, builder) =>
+            .AddDbContext<DatabaseContext>(static (sp, builder) =>
             {
                 var env = sp.GetRequiredService<IHostEnvironment>();
                 builder.UseInMemoryDatabase("HomeInventory");
                 builder.EnableDetailedErrors(!env.IsProduction());
                 builder.EnableSensitiveDataLogging(!env.IsProduction());
             })
-            .AddScoped<IDatabaseContext>(sp => sp.GetRequiredService<DatabaseContext>())
-            .AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<DatabaseContext>());
+            .AddScoped<IDatabaseContext>(static sp => sp.GetRequiredService<DatabaseContext>())
+            .AddScoped<IUnitOfWork>(static sp => sp.GetRequiredService<DatabaseContext>());
 }

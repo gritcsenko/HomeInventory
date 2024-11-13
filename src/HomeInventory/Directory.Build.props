@@ -12,13 +12,15 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <WarningLevel>9999</WarningLevel>
     <IsPackable>false</IsPackable>
-    <NoWarn>CA1062;CA2007;CA1716;VISLIB0001</NoWarn>
+    <NoWarn>$(NoWarn);CA1062;CA2007;CA1716</NoWarn>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="HomeInventory.Tests"/>
     <InternalsVisibleTo Include="HomeInventory.Tests.Acceptance"/>
     <InternalsVisibleTo Include="HomeInventory.Tests.Framework"/>
+    <InternalsVisibleTo Include="HomeInventory.Tests.Integration"/>
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
   </ItemGroup>
 

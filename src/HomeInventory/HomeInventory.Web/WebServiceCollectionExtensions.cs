@@ -39,9 +39,9 @@ public static class WebServiceCollectionExtensions
         services.AddScoped<ProblemTraceIdentifierMiddleware>();
 
         services.AddMappingAssemblySource(moduleAssemblies);
-        services.AddAutoMapper((sp, configExpression) =>
+        services.AddAutoMapper(static (sp, configExpression) =>
         {
-            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(s => s.GetAssemblies()));
+            configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(static s => s.GetAssemblies()));
             configExpression.ConstructServicesUsing(sp.GetService);
         }, Type.EmptyTypes);
 
@@ -76,13 +76,13 @@ public static class WebServiceCollectionExtensions
         services.AddSingleton<ISwaggerOperationFilter, DeprecatedSwaggerOperationFilter>();
         services.AddSingleton<ISwaggerOperationFilter, ResponsesSwaggerOperationFilter>();
         services.AddSingleton<ISwaggerOperationFilter, ParametersSwaggerOperationFilter>();
-        services.AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>());
-        services.AddApiVersioning(options =>
+        services.AddSwaggerGen(static options => options.OperationFilter<SwaggerDefaultValues>());
+        services.AddApiVersioning(static options =>
         {
             options.DefaultApiVersion = new ApiVersion(1);
             options.AssumeDefaultVersionWhenUnspecified = true;
             options.ApiVersionReader = new QueryStringApiVersionReader();
-        }).AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+        }).AddApiExplorer(static options => options.GroupNameFormat = "'v'VVV");
     }
 
     public static TApp UseWeb<TApp>(this TApp app)
@@ -95,7 +95,7 @@ public static class WebServiceCollectionExtensions
         app.UseHealthChecksUI();
 
         app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
-        app.Map("/error", (HttpContext context) => Results.Problem(detail: context.GetFeature<IExceptionHandlerPathFeature>()?.Error?.Message));
+        app.Map("/error", static (HttpContext context) => Results.Problem(detail: context.GetFeature<IExceptionHandlerPathFeature>()?.Error?.Message));
 
         app.UseMiddleware<CorrelationIdMiddleware>();
         app.UseMiddleware<ProblemTraceIdentifierMiddleware>();
@@ -133,17 +133,17 @@ public static class WebServiceCollectionExtensions
     {
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
-            Predicate = _ => true,
+            Predicate = static _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
         app.MapHealthChecks("/health/ready", new HealthCheckOptions
         {
-            Predicate = x => x.Tags.Contains(HealthCheckTags.Ready),
+            Predicate = static x => x.Tags.Contains(HealthCheckTags.Ready),
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
         app.MapHealthChecks("/health/live", new HealthCheckOptions
         {
-            Predicate = _ => false,
+            Predicate = static _ => false,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
         });
     }

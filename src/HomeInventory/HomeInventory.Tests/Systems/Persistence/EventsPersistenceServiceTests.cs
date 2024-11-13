@@ -12,7 +12,7 @@ public class EventsPersistenceServiceTests : BaseTest<EventsPersistenceServiceTe
     private readonly DbContextOptions<DatabaseContext> _options;
 
     public EventsPersistenceServiceTests()
-        : base(t => new(t))
+        : base(static t => new(t))
     {
         _options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
     }

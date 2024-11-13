@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure.Framework.Models;
 
 namespace HomeInventory.Infrastructure.Persistence.Models;
 

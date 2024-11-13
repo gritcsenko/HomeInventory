@@ -4,7 +4,7 @@ using HomeInventory.Domain.Primitives.Ids;
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
-public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>(t => new(t))
+public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>(static t => new(t))
 {
     [Fact]
     public void TryConvert_Should_ReturnValue_When_IdIsNotEmpty()
@@ -28,10 +28,10 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
             .Empty(out var id);
 
         var then = When
-            .Invoked(sut, id, (sut, id) => sut.TryConvert(id));
+            .Invoked(sut, id, static (sut, id) => sut.TryConvert(id));
 
         then
-            .Result(validation => validation
+            .Result(static validation => validation
                 .Should().BeFail()
                 .Which.Head.Should().BeOfType<ValidationError>()
                 .Which.Value.Should().BeOfType<Ulid>()
@@ -46,8 +46,8 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
             .Empty(out var id);
 
         When
-            .Catched(sut, id, (sut, id) => sut.Convert(id))
-            .Exception<ValidationException>(ex => ex.Which.Value.Should().Be(Ulid.Empty));
+            .Catched(sut, id, static (sut, id) => sut.Convert(id))
+            .Exception<ValidationException>(static ex => ex.Which.Value.Should().Be(Ulid.Empty));
     }
 }
 
@@ -60,7 +60,7 @@ public sealed class UlidIdConverterTestsGivenContext : GivenContext<UlidIdConver
     }
 
     internal UlidIdConverterTestsGivenContext Empty(out IVariable<Ulid> empty) =>
-        New(out empty, () => Ulid.Empty);
+        New(out empty, static () => Ulid.Empty);
 
     protected override UlidIdConverter<TestId> CreateSut() => new();
 }

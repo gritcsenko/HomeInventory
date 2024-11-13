@@ -2,7 +2,7 @@
 using AutoMapper;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;

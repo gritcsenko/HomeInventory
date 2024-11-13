@@ -20,7 +20,7 @@ internal class AppBuilder(string[] args)
             .AddSerilog(builder.Configuration);
 
         var app = builder.Build();
-        app.UseSerilogRequestLogging(options => options.IncludeQueryInRequestPath = true);
+        app.UseSerilogRequestLogging(static options => options.IncludeQueryInRequestPath = true);
         return app.UseWeb();
     }
 

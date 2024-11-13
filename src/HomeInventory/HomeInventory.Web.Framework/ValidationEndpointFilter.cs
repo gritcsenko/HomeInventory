@@ -19,12 +19,12 @@ internal sealed class ValidationEndpointFilter<T>(IValidationContextFactory<T> v
         var validator = httpContext.RequestServices.GetValidator<T>();
 
         var results = await ValidateArgumentAsync(validator, arguments, httpContext.RequestAborted).ToArrayAsync(httpContext.RequestAborted);
-        if (results.Length == 0 || Array.TrueForAll(results, r => r.IsValid))
+        if (results.Length == 0 || Array.TrueForAll(results, static r => r.IsValid))
         {
             return await next(context);
         }
 
-        var problem = _problemDetailsFactory.ConvertToProblem(results.Where(r => !r.IsValid), httpContext.TraceIdentifier);
+        var problem = _problemDetailsFactory.ConvertToProblem(results.Where(static r => !r.IsValid), httpContext.TraceIdentifier);
         return TypedResults.Problem(problem);
     }
 

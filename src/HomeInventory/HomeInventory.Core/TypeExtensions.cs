@@ -30,7 +30,6 @@ public static class TypeExtensions
             _ => type.Name,
         };
 
-
     private static string FormatGenericType(Type type)
     {
         var args = type.GenericTypeArguments;

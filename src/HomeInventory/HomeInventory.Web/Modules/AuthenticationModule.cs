@@ -22,7 +22,7 @@ public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetail
     {
         group.MapPost("login", LoginAsync)
             .AllowAnonymous()
-            .WithValidationOf<LoginRequest>(s => s.IncludeAllRuleSets());
+            .WithValidationOf<LoginRequest>(static s => s.IncludeAllRuleSets());
     }
 
     public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, HttpContext context, CancellationToken cancellationToken = default)

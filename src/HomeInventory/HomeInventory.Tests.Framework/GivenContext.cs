@@ -37,7 +37,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     }
 
     public TContext EmptyHashCode(out IVariable<HashCode> emptyHash) =>
-        New(out emptyHash, () => new HashCode());
+        New(out emptyHash, static () => new HashCode());
 
     public TContext SubstituteFor<T, TArg1, TArg2>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, Action<T, TArg1, TArg2> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : class

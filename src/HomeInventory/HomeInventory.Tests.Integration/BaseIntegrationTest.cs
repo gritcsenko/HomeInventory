@@ -10,7 +10,7 @@ namespace HomeInventory.Tests.Integration;
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "See InitializeDisposables")]
 public abstract class BaseIntegrationTest : BaseTest
 {
-    private readonly WebApplicationFactory<Program> _appFactory = new();
+    private readonly WebApplicationFactory<Api.AppBuilder> _appFactory = new();
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _testOutputHelper;
 
@@ -27,7 +27,7 @@ public abstract class BaseIntegrationTest : BaseTest
         _appFactory
             .Services
             .GetServices<EndpointDataSource>()
-            .SelectMany(s => s.Endpoints)
+            .SelectMany(static s => s.Endpoints)
             .OfType<RouteEndpoint>();
 
     protected async Task<HttpResponseMessage> PostAsync(string route, JsonContent content)
