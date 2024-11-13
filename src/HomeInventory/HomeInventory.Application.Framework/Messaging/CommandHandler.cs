@@ -1,6 +1,4 @@
-﻿using Unit = LanguageExt.Unit;
-
-namespace HomeInventory.Application.Interfaces.Messaging;
+﻿namespace HomeInventory.Application.Interfaces.Messaging;
 
 public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand>
     where TCommand : ICommand

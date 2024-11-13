@@ -32,7 +32,7 @@ public class OutboxMessageConfigurationTests : BaseTest
         type.Should().NotBeNull();
         var primaryKey = type!.FindPrimaryKey();
         primaryKey.Should().NotBeNull();
-        primaryKey!.Properties.Should().ContainSingle(x => x.Name == nameof(OutboxMessage.Id));
+        primaryKey!.Properties.Should().ContainSingle(static x => x.Name == nameof(OutboxMessage.Id));
     }
 
     [Fact]

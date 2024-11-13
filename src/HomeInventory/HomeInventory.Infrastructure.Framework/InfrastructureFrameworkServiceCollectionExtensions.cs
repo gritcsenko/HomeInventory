@@ -10,6 +10,6 @@ public static class InfrastructureFrameworkServiceCollectionExtensions
         where TRepositoryImplementation : class, TRepository =>
         services
             .AddScoped<TRepository, TRepositoryImplementation>()
-            .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>())
-            .AddScoped<IReadOnlyRepository<TEntity>>(sp => sp.GetRequiredService<IRepository<TEntity>>());
+            .AddScoped<IRepository<TEntity>>(static sp => sp.GetRequiredService<TRepository>())
+            .AddScoped<IReadOnlyRepository<TEntity>>(static sp => sp.GetRequiredService<IRepository<TEntity>>());
 }

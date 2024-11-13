@@ -8,7 +8,7 @@ internal static class ObjectExtensions
     {
         if (typeof(T) == typeof(object))
         {
-            return (actual, expected) =>
+            return static (actual, expected) =>
             {
                 if (actual is null && expected is null)
                 {

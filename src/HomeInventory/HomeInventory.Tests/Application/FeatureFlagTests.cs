@@ -4,7 +4,7 @@ using Microsoft.FeatureManagement;
 namespace HomeInventory.Tests.Application;
 
 [UnitTest]
-public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestContext>(t => new(t))
+public sealed class FeatureFlagTests() : BaseTest<FeatureFlagGivenTestContext>(static t => new(t))
 {
     private static readonly Variable<IFeatureManager> _manager = new(nameof(_manager));
 
@@ -16,10 +16,10 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Sut(out var sut, name);
 
         var then = When
-            .Invoked(sut, sut => sut.Name);
+            .Invoked(sut, static sut => sut.Name);
 
         then
-            .Result(name, (actual, expected) => actual.Should().Be(expected));
+            .Result(name, static (actual, expected) => actual.Should().Be(expected));
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Invoked(name, FeatureFlag.Create);
 
         then
-            .Result(flag => flag.Should().NotBeNull())
-            .Result(name, (actual, expected) => actual.Name.Should().Be(expected));
+            .Result(static flag => flag.Should().NotBeNull())
+            .Result(name, static (actual, expected) => actual.Name.Should().Be(expected));
     }
 
     [Fact]
@@ -47,9 +47,9 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Invoked(name, context, FeatureFlag.Create);
 
         then
-            .Result(flag => flag.Should().NotBeNull())
-            .Result(name, (actual, expected) => actual.Name.Should().Be(expected))
-            .Result(context, (actual, expected) => actual.Context.Should().Be(expected));
+            .Result(static flag => flag.Should().NotBeNull())
+            .Result(name, static (actual, expected) => actual.Name.Should().Be(expected))
+            .Result(context, static (actual, expected) => actual.Context.Should().Be(expected));
     }
 
     [Theory]
@@ -79,12 +79,12 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Sut(out var sut, name);
 
         var then = When
-            .Invoked(sut, context, (sut, context) => sut.WithContext(context));
+            .Invoked(sut, context, static (sut, context) => sut.WithContext(context));
 
         then
-            .Result(flag => flag.Should().NotBeNull())
-            .Result(name, (actual, expected) => actual.Name.Should().Be(expected))
-            .Result(context, (actual, expected) => actual.Context.Should().Be(expected));
+            .Result(static flag => flag.Should().NotBeNull())
+            .Result(name, static (actual, expected) => actual.Name.Should().Be(expected))
+            .Result(context, static (actual, expected) => actual.Context.Should().Be(expected));
     }
 
     [Theory]
@@ -104,26 +104,5 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
 
         then
             .Result(flag => flag.Should().Be(expectedValue));
-    }
-
-#pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
-#pragma warning restore CA1034 // Nested types should not be visible
-    {
-        private static readonly Variable<IFeatureFlag> _sut = new(nameof(_sut));
-        private static readonly Variable<IFeatureFlag<Guid>> _sutContext = new(nameof(_sutContext));
-
-        internal GivenTestContext Sut(out IVariable<IFeatureFlag> sut, IVariable<string> nameVariable) =>
-            New(out sut, () => Create(nameVariable));
-
-        internal GivenTestContext Sut(out IVariable<IFeatureFlag<Guid>> sut, IVariable<string> nameVariable, IVariable<Guid> contextVariable) =>
-            New(out sut, () => Create(nameVariable, contextVariable));
-
-        private IFeatureFlag Create(IVariable<string> nameVariable) =>
-            FeatureFlag.Create(GetValue(nameVariable));
-
-        private IFeatureFlag<TContext> Create<TContext>(IVariable<string> nameVariable, IVariable<TContext> contextVariable)
-            where TContext : notnull =>
-            FeatureFlag.Create(GetValue(nameVariable), GetValue(contextVariable));
     }
 }

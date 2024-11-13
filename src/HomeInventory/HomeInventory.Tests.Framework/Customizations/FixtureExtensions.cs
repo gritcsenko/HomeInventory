@@ -9,12 +9,12 @@ public static class FixtureExtensions
         where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>, IValuableIdentifierObject<TId, Ulid> =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(s => (TId)TId.CreateBuilder().WithValue(s.Supply()).Build());
+            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(static s => (TId)TId.CreateBuilder().WithValue(s.Supply()).Build());
 
     public static IFixture CustomizeEmail(this IFixture fixture) =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new Email(s.Supply().ToString() + "@email.com"));
+            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(static s => new Email(s.Supply().ToString() + "@email.com"));
 
     public static IFixture CustomizeFromFactory<TObject>(this IFixture fixture, Func<TObject> createFunc)
     {

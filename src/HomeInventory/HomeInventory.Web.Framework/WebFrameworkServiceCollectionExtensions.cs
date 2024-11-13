@@ -12,10 +12,10 @@ public static class WebFrameworkServiceCollectionExtensions
     public static IServiceCollection AddWebFramework(this IServiceCollection services)
     {
         services.AddSingleton(ErrorMappingBuilder.CreateDefault());
-        services.AddSingleton(sp => sp.GetRequiredService<ErrorMappingBuilder>().Build());
+        services.AddSingleton(static sp => sp.GetRequiredService<ErrorMappingBuilder>().Build());
         services.AddTransient<HomeInventoryProblemDetailsFactory>();
-        services.AddTransient<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
-        services.AddTransient<IProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddTransient<ProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
+        services.AddTransient<IProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>());
 
         return services;
     }

@@ -15,10 +15,10 @@ public static class DynamicAuthorizationServiceCollectionExtensions
         services.AddTransient<IAuthorizationHandler, DynamicAuthorizationHandler>();
 
         services.AddAuthorizationBuilder()
-            .AddPolicy(AuthorizationPolicyNames.Dynamic, pb => pb
+            .AddPolicy(AuthorizationPolicyNames.Dynamic, static pb => pb
             .RequireAuthenticatedUser()
             .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-            .AddRequirements(new DynamicPermissionRequirement(ep => ep.GetPermissions())));
+            .AddRequirements(new DynamicPermissionRequirement(static ep => ep.GetPermissions())));
 
         return services;
     }
@@ -48,7 +48,7 @@ public static class DynamicAuthorizationServiceCollectionExtensions
         builder.RequireAuthorization(AuthorizationPolicyNames.Dynamic).WithMetadata(new PermissionMetadata(permissions));
 
     private static IEnumerable<PermissionType> GetPermissions(this Endpoint endpoint) =>
-        endpoint.Metadata.GetOrderedMetadata<PermissionMetadata>().SelectMany(a => a.Permissions);
+        endpoint.Metadata.GetOrderedMetadata<PermissionMetadata>().SelectMany(static a => a.Permissions);
 
     private static class AuthorizationPolicyNames
     {

@@ -1,5 +1,4 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 
@@ -41,13 +40,13 @@ public class MeasurementTypeTests : BaseTest
         var fields = typeof(MeasurementType).GetFieldsOfType<MeasurementType>().ToArray();
 
         fields.Should().NotBeEmpty()
-            .And.AllSatisfy(t => t.Value!.Name.Should().Be(t.Field.Name));
+            .And.AllSatisfy(static t => t.Value!.Name.Should().Be(t.Field.Name));
     }
 
     [Fact]
     public void CanBeUsedAsDictionaryKey()
     {
-        var dictionary = _items.ToDictionary(x => x, x => x.Name);
+        var dictionary = _items.ToDictionary(static x => x, static x => x.Name);
         var values = typeof(MeasurementType).GetFieldValuesOfType<MeasurementType>().ToArray();
 
         dictionary.Should().ContainKeys(values);

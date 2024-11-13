@@ -3,6 +3,7 @@ using AutoMapper;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Specifications;
 
@@ -20,7 +21,7 @@ internal sealed class UserRepository(IDatabaseContext context, IMapper mapper, I
     public async Task<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
         var userResult = await FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken)
-            .Convert(x => true);
+            .Convert(static x => true);
 #pragma warning disable CA1849 // Call async methods when in an async method
         return userResult.IfNone(false);
 #pragma warning restore CA1849 // Call async methods when in an async method

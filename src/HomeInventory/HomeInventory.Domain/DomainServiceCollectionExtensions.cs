@@ -13,7 +13,7 @@ public static class DomainServiceCollectionExtensions
         services.AddSingleton<IScopeContainer, ScopeContainer>();
         services.AddSingleton<IScopeAccessor, ScopeAccessor>();
         services.AddSingleton<IAmountFactory, AmountFactory>();
-        services.AddTransient<TimeProvider>(_ => new FixedTimeProvider(TimeProvider.System));
+        services.AddTransient<TimeProvider>(static _ => new FixedTimeProvider(TimeProvider.System));
         return services;
     }
 }

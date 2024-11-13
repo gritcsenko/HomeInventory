@@ -18,7 +18,7 @@ public static class InfrastructureUserManagementServiceCollectionExtensions
         services.AddMappingAssemblySource(HomeInventory.Infrastructure.UserManagement.AssemblyReference.Assembly);
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
-        services.AddSingleton<IJsonDerivedTypeInfo>(_ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
+        services.AddSingleton<IJsonDerivedTypeInfo>(static _ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
 
         services.AddScoped<IDatabaseConfigurationApplier, UserModelDatabaseConfigurationApplier>();
 

@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Application.Interfaces.Messaging;
-using LanguageExt;
 using Unit = LanguageExt.Unit;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;

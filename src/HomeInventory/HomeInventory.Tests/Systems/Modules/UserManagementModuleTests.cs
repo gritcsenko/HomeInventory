@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Routing.Patterns;
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModuleTestContext>(t => new(t))
+public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModuleTestContext>(static t => new(t))
 {
     [Fact]
     public void AddRoutes_ShouldRegister()
@@ -20,10 +20,10 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sut);
 
         var then = When
-            .Invoked(sut, routeBuilder, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
+            .Invoked(sut, routeBuilder, static (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
 
         then
-            .Ensure(sut, dataSources, (module, dataSources) =>
+            .Ensure(sut, dataSources, static (module, dataSources) =>
                 dataSources.Should().ContainSingle()
                     .Which.Endpoints.OfType<RouteEndpoint>().Should().ContainSingle()
                     .Which.Should().HaveRoutePattern(module.GroupPrefix, RoutePatternFactory.Parse("register"))
@@ -45,10 +45,10 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sut);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sut, registerRequest, context, static (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
 
         then
-            .Result(registerResponse, (actual, expected) =>
+            .Result(registerResponse, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<RegisterResponse>>()
                     .Which.Should().HaveValue(expected));
     }

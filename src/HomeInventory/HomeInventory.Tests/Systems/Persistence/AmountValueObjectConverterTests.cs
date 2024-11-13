@@ -18,7 +18,7 @@ public class AmountValueObjectConverterTests : IAsyncLifetime
     public void TryConvert() => _test.TryConvert();
 }
 
-internal class InternalAmountValueObjectConverterTests() : BaseTest<AmountValueObjectConverterTestsGivenContext>(t => new(t))
+internal class InternalAmountValueObjectConverterTests() : BaseTest<AmountValueObjectConverterTestsGivenContext>(static t => new(t))
 {
     public void TryConvert()
     {
@@ -53,8 +53,8 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
     {
         public void Customize(IFixture fixture)
         {
-            fixture.Customize<ProductAmountModel>(c => c
-                .With<string, AmountUnit>(m => m.UnitName, u => u.Name));
+            fixture.Customize<ProductAmountModel>(static c => c
+                .With<string, AmountUnit>(static m => m.UnitName, static u => u.Name));
         }
     }
     private sealed class AmountUnitCustomization : ICustomization
@@ -71,7 +71,7 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
     {
         public void Customize(IFixture fixture)
         {
-            fixture.Customize<Amount>(c => c.FromFactory<decimal, AmountUnit>((v, u) => new Amount(v, u)));
+            fixture.Customize<Amount>(static c => c.FromFactory<decimal, AmountUnit>(static (v, u) => new Amount(v, u)));
         }
     }
 }

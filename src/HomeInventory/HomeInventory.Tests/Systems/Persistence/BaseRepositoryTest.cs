@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
 using HomeInventory.Web.UserManagement;
@@ -13,7 +13,7 @@ public abstract class BaseRepositoryTest : BaseDatabaseContextTest
         var services = new ServiceCollection();
         var factory = new DefaultServiceProviderFactory();
 
-        var config = new MapperConfiguration(x =>
+        var config = new MapperConfiguration(static x =>
         {
             x.AddProfile<ModelMappings>();
             x.AddProfile<UserManagementModelMappings>();

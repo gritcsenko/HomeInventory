@@ -7,14 +7,14 @@ internal sealed class UserModelConfiguration : IEntityTypeConfiguration<UserMode
 {
     public void Configure(EntityTypeBuilder<UserModel> builder)
     {
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
+        builder.HasKey(static x => x.Id);
+        builder.Property(static x => x.Id)
             .HasIdConversion();
 
-        builder.Property(x => x.Email)
+        builder.Property(static x => x.Email)
             .IsRequired();
 
-        builder.Property(x => x.Password)
+        builder.Property(static x => x.Password)
             .IsRequired();
     }
 }

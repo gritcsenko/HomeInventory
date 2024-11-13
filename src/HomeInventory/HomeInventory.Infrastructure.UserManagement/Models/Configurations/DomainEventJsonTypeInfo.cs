@@ -7,5 +7,5 @@ internal sealed class DomainEventJsonTypeInfo(params Type[] types) : IJsonDerive
 {
     private readonly Type[] _types = types;
 
-    public IEnumerable<JsonDerivedType> DerivedTypes => _types.Select(t => new JsonDerivedType(t, t.FullName ?? t.Name));
+    public IEnumerable<JsonDerivedType> DerivedTypes => _types.Select(static t => new JsonDerivedType(t, t.FullName ?? t.Name));
 }

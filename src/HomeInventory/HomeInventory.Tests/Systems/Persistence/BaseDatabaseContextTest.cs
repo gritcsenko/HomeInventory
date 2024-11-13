@@ -12,5 +12,5 @@ public abstract class BaseDatabaseContextTest : BaseTest
         AddAsyncDisposable(_context);
     }
 
-    protected private DatabaseContext Context => _context;
+    private protected DatabaseContext Context => _context;
 }
