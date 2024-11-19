@@ -1,5 +1,4 @@
-﻿using HomeInventory.Api;
-using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Tests.Framework;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;

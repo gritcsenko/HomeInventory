@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Framework;
+﻿using HomeInventory.Modules;
+using HomeInventory.Modules.Interfaces;
 
 namespace HomeInventory.Tests.Application;
 

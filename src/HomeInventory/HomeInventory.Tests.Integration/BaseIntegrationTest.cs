@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using HomeInventory.Api;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Modules;
-using HomeInventory.Modules.Interfaces;
 using Microsoft.FeatureManagement;
 
 namespace HomeInventory.Tests.Application;
