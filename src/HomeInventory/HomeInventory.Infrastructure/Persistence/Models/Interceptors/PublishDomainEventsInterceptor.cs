@@ -23,7 +23,7 @@ internal class PublishDomainEventsInterceptor(IPublisher publisher) : SaveChange
     {
         var domainEvents = context.ChangeTracker
             .Entries<OutboxMessage>()
-            .Select(e => e.Entity.Content);
+            .Select(static e => e.Entity.Content);
 
         foreach (var domainEvent in domainEvents)
         {

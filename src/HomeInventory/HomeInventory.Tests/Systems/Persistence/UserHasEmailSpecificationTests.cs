@@ -20,7 +20,7 @@ public class UserHasEmailSpecificationTests : BaseTest
     {
         var email = Fixture.Create<string>();
         var user = Fixture.Build<UserModel>()
-            .With(x => x.Email, email)
+            .With(static x => x.Email, email)
             .Create();
         var query = new[] { user }.AsQueryable();
         var sut = new UserHasEmailSpecification(new(email));
@@ -34,7 +34,7 @@ public class UserHasEmailSpecificationTests : BaseTest
     public void Should_NotSatisfyWithWrongEmail()
     {
         var query = Fixture.Build<UserModel>()
-            .With(x => x.Email, Fixture.Create<string>())
+            .With(static x => x.Email, Fixture.Create<string>())
             .CreateMany()
             .AsQueryable();
         var sut = new UserHasEmailSpecification(new(Fixture.Create<string>()));

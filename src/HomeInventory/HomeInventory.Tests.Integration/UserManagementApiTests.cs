@@ -33,7 +33,7 @@ public class UserManagementApiTests : BaseIntegrationTest
 
         using var scope = new AssertionScope();
         endpoints.Should().ContainEndpoint(_registerRoute, HttpMethods.Post)
-            .Which.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
+            .Which.Metadata.Should().ContainSingle(static x => x is AllowAnonymousAttribute);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class UserManagementApiTests : BaseIntegrationTest
 #pragma warning disable CA1308 // Normalize strings to uppercase
         body.Extensions.Should().ContainKey("errors")
             .WhoseValue.Should().BeJsonElement()
-            .Which.Should().BeArray(e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message).ToLowerInvariant())
+            .Which.Should().BeArray(static e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message).ToLowerInvariant())
                 .Which.Should().HaveValue(DuplicateEmailError.DefaultMessage));
 #pragma warning restore CA1308 // Normalize strings to uppercase
     }

@@ -26,7 +26,7 @@ public sealed class VariableValues<T> : IVariableValues
             ? OptionNone.Default
             : GetOrAdd(index, createValueFunc);
 
-    public IEnumerable<T> GetAll() => _values.Select(x => x.Value);
+    public IEnumerable<T> GetAll() => _values.Select(static x => x.Value);
 
     private PropertyValue<T> GetOrAdd(int index, Func<T> createValueFunc) =>
         index == _values.Count
@@ -51,8 +51,11 @@ public sealed class VariableValues<T> : IVariableValues
                 case IDisposable disposable:
                     disposable.Dispose();
                     break;
+                default:
+                    break;
             }
         }
+
         _values.Clear();
     }
 }

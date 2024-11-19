@@ -7,9 +7,9 @@ namespace HomeInventory.Tests.Framework;
 public abstract class BaseTest : IAsyncLifetime
 {
     private readonly List<IAsyncDisposable> _asyncDisposables = [];
-    private readonly Lazy<CancellationImplementation> _lazyCancellation = new(() => new());
-    private readonly Lazy<IFixture> _lazyFixture = new(() => new Fixture());
-    private readonly Lazy<TimeProvider> _lazyDateTime = new(() => new FixedTimeProvider(TimeProvider.System));
+    private readonly Lazy<CancellationImplementation> _lazyCancellation = new(static () => new());
+    private readonly Lazy<IFixture> _lazyFixture = new(static () => new Fixture());
+    private readonly Lazy<TimeProvider> _lazyDateTime = new(static () => new FixedTimeProvider(TimeProvider.System));
 
     protected BaseTest()
     {

@@ -21,7 +21,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
     public void Should_SatisfyWithCorrectId()
     {
         var user = Fixture.Build<UserModel>()
-            .With(m => m.Id, _id)
+            .With(static m => m.Id, _id)
             .Create();
         var query = new[] { user }.AsQueryable();
         var sut = CreateSut();
@@ -47,7 +47,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
     public async Task ExecuteAsync_Should_SatisfyWithCorrectId()
     {
         var user = Fixture.Build<UserModel>()
-            .With(m => m.Id, _id)
+            .With(static m => m.Id, _id)
             .Create();
         await Context.Set<UserModel>().AddAsync(user, Cancellation.Token);
         await Context.SaveChangesAsync();

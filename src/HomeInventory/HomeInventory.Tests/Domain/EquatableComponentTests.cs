@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenContext>(t => new(t))
+public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenContext>(static t => new(t))
 {
     [Fact]
     public void GetHashCode_ShouldReturnZero_WhenNoComponents()
@@ -14,8 +14,8 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
             .EmptyHashCode(out var hashVar);
 
         When
-            .Invoked(sutVar, sut => sut.GetHashCode())
-            .Result(hashVar, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sutVar, static sut => sut.GetHashCode())
+            .Result(hashVar, static (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Theory]
@@ -30,8 +30,8 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
             .Sut(out var sutVar, componentVar);
 
         When
-            .Invoked(sutVar, sut => sut.GetHashCode())
-            .Result(hashVar, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sutVar, static sut => sut.GetHashCode())
+            .Result(hashVar, static (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
@@ -41,8 +41,8 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
             .Sut(out var sutVar, 2);
 
         When
-            .Invoked(sutVar[0], sutVar[1], (sut, other) => sut.Equals(other))
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar[0], sutVar[1], static (sut, other) => sut.Equals(other))
+            .Result(static actual => actual.Should().BeTrue());
     }
 
     [Theory]
@@ -57,8 +57,8 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
             .Sut(out var sutVar2);
 
         When
-            .Invoked(sutVar1, sutVar2, (sut, other) => sut.Equals(other))
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar1, sutVar2, static (sut, other) => sut.Equals(other))
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Theory]
@@ -72,8 +72,8 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
             .Sut(out var sutVar, componentVar, 2);
 
         When
-            .Invoked(sutVar[0], sutVar[1], (sut, other) => sut.Equals(other))
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar[0], sutVar[1], static (sut, other) => sut.Equals(other))
+            .Result(static actual => actual.Should().BeTrue());
     }
 
     [Theory]
@@ -87,8 +87,8 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
             .Sut(out var sutVar, componentVar, ..count, count..);
 
         When
-            .Invoked(sutVar[0], sutVar[1], (sut, other) => sut.Equals(other))
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar[0], sutVar[1], static (sut, other) => sut.Equals(other))
+            .Result(static actual => actual.Should().BeFalse());
     }
 }
 
@@ -113,7 +113,7 @@ public sealed class EquatableComponentTestsGivenContext : GivenContext<Equatable
     private EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, string name, params Range[] ranges) =>
         New(out sut, i => CreateSut(variable, ranges[i]), ranges.Length, name);
 
-    private EquatableComponent<string> CreateSut(IVariable<Ulid> variable, Range range) => new(Array.ConvertAll(Variables.GetMany(variable, range).ToArray(), x => (object)x));
+    private EquatableComponent<string> CreateSut(IVariable<Ulid> variable, Range range) => new(Array.ConvertAll(Variables.GetMany(variable, range).ToArray(), static x => (object)x));
 
     protected override EquatableComponent<string> CreateSut(Ulid arg) => throw new NotImplementedException();
 }

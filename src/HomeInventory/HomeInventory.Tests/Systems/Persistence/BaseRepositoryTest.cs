@@ -13,7 +13,7 @@ public abstract class BaseRepositoryTest : BaseDatabaseContextTest
         var services = new ServiceCollection();
         var factory = new DefaultServiceProviderFactory();
 
-        var config = new MapperConfiguration(x =>
+        var config = new MapperConfiguration(static x =>
         {
             x.AddProfile<ModelMappings>();
             x.AddProfile<UserManagementModelMappings>();

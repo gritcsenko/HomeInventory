@@ -20,7 +20,7 @@ public class UserModelConfigurationTests : BaseTest
         type.Should().NotBeNull();
         var primaryKey = type.FindPrimaryKey();
         primaryKey.Should().NotBeNull();
-        primaryKey.Properties.Should().ContainSingle(x => x.Name == nameof(UserModel.Id));
+        primaryKey.Properties.Should().ContainSingle(static x => x.Name == nameof(UserModel.Id));
     }
 
     private static UserModelConfiguration CreateSut() => new();

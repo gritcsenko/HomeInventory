@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, IHomeInventoryApiDriver
+internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Api.AppBuilder>, IHomeInventoryApiDriver
 {
     private readonly ITestingConfiguration _configuration;
     private readonly Lazy<IUserManagementApiDriver> _lazyUserManagement;

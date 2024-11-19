@@ -12,8 +12,8 @@ internal sealed class UserManagementContractsMappings : BaseMappingsProfile
 {
     public UserManagementContractsMappings()
     {
-        CreateMap<UserId>().Using(x => x.Value, UserId.Converter);
-        CreateMap<Email>().Using(x => x.Value, x => new(x));
+        CreateMap<UserId>().Using(static x => x.Value, UserId.Converter);
+        CreateMap<Email>().Using(static x => x.Value, static x => new(x));
 
         CreateMap<RegisterRequest>().Using(CreateRegisterCommand);
 

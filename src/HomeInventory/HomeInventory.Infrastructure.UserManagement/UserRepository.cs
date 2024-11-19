@@ -22,7 +22,7 @@ internal sealed class UserRepository(IDatabaseContext context, IMapper mapper, I
     public async Task<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
         var userResult = await FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken)
-            .Convert(_ => true);
+            .Convert(static _ => true);
 #pragma warning disable CA1849 // Call async methods when in an async method
         return userResult.IfNone(false);
 #pragma warning restore CA1849 // Call async methods when in an async method

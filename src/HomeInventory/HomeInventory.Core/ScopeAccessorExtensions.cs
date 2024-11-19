@@ -7,5 +7,5 @@ public static class ScopeAccessorExtensions
         scopeAccessor
             .GetScope<TContext>()
             .Get()
-            .ThrowIfNone(() => new InvalidOperationException($"Required context of type {typeof(TContext).FullName} not found"));
+            .ThrowIfNone(static () => new InvalidOperationException($"Required context of type {typeof(TContext).FullName} not found"));
 }

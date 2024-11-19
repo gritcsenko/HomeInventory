@@ -178,7 +178,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.3.11
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
@@ -293,7 +293,7 @@ jobs:
       - name: Install Living Documentation Tool
         run: dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
       - name: Generate Living Documentation Specification
-        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net8/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net8/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net9/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net9/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()

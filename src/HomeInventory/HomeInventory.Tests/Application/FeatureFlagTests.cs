@@ -5,7 +5,7 @@ using Microsoft.FeatureManagement;
 namespace HomeInventory.Tests.Application;
 
 [UnitTest]
-public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestContext>(t => new(t))
+public sealed class FeatureFlagTests() : BaseTest<FeatureFlagGivenTestContext>(static t => new(t))
 {
     [Fact]
     public void ConstructorShouldPreserveName()
@@ -15,10 +15,10 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Sut(out var sutVar, nameVar);
 
         var then = When
-            .Invoked(sutVar, sut => sut.Name);
+            .Invoked(sutVar, static sut => sut.Name);
 
         then
-            .Result(nameVar, (actual, expected) => actual.Should().Be(expected));
+            .Result(nameVar, static (actual, expected) => actual.Should().Be(expected));
     }
 
     [Fact]
@@ -31,8 +31,8 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Invoked(nameVar, FeatureFlag.Create);
 
         then
-            .Result(flag => flag.Should().NotBeNull())
-            .Result(nameVar, (actual, expected) => actual.Name.Should().Be(expected));
+            .Result(static flag => flag.Should().NotBeNull())
+            .Result(nameVar, static (actual, expected) => actual.Name.Should().Be(expected));
     }
 
     [Fact]
@@ -46,9 +46,9 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Invoked(nameVar, contextVar, FeatureFlag.Create);
 
         then
-            .Result(flag => flag.Should().NotBeNull())
-            .Result(nameVar, (actual, expected) => actual.Name.Should().Be(expected))
-            .Result(contextVar, (actual, expected) => actual.Context.Should().Be(expected));
+            .Result(static flag => flag.Should().NotBeNull())
+            .Result(nameVar, static (actual, expected) => actual.Name.Should().Be(expected))
+            .Result(contextVar, static (actual, expected) => actual.Context.Should().Be(expected));
     }
 
     [Theory]
@@ -78,12 +78,12 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
             .Sut(out var sutVar, nameVar);
 
         var then = When
-            .Invoked(sutVar, contextVar, (sut, context) => sut.WithContext(context));
+            .Invoked(sutVar, contextVar, static (sut, context) => sut.WithContext(context));
 
         then
-            .Result(flag => flag.Should().NotBeNull())
-            .Result(nameVar, (actual, expected) => actual.Name.Should().Be(expected))
-            .Result(contextVar, (actual, expected) => actual.Context.Should().Be(expected));
+            .Result(static flag => flag.Should().NotBeNull())
+            .Result(nameVar, static (actual, expected) => actual.Name.Should().Be(expected))
+            .Result(contextVar, static (actual, expected) => actual.Context.Should().Be(expected));
     }
 
     [Theory]
@@ -103,23 +103,5 @@ public sealed class FeatureFlagTests() : BaseTest<FeatureFlagTests.GivenTestCont
 
         then
             .Result(flag => flag.Should().Be(expectedValue));
-    }
-
-#pragma warning disable CA1034 // Nested types should not be visible
-    public sealed class GivenTestContext(BaseTest test) : GivenContext<GivenTestContext>(test)
-#pragma warning restore CA1034 // Nested types should not be visible
-    {
-        internal GivenTestContext Sut(out IVariable<IFeatureFlag> sut, IVariable<string> nameVariable) =>
-            New(out sut, () => Create(nameVariable));
-
-        internal GivenTestContext Sut(out IVariable<IFeatureFlag<Guid>> sut, IVariable<string> nameVariable, IVariable<Guid> contextVariable) =>
-            New(out sut, () => Create(nameVariable, contextVariable));
-
-        private IFeatureFlag Create(IVariable<string> nameVariable) =>
-            FeatureFlag.Create(GetValue(nameVariable));
-
-        private IFeatureFlag<TContext> Create<TContext>(IVariable<string> nameVariable, IVariable<TContext> contextVariable)
-            where TContext : notnull =>
-            FeatureFlag.Create(GetValue(nameVariable), GetValue(contextVariable));
     }
 }

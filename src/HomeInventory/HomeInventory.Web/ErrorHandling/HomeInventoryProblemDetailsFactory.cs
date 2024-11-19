@@ -64,7 +64,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             return problems.FirstOrDefault() ?? throw new InvalidOperationException("Has to be at least one error provided");
         }
 
-        var statuses = problems.Select(x => x.Status).ToHashSet();
+        var statuses = problems.Select(static x => x.Status).ToHashSet();
         var status = (statuses.Count == 1 ? statuses.First() : default) ?? _defaultStatusCode;
         return CreateProblem<ProblemDetails>(
             status,

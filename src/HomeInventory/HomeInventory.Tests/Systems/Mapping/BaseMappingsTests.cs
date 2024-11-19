@@ -18,7 +18,7 @@ public abstract class BaseMappingsTests : BaseTest
     protected virtual IMapper CreateSut<TMapper>()
         where TMapper : Profile, new()
     {
-        var config = new MapperConfiguration(x =>
+        var config = new MapperConfiguration(static x =>
         {
             x.AddProfile<TMapper>();
         });
@@ -31,7 +31,7 @@ public abstract class BaseMappingsTests : BaseTest
         where TMapper1 : Profile, new()
         where TMapper2 : Profile, new()
     {
-        var config = new MapperConfiguration(x =>
+        var config = new MapperConfiguration(static x =>
         {
             x.AddProfile<TMapper1>();
             x.AddProfile<TMapper2>();

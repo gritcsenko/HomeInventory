@@ -4,7 +4,7 @@ using HomeInventory.Domain.Primitives.Ids;
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
-public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t))
+public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(static t => new(t))
 {
     [Fact]
     public void EqualsTEntity_Should_ReturnTrueWhenSameReference()
@@ -14,8 +14,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, sut => sut.Equals(sut))
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar, static sut => sut.Equals(sut))
+            .Result(static actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -27,8 +27,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut.Equals(other))
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut.Equals(other))
+            .Result(static actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -39,8 +39,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, sut => sut.Equals(default))
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar, static sut => sut.Equals(default))
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar[1]);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut.Equals(other))
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut.Equals(other))
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -65,8 +65,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut.Equals(other))
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut.Equals(other))
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -77,8 +77,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, sut => sut.Equals((object)sut))
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar, static sut => sut.Equals((object)sut))
+            .Result(static actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -90,8 +90,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut.Equals((object)other))
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut.Equals((object)other))
+            .Result(static actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -102,8 +102,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, sut => sut.Equals(default(object?)))
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar, static sut => sut.Equals(default(object?)))
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -115,8 +115,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar[1]);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut.Equals((object)other))
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut.Equals((object)other))
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -128,8 +128,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, sut => sut.GetHashCode())
-            .Result(hashVar, (actual, hash) => actual.Should().Be(hash.ToHashCode()));
+            .Invoked(sutVar, static sut => sut.GetHashCode())
+            .Result(hashVar, static (actual, hash) => actual.Should().Be(hash.ToHashCode()));
     }
 
     [Fact]
@@ -141,8 +141,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut == other)
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut == other)
+            .Result(static actual => actual.Should().BeTrue());
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar[1]);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut == other)
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut == other)
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -167,8 +167,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut != other)
-            .Result(actual => actual.Should().BeFalse());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut != other)
+            .Result(static actual => actual.Should().BeFalse());
     }
 
     [Fact]
@@ -180,8 +180,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(t => new(t
             .Sut(out var sutVar, idVar[1]);
 
         When
-            .Invoked(sutVar, otherVar, (sut, other) => sut != other)
-            .Result(actual => actual.Should().BeTrue());
+            .Invoked(sutVar, otherVar, static (sut, other) => sut != other)
+            .Result(static actual => actual.Should().BeTrue());
     }
 }
 

@@ -62,7 +62,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         New(out context, CreateHttpContext);
 
     public TGiven DataSources(out IVariable<List<EndpointDataSource>> dataSources) =>
-        New(out dataSources, () => []);
+        New(out dataSources, static () => []);
 
     public TGiven RouteBuilder(out IVariable<IEndpointRouteBuilder> routeBuilder, IVariable<List<EndpointDataSource>> dataSources) =>
         SubstituteFor(out routeBuilder, dataSources, (b, s) =>

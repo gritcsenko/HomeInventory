@@ -8,5 +8,5 @@ internal static class PasswordCharacterSets
 
     public static IPasswordCharacterSet Lowercase { get; } = new PasswordCharacterSet(char.IsLower, "lowercase");
 
-    public static IPasswordCharacterSet NonAlphanumeric { get; } = new PasswordCharacterSet(c => !char.IsLetterOrDigit(c), "non-alphanumeric");
+    public static IPasswordCharacterSet NonAlphanumeric { get; } = new PasswordCharacterSet(static c => !char.IsLetterOrDigit(c), "non-alphanumeric");
 }

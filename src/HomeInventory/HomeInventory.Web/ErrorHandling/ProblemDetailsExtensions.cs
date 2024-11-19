@@ -39,7 +39,7 @@ internal static class ProblemDetailsExtensions
     public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, Seq<Error> errors)
         where TProblem : ProblemDetails
     {
-        problemDetails.Extensions["errorCodes"] = errors.Select(e => e.GetType().Name).ToArray();
+        problemDetails.Extensions["errorCodes"] = errors.Select(static e => e.GetType().Name).ToArray();
         problemDetails.Extensions["errors"] = errors.ToArray();
         return problemDetails;
     }
@@ -53,15 +53,15 @@ internal static class ProblemDetailsExtensions
 
     private static Dictionary<string, string[]> ToErrorDictionary(this ModelStateDictionary modelState) =>
         modelState
-            .Select(p => (p.Key, Messages: p.Value?.Errors.GetErrorMessages() ?? []))
-            .Where(x => x.Messages.Length > 0)
-            .ToDictionary(x => x.Key, x => x.Messages);
+            .Select(static p => (p.Key, Messages: p.Value?.Errors.GetErrorMessages() ?? []))
+            .Where(static x => x.Messages.Length > 0)
+            .ToDictionary(static x => x.Key, static x => x.Messages);
 
     private static string[] GetErrorMessages(this ModelErrorCollection collection) =>
         collection switch
         {
             { Count: 1 } errors => [errors[0].GetErrorMessage()],
-            { } errors => errors.Select(e => e.GetErrorMessage()).ToArray(),
+            { } errors => errors.Select(static e => e.GetErrorMessage()).ToArray(),
             _ => [],
         };
 

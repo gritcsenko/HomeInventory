@@ -44,7 +44,7 @@ public class PasswordValidatorTests : BaseTest
 
         var results = sut.TestValidate(container);
 
-        results.ShouldHaveValidationErrorFor(c => c.Password);
+        results.ShouldHaveValidationErrorFor(static c => c.Password);
     }
 
     private class Container
@@ -55,8 +55,7 @@ public class PasswordValidatorTests : BaseTest
 #pragma warning disable IDE0028 // Simplify collection initialization
     private static InlineValidator<Container> CreateSut() =>
         new()
-        {
-            v => v.RuleFor(x => x.Password).Password()
+        { static v => v.RuleFor(static x => x.Password).Password()
         };
 #pragma warning restore IDE0028 // Simplify collection initialization
 }

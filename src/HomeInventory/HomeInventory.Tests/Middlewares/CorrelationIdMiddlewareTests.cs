@@ -95,8 +95,8 @@ public class CorrelationIdMiddlewareTests : BaseTest
     public async Task InvokeAsync_Should_AddCorrelationIdToResponse()
     {
         _httpResponseFeature
-            .When(f => f.OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>()))
-            .Do(ci =>
+            .When(static f => f.OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>()))
+            .Do(static ci =>
             {
                 var func = ci.Arg<Func<object, Task>>();
                 var state = ci.Arg<object>();

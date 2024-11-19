@@ -4,7 +4,7 @@ using HomeInventory.Web.ErrorHandling;
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public class ErrorMappingTests() : BaseTest<ErrorMappingTests.ErrorMappingTestsGivenContext>(t => new(t))
+public class ErrorMappingTests() : BaseTest<ErrorMappingTests.ErrorMappingTestsGivenContext>(static t => new(t))
 {
     [Fact]
     public void GetDefaultError_Should_Return500()
@@ -13,8 +13,8 @@ public class ErrorMappingTests() : BaseTest<ErrorMappingTests.ErrorMappingTestsG
             .Sut(out var sutVar);
 
         When
-            .Invoked(sutVar, sut => sut.GetDefaultError())
-            .Result(actual => actual.Should().Be(HttpStatusCode.InternalServerError));
+            .Invoked(sutVar, static sut => sut.GetDefaultError())
+            .Result(static actual => actual.Should().Be(HttpStatusCode.InternalServerError));
     }
 
     [Theory]

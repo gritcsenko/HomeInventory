@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HomeInventory.Tests.Systems.Persistence;
 
 [UnitTest]
-public class EventsPersistenceServiceTests() : BaseTest<EventsPersistenceServiceTestsGivenContext>(t => new(t))
+public class EventsPersistenceServiceTests() : BaseTest<EventsPersistenceServiceTestsGivenContext>(static t => new(t))
 {
     private readonly DbContextOptions<DatabaseContext> _options = DbContextFactory.CreateInMemoryOptions<DatabaseContext>("database");
 

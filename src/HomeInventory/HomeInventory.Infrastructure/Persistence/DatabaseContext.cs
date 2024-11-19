@@ -24,7 +24,7 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
         where TEntity : class =>
         ChangeTracker
             .Entries<TEntity>()
-            .Select(e => e.Entity)
+            .Select(static e => e.Entity)
             .Where(condition)
             .HeadOrNone();
 
@@ -49,8 +49,8 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
 
     private void UpdateAuditableEntities(DateTimeOffset now)
     {
-        UpdateTimeAuditEntities<IHasCreationAudit>(now, EntityState.Added, x => x.CreatedOn);
-        UpdateTimeAuditEntities<IHasModificationAudit>(now, EntityState.Modified, x => x.ModifiedOn);
+        UpdateTimeAuditEntities<IHasCreationAudit>(now, EntityState.Added, static x => x.CreatedOn);
+        UpdateTimeAuditEntities<IHasModificationAudit>(now, EntityState.Modified, static x => x.ModifiedOn);
     }
 
     private void UpdateTimeAuditEntities<TEntity>(DateTimeOffset now, EntityState state, Expression<Func<TEntity, DateTimeOffset>> propertyExpression)

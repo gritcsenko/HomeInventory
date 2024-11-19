@@ -22,5 +22,5 @@ public class PermissionModule : ApiCarterModule
     }
 
     public static Task<Ok<IEnumerable<string>>> GetPermissionsAsync([FromServices] PermissionList list, CancellationToken cancellationToken = default)
-        => Task.FromResult(TypedResults.Ok(list.Select(p => p.ToString())));
+        => Task.FromResult(TypedResults.Ok(list.Select(static p => p.ToString())));
 }

@@ -3,7 +3,7 @@
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValueConverterGivenContext>(t => new(t))
+public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValueConverterGivenContext>(static t => new(t))
 {
     [Fact]
     public void Convert_ShouldReturnNull_WhenValueIsNull()
@@ -13,10 +13,10 @@ public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValue
             .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sutVar, valueVar, (sut, value) => sut.Convert(value, typeof(object)));
+            .Invoked(sutVar, valueVar, static (sut, value) => sut.Convert(value, typeof(object)));
 
         then
-            .Result(any => any.Should().BeOfType<OpenApiNull>());
+            .Result(static any => any.Should().BeOfType<OpenApiNull>());
     }
 
     [Fact]
@@ -27,10 +27,10 @@ public sealed class JsonOpenApiValueConverterTests() : BaseTest<JsonOpenApiValue
             .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sutVar, valueVar, (sut, value) => sut.Convert(value, value.GetType()));
+            .Invoked(sutVar, valueVar, static (sut, value) => sut.Convert(value, value.GetType()));
 
         then
-            .Result(any => any.Should().BeOfType<OpenApiNull>());
+            .Result(static any => any.Should().BeOfType<OpenApiNull>());
     }
 
     [Theory]

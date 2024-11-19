@@ -9,7 +9,7 @@ public static class FixtureExtensions
         where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>, IValuableIdentifierObject<TId, Ulid> =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(s => (TId)TId.CreateBuilder().WithValue(s.Supply()).Build());
+            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(static s => (TId)TId.CreateBuilder().WithValue(s.Supply()).Build());
 
     public static IFixture CustomizeId<TId>(this IFixture fixture, DateTimeOffset timeStamp, Random? random = null)
         where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>, IValuableIdentifierObject<TId, Ulid> =>
@@ -20,12 +20,12 @@ public static class FixtureExtensions
     public static IFixture CustomizeEmail(this IFixture fixture) =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new(s.Supply().ToString() + "@email.com"));
+            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(static s => new(s.Supply().ToString() + "@email.com"));
 
     public static IFixture CustomizeEmail(this IFixture fixture, DateTimeOffset timeStamp, Random? random = null) =>
         fixture
             .CustomizeUlid(timeStamp, random)
-            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(s => new(s.Supply().ToString() + "@email.com"));
+            .CustomizeFromFactory<Email, IIdSupplier<Ulid>>(static s => new(s.Supply().ToString() + "@email.com"));
 
     public static IFixture CustomizeFromFactory<TObject>(this IFixture fixture, Func<TObject> createFunc)
     {

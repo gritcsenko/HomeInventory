@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Routing;
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModuleTestContext>(t => new(t))
+public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModuleTestContext>(static t => new(t))
 {
     [Fact]
     public async Task AddRoutes_ShouldRegister()
@@ -20,10 +20,10 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .InitializeHostAsync();
 
         var then = When
-            .Invoked(sutVar, routeBuilderVar, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
+            .Invoked(sutVar, routeBuilderVar, static (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
 
         then
-            .Ensure(sutVar, dataSourcesVar, (module, dataSources) =>
+            .Ensure(sutVar, dataSourcesVar, static (module, dataSources) =>
                 dataSources.Should().ContainSingle()
                     .Which.Endpoints.OfType<RouteEndpoint>().Should().ContainSingle()
                     .Which.Should().HaveRoutePattern(module.GroupPrefix, RoutePatternFactory.Parse("login"))
@@ -45,10 +45,10 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
 
 
         var then = await When
-            .InvokedAsync(sutVar, loginRequestVar, contextVar, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
+            .InvokedAsync(sutVar, loginRequestVar, contextVar, static (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
 
         then
-            .Result(loginResponseVar, (actual, expected) =>
+            .Result(loginResponseVar, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<LoginResponse>>()
                     .Which.Should().HaveValue(expected));
     }
