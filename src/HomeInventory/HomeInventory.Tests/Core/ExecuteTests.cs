@@ -7,13 +7,13 @@ public class ExecuteTests
     public async Task AndCatchAsync_ShouldExecuteAction()
     {
         var isExecuted = false;
-        Task asyncAction()
+        Task AsyncAction()
         {
             isExecuted = true;
             return Task.CompletedTask;
         }
 
-        await Execute.AndCatchAsync(asyncAction, (Exception _) => false.Should().BeTrue());
+        await Execute.AndCatchAsync(AsyncAction, (Exception _) => false.Should().BeTrue());
 
         isExecuted.Should().BeTrue();
     }
@@ -23,12 +23,9 @@ public class ExecuteTests
     {
         var expected = new InvalidOperationException();
         Exception? actual = null;
-        Task asyncAction()
-        {
-            throw expected;
-        }
+        Task AsyncAction() => throw expected;
 
-        await Execute.AndCatchAsync(asyncAction, (Exception ex) => actual = ex);
+        await Execute.AndCatchAsync(AsyncAction, (Exception ex) => actual = ex);
 
         actual.Should().Be(expected);
     }
@@ -37,9 +34,13 @@ public class ExecuteTests
     public async Task AndCatchAsync_ShouldReturnResult()
     {
         var expected = Guid.NewGuid();
-        Task<Guid> asyncAction() => Task.FromResult(expected);
+        Task<Guid> AsyncAction() => Task.FromResult(expected);
 
-        var actual = await Execute.AndCatchAsync(asyncAction, (Exception _) => { false.Should().BeTrue(); return Guid.Empty; });
+        var actual = await Execute.AndCatchAsync(AsyncAction, (Exception _) =>
+        {
+            false.Should().BeTrue();
+            return Guid.Empty;
+        });
 
         actual.Should().Be(expected);
     }
@@ -50,12 +51,13 @@ public class ExecuteTests
         var expected = new InvalidOperationException();
         var expectedResult = Guid.NewGuid();
         Exception? actual = null;
-        Task<Guid> asyncAction()
-        {
-            throw expected;
-        }
+        Task<Guid> AsyncAction() => throw expected;
 
-        var actualResult = await Execute.AndCatchAsync(asyncAction, (Exception ex) => { actual = ex; return expectedResult; });
+        var actualResult = await Execute.AndCatchAsync(AsyncAction, (Exception ex) =>
+        {
+            actual = ex;
+            return expectedResult;
+        });
 
         actual.Should().Be(expected);
         actualResult.Should().Be(expectedResult);
@@ -66,7 +68,11 @@ public class ExecuteTests
     {
         var expected = Guid.NewGuid();
 
-        var actual = Execute.AndCatch(() => expected, (Exception _) => { false.Should().BeTrue(); return Guid.Empty; });
+        var actual = Execute.AndCatch(() => expected, (Exception _) =>
+        {
+            false.Should().BeTrue();
+            return Guid.Empty;
+        });
 
         actual.Should().Be(expected);
     }
@@ -77,9 +83,13 @@ public class ExecuteTests
         var expected = new InvalidOperationException();
         var expectedResult = Guid.NewGuid();
         Exception? actual = null;
-        Guid asyncAction() => throw expected;
+        Guid AsyncAction() => throw expected;
 
-        var actualResult = Execute.AndCatch(asyncAction, (Exception ex) => { actual = ex; return expectedResult; });
+        var actualResult = Execute.AndCatch(AsyncAction, (Exception ex) =>
+        {
+            actual = ex;
+            return expectedResult;
+        });
 
         actual.Should().Be(expected);
         actualResult.Should().Be(expectedResult);

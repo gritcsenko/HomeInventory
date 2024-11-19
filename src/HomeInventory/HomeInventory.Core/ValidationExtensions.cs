@@ -9,14 +9,10 @@ public static class ValidationExtensions
 
     public static async Task<Validation<TFailure, TResult>> MapAsync<TFailure, TSuccess, TResult>(this Validation<TFailure, TSuccess> validation, Func<TSuccess, Task<Validation<TFailure, TResult>>> f)
     //where TFailure : LanguageExt.Traits.Monoid<TFailure>
-    {
-        if (validation.IsSuccess)
-        {
-            return await f((TSuccess)validation);
-        }
-
-        return Validation<TFailure, TResult>.Fail((Seq<TFailure>)validation);
-    }
+        =>
+            validation.IsSuccess
+                ? await f((TSuccess)validation)
+                : Validation<TFailure, TResult>.Fail((Seq<TFailure>)validation);
 
     public static TResult MatchOrThrow<TSuccess, TResult>(this Validation<Error, TSuccess> validation, Func<TSuccess, TResult> convert) =>
         validation.Match(convert, seq => Error.Many(seq).Throw().Return(ShouldNotBeCalled<TResult>));

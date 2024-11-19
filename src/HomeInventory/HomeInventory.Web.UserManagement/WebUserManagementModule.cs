@@ -5,8 +5,5 @@ namespace HomeInventory.Web.UserManagement;
 
 public sealed class WebUserManagementModule : BaseModuleWithCarter
 {
-    public override void Configure(CarterConfigurator configurator)
-    {
-        AddCarterModulesFromCurrentAssembly(configurator);
-    }
+    public override void Configure(CarterConfigurator configurator) => AddCarterModulesFromCurrentAssembly(configurator);
 }

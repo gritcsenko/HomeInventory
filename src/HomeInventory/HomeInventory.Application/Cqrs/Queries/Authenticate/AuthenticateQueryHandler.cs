@@ -19,12 +19,8 @@ internal sealed class AuthenticateQueryHandler(IAuthenticationTokenGenerator tok
             .IfAsync((user, t) => IsPasswordMatchAsync(user, query.Password, t), cancellationToken)
             .ConvertAsync(async (user, t) => (token: await _tokenGenerator.GenerateTokenAsync(user, t), id: user.Id), cancellationToken);
 
-        if (!result.IsSome)
-        {
-            return new InvalidCredentialsError();
-        }
-
-        return result.Map(t => new AuthenticateResult(t.id, t.token)).ErrorIfNone(() => new InvalidCredentialsError());
+        return result.Map(t => new AuthenticateResult(t.id, t.token))
+            .ErrorIfNone(() => new InvalidCredentialsError());
     }
 
     private async Task<Option<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>

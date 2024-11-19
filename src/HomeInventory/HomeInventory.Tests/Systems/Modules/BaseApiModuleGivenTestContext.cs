@@ -44,10 +44,10 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
             .AddOptions(new ApiBehaviorOptions())
             .AddSingleton<HomeInventoryProblemDetailsFactory>()
-            .AddSingleton<IProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
+            .AddSingleton<IProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
             .AddSingleton<TModule>();
 
-        _lazyServiceProvider = new(() => _services.BuildServiceProvider());
+        _lazyServiceProvider = new(_services.BuildServiceProvider);
     }
 
     private IServiceProvider ServiceProvider => _lazyServiceProvider.Value;

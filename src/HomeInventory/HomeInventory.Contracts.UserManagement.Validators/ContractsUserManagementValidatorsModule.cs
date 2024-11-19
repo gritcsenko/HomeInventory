@@ -5,8 +5,5 @@ namespace HomeInventory.Contracts.UserManagement.Validators;
 
 public sealed class ContractsUserManagementValidatorsModule : BaseModuleWithCarter
 {
-    public override void Configure(CarterConfigurator configurator)
-    {
-        AddValidatorsFromCurrentAssembly(configurator);
-    }
+    public override void Configure(CarterConfigurator configurator) => AddValidatorsFromCurrentAssembly(configurator);
 }

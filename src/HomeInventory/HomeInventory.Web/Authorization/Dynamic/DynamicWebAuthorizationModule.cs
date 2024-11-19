@@ -17,7 +17,7 @@ public sealed class DynamicWebAuthorizationModule : BaseModule
             .AddSingleton<PermissionList>()
             .AddTransient<IAuthorizationHandler, DynamicAuthorizationHandler>()
             .AddAuthorizationBuilder()
-            .AddPolicy(AuthorizationPolicyNames.Dynamic, pb => pb
+            .AddPolicy(AuthorizationPolicyNames.Dynamic, static pb => pb
             .RequireAuthenticatedUser()
             .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
             .AddRequirements(new DynamicPermissionRequirement(GetPermissions)));
@@ -28,11 +28,11 @@ public sealed class DynamicWebAuthorizationModule : BaseModule
         await base.BuildAppAsync(context);
 
         var permissionList = context.GetRequiredService<PermissionList>();
-        permissionList.AddRange(context.EndpointRouteBuilder.DataSources.SelectMany(s => s.Endpoints).SelectMany(GetPermissions));
+        permissionList.AddRange(context.EndpointRouteBuilder.DataSources.SelectMany(static s => s.Endpoints).SelectMany(GetPermissions));
 
         context.ApplicationBuilder.UseAuthorization();
     }
 
     private static IEnumerable<PermissionType> GetPermissions(Endpoint endpoint) =>
-        endpoint.Metadata.GetOrderedMetadata<PermissionMetadata>().SelectMany(a => a.Permissions);
+        endpoint.Metadata.GetOrderedMetadata<PermissionMetadata>().SelectMany(static a => a.Permissions);
 }

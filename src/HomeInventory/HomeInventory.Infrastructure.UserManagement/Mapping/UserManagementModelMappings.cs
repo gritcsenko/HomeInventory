@@ -6,8 +6,5 @@ namespace HomeInventory.Infrastructure.UserManagement.Mapping;
 
 internal sealed class UserManagementModelMappings : BaseMappingsProfile
 {
-    public UserManagementModelMappings()
-    {
-        CreateMap<User, UserModel>().ReverseMap();
-    }
+    public UserManagementModelMappings() => CreateMap<User, UserModel>().ReverseMap();
 }

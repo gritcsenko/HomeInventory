@@ -6,15 +6,9 @@ public class BaseAssemblyReference : IAssemblyReference
 {
     private readonly Type _currentType;
 
-    public BaseAssemblyReference(Type type)
-    {
-        _currentType = type;
-    }
+    public BaseAssemblyReference(Type type) => _currentType = type;
 
-    protected BaseAssemblyReference()
-    {
-        _currentType = GetType();
-    }
+    protected BaseAssemblyReference() => _currentType = GetType();
 
     public Assembly Assembly => _currentType.Assembly;
 

@@ -23,14 +23,14 @@ public sealed class InfrastructureDatabaseModule : BaseModule
             .AddScoped<IDatabaseConfigurationApplier, OutboxDatabaseConfigurationApplier>()
             .AddScoped<PolymorphicDomainEventTypeResolver>()
             .AddScoped<PublishDomainEventsInterceptor>()
-            .AddDbContext<DatabaseContext>((sp, builder) =>
+            .AddDbContext<DatabaseContext>(static (sp, builder) =>
             {
                 var env = sp.GetRequiredService<IHostEnvironment>();
                 builder.UseInMemoryDatabase("HomeInventory");
                 builder.EnableDetailedErrors(!env.IsProduction());
                 builder.EnableSensitiveDataLogging(!env.IsProduction());
             })
-            .AddScoped<IDatabaseContext>(sp => sp.GetRequiredService<DatabaseContext>())
-            .AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<DatabaseContext>());
+            .AddScoped<IDatabaseContext>(static sp => sp.GetRequiredService<DatabaseContext>())
+            .AddScoped<IUnitOfWork>(static sp => sp.GetRequiredService<DatabaseContext>());
     }
 }

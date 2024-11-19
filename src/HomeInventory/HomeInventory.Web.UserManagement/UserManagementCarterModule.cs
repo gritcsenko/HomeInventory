@@ -23,12 +23,10 @@ public class UserManagementCarterModule(IMapper mapper, ISender sender, IScopeAc
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
 
-    protected override void AddRoutes(RouteGroupBuilder group)
-    {
+    protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapPost("register", RegisterAsync)
             .AllowAnonymous()
             .WithValidationOf<RegisterRequest>();
-    }
 
     public async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
     {

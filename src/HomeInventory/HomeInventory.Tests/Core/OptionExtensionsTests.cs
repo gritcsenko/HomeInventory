@@ -28,7 +28,11 @@ public class OptionExtensionsTests : BaseTest
         var optionalTask = Task.FromResult(optional);
 
         Ulid? actual = null;
-        var tapped = await optionalTask.Tap(x => { actual = x; return Task.CompletedTask; });
+        var tapped = await optionalTask.Tap(x =>
+        {
+            actual = x;
+            return Task.CompletedTask;
+        });
 
         using var scope = new AssertionScope();
         tapped.Should().Be(expected.Value);
@@ -43,7 +47,11 @@ public class OptionExtensionsTests : BaseTest
         var optionalTask = Task.FromResult(optional);
 
         Ulid? actual = null;
-        var tapped = await optionalTask.Tap(x => { actual = x; return ValueTask.CompletedTask; });
+        var tapped = await optionalTask.Tap(x =>
+        {
+            actual = x;
+            return ValueTask.CompletedTask;
+        });
 
         using var scope = new AssertionScope();
         tapped.Should().Be(expected.Value);

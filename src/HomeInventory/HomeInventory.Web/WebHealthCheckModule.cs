@@ -30,19 +30,19 @@ public sealed class WebHealthCheckModule : BaseModule
         context.EndpointRouteBuilder
             .MapHealthChecks("/health", new()
             {
-                Predicate = _ => true,
+                Predicate = static _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
         context.EndpointRouteBuilder
             .MapHealthChecks("/health/ready", new()
             {
-                Predicate = x => x.Tags.Contains(HealthCheckTags.Ready),
+                Predicate = static x => x.Tags.Contains(HealthCheckTags.Ready),
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
         context.EndpointRouteBuilder
             .MapHealthChecks("/health/live", new()
             {
-                Predicate = _ => false,
+                Predicate = static _ => false,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
         context.ApplicationBuilder

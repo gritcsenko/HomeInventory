@@ -5,9 +5,6 @@ namespace HomeInventory.Tests.Application;
 
 public sealed class FeatureFlagGivenTestContext(BaseTest test) : GivenContext<FeatureFlagGivenTestContext>(test)
 {
-    private static readonly Variable<IFeatureFlag> _sut = new(nameof(_sut));
-    private static readonly Variable<IFeatureFlag<Guid>> _sutContext = new(nameof(_sutContext));
-
     internal FeatureFlagGivenTestContext Sut(out IVariable<IFeatureFlag> sut, IVariable<string> nameVariable) =>
         New(out sut, () => Create(nameVariable));
 

@@ -8,20 +8,12 @@ public abstract class BaseMappingsTests : BaseTest
     private readonly ServiceCollection _services = new();
     private readonly DefaultServiceProviderFactory _factory = new(new() { ValidateOnBuild = true, ValidateScopes = true });
 
-    protected BaseMappingsTests()
-    {
-        Services.AddMappingAssemblySource();
-    }
-
-    public IServiceCollection Services => _services;
+    protected BaseMappingsTests() => _services.AddMappingAssemblySource();
 
     protected virtual IMapper CreateSut<TMapper>()
         where TMapper : Profile, new()
     {
-        var config = new MapperConfiguration(static x =>
-        {
-            x.AddProfile<TMapper>();
-        });
+        var config = new MapperConfiguration(static x => x.AddProfile<TMapper>());
 
         var serviceProvider = _factory.CreateServiceProvider(_services);
         return new Mapper(config, serviceProvider.GetService);

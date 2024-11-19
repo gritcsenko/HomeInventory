@@ -18,10 +18,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     private readonly IConfiguration _configuration = new ConfigurationManager();
     private readonly IServiceCollection _services = new ServiceCollection();
 
-    public UserManagementModelMappingsTests()
-    {
-        Fixture.CustomizeId<UserId>();
-    }
+    public UserManagementModelMappingsTests() => Fixture.CustomizeId<UserId>();
 
     [Theory]
     [MemberData(nameof(MapData))]

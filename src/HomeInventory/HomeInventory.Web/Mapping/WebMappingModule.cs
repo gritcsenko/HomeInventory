@@ -5,10 +5,7 @@ namespace HomeInventory.Web.Mapping;
 
 public sealed class WebMappingModule : BaseModule
 {
-    public WebMappingModule()
-    {
-        DependsOn<ApplicationMappingModule>();
-    }
+    public WebMappingModule() => DependsOn<ApplicationMappingModule>();
 
     public override async Task AddServicesAsync(IModuleServicesContext context)
     {

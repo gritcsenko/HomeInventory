@@ -12,7 +12,7 @@ public static class EnumerableExtensions
         source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
 
     public static Task<Option<T>> FirstOrNoneAsync<T>(this IAsyncEnumerable<T> values, Func<T, bool> predicate, CancellationToken cancellationToken = default) =>
-        AsyncEnumerable.Where(values, predicate).FirstOrNoneCoreAsync(cancellationToken);
+        values.Where(predicate).FirstOrNoneCoreAsync(cancellationToken);
 
     private static IEnumerable<T> ConcatCore<T>(IEnumerable<T> source, T item)
     {
@@ -30,24 +30,5 @@ public static class EnumerableExtensions
         return await enumerator.MoveNextAsync(cancellationToken)
             ? enumerator.Current
             : Option<T>.None;
-    }
-}
-
-public static class CollectionExtensions
-{
-    public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
-    {
-        switch (collection)
-        {
-            case List<T> list:
-                list.AddRange(items);
-                break;
-            default:
-                foreach (var item in items)
-                {
-                    collection.Add(item);
-                }
-                break;
-        }
     }
 }

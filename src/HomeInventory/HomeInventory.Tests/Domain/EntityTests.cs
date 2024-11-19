@@ -188,10 +188,8 @@ public sealed class EntityTests() : BaseTest<EntityTestsGivenContext>(static t =
 public sealed class EntityTestsGivenContext : GivenContext<EntityTestsGivenContext, TestEntity, TestEntityId>
 {
     public EntityTestsGivenContext(BaseTest test)
-        : base(test)
-    {
+        : base(test) =>
         test.Fixture.CustomizeUlid();
-    }
 
     internal EntityTestsGivenContext Id(out IVariable<TestEntityId> id, int count = 1) => New(out id, CreateTestEntityId, count);
 

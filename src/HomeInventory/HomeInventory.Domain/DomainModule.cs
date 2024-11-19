@@ -18,6 +18,6 @@ public sealed class DomainModule : BaseModule
             .AddSingleton<IScopeContainer, ScopeContainer>()
             .AddSingleton<IScopeAccessor, ScopeAccessor>()
             .AddSingleton<IAmountFactory, AmountFactory>()
-            .TryAddTransient(_ => TimeProvider.System);
+            .TryAddTransient(static _ => TimeProvider.System);
     }
 }

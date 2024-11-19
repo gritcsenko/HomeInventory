@@ -53,10 +53,8 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
 public sealed class UlidIdConverterTestsGivenContext : GivenContext<UlidIdConverterTestsGivenContext, UlidIdConverter<TestId>>
 {
     public UlidIdConverterTestsGivenContext(BaseTest test)
-        : base(test)
-    {
+        : base(test) =>
         test.Fixture.CustomizeUlid();
-    }
 
     internal UlidIdConverterTestsGivenContext Empty(out IVariable<Ulid> empty) =>
         New(out empty, static () => Ulid.Empty);

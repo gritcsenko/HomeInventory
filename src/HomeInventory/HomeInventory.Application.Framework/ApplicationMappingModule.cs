@@ -10,9 +10,9 @@ public sealed class ApplicationMappingModule : BaseModule
         await base.AddServicesAsync(context);
 
         context.Services
-            .AddAutoMapper((sp, configExpression) =>
+            .AddAutoMapper(static (sp, configExpression) =>
             {
-                configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(s => s.GetAssemblies()));
+                configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(static s => s.GetAssemblies()));
                 configExpression.ConstructServicesUsing(sp.GetRequiredService);
             }, Type.EmptyTypes);
     }

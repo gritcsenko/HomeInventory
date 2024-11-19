@@ -19,10 +19,10 @@ public sealed class WebErrorHandling : BaseModule
 
         context.Services
             .AddSingleton(ErrorMappingBuilder.CreateDefault())
-            .AddSingleton(sp => sp.GetRequiredService<ErrorMappingBuilder>().Build())
+            .AddSingleton(static sp => sp.GetRequiredService<ErrorMappingBuilder>().Build())
             .AddTransient<HomeInventoryProblemDetailsFactory>()
-            .AddTransient<ProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
-            .AddTransient<IProblemDetailsFactory>(sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
+            .AddTransient<ProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
+            .AddTransient<IProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
             .AddScoped<ICorrelationIdContainer, CorrelationIdContainer>()
             .AddScoped<CorrelationIdMiddleware>();
     }
@@ -33,7 +33,7 @@ public sealed class WebErrorHandling : BaseModule
 
         context.ApplicationBuilder.UseMiddleware<CorrelationIdMiddleware>();
         context.ApplicationBuilder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
-        context.EndpointRouteBuilder.Map("/error", (HttpContext ctx) => Results.Problem(detail: GetFeature<IExceptionHandlerPathFeature>(ctx)?.Error.Message));
+        context.EndpointRouteBuilder.Map("/error", static (HttpContext ctx) => Results.Problem(detail: GetFeature<IExceptionHandlerPathFeature>(ctx)?.Error.Message));
     }
 
     private static TFeature? GetFeature<TFeature>(HttpContext context) =>

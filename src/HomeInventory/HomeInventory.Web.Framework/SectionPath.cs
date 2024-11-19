@@ -8,7 +8,6 @@ public sealed record SectionPath(string Path)
 
     public static implicit operator SectionPath(string path) => ToSectionPath(path);
 
-
     public static implicit operator string(SectionPath path) => path.ToString();
 
     public static SectionPath operator /(SectionPath left, SectionPath right) => Divide(left, right);

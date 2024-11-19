@@ -18,7 +18,7 @@ public class ArchitectureTests
         var conditionList = conditions.OnlyHaveDependenciesOn(allowed);
         var result = conditionList.GetResult();
 
-        var failing = result.FailingTypes?.Where(t => t.GetCustomAttribute<CompilerGeneratedAttribute>() is null && t.FullName?.StartsWith("<>", StringComparison.Ordinal) != true).ToArray();
+        var failing = result.FailingTypes?.Where(static t => t.GetCustomAttribute<CompilerGeneratedAttribute>() is null && t.FullName?.StartsWith("<>", StringComparison.Ordinal) != true).ToArray();
         failing.Should().BeNullOrEmpty();
     }
 

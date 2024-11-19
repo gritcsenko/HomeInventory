@@ -43,7 +43,6 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .Sut(out var sutVar)
             .InitializeHostAsync();
 
-
         var then = await When
             .InvokedAsync(sutVar, loginRequestVar, contextVar, static (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
 

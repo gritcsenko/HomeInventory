@@ -19,6 +19,7 @@ internal class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) 
         {
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }
+
         options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new()
         {
             In = ParameterLocation.Header,

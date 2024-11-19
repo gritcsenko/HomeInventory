@@ -12,12 +12,10 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class OutboxMessageConfigurationTests : BaseTest
 {
-    private static readonly PolymorphicDomainEventTypeResolver _typeResolver = new(new[] { new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)) });
+    private static readonly PolymorphicDomainEventTypeResolver _typeResolver = new([new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent))
+    ]);
 
-    public OutboxMessageConfigurationTests()
-    {
-        Fixture.CustomizeId<UserId>();
-    }
+    public OutboxMessageConfigurationTests() => Fixture.CustomizeId<UserId>();
 
     [Fact]
     public void UserModel_Should_HavePrimaryKey()

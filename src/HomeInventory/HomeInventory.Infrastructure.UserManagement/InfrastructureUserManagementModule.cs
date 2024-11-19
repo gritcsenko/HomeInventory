@@ -16,6 +16,6 @@ public sealed class InfrastructureUserManagementModule : BaseModule
 
         context.Services
             .AddSingleton<IPasswordHasher, BCryptPasswordHasher>()
-            .AddSingleton<IJsonDerivedTypeInfo>(_ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
+            .AddSingleton<IJsonDerivedTypeInfo>(static _ => new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)));
     }
 }

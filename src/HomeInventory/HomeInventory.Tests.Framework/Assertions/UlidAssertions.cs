@@ -29,23 +29,13 @@ public class UlidAssertions<TAssertions>(Ulid actualValue, AssertionChain assert
         return new((TAssertions)this);
     }
 
-    public AndConstraint<TAssertions> Be(string expected, string because = "", params object[] becauseArgs)
-    {
-        if (!Ulid.TryParse(expected, out var expectedUlid))
-        {
-            throw new ArgumentException($"Unable to parse \"{expected}\" as a valid ULID", nameof(expected));
-        }
+    public AndConstraint<TAssertions> Be(string expected, string because = "", params object[] becauseArgs) =>
+        !Ulid.TryParse(expected, out var expectedUlid)
+            ? throw new ArgumentException($"Unable to parse \"{expected}\" as a valid ULID", nameof(expected))
+            : Be(expectedUlid, because, becauseArgs);
 
-        return Be(expectedUlid, because, becauseArgs);
-    }
-
-    public AndConstraint<TAssertions> NotBe(string unexpected, string because = "", params object[] becauseArgs)
-    {
-        if (!Ulid.TryParse(unexpected, out var unexpectedGuid))
-        {
-            throw new ArgumentException($"Unable to parse \"{unexpected}\" as a valid ULID", nameof(unexpected));
-        }
-
-        return NotBe(unexpectedGuid, because, becauseArgs);
-    }
+    public AndConstraint<TAssertions> NotBe(string unexpected, string because = "", params object[] becauseArgs) =>
+        !Ulid.TryParse(unexpected, out var unexpectedGuid)
+            ? throw new ArgumentException($"Unable to parse \"{unexpected}\" as a valid ULID", nameof(unexpected))
+            : NotBe(unexpectedGuid, because, becauseArgs);
 }

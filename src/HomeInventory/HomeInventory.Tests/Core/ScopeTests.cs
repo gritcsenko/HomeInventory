@@ -51,7 +51,6 @@ public sealed class ScopeTests
         actual.Should().BeNone();
     }
 
-
     [Fact]
     public void Get_ShouldReturnContext_WhenResetAndDisposed()
     {

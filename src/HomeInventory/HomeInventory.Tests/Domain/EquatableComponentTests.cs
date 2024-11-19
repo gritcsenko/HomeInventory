@@ -95,10 +95,8 @@ public class EquatableComponentTests() : BaseTest<EquatableComponentTestsGivenCo
 public sealed class EquatableComponentTestsGivenContext : GivenContext<EquatableComponentTestsGivenContext, EquatableComponent<string>, Ulid>
 {
     public EquatableComponentTestsGivenContext(BaseTest test)
-        : base(test)
-    {
+        : base(test) =>
         test.Fixture.CustomizeUlid();
-    }
 
     public EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
         Sut(out sut, new Variable<Ulid>("none"), count, name);

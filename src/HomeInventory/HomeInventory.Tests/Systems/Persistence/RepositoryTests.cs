@@ -12,10 +12,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class RepositoryTests : BaseRepositoryTest
 {
-    public RepositoryTests()
-    {
-        Fixture.CustomizeId<UserId>();
-    }
+    public RepositoryTests() => Fixture.CustomizeId<UserId>();
 
     [Fact]
     public async Task AddAsync_ShouldAdd()

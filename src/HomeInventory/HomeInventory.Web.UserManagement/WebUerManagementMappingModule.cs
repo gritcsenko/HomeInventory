@@ -5,10 +5,7 @@ namespace HomeInventory.Web.UserManagement;
 
 public sealed class WebUerManagementMappingModule : BaseModule
 {
-    public WebUerManagementMappingModule()
-    {
-        DependsOn<ApplicationMappingModule>();
-    }
+    public WebUerManagementMappingModule() => DependsOn<ApplicationMappingModule>();
 
     public override async Task AddServicesAsync(IModuleServicesContext context)
     {

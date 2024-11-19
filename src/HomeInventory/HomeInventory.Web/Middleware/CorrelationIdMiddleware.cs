@@ -29,13 +29,11 @@ internal class CorrelationIdMiddleware(ICorrelationIdContainer container, ILogge
         }
     }
 
-    private void AddCorrelationIdTo(HttpResponse response)
-    {
+    private void AddCorrelationIdTo(HttpResponse response) =>
         response.OnStarting(() =>
         {
             _logger.CorrelationIdReturned(_container.CorrelationId);
             response.Headers[HeaderNames.CorrelationId] = new(_container.CorrelationId);
             return Task.CompletedTask;
         });
-    }
 }

@@ -40,22 +40,18 @@ internal class InternalAmountValueObjectConverterTests() : BaseTest<AmountValueO
 internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext<AmountValueObjectConverterTestsGivenContext, AmountObjectConverter, IAmountFactory>
 {
     public AmountValueObjectConverterTestsGivenContext(BaseTest test)
-        : base(test)
-    {
+        : base(test) =>
         Customize<AmountUnitCustomization>()
             .Customize<ProductAmountModelCustomization>()
             .Customize<AmountCustomization>();
-    }
 
     protected override AmountObjectConverter CreateSut(IAmountFactory factory) => new(factory);
 
     private sealed class ProductAmountModelCustomization : ICustomization
     {
-        public void Customize(IFixture fixture)
-        {
+        public void Customize(IFixture fixture) =>
             fixture.Customize<ProductAmountModel>(static c => c
                 .With<string, AmountUnit>(static m => m.UnitName, static u => u.Name));
-        }
     }
     private sealed class AmountUnitCustomization : ICustomization
     {
@@ -69,9 +65,6 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
 
     private sealed class AmountCustomization : ICustomization
     {
-        public void Customize(IFixture fixture)
-        {
-            fixture.Customize<Amount>(static c => c.FromFactory<decimal, AmountUnit>(static (v, u) => new(v, u)));
-        }
+        public void Customize(IFixture fixture) => fixture.Customize<Amount>(static c => c.FromFactory<decimal, AmountUnit>(static (v, u) => new(v, u)));
     }
 }

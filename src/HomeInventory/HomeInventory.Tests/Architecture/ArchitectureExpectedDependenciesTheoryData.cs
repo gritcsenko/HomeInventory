@@ -70,5 +70,3 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
 
     public static IReadOnlyDictionary<string, IAssemblyReference> References => _references;
 }
-
-

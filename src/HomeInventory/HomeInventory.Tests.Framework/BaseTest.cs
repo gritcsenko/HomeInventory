@@ -11,10 +11,7 @@ public abstract class BaseTest : IAsyncLifetime
     private readonly Lazy<IFixture> _lazyFixture = new(static () => new Fixture());
     private readonly Lazy<TimeProvider> _lazyDateTime = new(static () => new FixedTimeProvider(TimeProvider.System));
 
-    protected BaseTest()
-    {
-        AddDisposable(_lazyCancellation.ToDisposable());
-    }
+    protected BaseTest() => AddDisposable(_lazyCancellation.ToDisposable());
 
     protected internal IFixture Fixture => _lazyFixture.Value;
 
@@ -22,10 +19,7 @@ public abstract class BaseTest : IAsyncLifetime
 
     protected internal TimeProvider DateTime => _lazyDateTime.Value;
 
-    public virtual Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
+    public virtual Task InitializeAsync() => Task.CompletedTask;
 
     public virtual async Task DisposeAsync()
     {

@@ -8,10 +8,9 @@ using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 
 namespace HomeInventory.Tests.Modules;
 
-public class InfrastructureDatabaseModuleTests() : BaseModuleTest<InfrastructureDatabaseModule>(() => new())
+public class InfrastructureDatabaseModuleTests() : BaseModuleTest<InfrastructureDatabaseModule>(static () => new())
 {
-    protected override void EnsureRegistered(IServiceCollection services)
-    {
+    protected override void EnsureRegistered(IServiceCollection services) =>
         services.Should().ContainSingleScoped<IEventsPersistenceService>()
             .And.ContainSingleScoped<IDatabaseConfigurationApplier>()
             .And.ContainSingleScoped<IDatabaseContext>()
@@ -19,5 +18,4 @@ public class InfrastructureDatabaseModuleTests() : BaseModuleTest<Infrastructure
             .And.ContainSingleScoped<PolymorphicDomainEventTypeResolver>()
             .And.ContainSingleScoped<PublishDomainEventsInterceptor>()
             .And.ContainSingleScoped<DatabaseContext>();
-    }
 }

@@ -6,10 +6,7 @@ namespace HomeInventory.Web.Framework;
 
 public abstract class BaseModuleWithCarter : BaseModule, IModuleWithCarter
 {
-    protected BaseModuleWithCarter()
-    {
-        DependsOn<WebCarterSupportModule>();
-    }
+    protected BaseModuleWithCarter() => DependsOn<WebCarterSupportModule>();
 
     public abstract void Configure(CarterConfigurator configurator);
 
@@ -22,7 +19,7 @@ public abstract class BaseModuleWithCarter : BaseModule, IModuleWithCarter
     protected void AddCarterModulesFromCurrentAssembly(CarterConfigurator configurator)
     {
         var modules = GetTypesDerivedFrom<ICarterModule>()
-            .Where(t => t.IsPublic || t.IsNestedPublic);
+            .Where(static t => t.IsPublic || t.IsNestedPublic);
         configurator.WithModules(modules.ToArray());
     }
 

@@ -10,10 +10,7 @@ public class UserHasEmailSpecificationTests : BaseTest
 {
     private readonly SpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
 
-    public UserHasEmailSpecificationTests()
-    {
-        Fixture.CustomizeId<UserId>();
-    }
+    public UserHasEmailSpecificationTests() => Fixture.CustomizeId<UserId>();
 
     [Fact]
     public void Should_SatisfyWithCorrectEmail()

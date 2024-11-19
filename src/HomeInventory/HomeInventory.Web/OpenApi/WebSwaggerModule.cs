@@ -21,14 +21,14 @@ public sealed class WebSwaggerModule : BaseModule
             .AddSingleton<ISwaggerOperationFilter, DeprecatedSwaggerOperationFilter>()
             .AddSingleton<ISwaggerOperationFilter, ResponsesSwaggerOperationFilter>()
             .AddSingleton<ISwaggerOperationFilter, ParametersSwaggerOperationFilter>()
-            .AddSwaggerGen(options => options.OperationFilter<SwaggerDefaultValues>())
-            .AddApiVersioning(options =>
+            .AddSwaggerGen(static options => options.OperationFilter<SwaggerDefaultValues>())
+            .AddApiVersioning(static options =>
             {
                 options.DefaultApiVersion = new(1);
                 options.AssumeDefaultVersionWhenUnspecified = true;
                 options.ApiVersionReader = new QueryStringApiVersionReader();
             })
-            .AddApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+            .AddApiExplorer(static options => options.GroupNameFormat = "'v'VVV");
     }
 
     public override async Task BuildAppAsync(IModuleBuildContext context)

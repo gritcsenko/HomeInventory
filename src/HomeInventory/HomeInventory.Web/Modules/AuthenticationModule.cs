@@ -18,12 +18,10 @@ public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetail
     private readonly ISender _sender = sender;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
 
-    protected override void AddRoutes(RouteGroupBuilder group)
-    {
+    protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapPost("login", LoginAsync)
             .AllowAnonymous()
             .WithValidationOf<LoginRequest>(static s => s.IncludeAllRuleSets());
-    }
 
     public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, HttpContext context, CancellationToken cancellationToken = default)
     {

@@ -17,10 +17,7 @@ public static class ProblemDetailsFactoryExtensions
     public static Results<Ok<TResponse>, ProblemHttpResult> MatchToOk<T, TResponse>(this IProblemDetailsFactory factory, IQueryResult<T> errorOrResult, Func<T, TResponse> onValue, string? traceIdentifier = null)
         where T : notnull =>
         errorOrResult.Match<Results<Ok<TResponse>, ProblemHttpResult>>(
-            value =>
-            {
-                return TypedResults.Ok(onValue(value));
-            },
+            value => TypedResults.Ok(onValue(value)),
             error =>
             {
                 var problem = factory.ConvertToProblem(error, traceIdentifier);

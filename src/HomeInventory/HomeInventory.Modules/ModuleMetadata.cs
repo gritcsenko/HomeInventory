@@ -11,5 +11,5 @@ public sealed class ModuleMetadata(IModule module)
     public IEnumerable<Option<ModuleMetadata>> GetDependencies(IReadOnlyCollection<ModuleMetadata> container) =>
         Module.Dependencies.Select(d => container.Find(m => m.ModuleType == d));
 
-    public override string ToString() => $"{ModuleType.Name}{(Module.Dependencies.Count == 0 ? "" : ":" + string.Join(',', Module.Dependencies.Select(d => d.Name)))}";
+    public override string ToString() => $"{ModuleType.Name}{(Module.Dependencies.Count == 0 ? "" : ":" + string.Join(',', Module.Dependencies.Select(static d => d.Name)))}";
 }

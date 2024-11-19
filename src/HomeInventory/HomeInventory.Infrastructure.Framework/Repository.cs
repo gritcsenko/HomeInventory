@@ -83,12 +83,9 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query, cancellationToken);
-        if (await projected.FirstOrDefaultAsync(cancellationToken) is { } entity)
-        {
-            return entity;
-        }
-
-        return OptionNone.Default;
+        return await projected.FirstOrDefaultAsync(cancellationToken) is { } entity
+            ? (Option<TAggregateRoot>)entity
+            : OptionNone.Default;
     }
 
     public async Task<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)

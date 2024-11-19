@@ -13,10 +13,7 @@ public class DbContextFactory
 {
     private readonly IDbContextFactory _factory;
 
-    internal DbContextFactory(IDbContextFactory factory)
-    {
-        _factory = factory;
-    }
+    internal DbContextFactory(IDbContextFactory factory) => _factory = factory;
 
     public static DbContextFactory Default { get; } = new(new ReflectionDbContextFactory());
 
@@ -32,7 +29,7 @@ public class DbContextFactory
         CreateInMemory(
             dateTimeService,
             options,
-            new OutboxDatabaseConfigurationApplier(new(new[] { new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent)) })),
+            new OutboxDatabaseConfigurationApplier(new([new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent))])),
             new UserModelDatabaseConfigurationApplier());
 
     public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)

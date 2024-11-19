@@ -134,7 +134,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         private static void Visit(State state)
         {
             var node = state.Path[^1];
-            foreach (var destination in node.Outgoing.Select(e => e.Destination))
+            foreach (var destination in node.Outgoing.Select(static e => e.Destination))
             {
                 if (state.PathContains(destination))
                 {

@@ -13,10 +13,7 @@ public class CorrelationIdMiddlewareTests : BaseTest
     private readonly DefaultHttpContext _httpContext = new();
     private readonly IHttpResponseFeature _httpResponseFeature = Substitute.For<IHttpResponseFeature>();
 
-    public CorrelationIdMiddlewareTests()
-    {
-        _httpContext.Features.Set(_httpResponseFeature);
-    }
+    public CorrelationIdMiddlewareTests() => _httpContext.Features.Set(_httpResponseFeature);
 
     [Fact]
     public async Task InvokeAsync_Should_CallNext()

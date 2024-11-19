@@ -27,6 +27,6 @@ public sealed class LoggingModule : BaseModule
     {
         await base.BuildAppAsync(context);
 
-        context.ApplicationBuilder.UseSerilogRequestLogging(options => options.IncludeQueryInRequestPath = true);
+        context.ApplicationBuilder.UseSerilogRequestLogging(static options => options.IncludeQueryInRequestPath = true);
     }
 }

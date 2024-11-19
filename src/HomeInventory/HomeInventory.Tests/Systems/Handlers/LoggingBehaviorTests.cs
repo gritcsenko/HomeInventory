@@ -51,10 +51,7 @@ public class LoggingBehaviorTests : BaseTest
 
         response.Should().BeSameAs(_response);
 
-        Task<IQueryResult<AuthenticateResult>> Handler()
-        {
-            return Task.FromResult(_response);
-        }
+        Task<IQueryResult<AuthenticateResult>> Handler() => Task.FromResult(_response);
     }
 
     [Fact]

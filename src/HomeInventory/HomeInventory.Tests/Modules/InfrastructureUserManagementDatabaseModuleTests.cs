@@ -4,11 +4,9 @@ using HomeInventory.Infrastructure.UserManagement;
 
 namespace HomeInventory.Tests.Modules;
 
-public class InfrastructureUserManagementDatabaseModuleTests() : BaseModuleTest<InfrastructureUserManagementDatabaseModule>(() => new())
+public class InfrastructureUserManagementDatabaseModuleTests() : BaseModuleTest<InfrastructureUserManagementDatabaseModule>(static () => new())
 {
-    protected override void EnsureRegistered(IServiceCollection services)
-    {
+    protected override void EnsureRegistered(IServiceCollection services) =>
         services.Should().ContainSingleScoped<IUserRepository>()
             .And.ContainSingleScoped<IDatabaseConfigurationApplier>();
-    }
 }

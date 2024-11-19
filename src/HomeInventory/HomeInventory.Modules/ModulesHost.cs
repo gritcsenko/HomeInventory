@@ -46,8 +46,5 @@ public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
         await Task.WhenAll(_availableModules.Select(async m => await m.BuildAppAsync(context)));
     }
 
-    private static void AddFeatures(IServiceCollection services)
-    {
-        services.AddFeatureManagement();
-    }
+    private static void AddFeatures(IServiceCollection services) => services.AddFeatureManagement();
 }

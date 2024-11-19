@@ -30,9 +30,7 @@ public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGiv
 
         var then = await When
             .InvokedAsync(sutVar, passwordVar[0], passwordVar[1], static async (sut, password1, password2, ct) =>
-            {
-                return new[] { await sut.HashAsync(password1, ct), await sut.HashAsync(password2, ct) };
-            });
+                new[] { await sut.HashAsync(password1, ct), await sut.HashAsync(password2, ct) });
 
         then
             .Result(static actual =>

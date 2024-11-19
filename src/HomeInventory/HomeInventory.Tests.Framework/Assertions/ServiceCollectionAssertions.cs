@@ -79,10 +79,7 @@ public sealed class ServiceCollectionAssertions(IServiceCollection value, Assert
         return new(this, matched);
     }
 
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime)
-    {
-        return Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
-    }
+    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime) => Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
 
     private AndConstraint<ServiceCollectionAssertions> Contain<T>(IServiceProvider provider, ServiceLifetime lifetime)
         where T : class =>
@@ -90,7 +87,9 @@ public sealed class ServiceCollectionAssertions(IServiceCollection value, Assert
             .And.AllSatisfy(d =>
             {
                 if (d.ServiceType == typeof(T) && d.Lifetime == lifetime)
+                {
                     d.GetInstance(provider).Should().BeAssignableTo<T>();
+                }
             });
 
     private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain<T>(ServiceLifetime lifetime)

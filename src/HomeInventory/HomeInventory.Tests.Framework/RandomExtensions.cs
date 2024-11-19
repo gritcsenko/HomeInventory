@@ -28,7 +28,9 @@ public static class RandomExtensions
             for (var i = 0; enumerator.MoveNext(); i++)
             {
                 if (i == index)
+                {
                     return enumerator.Current;
+                }
             }
 #pragma warning restore S1994 // "for" loop increment clauses should modify the loops' counters
 

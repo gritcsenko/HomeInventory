@@ -9,10 +9,7 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
 
     public int Count => _metadata.Count;
 
-    public void Add(IModule module)
-    {
-        _metadata.Add(new(module));
-    }
+    public void Add(IModule module) => _metadata.Add(new(module));
 
     public IEnumerator<ModuleMetadata> GetEnumerator() => _metadata.GetEnumerator();
 
@@ -70,9 +67,6 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
             }
         }
 
-        ValueTask<bool> CanLoadAsync(ModuleMetadata metadata)
-        {
-            return canLoadCache.GetOrAddAsync(metadata.ModuleType, _ => canLoadAsync(metadata));
-        }
+        ValueTask<bool> CanLoadAsync(ModuleMetadata metadata) => canLoadCache.GetOrAddAsync(metadata.ModuleType, _ => canLoadAsync(metadata));
     }
 }
