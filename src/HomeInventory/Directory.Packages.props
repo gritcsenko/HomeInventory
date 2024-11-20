@@ -77,7 +77,6 @@
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
     <PackageVersion Include="AutoFixture" Version="5.0.0-preview0011" />
     <PackageVersion Include="FluentAssertions" Version="7.0.0-alpha.5" />
-    <PackageVersion Include="FluentAssertions.LanguageExt" Version="0.5.0" />
     <PackageVersion Include="LanguageExt.AutoFixture" Version="2.0.1" />
     <PackageVersion Include="LanguageExt.UnitTesting" Version="4.4.9.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />

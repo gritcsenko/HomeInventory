@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using FluentAssertions.Execution;
-using FluentAssertions.LanguageExt;
 using HomeInventory.Application.Framework.Messaging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,9 +21,9 @@ public static class AssertionExtensions
 
     public static OkResultAssertions<TValue> Should<TValue>(this Ok<TValue> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
-    public static LanguageExtOptionAssertions<T> Should<T>(this Option<T> actualValue) => new(actualValue);
+    public static LanguageExtOptionAssertions<T> Should<T>(this Option<T> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
-    public static LanguageExtValidationAssertions<Error, T> Should<T>(this Validation<Error, T> actualValue) => new(actualValue);
+    public static LanguageExtValidationAssertions<Error, T> Should<T>(this Validation<Error, T> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
     public static QueryResultAssertions<T> Should<T>(this IQueryResult<T> actualValue) where T : notnull => new(actualValue, AssertionChain.GetOrCreate());
 

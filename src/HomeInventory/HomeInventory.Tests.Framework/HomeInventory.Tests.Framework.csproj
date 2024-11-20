@@ -4,7 +4,6 @@
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="FluentAssertions.Analyzers" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-    <PackageReference Include="FluentAssertions.LanguageExt" />
     <PackageReference Include="Flurl" />
     <PackageReference Include="LanguageExt.AutoFixture" />
     <PackageReference Include="LanguageExt.UnitTesting" />
