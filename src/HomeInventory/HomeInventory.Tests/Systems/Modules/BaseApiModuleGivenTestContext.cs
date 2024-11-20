@@ -147,7 +147,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     private TGiven OnRequestReturnResult<TRequest>(IVariable<TRequest> request)
         where TRequest : IRequest<Option<Error>> =>
-        OnRequestReturnResult<TRequest, Option<Error>>(request, OptionNone.Default);
+        OnRequestReturnResult(request, Option<Error>.None);
 
     private TGiven OnRequestReturnResult<TRequest, TResult>(IVariable<TRequest> request, TResult resultValue)
         where TRequest : IRequest<TResult>
@@ -161,28 +161,5 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         _mediator.Send(GetValue(request), _cancellation.Token)
             .Returns(result);
         return This;
-    }
-
-    private sealed class QueryResult<TResponse>(Validation<Error, TResponse> validation) : IQueryResult<TResponse>
-        where TResponse : notnull
-    {
-        private readonly Validation<Error, TResponse> _validation = validation;
-
-        public TResponse Success => (TResponse)_validation;
-        public bool IsFail => _validation.IsFail;
-        public bool IsSuccess => _validation.IsSuccess;
-        public Seq<Error> Fail => (Seq<Error>)_validation;
-        object IQueryResult.Success => Success;
-
-        public bool Equals(TResponse other) => _validation == other;
-
-        public Seq<Error> FailAsEnumerable() => _validation.FailAsEnumerable();
-
-        public LanguageExt.Unit IfSuccess(Action<TResponse> Success) => _validation.IfSuccess(Success);
-
-        public TResult Match<TResult>(Func<TResponse, TResult> Succ, Func<Seq<Error>, TResult> Fail) =>
-            _validation.Match(Succ, Fail);
-
-        public Seq<TResponse> SuccessAsEnumerable() => _validation.SuccessAsEnumerable();
     }
 }

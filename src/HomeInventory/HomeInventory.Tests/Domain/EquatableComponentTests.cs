@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
 using System.Runtime.CompilerServices;
+using Range = System.Range;
 
 namespace HomeInventory.Tests.Domain;
 

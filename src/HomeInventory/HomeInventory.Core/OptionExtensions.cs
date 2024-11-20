@@ -84,7 +84,7 @@ public static class OptionExtensions
 
     public static Option<T> Coalesce<T>(this Option<T> first, Func<Option<T>> secondFunc) => first ? first : secondFunc();
 
-    public static Option<T> NoneIfNull<T>(this T? value) where T : class => value is null ? Option<T>.None : value;
+    public static Option<T> NoneIfNull<T>(this T? value) where T : class => value ?? Option<T>.None;
 
     public static T ThrowIfNone<T>(this Option<T> option, Func<Exception> exceptionFactory) =>
         option.IfNone(() => exceptionFactory().Rethrow<T>());
@@ -95,5 +95,5 @@ public static class OptionExtensions
     public static Validation<Error, T> ErrorIfNone<T>(this Option<T> option, Func<Error> errorsFactory) =>
         option
             .Map(Validation<Error, T>.Success)
-            .IfNone(() => Validation<Error, T>.Fail(Seq<Error>.Empty.Add(errorsFactory())));
+            .IfNone(() => Validation<Error, T>.Fail(errorsFactory()));
 }

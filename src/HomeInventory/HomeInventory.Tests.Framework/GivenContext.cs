@@ -1,8 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Framework;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
+[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     where TContext : GivenContext<TContext>
 {
@@ -71,6 +72,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
 
     protected T Create<T>() => _fixture.Create<T>();
 
+    [SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "False positive")]
     protected TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
         New(out variable, () => Enumerable.Range(0, count).Select(create), name);

@@ -11,9 +11,6 @@ public static class EnumerableExtensions
     public static IEnumerable<T> WithCancellation<T>(this IEnumerable<T> source, CancellationToken cancellationToken) =>
         source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
 
-    public static Task<Option<T>> FirstOrNoneAsync<T>(this IAsyncEnumerable<T> values, Func<T, bool> predicate, CancellationToken cancellationToken = default) =>
-        values.Where(predicate).FirstOrNoneCoreAsync(cancellationToken);
-
     private static IEnumerable<T> ConcatCore<T>(IEnumerable<T> source, T item)
     {
         foreach (var i in source)
@@ -22,13 +19,5 @@ public static class EnumerableExtensions
         }
 
         yield return item;
-    }
-
-    private static async Task<Option<T>> FirstOrNoneCoreAsync<T>(this IAsyncEnumerable<T> values, CancellationToken cancellationToken)
-    {
-        await using var enumerator = values.GetAsyncEnumerator(cancellationToken);
-        return await enumerator.MoveNextAsync(cancellationToken)
-            ? enumerator.Current
-            : Option<T>.None;
     }
 }

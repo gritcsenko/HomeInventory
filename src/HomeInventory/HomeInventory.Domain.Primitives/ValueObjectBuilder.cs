@@ -1,5 +1,4 @@
 ﻿using HomeInventory.Domain.Primitives.Errors;
-using LanguageExt.SomeHelp;
 
 namespace HomeInventory.Domain.Primitives;
 
@@ -8,11 +7,11 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
     where TObject : IValueObject<TObject>
     where TValue : notnull
 {
-    private Option<TValue> _value = OptionNone.Default;
+    private Option<TValue> _value = Option<TValue>.None;
 
     public TSelf WithValue(TValue value)
     {
-        _value = value.ToSome();
+        _value = value;
         return (TSelf)this;
     }
 
@@ -23,7 +22,7 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
             .Match(static x => x, static () => Statics.ValueNotSpecified);
 
     public void Reset() =>
-        _value = OptionNone.Default;
+        _value = Option<TValue>.None;
 
     protected abstract TObject ToObject(TValue value);
 
@@ -33,5 +32,5 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
 
 file static class Statics
 {
-    public static Seq<Error> ValueNotSpecified { get; } = Seq.create(new ValueNotSpecifiedError()).Cast<Error>();
+    public static Error ValueNotSpecified { get; } = new ValueNotSpecifiedError();
 }

@@ -26,7 +26,7 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
             .Entries<TEntity>()
             .Select(static e => e.Entity)
             .Where(condition)
-            .HeadOrNone();
+            .ToOption();
 
     public DbSet<TEntity> GetDbSet<TEntity>()
         where TEntity : class =>

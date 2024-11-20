@@ -51,7 +51,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             .ApplyErrors(modelStateDictionary)
             .AddProblemDetailsExtensions(httpContext.TraceIdentifier);
 
-    public ProblemDetails ConvertToProblem(Seq<Error> errors, string? traceIdentifier = null) =>
+    public ProblemDetails ConvertToProblem(IReadOnlyCollection<Error> errors, string? traceIdentifier = null) =>
         InternalConvertToProblem(errors)
             .AddProblemDetailsExtensions(traceIdentifier)
             .AddProblemDetailsExtensions(errors);

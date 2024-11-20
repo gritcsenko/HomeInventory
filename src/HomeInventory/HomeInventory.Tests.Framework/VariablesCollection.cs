@@ -6,29 +6,29 @@ public sealed class VariablesContainer : IAsyncDisposable
 
     public PropertyValue<T> Add<T>(IVariable<T> variable, Func<T> createValueFunc)
         where T : notnull =>
-        GetAllValues(variable).Add(createValueFunc);
+        AllFor(variable).Add(createValueFunc);
 
     public async Task<PropertyValue<T>> AddAsync<T>(IVariable<T> variable, Func<Task<T>> createValueFunc)
         where T : notnull =>
-        await GetAllValues(variable).AddAsync(createValueFunc);
+        await AllFor(variable).AddAsync(createValueFunc);
 
     public Option<PropertyValue<T>> TryGet<T>(IIndexedVariable<T> variable)
         where T : notnull =>
-        GetAllValues(variable).TryGet(variable.Index);
+        AllFor(variable).TryGet(variable.Index);
 
     public Option<PropertyValue<T>> TryGetOrAdd<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
         where T : notnull =>
-        GetAllValues(variable).TryGetOrAdd(variable.Index, createValueFunc);
+        AllFor(variable).TryGetOrAdd(variable.Index, createValueFunc);
 
     public IEnumerable<T> GetAll<T>(IVariable<T> variable)
         where T : notnull =>
-        GetAllValues(variable).GetAll();
+        AllFor(variable).Values();
 
     public Option<PropertyValue<T>> TryUpdate<T>(IIndexedVariable<T> variable, Func<T> createValueFunc)
         where T : notnull =>
-        GetAllValues(variable).TrySet(variable.Index, createValueFunc);
+        AllFor(variable).TrySet(variable.Index, createValueFunc);
 
-    private VariableValues<T> GetAllValues<T>(IVariable<T> variable)
+    private VariableValues<T> AllFor<T>(IVariable<T> variable)
         where T : notnull =>
         _variables.GetOrAdd(variable.Name, static _ => new VariableValues<T>());
 

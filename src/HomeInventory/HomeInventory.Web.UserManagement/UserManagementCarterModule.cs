@@ -39,7 +39,7 @@ public class UserManagementCarterModule(IMapper mapper, ISender sender, IScopeAc
         return await result.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
             async error =>
             {
-                var problem = _problemDetailsFactory.ConvertToProblem(new([error]), context.TraceIdentifier);
+                var problem = _problemDetailsFactory.ConvertToProblem([error], context.TraceIdentifier);
                 return await Task.FromResult(TypedResults.Problem(problem));
             },
             async () =>

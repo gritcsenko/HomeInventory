@@ -24,7 +24,7 @@ internal sealed class EnumerationItemsCollection<T> : ISpannableCollection<T>
         _flattened = new(() => _items.Flatten().ToArray());
     }
 
-    public Option<T> this[string name] => _items[name].HeadOrNone();
+    public Option<T> this[string name] => _items[name].ToOption();
 
     public Span<T> AsSpan() => new(_flattened.Value);
 

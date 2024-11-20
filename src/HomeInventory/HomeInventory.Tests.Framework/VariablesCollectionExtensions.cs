@@ -1,4 +1,6 @@
-﻿namespace HomeInventory.Tests.Framework;
+﻿using Range = System.Range;
+
+namespace HomeInventory.Tests.Framework;
 
 public static class VariablesCollectionExtensions
 {

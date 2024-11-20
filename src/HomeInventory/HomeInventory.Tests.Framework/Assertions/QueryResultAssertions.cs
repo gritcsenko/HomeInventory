@@ -8,7 +8,7 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject, AssertionC
 {
     protected override string Identifier => "validation";
 
-    public AndWhichConstraint<QueryResultAssertions<T>, Seq<Error>> BeFail(string because = "", params object[] becauseArgs)
+    public AndWhichConstraint<QueryResultAssertions<T>, Error> BeFail(string because = "", params object[] becauseArgs)
     {
         CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
@@ -17,7 +17,7 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject, AssertionC
                 .ForCondition(subject => subject.IsFail)
                 .FailWith("but found to be {0}.", Subject));
 
-        return new(this, Subject.FailAsEnumerable());
+        return new(this, Subject.Fail);
     }
 
     public AndWhichConstraint<QueryResultAssertions<T>, T> BeSuccess(string because = "", params object[] becauseArgs)
@@ -29,7 +29,7 @@ public sealed class QueryResultAssertions<T>(IQueryResult<T> subject, AssertionC
                 .ForCondition(subject => subject.IsSuccess)
                 .FailWith("but found to be {0}.", Subject));
 
-        return new(this, Subject.SuccessAsEnumerable());
+        return new(this, Subject.Success);
     }
 
     public AndConstraint<QueryResultAssertions<T>> BeSuccess(Action<T> action, string because = "", params object[] becauseArgs)

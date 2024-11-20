@@ -52,7 +52,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<AuthenticateQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Option<User>.None);
 
         var sut = CreateSut();
         // When

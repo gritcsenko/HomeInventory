@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
+using LanguageExt;
 
 namespace HomeInventory.Contracts.UserManagement.Validators;
 
@@ -13,7 +14,7 @@ internal sealed class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> re
         value == null
         || _requiredSets
             .Where(set => !set.ContainsAny(value))
-            .HeadOrNone()
+            .ToOption()
             .Map(set =>
             {
                 context.MessageFormatter.AppendArgument("Category", set.Name);

@@ -20,10 +20,10 @@ public static class ProblemDetailsFactoryExtensions
             value => TypedResults.Ok(onValue(value)),
             error =>
             {
-                var problem = factory.ConvertToProblem(error, traceIdentifier);
+                var problem = factory.ConvertToProblem([error], traceIdentifier);
                 return TypedResults.Problem(problem);
             });
 
     private static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, IEnumerable<ValidationFailure> failures, string? traceIdentifier = null) =>
-        factory.ConvertToProblem(failures.Select(static x => new ValidationError(x.ErrorMessage, x.AttemptedValue)).Cast<Error>().ToSeq(), traceIdentifier);
+        factory.ConvertToProblem(failures.Select(static x => new ValidationError(x.ErrorMessage, x.AttemptedValue)).ToArray(), traceIdentifier);
 }

@@ -36,7 +36,7 @@ internal static class ProblemDetailsExtensions
         return problemDetails;
     }
 
-    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, Seq<Error> errors)
+    public static TProblem AddProblemDetailsExtensions<TProblem>(this TProblem problemDetails, IReadOnlyCollection<Error> errors)
         where TProblem : ProblemDetails
     {
         problemDetails.Extensions["errorCodes"] = errors.Select(static e => e.GetType().Name).ToArray();

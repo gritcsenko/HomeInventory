@@ -19,7 +19,10 @@ public class JsonElementAssertions(JsonElement value, AssertionChain assertionCh
         ShouldBeArray(because, becauseArgs);
         ShouldHaveCount(items.Count, because, becauseArgs);
 
-        Subject.EnumerateArray().Zip(items).Iter(tuple => assert(tuple.Item1, tuple.Item2));
+        foreach (var (element, item) in Subject.EnumerateArray().Zip(items))
+        {
+            assert(element, item);
+        }
 
         return new(this);
     }
@@ -27,7 +30,10 @@ public class JsonElementAssertions(JsonElement value, AssertionChain assertionCh
     public AndConstraint<JsonElementAssertions> BeArray(Action<JsonElement> assert, string because = "", params object[] becauseArgs)
     {
         ShouldBeArray(because, becauseArgs);
-        Subject.EnumerateArray().Iter(assert);
+        foreach (var element in Subject.EnumerateArray())
+        {
+            assert(element);
+        }
 
         return new(this);
     }

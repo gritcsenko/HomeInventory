@@ -47,7 +47,7 @@ public class UserIdQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<UserIdQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Option<User>.None);
 
         var sut = CreateSut();
 

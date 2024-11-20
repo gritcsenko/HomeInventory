@@ -26,6 +26,6 @@ internal sealed class ErrorMapping(HttpStatusCode defaultError, HttpStatusCode d
             type = type.BaseType;
         }
 
-        return OptionNone.Default;
+        return Option<HttpStatusCode>.None;
     }
 }
