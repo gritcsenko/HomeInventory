@@ -1,7 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\HomeInventory.Core\HomeInventory.Core.csproj" />
     <ProjectReference Include="..\HomeInventory.Modules.Interfaces\HomeInventory.Modules.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LanguageExt.Core" />
   </ItemGroup>
 
 </Project>

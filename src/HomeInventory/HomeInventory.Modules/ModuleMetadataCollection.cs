@@ -1,5 +1,7 @@
 using System.Collections;
+using HomeInventory.Core;
 using HomeInventory.Modules.Interfaces;
+using LanguageExt;
 
 namespace HomeInventory.Modules;
 
