@@ -2,6 +2,7 @@
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
 using HomeInventory.Modules;
+using HomeInventory.Modules.Interfaces;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -23,6 +24,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         ["ContractsUserManagement"] = new BaseAssemblyReference(typeof(RegisterRequest)),
         ["ContractsUserManagementValidators"] = new BaseAssemblyReference(typeof(ContractsUserManagementValidatorsModule)),
         ["Modules"] = new BaseAssemblyReference(typeof(ModulesHost)),
+        ["ModulesInterfaces"] = new BaseAssemblyReference(typeof(IModule)),
     };
 
     private static readonly string[] _allowedNamespaces =
@@ -44,6 +46,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         var contractsUserManagement = _references["ContractsUserManagement"];
         var contractsUserManagementValidators = _references["ContractsUserManagementValidators"];
         var modules = _references["Modules"];
+        var modulesInterfaces = _references["ModulesInterfaces"];
 
         Add(AssemblyReferences.Core, []);
         Add(contractsUserManagement, []);
@@ -67,6 +70,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
             AssemblyReferences.DomainPrimitives,
             AssemblyReferences.Core,
             modules,
+            modulesInterfaces,
         ]);
         Add(AssemblyReferences.Application,
         [
@@ -74,6 +78,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
             AssemblyReferences.DomainPrimitives,
             AssemblyReferences.Core,
             modules,
+            modulesInterfaces,
         ]);
         Add(AssemblyReferences.WebUserManagement,
         [
@@ -85,6 +90,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
             AssemblyReferences.Core,
             contractsUserManagement,
             modules,
+            modulesInterfaces,
         ]);
         Add(AssemblyReferences.Infrastructure,
         [
@@ -93,6 +99,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
             AssemblyReferences.DomainPrimitives,
             AssemblyReferences.Core,
             modules,
+            modulesInterfaces,
         ]);
 
         Add(AssemblyReferences.Api,
@@ -108,6 +115,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
             AssemblyReferences.DomainPrimitives,
             AssemblyReferences.Core,
             modules,
+            modulesInterfaces,
         ]);
     }
 
