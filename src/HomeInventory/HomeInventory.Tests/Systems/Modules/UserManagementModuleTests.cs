@@ -17,8 +17,8 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
         await Given
             .DataSources(out var dataSourcesVar)
             .RouteBuilder(out var routeBuilderVar, dataSourcesVar)
-            .Sut(out var sutVar)
             .InitializeHostAsync();
+        Given.Sut(out var sutVar);
 
         var then = When
             .Invoked(sutVar, routeBuilderVar, static (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
@@ -37,14 +37,15 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         await Given
-            .HttpContext(out var contextVar)
             .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
             .Map(registerRequestVar).To<UserIdQuery>(out var userIdQueryVar)
             .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
             .OnCommandReturnSuccess(registerCommandVar)
             .OnQueryReturn(userIdQueryVar, userIdResultVar)
-            .Sut(out var sutVar)
             .InitializeHostAsync();
+        Given
+            .HttpContext(out var contextVar)
+            .Sut(out var sutVar);
 
         var then = await When
             .InvokedAsync(sutVar, registerRequestVar, contextVar, static (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
@@ -59,12 +60,13 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         await Given
-            .HttpContext(out var contextVar)
             .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
             .New<DuplicateEmailError>(out var errorVar)
             .OnCommandReturnError(registerCommandVar, errorVar)
-            .Sut(out var sutVar)
             .InitializeHostAsync();
+        Given
+            .HttpContext(out var contextVar)
+            .Sut(out var sutVar);
 
         var then = await When
             .InvokedAsync(sutVar, registerRequestVar, contextVar, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));

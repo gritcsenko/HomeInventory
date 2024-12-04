@@ -1,6 +1,7 @@
 ﻿using HomeInventory.Contracts;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
+using HomeInventory.Modules;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -21,17 +22,18 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         ["Contracts"] = new BaseAssemblyReference(typeof(LoginRequest)),
         ["ContractsUserManagement"] = new BaseAssemblyReference(typeof(RegisterRequest)),
         ["ContractsUserManagementValidators"] = new BaseAssemblyReference(typeof(ContractsUserManagementValidatorsModule)),
+        ["Modules"] = new BaseAssemblyReference(typeof(ModulesHost)),
     };
 
-    private static readonly string[] _allowedNamespaces = [
-      "",
+    private static readonly string[] _allowedNamespaces =
+    [
+        "",
         "System",
         "LanguageExt",
         "FluentValidation",
         "Carter",
         "Serilog",
         "MediatR",
-        "HomeInventory.Modules",
         "Microsoft",
         "AutoMapper",
     ];
@@ -41,21 +43,77 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         var contracts = _references["Contracts"];
         var contractsUserManagement = _references["ContractsUserManagement"];
         var contractsUserManagementValidators = _references["ContractsUserManagementValidators"];
+        var modules = _references["Modules"];
 
-        Add(AssemblyReferences.Core);
-        Add(contractsUserManagement);
-        Add(contractsUserManagementValidators, contractsUserManagement, AssemblyReferences.WebFramework);
-        Add(contracts);
-        Add(AssemblyReferences.ContractValidations, contracts, AssemblyReferences.WebFramework);
-        Add(AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
-        Add(AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
-        Add(AssemblyReferences.Application, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
-        Add(AssemblyReferences.WebUserManagement, AssemblyReferences.Application, AssemblyReferences.ContractValidations, contracts, AssemblyReferences.WebFramework, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core, contractsUserManagement);
-        Add(AssemblyReferences.Infrastructure, AssemblyReferences.Application, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
-        Add(AssemblyReferences.Api, AssemblyReferences.Web, AssemblyReferences.Infrastructure, AssemblyReferences.Application, AssemblyReferences.WebUserManagement, AssemblyReferences.WebFramework, contractsUserManagementValidators, AssemblyReferences.ContractValidations, AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.Core);
+        Add(AssemblyReferences.Core, []);
+        Add(contractsUserManagement, []);
+        Add(contractsUserManagementValidators,
+        [
+            contractsUserManagement,
+            AssemblyReferences.WebFramework,
+        ]);
+        Add(contracts, []);
+        Add(AssemblyReferences.ContractValidations,
+        [
+            contracts,
+            AssemblyReferences.WebFramework,
+        ]);
+        Add(AssemblyReferences.DomainPrimitives,
+        [
+            AssemblyReferences.Core,
+        ]);
+        Add(AssemblyReferences.Domain,
+        [
+            AssemblyReferences.DomainPrimitives,
+            AssemblyReferences.Core,
+            modules,
+        ]);
+        Add(AssemblyReferences.Application,
+        [
+            AssemblyReferences.Domain,
+            AssemblyReferences.DomainPrimitives,
+            AssemblyReferences.Core,
+            modules,
+        ]);
+        Add(AssemblyReferences.WebUserManagement,
+        [
+            AssemblyReferences.Application,
+            AssemblyReferences.ContractValidations, contracts,
+            AssemblyReferences.WebFramework,
+            AssemblyReferences.Domain,
+            AssemblyReferences.DomainPrimitives,
+            AssemblyReferences.Core,
+            contractsUserManagement,
+            modules,
+        ]);
+        Add(AssemblyReferences.Infrastructure,
+        [
+            AssemblyReferences.Application,
+            AssemblyReferences.Domain,
+            AssemblyReferences.DomainPrimitives,
+            AssemblyReferences.Core,
+            modules,
+        ]);
+
+        Add(AssemblyReferences.Api,
+        [
+            AssemblyReferences.Web,
+            AssemblyReferences.Infrastructure,
+            AssemblyReferences.Application,
+            AssemblyReferences.WebUserManagement,
+            AssemblyReferences.WebFramework,
+            contractsUserManagementValidators,
+            AssemblyReferences.ContractValidations,
+            AssemblyReferences.Domain,
+            AssemblyReferences.DomainPrimitives,
+            AssemblyReferences.Core,
+            modules,
+        ]);
     }
 
-    private void Add(IAssemblyReference reference, params IAssemblyReference[] allowed)
+    public static IReadOnlyDictionary<string, IAssemblyReference> References => _references;
+
+    private void Add(IAssemblyReference reference, IAssemblyReference[] allowed)
     {
         var explicitNamespaces = allowed.Concat(reference).SelectMany(r => Extend(r.Namespace));
         var implicitNamespaces = _allowedNamespaces.SelectMany(Extend);
@@ -67,6 +125,4 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
 
         static IEnumerable<string> Extend(string ns) => [ns, ns + ".*", ns + ".*.*", ns + ".*.*.*", ns + ".*.*.*.*"];
     }
-
-    public static IReadOnlyDictionary<string, IAssemblyReference> References => _references;
 }

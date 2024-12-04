@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Ids;
-
-namespace HomeInventory.Tests.Systems.Mapping;
+﻿namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>(static t => new(t))
@@ -48,21 +46,4 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
             .Catched(sutVar, idVar, static (sut, id) => sut.Convert(id))
             .Exception<ValidationException>(static ex => ex.Which.Value.Should().Be(Ulid.Empty));
     }
-}
-
-public sealed class UlidIdConverterTestsGivenContext : GivenContext<UlidIdConverterTestsGivenContext, UlidIdConverter<TestId>>
-{
-    public UlidIdConverterTestsGivenContext(BaseTest test)
-        : base(test) =>
-        test.Fixture.CustomizeUlid();
-
-    internal UlidIdConverterTestsGivenContext Empty(out IVariable<Ulid> empty) =>
-        New(out empty, static () => Ulid.Empty);
-
-    protected override UlidIdConverter<TestId> CreateSut() => new();
-}
-
-public class TestId(Ulid value) : UlidIdentifierObject<TestId>(value), IUlidBuildable<TestId>
-{
-    public static TestId CreateFrom(Ulid value) => new(value);
 }

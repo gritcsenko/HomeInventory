@@ -5,7 +5,7 @@ namespace HomeInventory.Modules;
 
 public class ModulesCollection : IReadOnlyCollection<IModule>
 {
-    private readonly System.Collections.Generic.HashSet<IModule> _modules = new(new ModuleEqualityComparer());
+    private readonly HashSet<IModule> _modules = new(new ModuleEqualityComparer());
 
     public int Count => _modules.Count;
 

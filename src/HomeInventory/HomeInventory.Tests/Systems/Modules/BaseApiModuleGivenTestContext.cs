@@ -45,6 +45,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             .AddOptions(new ApiBehaviorOptions())
             .AddSingleton<HomeInventoryProblemDetailsFactory>()
             .AddSingleton<IProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
+            .AddSingleton(_configuration)
             .AddSingleton<TModule>();
 
         _lazyServiceProvider = new(_services.BuildServiceProvider);
@@ -67,7 +68,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     public TGiven RouteBuilder(out IVariable<IEndpointRouteBuilder> routeBuilder, IVariable<List<EndpointDataSource>> dataSources) =>
         SubstituteFor(out routeBuilder, dataSources, (b, s) =>
         {
-            b.ServiceProvider.Returns(ServiceProvider);
+            b.ServiceProvider.Returns(_ => ServiceProvider);
             b.DataSources.Returns(s);
         });
 

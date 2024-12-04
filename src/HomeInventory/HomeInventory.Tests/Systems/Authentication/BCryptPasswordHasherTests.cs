@@ -1,7 +1,4 @@
-﻿using HomeInventory.Application.UserManagement.Interfaces;
-using HomeInventory.Infrastructure.UserManagement.Services;
-
-namespace HomeInventory.Tests.Systems.Authentication;
+﻿namespace HomeInventory.Tests.Systems.Authentication;
 
 [UnitTest]
 public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGivenContext>(static t => new(t))
@@ -55,9 +52,4 @@ public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGiv
             .Result(static actual =>
                 actual.Should().BeTrue());
     }
-}
-
-public sealed class BCryptPasswordHasherTestsGivenContext(BaseTest test) : GivenContext<BCryptPasswordHasherTestsGivenContext, IPasswordHasher>(test)
-{
-    protected override IPasswordHasher CreateSut() => new BCryptPasswordHasher() { WorkFactor = 6 };
 }
