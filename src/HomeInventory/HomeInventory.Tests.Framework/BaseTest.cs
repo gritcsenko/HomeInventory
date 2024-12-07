@@ -1,5 +1,4 @@
-﻿using HomeInventory.Domain;
-using HomeInventory.Tests.Framework.Attributes;
+﻿using HomeInventory.Tests.Framework.Attributes;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -8,14 +7,11 @@ namespace HomeInventory.Tests.Framework;
 public abstract class BaseTest : IAsyncLifetime
 {
     private readonly List<IAsyncDisposable> _asyncDisposables = [];
-    private readonly Lazy<CancellationImplementation> _lazyCancellation = new(static () => new CancellationImplementation());
+    private readonly Lazy<CancellationImplementation> _lazyCancellation = new(static () => new());
     private readonly Lazy<IFixture> _lazyFixture = new(static () => new Fixture());
     private readonly Lazy<TimeProvider> _lazyDateTime = new(static () => new FixedTimeProvider(TimeProvider.System));
 
-    protected BaseTest()
-    {
-        AddDisposable(_lazyCancellation.ToDisposable());
-    }
+    protected BaseTest() => AddDisposable(_lazyCancellation.ToDisposable());
 
     protected internal IFixture Fixture => _lazyFixture.Value;
 
@@ -23,10 +19,7 @@ public abstract class BaseTest : IAsyncLifetime
 
     protected internal TimeProvider DateTime => _lazyDateTime.Value;
 
-    public virtual Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
+    public virtual Task InitializeAsync() => Task.CompletedTask;
 
     public virtual async Task DisposeAsync()
     {
@@ -52,7 +45,7 @@ public abstract class BaseTest<TGiven> : BaseTest
     protected BaseTest(Func<BaseTest, TGiven> createGiven)
     {
         _lazyGiven = new(() => createGiven(this));
-        _lazyWhen = new(() => new WhenContext(Given.Variables, Cancellation));
+        _lazyWhen = new(() => new(Given.Variables, Cancellation));
         AddDisposable(_lazyGiven.ToAsyncDisposable());
     }
 

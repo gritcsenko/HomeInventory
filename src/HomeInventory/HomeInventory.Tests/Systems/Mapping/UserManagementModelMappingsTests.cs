@@ -1,25 +1,30 @@
-﻿using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Models;
+﻿using HomeInventory.Api;
+using HomeInventory.Domain;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
+using HomeInventory.Infrastructure.UserManagement.Models;
+using HomeInventory.Modules;
 using HomeInventory.Web.UserManagement;
+using Microsoft.Extensions.Configuration;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class UserManagementModelMappingsTests : BaseMappingsTests
 {
-    public UserManagementModelMappingsTests()
-    {
-        Services.AddDomain();
-        Services.AddInfrastructure();
-        Fixture.CustomizeId<UserId>();
-    }
+    private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule()]);
+    private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IServiceCollection _services = new ServiceCollection();
+
+    public UserManagementModelMappingsTests() => Fixture.CustomizeId<UserId>();
 
     [Theory]
     [MemberData(nameof(MapData))]
-    public void ShouldMap(object instance, Type destination)
+    public async Task ShouldMap(object instance, Type destination)
     {
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
         var source = instance.GetType();
 
@@ -29,8 +34,9 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     }
 
     [Fact]
-    public void ShouldMapUserModelToUser()
+    public async Task ShouldMapUserModelToUser()
     {
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
 
@@ -43,8 +49,9 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     }
 
     [Fact]
-    public void ShouldProjectUserModelToUser()
+    public async Task ShouldProjectUserModelToUser()
     {
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
         var source = new[] { instance }.AsQueryable();
@@ -56,9 +63,10 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 
     public static TheoryData<object, Type> MapData()
     {
+        var timestamp = new DateTimeOffset(new(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
         var fixture = new Fixture();
-        fixture.CustomizeId<UserId>();
-        fixture.CustomizeEmail();
+        fixture.CustomizeId<UserId>(timestamp);
+        fixture.CustomizeEmail(timestamp);
 
         var data = new TheoryData<object, Type>();
 

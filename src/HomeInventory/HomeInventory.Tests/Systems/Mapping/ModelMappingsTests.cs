@@ -1,57 +1,67 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using AutoFixture.Kernel;
+using HomeInventory.Api;
+using HomeInventory.Application.Framework;
+using HomeInventory.Domain;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
+using HomeInventory.Modules;
+using Microsoft.Extensions.Configuration;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class ModelMappingsTests : BaseMappingsTests
 {
+    private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule(), new ApplicationMappingModule()]);
+    private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IServiceCollection _services = new ServiceCollection();
+
     public ModelMappingsTests()
     {
-        Services.AddDomain();
-        Services.AddInfrastructure();
+        _services.AddSingleton(_configuration);
+
+        var timestamp = new DateTimeOffset(new(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
+        Fixture.CustomizeId<ProductId>(timestamp);
+
+        var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
+        Fixture.CustomizeFromFactory<AmountUnit, int>(i => items.ElementAt(i % items.Count));
+        Fixture.CustomizeFromFactory<Amount, (decimal value, AmountUnit unit)>(x => new(x.value, x.unit));
+
+        Fixture.Customize<ProductAmountModel>(builder => builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));
     }
 
     [Theory]
     [MemberData(nameof(MapData))]
-    public void ShouldMap(object instance, Type destination)
+    public async Task ShouldMap(Type sourceType, Type destinationType)
     {
+        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<ModelMappings>();
-        var source = instance.GetType();
+        var source = new SpecimenContext(Fixture).Resolve(new SeededRequest(sourceType, null));
 
-        var target = sut.Map(instance, source, destination);
+        var target = sut.Map(source, sourceType, destinationType);
 
-        target.Should().BeAssignableTo(destination);
+        target.Should().BeAssignableTo(destinationType);
     }
 
-    public static TheoryData<object, Type> MapData()
+    public static TheoryData<Type, Type> MapData()
     {
-        var fixture = new Fixture();
-        fixture.CustomizeId<ProductId>();
+        var data = new TheoryData<Type, Type>();
 
-        var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
-        fixture.CustomizeFromFactory<AmountUnit, int>(i => items.ElementAt(i % items.Count));
-        fixture.CustomizeFromFactory<Amount, (decimal value, AmountUnit unit)>(x => new Amount(x.value, x.unit));
+        Add<ProductId, Ulid>(data);
 
-        fixture.Customize<ProductAmountModel>(builder =>
-            builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));
-
-        var data = new TheoryData<object, Type>();
-
-        Add<ProductId, Ulid>(fixture, data);
-
-        Add<Amount, ProductAmountModel>(fixture, data);
+        Add<Amount, ProductAmountModel>(data);
 
         return data;
 
-        static void Add<T1, T2>(IFixture fixture, TheoryData<object, Type> data)
+        static void Add<T1, T2>(TheoryData<Type, Type> data)
             where T1 : notnull
             where T2 : notnull
         {
-            data.Add(fixture.Create<T1>(), typeof(T2));
-            data.Add(fixture.Create<T2>(), typeof(T1));
+            data.Add(typeof(T1), typeof(T2));
+            data.Add(typeof(T2), typeof(T1));
         }
     }
 }

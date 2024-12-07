@@ -14,6 +14,7 @@ internal static class ObjectExtensions
                 {
                     return true;
                 }
+
                 if (actual is null || expected is null)
                 {
                     return false;
@@ -58,9 +59,8 @@ internal static class ObjectExtensions
         Convert.ChangeType(source, targetType, formatProvider);
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4201:Null checks should not be used with \"is\"", Justification = "Due to https://github.com/dotnet/runtime/issues/47920#issuecomment-774481505")]
-    private static bool IsNumericType(this object obj)
-    {
-        return obj is not null and (
+    private static bool IsNumericType(this object obj) =>
+        obj is not null and (
             int or
             long or
             float or
@@ -72,5 +72,4 @@ internal static class ObjectExtensions
             ushort or
             uint or
             ulong);
-    }
 }
