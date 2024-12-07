@@ -31,7 +31,7 @@
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
     <PackageVersion Include="Scrutor" Version="5.0.2" />
-    <PackageVersion Include="Serilog" Version="4.1.0" />
+    <PackageVersion Include="Serilog" Version="4.2.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
     <PackageVersion Include="Serilog.Enrichers.Demystifier" Version="1.0.3" />
     <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
