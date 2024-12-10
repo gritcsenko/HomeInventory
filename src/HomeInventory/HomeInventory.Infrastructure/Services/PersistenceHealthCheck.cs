@@ -22,7 +22,7 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
         var canConnect = await database.CanConnectAsync(cancellationToken);
         if (!canConnect)
         {
-            return new HealthCheckStatus
+            return new()
             {
                 IsFailed = true,
                 Description = "Cannot connect to the database",
@@ -38,7 +38,7 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
             var count = pendingMigrations.Count();
             if (count != 0)
             {
-                return new HealthCheckStatus
+                return new()
                 {
                     IsFailed = true,
                     Description = $"Database has {count} pending migrations",
@@ -50,7 +50,7 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
             }
         }
 
-        return new HealthCheckStatus
+        return new()
         {
             Description = "Database is healthy",
             Data = {

@@ -1,5 +1,5 @@
 ﻿namespace HomeInventory.Contracts;
 
-public record class LoginRequest(
+public record LoginRequest(
     string Email,
     string Password);

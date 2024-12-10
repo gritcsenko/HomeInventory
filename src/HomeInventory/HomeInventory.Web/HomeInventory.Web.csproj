@@ -22,8 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application\HomeInventory.Application.csproj" />
-    <ProjectReference Include="..\HomeInventory.Contracts.UserManagement.Validators\HomeInventory.Contracts.UserManagement.Validators.csproj" />
-    <ProjectReference Include="..\HomeInventory.Contracts.Validations\HomeInventory.Contracts.Validations.csproj" />
+    <ProjectReference Include="..\HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
     <ProjectReference Include="..\HomeInventory.Web.Framework\HomeInventory.Web.Framework.csproj" />
   </ItemGroup>
 
