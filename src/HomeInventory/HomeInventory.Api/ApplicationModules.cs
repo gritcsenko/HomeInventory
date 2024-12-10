@@ -18,7 +18,7 @@ using HomeInventory.Web.UserManagement;
 
 namespace HomeInventory.Api;
 
-public sealed class ApplicationModules : ModulesCollection
+internal sealed class ApplicationModules : ModulesCollection
 {
     public ApplicationModules()
     {

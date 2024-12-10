@@ -20,6 +20,8 @@
     <IsContractsProject Condition="$(MSBuildProjectName.Contains('Contracts')) AND '$(IsCsProject)' == 'true'">true</IsContractsProject>
     <IsModulesProject>false</IsModulesProject>
     <IsModulesProject Condition="$(MSBuildProjectName.Contains('Modules')) AND '$(IsCsProject)' == 'true'">true</IsModulesProject>
+    <IsTestsProject>false</IsTestsProject>
+    <IsTestsProject Condition="$(MSBuildProjectName.Contains('Tests')) AND '$(IsCsProject)' == 'true'">true</IsTestsProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +35,10 @@
   <ItemGroup Condition="'$(IsCsProject)' == 'true'">
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="All"/>
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(IsTestsProject)' == 'true'">
+    <NoWarn>$(NoWarn);CA1515</NoWarn>
+  </PropertyGroup>
 
   <ItemGroup Condition="'$(IsContractsProject)' == 'false' AND '$(IsModulesProject)' == 'false'">
     <Using Include="LanguageExt"/>

@@ -46,7 +46,6 @@ public abstract class BaseTest<TGiven> : BaseTest
     {
         _lazyGiven = new(() => createGiven(this));
         _lazyWhen = new(() => new(Given.Variables, Cancellation));
-        AddDisposable(_lazyGiven.ToAsyncDisposable());
     }
 
     protected TGiven Given => _lazyGiven.Value;

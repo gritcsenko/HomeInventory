@@ -1,6 +1,7 @@
 ﻿using AutoFixture.Kernel;
 using HomeInventory.Api;
 using HomeInventory.Application.Framework;
+using HomeInventory.Application.Framework.Mapping;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
@@ -17,11 +18,10 @@ public class ModelMappingsTests : BaseMappingsTests
 {
     private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule(), new ApplicationMappingModule()]);
     private readonly IConfiguration _configuration = new ConfigurationManager();
-    private readonly IServiceCollection _services = new ServiceCollection();
 
     public ModelMappingsTests()
     {
-        _services.AddSingleton(_configuration);
+        Services.AddSingleton(_configuration);
 
         var timestamp = new DateTimeOffset(new(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
         Fixture.CustomizeId<ProductId>(timestamp);
@@ -33,17 +33,23 @@ public class ModelMappingsTests : BaseMappingsTests
         Fixture.Customize<ProductAmountModel>(builder => builder.With(m => m.UnitName, (AmountUnit unit) => unit.Name));
     }
 
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        await _host.AddModulesAsync(Services, _configuration);
+    }
+
     [Theory]
     [MemberData(nameof(MapData))]
-    public async Task ShouldMap(Type sourceType, Type destinationType)
+    public void ShouldMap(Type sourceType, Type destinationType)
     {
-        await _host.AddModulesAsync(_services, _configuration);
-        var sut = CreateSut<ModelMappings>();
         var source = new SpecimenContext(Fixture).Resolve(new SeededRequest(sourceType, null));
+        var sut = CreateSut<ModelMappings>();
 
-        var target = sut.Map(source, sourceType, destinationType);
+        var actual = sut.Map(source, sourceType, destinationType);
 
-        target.Should().BeAssignableTo(destinationType);
+        actual.Should().BeAssignableTo(destinationType);
     }
 
     public static TheoryData<Type, Type> MapData()

@@ -4,7 +4,7 @@ namespace HomeInventory.Api;
 
 [SuppressMessage("Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "By design")]
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-public class Program
+internal class Program
 {
     protected Program()
     {

@@ -16,15 +16,24 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 {
     private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule()]);
     private readonly IConfiguration _configuration = new ConfigurationManager();
-    private readonly IServiceCollection _services = new ServiceCollection();
 
-    public UserManagementModelMappingsTests() => Fixture.CustomizeId<UserId>();
+    public UserManagementModelMappingsTests()
+    {
+        Fixture.CustomizeId<UserId>();
+        Services.AddSingleton(_configuration);
+    }
+
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        await _host.AddModulesAsync(Services, _configuration);
+    }
 
     [Theory]
     [MemberData(nameof(MapData))]
-    public async Task ShouldMap(object instance, Type destination)
+    public void ShouldMap(object instance, Type destination)
     {
-        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
         var source = instance.GetType();
 
@@ -34,9 +43,8 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     }
 
     [Fact]
-    public async Task ShouldMapUserModelToUser()
+    public void ShouldMapUserModelToUser()
     {
-        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
 
@@ -49,9 +57,8 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     }
 
     [Fact]
-    public async Task ShouldProjectUserModelToUser()
+    public void ShouldProjectUserModelToUser()
     {
-        await _host.AddModulesAsync(_services, _configuration);
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
         var instance = Fixture.Create<UserModel>();
         var source = new[] { instance }.AsQueryable();

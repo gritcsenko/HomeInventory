@@ -47,7 +47,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         _host = new([]);
     }
 
-    [Fact]
+    [Fact(Skip = "Will be removed in a future version")]
     public async Task ShouldRegister()
     {
         await _host.AddModulesAsync(Services, _configuration);

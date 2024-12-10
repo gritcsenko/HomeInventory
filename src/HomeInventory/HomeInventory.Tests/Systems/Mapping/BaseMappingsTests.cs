@@ -5,10 +5,12 @@ namespace HomeInventory.Tests.Systems.Mapping;
 
 public abstract class BaseMappingsTests : BaseTest
 {
-    private readonly ServiceCollection _services = new();
+    private readonly ServiceCollection _services = [];
     private readonly DefaultServiceProviderFactory _factory = new(new() { ValidateOnBuild = true, ValidateScopes = true });
 
     protected BaseMappingsTests() => _services.AddMappingAssemblySource();
+    
+    protected IServiceCollection Services => _services;
 
     protected virtual IMapper CreateSut<TMapper>()
         where TMapper : Profile, new()

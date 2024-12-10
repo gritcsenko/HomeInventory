@@ -1,15 +1,9 @@
 ﻿
 namespace HomeInventory.Tests.Framework;
 
-public abstract class BaseContext(VariablesContainer variables) : IAsyncDisposable
+public abstract class BaseContext(VariablesContainer variables) 
 {
     protected internal VariablesContainer Variables { get; } = variables;
-
-    public ValueTask DisposeAsync()
-    {
-        GC.SuppressFinalize(this);
-        return Variables.DisposeAsync();
-    }
 
     protected T GetValue<T>(IVariable<T> variable)
         where T : notnull =>

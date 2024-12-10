@@ -1,4 +1,5 @@
-﻿using HomeInventory.Modules.Interfaces;
+﻿using HomeInventory.Application.Framework.Mapping;
+using HomeInventory.Modules.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Application.Framework;
@@ -10,6 +11,7 @@ public sealed class ApplicationMappingModule : BaseModule
         await base.AddServicesAsync(context);
 
         context.Services
+            .AddSingleton(typeof(TypeConverterAdapter<,,>))    
             .AddAutoMapper(static (sp, configExpression) =>
             {
                 configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(static s => s.GetAssemblies()));

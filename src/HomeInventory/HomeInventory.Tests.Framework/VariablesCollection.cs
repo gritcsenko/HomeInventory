@@ -1,6 +1,6 @@
 ﻿namespace HomeInventory.Tests.Framework;
 
-public sealed class VariablesContainer : IAsyncDisposable
+public sealed class VariablesContainer
 {
     private readonly Dictionary<string, IVariableValues> _variables = [];
 
@@ -31,14 +31,4 @@ public sealed class VariablesContainer : IAsyncDisposable
     private VariableValues<T> AllFor<T>(IVariable<T> variable)
         where T : notnull =>
         _variables.GetOrAdd(variable.Name, static _ => new VariableValues<T>());
-
-    public async ValueTask DisposeAsync()
-    {
-        foreach (var collection in _variables.Values)
-        {
-            await collection.DisposeAsync();
-        }
-
-        _variables.Clear();
-    }
 }

@@ -5,11 +5,11 @@ namespace HomeInventory.Tests.DependencyInjection;
 
 public abstract class BaseDependencyInjectionTest : BaseTest
 {
-    protected ServiceProviderOptions DefaultOptions { get; } = new();
+    private readonly ServiceProviderOptions _defaultOptions= new();
 
     protected IServiceCollection Services { get; } = new ServiceCollection();
 
-    protected ServiceProvider CreateProvider(ServiceProviderOptions? options = null) => Services.BuildServiceProvider(options ?? DefaultOptions);
+    protected ServiceProvider CreateProvider(ServiceProviderOptions? options = null) => Services.BuildServiceProvider(options ?? _defaultOptions);
 
     protected IConfigurationManager AddConfiguration(IEnumerable<KeyValuePair<string, string?>> inlineData)
     {
