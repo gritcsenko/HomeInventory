@@ -1,7 +1,7 @@
 ﻿
 namespace HomeInventory.Tests.Framework;
 
-public abstract class BaseContext(VariablesContainer variables) 
+public abstract class BaseContext(VariablesContainer variables)
 {
     protected internal VariablesContainer Variables { get; } = variables;
 

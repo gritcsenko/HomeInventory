@@ -6,7 +6,7 @@ public sealed class VariableValues<T> : IVariableValues
     private readonly List<PropertyValue<T>> _values = [];
 
     public int Count => _values.Count;
-    
+
     public PropertyValue<T> Add(Func<T> createValueFunc) => AddCore(createValueFunc());
 
     public async Task<PropertyValue<T>> AddAsync(Func<Task<T>> createValueFunc) => AddCore(await createValueFunc());

@@ -9,7 +9,7 @@ public abstract class BaseMappingsTests : BaseTest
     private readonly DefaultServiceProviderFactory _factory = new(new() { ValidateOnBuild = true, ValidateScopes = true });
 
     protected BaseMappingsTests() => _services.AddMappingAssemblySource();
-    
+
     protected IServiceCollection Services => _services;
 
     protected virtual IMapper CreateSut<TMapper>()

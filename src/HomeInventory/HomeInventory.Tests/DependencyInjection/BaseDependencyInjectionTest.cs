@@ -5,7 +5,7 @@ namespace HomeInventory.Tests.DependencyInjection;
 
 public abstract class BaseDependencyInjectionTest : BaseTest
 {
-    private readonly ServiceProviderOptions _defaultOptions= new();
+    private readonly ServiceProviderOptions _defaultOptions = new();
 
     protected IServiceCollection Services { get; } = new ServiceCollection();
 

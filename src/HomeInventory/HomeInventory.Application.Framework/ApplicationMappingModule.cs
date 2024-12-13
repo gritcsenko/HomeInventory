@@ -11,7 +11,7 @@ public sealed class ApplicationMappingModule : BaseModule
         await base.AddServicesAsync(context);
 
         context.Services
-            .AddSingleton(typeof(TypeConverterAdapter<,,>))    
+            .AddSingleton(typeof(TypeConverterAdapter<,,>))
             .AddAutoMapper(static (sp, configExpression) =>
             {
                 configExpression.AddMaps(sp.GetServices<IMappingAssemblySource>().SelectMany(static s => s.GetAssemblies()));
