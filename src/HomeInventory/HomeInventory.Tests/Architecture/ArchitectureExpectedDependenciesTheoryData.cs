@@ -1,4 +1,5 @@
-﻿using HomeInventory.Contracts;
+﻿using HomeInventory.Application.UserManagement;
+using HomeInventory.Contracts;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
 using HomeInventory.Modules;
@@ -25,6 +26,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         ["ContractsUserManagementValidators"] = new BaseAssemblyReference(typeof(ContractsUserManagementValidatorsModule)),
         ["Modules"] = new BaseAssemblyReference(typeof(ModulesHost)),
         ["ModulesInterfaces"] = new BaseAssemblyReference(typeof(IModule)),
+        ["ApplicationUserManagement"] = new BaseAssemblyReference(typeof(ApplicationUserManagementMediatrModule)),
     };
 
     private static readonly string[] _allowedNamespaces =
@@ -47,6 +49,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         var contractsUserManagementValidators = _references["ContractsUserManagementValidators"];
         var modules = _references["Modules"];
         var modulesInterfaces = _references["ModulesInterfaces"];
+        var applicationUserManagement = _references["ApplicationUserManagement"];
 
         Add(AssemblyReferences.Core, []);
         Add(contractsUserManagement, []);
@@ -104,10 +107,11 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
 
         Add(AssemblyReferences.Api,
         [
+            AssemblyReferences.Application,
             AssemblyReferences.Web,
             AssemblyReferences.Infrastructure,
-            AssemblyReferences.Application,
             AssemblyReferences.WebUserManagement,
+            applicationUserManagement,
             AssemblyReferences.WebFramework,
             contractsUserManagementValidators,
             AssemblyReferences.ContractValidations,
