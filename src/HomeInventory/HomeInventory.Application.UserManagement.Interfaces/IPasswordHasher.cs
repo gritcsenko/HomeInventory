@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Application.Interfaces.Authentication;
+﻿namespace HomeInventory.Application.UserManagement.Interfaces;
 
 public interface IPasswordHasher
 {

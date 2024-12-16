@@ -1,5 +1,5 @@
 ﻿using System.Transactions;
-using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;

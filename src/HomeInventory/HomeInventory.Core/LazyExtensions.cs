@@ -5,11 +5,11 @@ namespace HomeInventory.Core;
 public static class LazyExtensions
 {
     public static IDisposable ToDisposable<TDisposable>(this Lazy<TDisposable> lazy)
-        where TDisposable : notnull, IDisposable =>
+        where TDisposable : IDisposable =>
         Disposable.Create(lazy.DisposeIfCreated);
 
     public static IAsyncDisposable ToAsyncDisposable<TDisposable>(this Lazy<TDisposable> lazy)
-        where TDisposable : notnull, IAsyncDisposable =>
+        where TDisposable : IAsyncDisposable =>
         new AnonymousAsyncDisposable(lazy.DisposeAsyncIfCreated);
 
     private static void DisposeIfCreated<T>(this Lazy<T> lazy)

@@ -1,43 +1,30 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Framework;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
-public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesContainer())
+[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
+public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     where TContext : GivenContext<TContext>
 {
     private readonly IFixture _fixture = test.Fixture;
 
     protected TContext This => (TContext)this;
 
-    public TContext Customize(ICustomization customization)
-    {
-        _fixture.Customize(customization);
-        return This;
-    }
+    protected TContext Customize<TCustomization>()
+        where TCustomization : ICustomization, new() =>
+        Customize(new TCustomization());
 
     public TContext New<T>(out IVariable<T> variable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
-        New(out variable, () => _fixture.CreateMany<T>(count), name);
+        New(out variable, () => CreateMany<T>(count), name);
 
     public TContext New<T>(out IVariable<T> variable, Func<T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : notnull =>
         New(out variable, _ => create(), count, name);
 
-    public TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull =>
-        New(out variable, () => Enumerable.Range(0, count).Select(create), name);
-
-    public TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull
-    {
-        variable = new Variable<T>(name ?? typeof(T).Name);
-
-        return Add(variable, createMany);
-    }
-
     public TContext EmptyHashCode(out IVariable<HashCode> emptyHash) =>
-        New(out emptyHash, static () => new HashCode());
+        New(out emptyHash, static () => new());
 
     public TContext SubstituteFor<T, TArg1, TArg2>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, Action<T, TArg1, TArg2> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : class
@@ -53,9 +40,9 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     public TContext SubstituteFor<T>(out IVariable<T> variable, Action<T> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : class
     {
-        return New(out variable, () => Create(setup), name: name);
+        return New(out variable, () => CreateAndSetup(setup), name: name);
 
-        static T Create(Action<T> setup)
+        static T CreateAndSetup(Action<T> setup)
         {
             var value = Substitute.For<T>();
             setup(value);
@@ -68,7 +55,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
     {
         name ??= nameof(AddAllToHashCode);
         hash = new Variable<HashCode>(name);
-        var hashValue = Variables.TryGetOrAdd(hash[0], () => new HashCode())
+        var hashValue = Variables.TryGetOrAdd(hash[0], () => new())
             .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{name}' of type {typeof(HashCode)}"))
             .Value;
 
@@ -83,7 +70,20 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         return This;
     }
 
-    protected TContext Add<T>(IVariable<T> variable, Func<IEnumerable<T>> createValues)
+    protected T Create<T>() => _fixture.Create<T>();
+
+    [SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "False positive")]
+    protected TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : notnull =>
+        New(out variable, () => Enumerable.Range(0, count).Select(create), name);
+
+    private TContext Customize(ICustomization customization)
+    {
+        _fixture.Customize(customization);
+        return This;
+    }
+
+    private TContext Add<T>(IVariable<T> variable, Func<IEnumerable<T>> createValues)
         where T : notnull
     {
         foreach (var value in createValues())
@@ -94,7 +94,15 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new VariablesCo
         return This;
     }
 
-    protected T Create<T>() => _fixture.Create<T>();
+    private IEnumerable<T> CreateMany<T>(int count) => _fixture.CreateMany<T>(count);
+
+    private TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : notnull
+    {
+        variable = new Variable<T>(name ?? typeof(T).Name);
+
+        return Add(variable, createMany);
+    }
 }
 
 public abstract class GivenContext<TGiven, TSut>(BaseTest test) : GivenContext<TGiven>(test)

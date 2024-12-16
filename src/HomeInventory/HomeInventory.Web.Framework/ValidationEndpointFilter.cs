@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using HomeInventory.Web.Framework;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.Framework.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using System.Runtime.CompilerServices;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Framework;
 
 internal sealed class ValidationEndpointFilter<T>(IValidationContextFactory<T> validationContextFactory, IProblemDetailsFactory problemDetailsFactory) : IEndpointFilter
 {
