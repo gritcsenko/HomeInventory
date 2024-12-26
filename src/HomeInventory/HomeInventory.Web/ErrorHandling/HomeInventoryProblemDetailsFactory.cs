@@ -102,7 +102,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
             Type = type,
             Detail = detail,
             Instance = instance,
-            Extensions = metadata.ToDictionary(StringComparer.Ordinal)
+            Extensions = metadata.ToDictionary(StringComparer.Ordinal),
         }
             .ApplyProblemDetailsDefaults(_options.ClientErrorMapping);
 }
