@@ -1,9 +1,10 @@
 ﻿using FluentAssertions.Execution;
-using HomeInventory.Application.Cqrs.Queries.UserId;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Persistence;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
+using HomeInventory.Application.UserManagement.Queries;
 using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -46,7 +47,7 @@ public class UserIdQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<UserIdQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Option<User>.None);
 
         var sut = CreateSut();
 

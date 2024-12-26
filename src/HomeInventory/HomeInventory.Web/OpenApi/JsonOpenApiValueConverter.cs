@@ -11,7 +11,7 @@ public sealed class JsonOpenApiValueConverter : IOpenApiValueConverter
 {
     public IOpenApiAny Convert(object? value, Type type)
     {
-        if (value is null || value is DBNull)
+        if (value is null or DBNull)
         {
             return new OpenApiNull();
         }

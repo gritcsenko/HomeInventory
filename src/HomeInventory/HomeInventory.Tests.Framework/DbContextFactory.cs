@@ -1,5 +1,6 @@
-﻿using HomeInventory.Domain.Events;
-using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.UserManagement.Events;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
@@ -12,12 +13,9 @@ public class DbContextFactory
 {
     private readonly IDbContextFactory _factory;
 
-    internal DbContextFactory(IDbContextFactory factory)
-    {
-        _factory = factory;
-    }
+    internal DbContextFactory(IDbContextFactory factory) => _factory = factory;
 
-    public static DbContextFactory Default { get; } = new DbContextFactory(new ReflectionDbContextFactory());
+    public static DbContextFactory Default { get; } = new(new ReflectionDbContextFactory());
 
     public TContext CreateInMemory<TContext>(TimeProvider dateTimeService)
         where TContext : DbContext
@@ -31,7 +29,7 @@ public class DbContextFactory
         CreateInMemory(
             dateTimeService,
             options,
-            new OutboxDatabaseConfigurationApplier(new PolymorphicDomainEventTypeResolver(new[] { new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent)) })),
+            new OutboxDatabaseConfigurationApplier(new([new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent))])),
             new UserModelDatabaseConfigurationApplier());
 
     public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)

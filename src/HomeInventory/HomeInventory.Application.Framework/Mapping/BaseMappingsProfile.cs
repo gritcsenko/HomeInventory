@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
 using System.Linq.Expressions;
-using HomeInventory.Application.Mapping;
+using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Framework.Mapping;
 
 public abstract class BaseMappingsProfile : Profile
 {
-    protected BaseMappingsProfile()
-    {
-    }
-
     protected IObjectMap<TSource> CreateMap<TSource>() => new ObjectMap<TSource>(this);
 
     protected interface IObjectMap<TSource>

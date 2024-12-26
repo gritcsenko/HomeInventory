@@ -9,7 +9,7 @@ public class OptionExtensionsTests : BaseTest
     public async Task Tap_ShouldInvokeAction_WhenOptionalHasValue()
     {
         Ulid? expected = Ulid.NewUlid();
-        var optional = expected.ToOption();
+        var optional = Option<Ulid>.Some(expected.Value);
         var optionalTask = Task.FromResult(optional);
 
         Ulid? actual = null;
@@ -24,11 +24,15 @@ public class OptionExtensionsTests : BaseTest
     public async Task Tap2_ShouldInvokeAction_WhenOptionalHasValue()
     {
         Ulid? expected = Ulid.NewUlid();
-        var optional = expected.ToOption();
+        var optional = Option<Ulid>.Some(expected.Value);
         var optionalTask = Task.FromResult(optional);
 
         Ulid? actual = null;
-        var tapped = await optionalTask.Tap(x => { actual = x; return Task.CompletedTask; });
+        var tapped = await optionalTask.Tap(x =>
+        {
+            actual = x;
+            return Task.CompletedTask;
+        });
 
         using var scope = new AssertionScope();
         tapped.Should().Be(expected.Value);
@@ -39,11 +43,15 @@ public class OptionExtensionsTests : BaseTest
     public async Task Tap3_ShouldInvokeAction_WhenOptionalHasValue()
     {
         Ulid? expected = Ulid.NewUlid();
-        var optional = expected.ToOption();
+        var optional = Option<Ulid>.Some(expected.Value);
         var optionalTask = Task.FromResult(optional);
 
         Ulid? actual = null;
-        var tapped = await optionalTask.Tap(x => { actual = x; return ValueTask.CompletedTask; });
+        var tapped = await optionalTask.Tap(x =>
+        {
+            actual = x;
+            return ValueTask.CompletedTask;
+        });
 
         using var scope = new AssertionScope();
         tapped.Should().Be(expected.Value);

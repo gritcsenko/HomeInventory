@@ -1,6 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-
-namespace HomeInventory.Domain.ValueObjects;
+﻿namespace HomeInventory.Domain.ValueObjects;
 
 internal sealed class AmountFactory : IAmountFactory
 {
