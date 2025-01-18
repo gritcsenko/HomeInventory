@@ -1,7 +1,6 @@
 ﻿using AutoFixture.Kernel;
 using HomeInventory.Api;
 using HomeInventory.Application.Framework;
-using HomeInventory.Application.Framework.Mapping;
 using HomeInventory.Domain;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;

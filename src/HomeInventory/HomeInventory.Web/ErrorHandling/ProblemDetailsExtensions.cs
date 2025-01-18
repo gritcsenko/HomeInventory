@@ -60,8 +60,8 @@ internal static class ProblemDetailsExtensions
     private static string[] GetErrorMessages(this ModelErrorCollection collection) =>
         collection switch
         {
-            { Count: 1 } errors => [errors[0].GetErrorMessage()],
-            { } errors => errors.Select(static e => e.GetErrorMessage()).ToArray(),
+            { Count: 1 } => [collection[0].GetErrorMessage()],
+            not null => collection.Select(static e => e.GetErrorMessage()).ToArray(),
             _ => [],
         };
 
