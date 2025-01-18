@@ -89,8 +89,8 @@
     <PackageVersion Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageVersion Include="Throw" Version="1.4.0" />
     <PackageVersion Include="Verify.Xunit" Version="28.7.0" />
-    <PackageVersion Include="xunit" Version="2.9.2" />
-    <PackageVersion Include="xunit.core" Version="2.9.2" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.core" Version="2.9.3" />
   </ItemGroup>
   <ItemGroup Label="Compile-time dependencies">
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1" />
@@ -101,6 +101,6 @@
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.4.0.108396" />
     <PackageVersion Include="coverlet.collector" Version="6.0.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1" />
   </ItemGroup>
 </Project>
