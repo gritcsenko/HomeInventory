@@ -99,7 +99,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.4.0.108396" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.5.0.109200" />
     <PackageVersion Include="coverlet.collector" Version="6.0.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.1" />
   </ItemGroup>
