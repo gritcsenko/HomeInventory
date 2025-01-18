@@ -90,7 +90,7 @@
     <PackageVersion Include="Throw" Version="1.4.0" />
     <PackageVersion Include="Verify.Xunit" Version="28.7.0" />
     <PackageVersion Include="xunit" Version="2.9.2" />
-    <PackageVersion Include="xunit.core" Version="2.9.2" />
+    <PackageVersion Include="xunit.core" Version="2.9.3" />
   </ItemGroup>
   <ItemGroup Label="Compile-time dependencies">
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.34.1" />
