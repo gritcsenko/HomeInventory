@@ -65,7 +65,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
         }
 
         var statuses = problems.Select(static x => x.Status).ToHashSet();
-        var status = (statuses.Count == 1 ? statuses.First() : default) ?? _defaultStatusCode;
+        var status = (statuses.Count == 1 ? statuses.First() : null) ?? _defaultStatusCode;
         return CreateProblem<ProblemDetails>(
             status,
             "Multiple Problems",

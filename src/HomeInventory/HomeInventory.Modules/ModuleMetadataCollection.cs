@@ -44,7 +44,7 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
         var canLoadCache = new Dictionary<Type, bool>();
         while (true)
         {
-            var count = loadable.Count;
+            var initialCount = loadable.Count;
             foreach (var meta in loadable.Memo())
             {
                 if (!await CanLoadAsync(meta))
@@ -55,15 +55,17 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
 
                 foreach (var optional in meta.GetDependencies(_metadata))
                 {
-                    if (optional.IsNone || !await CanLoadAsync((ModuleMetadata)optional))
+                    if (optional.IsSome && await CanLoadAsync((ModuleMetadata)optional))
                     {
-                        loadable.Remove(meta);
-                        break;
+                        continue;
                     }
+
+                    loadable.Remove(meta);
+                    break;
                 }
             }
 
-            if (loadable.Count == count)
+            if (loadable.Count == initialCount)
             {
                 return loadable;
             }

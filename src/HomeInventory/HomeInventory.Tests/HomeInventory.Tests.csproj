@@ -7,7 +7,6 @@
   <ItemGroup>
     <PackageReference Include="AutoBogus.Conventions" />
     <PackageReference Include="AutoBogus.NSubstitute" />
-    <PackageReference Include="FluentAssertions.Analyzers" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
