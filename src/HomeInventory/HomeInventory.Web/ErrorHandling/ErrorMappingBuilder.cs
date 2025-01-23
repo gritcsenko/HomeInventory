@@ -17,8 +17,6 @@ internal sealed class ErrorMappingBuilder
         _mapping = new(mapping);
     }
 
-    public ErrorMappingBuilder Add<TError>(HttpStatusCode statusCode) => new(_default, _defaultValidation, _mapping.Concat(MapError<TError>(statusCode)));
-
     public ErrorMapping Build() => new(_default, _defaultValidation, _mapping);
 
     public static ErrorMappingBuilder CreateDefault() =>
@@ -27,6 +25,8 @@ internal sealed class ErrorMappingBuilder
             .Add<ValidationError>(HttpStatusCode.BadRequest)
             .Add<NotFoundError>(HttpStatusCode.NotFound)
             .Add<InvalidCredentialsError>(HttpStatusCode.Forbidden);
+
+    private ErrorMappingBuilder Add<TError>(HttpStatusCode statusCode) => new(_default, _defaultValidation, _mapping.Concat(MapError<TError>(statusCode)));
 
     private static KeyValuePair<Type, HttpStatusCode> MapError<TError>(HttpStatusCode statusCode) => KeyValuePair.Create(typeof(TError), statusCode);
 }

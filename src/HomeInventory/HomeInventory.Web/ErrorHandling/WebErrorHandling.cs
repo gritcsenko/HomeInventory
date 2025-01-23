@@ -6,6 +6,7 @@ using HomeInventory.Web.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,7 +25,8 @@ public sealed class WebErrorHandling : BaseModule
             .AddTransient<ProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
             .AddTransient<IProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
             .AddScoped<ICorrelationIdContainer, CorrelationIdContainer>()
-            .AddScoped<CorrelationIdMiddleware>();
+            .AddScoped<CorrelationIdMiddleware>()
+            .Configure<JsonOptions>(static o => o.SerializerOptions.Converters.Add(new DataContractJsonConverter<Error>()));
     }
 
     public override async Task BuildAppAsync(IModuleBuildContext context)

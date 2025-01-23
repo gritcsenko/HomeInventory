@@ -55,6 +55,10 @@ public class UserManagementApiTests : BaseIntegrationTest
     {
         _ = await PostAsync(_registerRoute, _content);
         var response = await PostAsync(_registerRoute, _content);
+        // ReSharper disable once UnusedVariable
+#pragma warning disable S1481
+        var text = await response.Content.ReadAsStringAsync();
+#pragma warning restore S1481
         var body = (await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, Cancellation.Token))!;
 
         using var scope = new AssertionScope();
@@ -74,7 +78,7 @@ public class UserManagementApiTests : BaseIntegrationTest
 #pragma warning disable CA1308 // Normalize strings to uppercase
         body.Extensions.Should().ContainKey("errors")
             .WhoseValue.Should().BeJsonElement()
-            .Which.Should().BeArray(static e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message).ToLowerInvariant())
+            .Which.Should().BeArray(static e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message))
                 .Which.Should().HaveValue(DuplicateEmailError.DefaultMessage));
 #pragma warning restore CA1308 // Normalize strings to uppercase
     }
