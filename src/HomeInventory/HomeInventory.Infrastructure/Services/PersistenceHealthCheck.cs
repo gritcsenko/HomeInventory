@@ -27,7 +27,7 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
             {
                 IsFailed = true,
                 Description = "Cannot connect to the database",
-                Data = 
+                Data =
                 {
                     ["provider"] = ProviderName,
                 },
@@ -53,7 +53,7 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
             {
                 IsFailed = true,
                 Description = $"Database has {count} pending migrations",
-                Data = 
+                Data =
                 {
                     ["provider"] = ProviderName,
                     ["migrations.count"] = count,

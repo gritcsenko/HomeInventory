@@ -8,55 +8,31 @@ public sealed class ServiceCollectionAssertions(IServiceCollection value, Assert
 {
     public AndWhichConstraint<ObjectAssertions, IConfigureOptions<TOptions>> ContainConfigureOptions<TOptions>(IServiceProvider provider)
         where TOptions : class =>
-        ContainSingleTransient<IConfigureOptions<TOptions>>(provider);
+        ContainSingle<IConfigureOptions<TOptions>>(provider, ServiceLifetime.Transient);
 
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainConfigureOptions<TOptions>()
         where TOptions : class =>
         ContainSingleTransient<IConfigureOptions<TOptions>>();
 
-    public AndWhichConstraint<ObjectAssertions, T> ContainSingleTransient<T>(IServiceProvider provider)
-        where T : class =>
-        ContainSingle<T>(provider, ServiceLifetime.Transient);
-
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleTransient<T>()
         where T : class =>
         ContainSingle<T>(ServiceLifetime.Transient);
-
-    public AndWhichConstraint<ObjectAssertions, T> ContainSingleSingleton<T>(IServiceProvider provider)
-        where T : class =>
-        ContainSingle<T>(provider, ServiceLifetime.Singleton);
 
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleSingleton<T>()
         where T : class =>
         ContainSingle<T>(ServiceLifetime.Singleton);
 
-    public AndWhichConstraint<ObjectAssertions, T> ContainSingleScoped<T>(IServiceProvider provider)
-        where T : class =>
-        ContainSingle<T>(provider, ServiceLifetime.Scoped);
-
     public AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingleScoped<T>()
         where T : class =>
         ContainSingle<T>(ServiceLifetime.Scoped);
-
-    public AndConstraint<ServiceCollectionAssertions> ContainSingleton<T>(IServiceProvider provider)
-        where T : class =>
-        Contain<T>(provider, ServiceLifetime.Singleton);
 
     public AndConstraint<ServiceCollectionAssertions> ContainSingleton<T>()
         where T : class =>
         Contain<T>(ServiceLifetime.Singleton);
 
-    public AndConstraint<ServiceCollectionAssertions> ContainTransient<T>(IServiceProvider provider)
-        where T : class =>
-        Contain<T>(provider, ServiceLifetime.Transient);
-
     public AndConstraint<ServiceCollectionAssertions> ContainTransient<T>()
         where T : class =>
         Contain<T>(ServiceLifetime.Transient);
-
-    public AndConstraint<ServiceCollectionAssertions> ContainScoped<T>(IServiceProvider provider)
-        where T : class =>
-        Contain<T>(provider, ServiceLifetime.Scoped);
 
     public AndConstraint<ServiceCollectionAssertions> ContainScoped<T>()
         where T : class =>
@@ -73,26 +49,18 @@ public sealed class ServiceCollectionAssertions(IServiceCollection value, Assert
 
     private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> ContainSingle(Type serviceType, ServiceLifetime lifetime)
     {
-        var matched = Subject.Where(d => d.ServiceType == serviceType && !d.IsKeyedService)
-            .Should().ContainSingle(d => d.Lifetime == lifetime, $"Expected {nameof(ServiceDescriptor.Lifetime)} of the {serviceType.FullName} to be {lifetime}")
+        var matched = Subject.Should().ContainSingle(d => d.ServiceType == serviceType && !d.IsKeyedService && d.Lifetime == lifetime, $"expected single non-keyed {serviceType.FullName} with {nameof(ServiceDescriptor.Lifetime)} = {lifetime}.")
             .Subject;
         return new(this, matched);
     }
 
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain(Type serviceType, ServiceLifetime lifetime) => Contain(d => d.ServiceType == serviceType && d.Lifetime == lifetime);
+    private AndConstraint<ServiceCollectionAssertions> Contain(Type serviceType, ServiceLifetime lifetime)
+    {
+        Subject.Should().Contain(d => d.ServiceType == serviceType && !d.IsKeyedService && d.Lifetime == lifetime, $"expected non-keyed {serviceType.FullName} with {nameof(ServiceDescriptor.Lifetime)} = {lifetime}.");
+        return new(this);
+    }
 
-    private AndConstraint<ServiceCollectionAssertions> Contain<T>(IServiceProvider provider, ServiceLifetime lifetime)
-        where T : class =>
-        Contain<T>(lifetime)
-            .And.AllSatisfy(d =>
-            {
-                if (d.ServiceType == typeof(T) && d.Lifetime == lifetime)
-                {
-                    d.GetInstance(provider).Should().BeAssignableTo<T>();
-                }
-            });
-
-    private AndWhichConstraint<ServiceCollectionAssertions, ServiceDescriptor> Contain<T>(ServiceLifetime lifetime)
+    private AndConstraint<ServiceCollectionAssertions> Contain<T>(ServiceLifetime lifetime)
         where T : class =>
         Contain(typeof(T), lifetime);
 }

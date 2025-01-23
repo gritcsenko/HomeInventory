@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web.ErrorHandling;
 
-public sealed class WebErrorHandling : BaseModule
+public sealed class WebErrorHandlingModule : BaseModule
 {
     public override async Task AddServicesAsync(IModuleServicesContext context)
     {

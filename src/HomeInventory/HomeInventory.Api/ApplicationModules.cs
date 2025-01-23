@@ -26,7 +26,7 @@ internal sealed class ApplicationModules : ModulesCollection
         Add(new LoggingModule());
         Add(new ContractsValidationsModule());
         Add(new ContractsUserManagementValidatorsModule());
-        Add(new WebErrorHandling());
+        Add(new WebErrorHandlingModule());
         Add(new WebAuthenticationModule());
         Add(new DynamicWebAuthorizationModule());
         Add(new WebSwaggerModule());

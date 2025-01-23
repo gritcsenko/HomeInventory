@@ -1,10 +1,12 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using HomeInventory.Modules.Interfaces;
 using Serilog;
 using Serilog.Core;
 
 namespace HomeInventory.Api;
 
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Module")]
 public sealed class LoggingModule : BaseModule
 {
     public static Logger CreateBootstrapLogger() =>

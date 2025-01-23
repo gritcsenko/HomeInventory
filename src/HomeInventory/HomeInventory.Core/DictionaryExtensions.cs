@@ -37,7 +37,7 @@ public static class DictionaryExtensions
         dictionary.TryGetValue(key, out var value)
             ? (TResult)value!
             : await dictionary.AddAsync(key, createValueFunc);
-    
+
     private static async Task<TResult> AddAsync<TKey, TValue, TResult>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TKey, Task<TResult>> createValueFunc)
         where TKey : notnull
         where TResult : TValue

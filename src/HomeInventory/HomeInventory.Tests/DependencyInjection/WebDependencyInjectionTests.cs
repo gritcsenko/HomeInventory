@@ -3,16 +3,19 @@ using FluentAssertions.Execution;
 using HomeInventory.Application.Framework;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Modules;
+using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
 using HomeInventory.Web.ErrorHandling;
+using HomeInventory.Web.Framework;
 using HomeInventory.Web.Framework.Infrastructure;
+using HomeInventory.Web.Mapping;
+using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -44,10 +47,19 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.AddSingleton(env);
         Services.AddSingleton<IHostEnvironment>(env);
 
-        _host = new([]);
+        _host = new([
+            new WebCarterSupportModule(),
+            new WebAuthenticationModule(),
+            new WebHealthCheckModule(),
+            new WebErrorHandlingModule(),
+            new ApplicationMappingModule(),
+            new WebMappingModule(),
+            new WebSwaggerModule(),
+            new DynamicWebAuthorizationModule(),
+        ]);
     }
 
-    [Fact(Skip = "Will be removed in a future version")]
+    [Fact]
     public async Task ShouldRegister()
     {
         await _host.AddModulesAsync(Services, _configuration);
@@ -63,7 +75,6 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.Should().ContainSingleTransient<IProblemDetailsFactory>();
         Services.Should().ContainSingleTransient<IMapper>();
         Services.Should().ContainSingleton<IMappingAssemblySource>();
-        Services.Should().ContainSingleSingleton<IControllerFactory>();
         Services.Should().ContainSingleTransient<ISwaggerProvider>();
         Services.Should().ContainSingleSingleton<PermissionList>();
         Services.Should().ContainTransient<IAuthorizationHandler>();

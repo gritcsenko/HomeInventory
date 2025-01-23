@@ -1,6 +1,9 @@
 ﻿using NetArchTest.Rules;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using HomeInventory.Api;
+using HomeInventory.Modules.Interfaces;
+using Mono.Cecil;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -19,7 +22,7 @@ public class ArchitectureTests
         var result = conditionList.GetResult();
 
         var failing = result.FailingTypes?.Where(static t =>
-            t.GetCustomAttribute<CompilerGeneratedAttribute>() is null 
+            t.GetCustomAttribute<CompilerGeneratedAttribute>() is null
             && t.FullName?.StartsWith("<>", StringComparison.Ordinal) != true
             && !t.Name.EndsWith("Module", StringComparison.Ordinal)
             && !t.Name.EndsWith("Modules", StringComparison.Ordinal)
@@ -80,5 +83,34 @@ public class ArchitectureTests
             .GetResult();
 
         result.FailingTypeNames.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public void Modules_Should_EndWithModule()
+    {
+        _ = new ApplicationModules();
+        var result = Types.InCurrentDomain()
+            .That().MeetCustomRule(new RuntimeClassesRule())
+            .And().AreClasses()
+            .And().AreNotAbstract()
+            .And().Inherit(typeof(BaseModule))
+            .Should().BeSealed()
+            .And().HaveNameEndingWith("Module", StringComparison.Ordinal)
+            .GetResult();
+        result.FailingTypeNames.Should().BeNullOrEmpty();
+    }
+}
+
+file sealed class RuntimeClassesRule : ICustomRule
+{
+    public bool MeetsRule(TypeDefinition type)
+    {
+        if (type.Namespace is not { } ns)
+        {
+            return false;
+        }
+
+        return ns.StartsWith("HomeInventory", StringComparison.Ordinal)
+               && !ns.Contains("Test", StringComparison.Ordinal);
     }
 }

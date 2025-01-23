@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions.Execution;
 using Flurl;
@@ -11,7 +12,8 @@ using Xunit.Abstractions;
 
 namespace HomeInventory.Tests.Integration;
 
-public class UserManagementApiTests : BaseIntegrationTest
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Test")]
+public sealed class UserManagementApiTests : BaseIntegrationTest
 {
     private static readonly string _registerRoute = "/".AppendPathSegments("api", "users", "manage", "register");
     private readonly JsonContent _content;
