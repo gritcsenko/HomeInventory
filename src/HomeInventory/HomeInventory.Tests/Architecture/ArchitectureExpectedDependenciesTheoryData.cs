@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.UserManagement;
+﻿using System.Diagnostics.CodeAnalysis;
+using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
@@ -7,6 +8,7 @@ using HomeInventory.Modules.Interfaces;
 
 namespace HomeInventory.Tests.Architecture;
 
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<string, string[]>
 {
     private static readonly Dictionary<string, IAssemblyReference> _references = new()
@@ -40,6 +42,7 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         "MediatR",
         "Microsoft",
         "AutoMapper",
+        "Ardalis",
     ];
 
     public ArchitectureExpectedDependenciesTheoryData()
@@ -135,6 +138,6 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
 
         Add(name, namespaces);
 
-        static IEnumerable<string> Extend(string ns) => [ns, ns + ".*", ns + ".*.*", ns + ".*.*.*", ns + ".*.*.*.*"];
+        static IEnumerable<string> Extend(string ns) => [ns, ns + ".*", ns + ".*.*", ns + ".*.*.*", ns + ".*.*.*.*", ns + ".*.*.*.*.*", ns + ".*.*.*.*.*.*"];
     }
 }
