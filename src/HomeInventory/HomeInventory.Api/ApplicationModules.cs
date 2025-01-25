@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application;
+﻿using System.Diagnostics.CodeAnalysis;
+using HomeInventory.Application;
 using HomeInventory.Application.Framework;
 using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
@@ -7,6 +8,7 @@ using HomeInventory.Domain;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.UserManagement;
 using HomeInventory.Modules;
+using HomeInventory.Modules.Interfaces;
 using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
@@ -18,33 +20,34 @@ using HomeInventory.Web.UserManagement;
 
 namespace HomeInventory.Api;
 
-internal sealed class ApplicationModules : ModulesCollection
+internal static class ApplicationModules
 {
-    public ApplicationModules()
+    [SuppressMessage("Style", "IDE0028:Simplify collection initialization", Justification = "Need to use specialized collection")]
+    public static IReadOnlyCollection<IModule> Instance { get; } = new ModulesCollection
     {
-        Add(new DomainModule());
-        Add(new LoggingModule());
-        Add(new ContractsValidationsModule());
-        Add(new ContractsUserManagementValidatorsModule());
-        Add(new WebErrorHandlingModule());
-        Add(new WebAuthenticationModule());
-        Add(new DynamicWebAuthorizationModule());
-        Add(new WebSwaggerModule());
-        Add(new WebMappingModule());
-        Add(new WebUserManagementModule());
-        Add(new WebUerManagementMappingModule());
-        Add(new WebHealthCheckModule());
-        Add(new WebCarterSupportModule());
-        Add(new ApplicationMediatrSupportModule());
-        Add(new ApplicationMappingModule());
-        Add(new ApplicationMediatrModule());
-        Add(new ApplicationUserManagementMediatrModule());
-        Add(new InfrastructureMappingModule());
-        Add(new InfrastructureDatabaseModule());
-        Add(new InfrastructurePersistenceHealthCheckModule());
-        Add(new InfrastructureSpecificationModule());
-        Add(new InfrastructureUserManagementMappingModule());
-        Add(new InfrastructureUserManagementDatabaseModule());
-        Add(new InfrastructureUserManagementModule());
-    }
+        new DomainModule(),
+        new LoggingModule(),
+        new ContractsValidationsModule(),
+        new ContractsUserManagementValidatorsModule(),
+        new WebErrorHandlingModule(),
+        new WebAuthenticationModule(),
+        new DynamicWebAuthorizationModule(),
+        new WebSwaggerModule(),
+        new WebMappingModule(),
+        new WebUserManagementModule(),
+        new WebUerManagementMappingModule(),
+        new WebHealthCheckModule(),
+        new WebCarterSupportModule(),
+        new ApplicationMediatrSupportModule(),
+        new ApplicationMappingModule(),
+        new ApplicationMediatrModule(),
+        new ApplicationUserManagementMediatrModule(),
+        new InfrastructureMappingModule(),
+        new InfrastructureDatabaseModule(),
+        new InfrastructurePersistenceHealthCheckModule(),
+        new InfrastructureSpecificationModule(),
+        new InfrastructureUserManagementMappingModule(),
+        new InfrastructureUserManagementDatabaseModule(),
+        new InfrastructureUserManagementModule(),
+    };
 }

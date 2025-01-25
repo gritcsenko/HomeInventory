@@ -4,8 +4,6 @@ namespace HomeInventory.Api;
 
 internal class AppBuilder(string[] args)
 {
-    private readonly ModulesCollection _modules = new ApplicationModules();
-
     private readonly string[] _args = args;
 
     public AppBuilder()
@@ -18,7 +16,7 @@ internal class AppBuilder(string[] args)
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
 
-        var modulesHost = new ModulesHost(_modules);
+        var modulesHost = new ModulesHost(ApplicationModules.Instance);
 
         await modulesHost.AddModulesAsync(builder.Services, builder.Configuration, cancellationToken);
 

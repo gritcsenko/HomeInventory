@@ -51,7 +51,7 @@ public class BaseModuleTests() : BaseTest<FunctionalModuleTestGivenContext<Subje
     public async Task FlagWithContext_Should_BeAlwaysEnabled()
     {
         Given
-            .SubstituteFor<object>(out var contextVar)    
+            .SubstituteFor<object>(out var contextVar)
             .SubstituteFor<IFeatureManager, object>(out var featureManagerVar, contextVar, static (m, ctx) => m.IsEnabledAsync(Arg.Any<string>(), ctx).Returns(false))
             .Sut(out var sutVar);
 
@@ -66,7 +66,7 @@ public class BaseModuleTests() : BaseTest<FunctionalModuleTestGivenContext<Subje
     public void FlagWithContext_Should_HaveCorrectContext()
     {
         Given
-            .SubstituteFor<object>(out var contextVar)    
+            .SubstituteFor<object>(out var contextVar)
             .Sut(out var sutVar);
 
         var then = When
@@ -80,7 +80,7 @@ public class BaseModuleTests() : BaseTest<FunctionalModuleTestGivenContext<Subje
     public async Task AddServicesAsync_Should_HaveNoSideEffects()
     {
         Given
-            .SubstituteFor<IModuleServicesContext>(out var contextVar)    
+            .SubstituteFor<IModuleServicesContext>(out var contextVar)
             .Sut(out var sutVar);
 
         var then = await When
@@ -98,7 +98,7 @@ public class BaseModuleTests() : BaseTest<FunctionalModuleTestGivenContext<Subje
     public async Task BuildAppAsync_Should_HaveNoSideEffects()
     {
         Given
-            .SubstituteFor<IModuleBuildContext>(out var contextVar)    
+            .SubstituteFor<IModuleBuildContext>(out var contextVar)
             .Sut(out var sutVar);
 
         var then = await When

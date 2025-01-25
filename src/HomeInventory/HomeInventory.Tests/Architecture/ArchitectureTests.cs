@@ -88,7 +88,7 @@ public class ArchitectureTests
     [Fact]
     public void Modules_Should_EndWithModule()
     {
-        _ = new ApplicationModules();
+        _ = ApplicationModules.Instance;
         var result = Types.InCurrentDomain()
             .That().MeetCustomRule(new RuntimeClassesRule())
             .And().AreClasses()
