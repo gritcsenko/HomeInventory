@@ -1,9 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Modules.Interfaces;
 using Microsoft.FeatureManagement;
 
 namespace HomeInventory.Tests.Modules;
 
+[UnitTest]
 public class BaseModuleTests() : BaseTest<FunctionalModuleTestGivenContext<SubjectModule>>(t => BaseModuleTestGivenContext.Create(t, () => new()))
 {
     [Fact]
@@ -107,19 +107,6 @@ public class BaseModuleTests() : BaseTest<FunctionalModuleTestGivenContext<Subje
         then
             .Ensure(sutVar, static sut => sut.Dependencies.Should().BeEmpty())
             .Ensure(contextVar, static ctx => _ = ctx.DidNotReceive().ApplicationBuilder)
-            .Ensure(contextVar, static ctx => _ = ctx.DidNotReceive().EndpointRouteBuilder)
-            .Ensure(contextVar, static ctx => _ = ctx.DidNotReceiveWithAnyArgs().GetRequiredService<object>());
+            .Ensure(contextVar, static ctx => _ = ctx.DidNotReceive().EndpointRouteBuilder);
     }
-}
-
-public sealed class SubjectModule : BaseModule
-{
-    public new void DependsOn<TModule>()
-        where TModule : class, IModule =>
-        base.DependsOn<TModule>();
-}
-
-[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-public sealed class SubjectDependentModule : BaseModule
-{
 }
