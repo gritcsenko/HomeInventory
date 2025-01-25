@@ -92,6 +92,7 @@
     <PackageVersion Include="xunit.core" Version="2.9.3" />
   </ItemGroup>
   <ItemGroup Label="Compile-time dependencies">
+    <PackageVersion Include="AwesomeAssertions.Analyzers" Version="0.34.1" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="9.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1" />
