@@ -7,9 +7,9 @@ namespace HomeInventory.Application.Framework;
 
 public sealed class ApplicationMediatrSupportModule : BaseModule
 {
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         var serviceConfig = new MediatRServiceConfiguration
         {
@@ -22,7 +22,7 @@ public sealed class ApplicationMediatrSupportModule : BaseModule
             serviceConfig.RegisterServicesFromAssemblyContaining(module.GetType());
         }
 
-        ServiceRegistrar.AddMediatRClasses(context.Services, serviceConfig);
+        ServiceRegistrar.AddMediatRClasses(context.Services, serviceConfig, cancellationToken);
         ServiceRegistrar.AddRequiredServices(context.Services, serviceConfig);
     }
 }

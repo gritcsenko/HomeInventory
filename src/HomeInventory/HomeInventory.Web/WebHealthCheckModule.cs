@@ -9,9 +9,9 @@ namespace HomeInventory.Web;
 
 public sealed class WebHealthCheckModule : BaseModule
 {
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/monitor-app-health
         // https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-6.0
@@ -23,9 +23,9 @@ public sealed class WebHealthCheckModule : BaseModule
             .AddInMemoryStorage();
     }
 
-    public override async Task BuildAppAsync(IModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
     {
-        await base.BuildAppAsync(context);
+        await base.BuildAppAsync(context, cancellationToken);
 
         context.EndpointRouteBuilder
             .MapHealthChecks("/health", new()

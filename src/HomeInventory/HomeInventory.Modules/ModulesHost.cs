@@ -13,7 +13,7 @@ public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
     private readonly ModuleMetadataCollection _metadata = [];
     private IModule[] _availableModules = [];
 
-    public async Task AddModulesAsync(IServiceCollection services, IConfiguration configuration)
+    public async Task AddModulesAsync(IServiceCollection services, IConfiguration configuration, CancellationToken cancellationToken = default)
     {
         AddFeatures(services);
 
@@ -29,21 +29,21 @@ public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
             _metadata.Add(module);
         }
 
-        var graph = await _metadata.CreateDependencyGraph(m => m.Module.Flag.IsEnabledAsync(featureManager));
+        var graph = await _metadata.CreateDependencyGraphAsync((m, _) => m.Module.Flag.IsEnabledAsync(featureManager), cancellationToken);
         var nodes = graph.KahnTopologicalSort();
 
         var sorted = nodes.Select(n => n.Value).ToArray();
 
         _availableModules = sorted.Select(m => m.Module).ToArray();
         var context = new ModuleServicesContext(services, configuration, featureManager, _availableModules);
-        await Task.WhenAll(_availableModules.Select(async m => await m.AddServicesAsync(context)));
+        await Task.WhenAll(_availableModules.Select(async m => await m.AddServicesAsync(context, cancellationToken)));
     }
 
-    public async Task BuildModulesAsync<TApp>(TApp app)
+    public async Task BuildModulesAsync<TApp>(TApp app, CancellationToken cancellationToken = default)
         where TApp : IApplicationBuilder, IEndpointRouteBuilder
     {
         var context = new ModuleBuildContext<TApp>(app);
-        await Task.WhenAll(_availableModules.Select(async m => await m.BuildAppAsync(context)));
+        await Task.WhenAll(_availableModules.Select(async m => await m.BuildAppAsync(context, cancellationToken)));
     }
 
     private static void AddFeatures(IServiceCollection services) => services.AddFeatureManagement();

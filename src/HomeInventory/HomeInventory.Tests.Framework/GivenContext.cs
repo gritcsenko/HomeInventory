@@ -50,6 +50,10 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
         }
     }
 
+    public TContext SubstituteFor<T>(out IVariable<T> variable, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : class =>
+        New(out variable, static () => Substitute.For<T>(), name: name);
+
     public TContext AddAllToHashCode<T>(out IVariable<HashCode> hash, IVariable<T> variable, [CallerArgumentExpression(nameof(hash))] string? name = null)
         where T : notnull
     {

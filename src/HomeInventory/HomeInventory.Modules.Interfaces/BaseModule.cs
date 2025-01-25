@@ -10,23 +10,21 @@ public abstract class BaseModule : IModule
 
     public virtual IFeatureFlag Flag { get; } = new AlwaysEnabledFlag("<Always Enabled>");
 
-    public virtual Task AddServicesAsync(IModuleServicesContext context) => Task.CompletedTask;
+    public virtual Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
-    public virtual Task BuildAppAsync(IModuleBuildContext context) => Task.CompletedTask;
+    public virtual Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
     protected void DependsOn<TModule>()
         where TModule : class, IModule =>
         _dependencies.Add(typeof(TModule));
 
-    private class AlwaysEnabledFlag(string name) : IFeatureFlag
+    private class AlwaysEnabledFlag(string name) : FeatureFlag(name)
     {
         private readonly Task<bool> _enabled = Task.FromResult(true);
 
-        public string Name { get; } = name;
+        public override Task<bool> IsEnabledAsync(IFeatureManager manager) => _enabled;
 
-        public Task<bool> IsEnabledAsync(IFeatureManager manager) => _enabled;
-
-        public IFeatureFlag<TContext> WithContext<TContext>(TContext context) => new AlwaysEnabledFlag<TContext>(Name, context);
+        public override IFeatureFlag<TContext> WithContext<TContext>(TContext context) => new AlwaysEnabledFlag<TContext>(Name, context);
     }
 
     private sealed class AlwaysEnabledFlag<TContext>(string name, TContext context) : AlwaysEnabledFlag(name), IFeatureFlag<TContext>

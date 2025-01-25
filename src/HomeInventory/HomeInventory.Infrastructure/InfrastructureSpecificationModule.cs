@@ -7,9 +7,9 @@ namespace HomeInventory.Infrastructure;
 
 public sealed class InfrastructureSpecificationModule : BaseModule
 {
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         context.Services.TryAddSingleton<ISpecificationEvaluator>(SpecificationEvaluator.Default);
     }

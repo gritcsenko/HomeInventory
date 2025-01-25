@@ -17,10 +17,10 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public async Task<DirectedAcyclicGraph<ModuleMetadata, Type>> CreateDependencyGraph(Func<ModuleMetadata, Task<bool>> canLoadAsync)
+    public async Task<DirectedAcyclicGraph<ModuleMetadata, Type>> CreateDependencyGraphAsync(Func<ModuleMetadata, CancellationToken, Task<bool>> canLoadAsync, CancellationToken cancellationToken = default)
     {
         var graph = new DirectedAcyclicGraph<ModuleMetadata, Type>();
-        var loadable = await GetLoadableModules(canLoadAsync);
+        var loadable = await GetLoadableModulesAsync(canLoadAsync, cancellationToken);
 
         foreach (var meta in loadable)
         {
@@ -38,7 +38,7 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
         return graph;
     }
 
-    private async Task<List<ModuleMetadata>> GetLoadableModules(Func<ModuleMetadata, Task<bool>> canLoadAsync)
+    private async Task<List<ModuleMetadata>> GetLoadableModulesAsync(Func<ModuleMetadata, CancellationToken, Task<bool>> canLoadAsync, CancellationToken cancellationToken)
     {
         var loadable = _metadata.ToList();
         var canLoadCache = new Dictionary<Type, bool>();
@@ -71,6 +71,6 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
             }
         }
 
-        ValueTask<bool> CanLoadAsync(ModuleMetadata metadata) => canLoadCache.GetOrAddAsync(metadata.ModuleType, _ => canLoadAsync(metadata));
+        ValueTask<bool> CanLoadAsync(ModuleMetadata metadata) => canLoadCache.GetOrAddAsync(metadata.ModuleType, _ => canLoadAsync(metadata, cancellationToken));
     }
 }

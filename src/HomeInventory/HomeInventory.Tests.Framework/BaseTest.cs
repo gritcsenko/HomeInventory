@@ -42,7 +42,7 @@ public abstract class BaseTest<TGiven> : BaseTest
     private readonly Lazy<TGiven> _lazyGiven;
     private readonly Lazy<WhenContext> _lazyWhen;
 
-    protected BaseTest(Func<BaseTest, TGiven> createGiven)
+    protected BaseTest(Func<BaseTest<TGiven>, TGiven> createGiven)
     {
         _lazyGiven = new(() => createGiven(this));
         _lazyWhen = new(() => new(Given.Variables, Cancellation));

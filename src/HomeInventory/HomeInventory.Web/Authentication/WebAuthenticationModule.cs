@@ -11,9 +11,9 @@ namespace HomeInventory.Web.Authentication;
 
 public sealed class WebAuthenticationModule : BaseModuleWithCarter
 {
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         context.Services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -32,9 +32,9 @@ public sealed class WebAuthenticationModule : BaseModuleWithCarter
         AddCarterModulesFromCurrentAssembly(configurator);
     }
 
-    public override async Task BuildAppAsync(IModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
     {
-        await base.BuildAppAsync(context);
+        await base.BuildAppAsync(context, cancellationToken);
 
         context.ApplicationBuilder.UseAuthentication();
     }

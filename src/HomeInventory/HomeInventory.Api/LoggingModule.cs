@@ -15,9 +15,9 @@ public sealed class LoggingModule : BaseModule
             .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture, theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
             .CreateLogger();
 
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         context.Services.AddSerilog((provider, loggerConfiguration) =>
             loggerConfiguration
@@ -25,9 +25,9 @@ public sealed class LoggingModule : BaseModule
                 .ReadFrom.Services(provider));
     }
 
-    public override async Task BuildAppAsync(IModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
     {
-        await base.BuildAppAsync(context);
+        await base.BuildAppAsync(context, cancellationToken);
 
         context.ApplicationBuilder.UseSerilogRequestLogging(static options => options.IncludeQueryInRequestPath = true);
     }

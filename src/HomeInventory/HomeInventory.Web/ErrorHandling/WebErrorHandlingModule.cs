@@ -14,9 +14,9 @@ namespace HomeInventory.Web.ErrorHandling;
 
 public sealed class WebErrorHandlingModule : BaseModule
 {
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         context.Services
             .AddSingleton(ErrorMappingBuilder.CreateDefault())
@@ -29,9 +29,9 @@ public sealed class WebErrorHandlingModule : BaseModule
             .Configure<JsonOptions>(static o => o.SerializerOptions.Converters.Add(new DataContractJsonConverter<Error>()));
     }
 
-    public override async Task BuildAppAsync(IModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
     {
-        await base.BuildAppAsync(context);
+        await base.BuildAppAsync(context, cancellationToken);
 
         context.ApplicationBuilder.UseMiddleware<CorrelationIdMiddleware>();
         context.ApplicationBuilder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });

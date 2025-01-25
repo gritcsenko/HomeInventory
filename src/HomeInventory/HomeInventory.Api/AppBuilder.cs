@@ -13,18 +13,18 @@ internal class AppBuilder(string[] args)
     {
     }
 
-    public async Task<WebApplication> BuildAsync()
+    public async Task<WebApplication> BuildAsync(CancellationToken cancellationToken = default)
     {
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
 
         var modulesHost = new ModulesHost(_modules);
 
-        await modulesHost.AddModulesAsync(builder.Services, builder.Configuration);
+        await modulesHost.AddModulesAsync(builder.Services, builder.Configuration, cancellationToken);
 
         var app = builder.Build();
 
-        await modulesHost.BuildModulesAsync(app);
+        await modulesHost.BuildModulesAsync(app, cancellationToken);
 
         app.UseHttpsRedirection();
 

@@ -9,9 +9,9 @@ namespace HomeInventory.Web.Authorization.Dynamic;
 
 public sealed class DynamicWebAuthorizationModule : BaseModule
 {
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         context.Services
             .AddSingleton<PermissionList>()
@@ -23,9 +23,9 @@ public sealed class DynamicWebAuthorizationModule : BaseModule
             .AddRequirements(new DynamicPermissionRequirement(GetPermissions)));
     }
 
-    public override async Task BuildAppAsync(IModuleBuildContext context)
+    public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
     {
-        await base.BuildAppAsync(context);
+        await base.BuildAppAsync(context, cancellationToken);
 
         var permissionList = context.GetRequiredService<PermissionList>();
         permissionList.AddRange(context.EndpointRouteBuilder.DataSources.SelectMany(static s => s.Endpoints).SelectMany(GetPermissions));

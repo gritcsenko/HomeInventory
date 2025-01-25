@@ -6,7 +6,7 @@ public interface IModule
 
     IFeatureFlag Flag { get; }
 
-    Task AddServicesAsync(IModuleServicesContext context);
+    Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default);
 
-    Task BuildAppAsync(IModuleBuildContext context);
+    Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default);
 }

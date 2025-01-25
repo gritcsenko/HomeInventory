@@ -14,9 +14,9 @@ namespace HomeInventory.Infrastructure;
 
 public sealed class InfrastructureDatabaseModule : BaseModule
 {
-    public override async Task AddServicesAsync(IModuleServicesContext context)
+    public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
-        await base.AddServicesAsync(context);
+        await base.AddServicesAsync(context, cancellationToken);
 
         context.Services
             .AddScoped<IEventsPersistenceService, EventsPersistenceService>()
