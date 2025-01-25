@@ -2,7 +2,7 @@
 
 namespace HomeInventory.Tests.Framework;
 
-public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResult> resultVariable) : BaseContext(variables)
+public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResult> resultVariable) : ThenContext(variables)
     where TResult : notnull
 {
     private readonly IVariable<TResult> _resultVariable = resultVariable;
