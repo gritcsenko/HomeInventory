@@ -1,6 +1,6 @@
 using HomeInventory.Application.Framework;
 
-namespace HomeInventory.Tests.Application;
+namespace HomeInventory.Tests.Modules;
 
 public sealed class SubjectBaseModuleWithMediatr : BaseModuleWithMediatr
 {

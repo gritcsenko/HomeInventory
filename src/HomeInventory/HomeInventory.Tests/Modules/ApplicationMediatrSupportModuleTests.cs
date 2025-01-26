@@ -1,11 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Application.Framework;
 using HomeInventory.Modules.Interfaces;
-using HomeInventory.Tests.Modules;
 using MediatR;
 using MediatR.NotificationPublishers;
 
-namespace HomeInventory.Tests.Application;
+namespace HomeInventory.Tests.Modules;
 
 [SuppressMessage("ReSharper", "UnusedType.Global")]
 public sealed class ApplicationMediatrSupportModuleTests() : BaseModuleTest<ApplicationMediatrSupportModule>(static () => new())
