@@ -19,7 +19,7 @@ public sealed class FluentOptionsValidatorTests() : BaseTest<FluentOptionsValida
 
         then.Result(actual => actual.Should().BeAssignableTo<FluentOptionsValidator<SubjectOptions>>());
     }
-    
+
     [Fact]
     public void Validate_Should_Skip_When_NameIsDifferent()
     {
@@ -35,7 +35,7 @@ public sealed class FluentOptionsValidatorTests() : BaseTest<FluentOptionsValida
 
         then.Result(actual => actual.Should().BeSameAs(ValidateOptionsResult.Skip));
     }
-    
+
     [Fact]
     public void Validate_Should_CallValidator()
     {

@@ -50,6 +50,13 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
         where TArg2 : notnull =>
         SubstituteFor(out variable, arg1, (value, arg) => setup(value, arg, GetValue(arg2)), name: name);
 
+    public TContext SubstituteFor<T, TArg1, TArg2, TArg3>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, Action<T, TArg1, TArg2, TArg3> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
+        where T : class
+        where TArg1 : notnull
+        where TArg2 : notnull
+        where TArg3 : notnull =>
+        SubstituteFor(out variable, arg1, arg2, (value, a1, a2) => setup(value, a1, a2, GetValue(arg3)), name: name);
+
     public TContext SubstituteFor<T, TArg>(out IVariable<T> variable, IVariable<TArg> argV, Action<T, TArg> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : class
         where TArg : notnull =>
@@ -149,4 +156,20 @@ public abstract class GivenContext<TGiven, TSut, TArg>(BaseTest test) : GivenCon
         New(out sut, () => CreateSut(GetValue(arg)), name: name);
 
     protected abstract TSut CreateSut(TArg arg);
+}
+
+
+public abstract class GivenContext<TGiven, TSut, TArg1, TArg2>(BaseTest test) : GivenContext<TGiven>(test)
+    where TGiven : GivenContext<TGiven, TSut, TArg1, TArg2>
+    where TSut : notnull
+    where TArg1 : notnull
+    where TArg2 : notnull
+{
+    public TGiven Sut(out IVariable<TSut> sut, IVariable<TArg1> arg1, IVariable<TArg2> arg2, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        New(out sut, i => CreateSut(GetValue(arg1[i]), GetValue(arg2[i])), count, name);
+
+    public TGiven Sut(out IVariable<TSut> sut, IIndexedVariable<TArg1> arg1, IIndexedVariable<TArg2> arg2, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
+        New(out sut, () => CreateSut(GetValue(arg1), GetValue(arg2)), name: name);
+
+    protected abstract TSut CreateSut(TArg1 arg1, TArg2 arg2);
 }

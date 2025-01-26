@@ -6,19 +6,24 @@ using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Web.Framework;
 
-internal sealed class ValidationEndpointFilter<T>(IValidationContextFactory<T> validationContextFactory, IProblemDetailsFactory problemDetailsFactory) : IEndpointFilter
+internal sealed class ValidationEndpointFilter<TArg>(IValidationContextFactory<TArg> validationContextFactory, IProblemDetailsFactory problemDetailsFactory) : IEndpointFilter
 {
-    private readonly IValidationContextFactory<T> _validationContextFactory = validationContextFactory;
+    private readonly IValidationContextFactory<TArg> _validationContextFactory = validationContextFactory;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        var arguments = context.Arguments.OfType<T>();
+        if (context.Arguments.Count == 0)
+        {
+            return await next(context);
+        }
+
+        var arguments = context.Arguments.OfType<TArg>();
         var httpContext = context.HttpContext;
-        var validator = httpContext.RequestServices.GetValidator<T>();
+        var validator = httpContext.RequestServices.GetValidator<TArg>();
 
         var results = await ValidateArgumentAsync(validator, arguments, httpContext.RequestAborted).ToArrayAsync(httpContext.RequestAborted);
-        if (results.Length == 0 || Array.TrueForAll(results, static r => r.IsValid))
+        if (Array.TrueForAll(results, static r => r.IsValid))
         {
             return await next(context);
         }
@@ -27,7 +32,7 @@ internal sealed class ValidationEndpointFilter<T>(IValidationContextFactory<T> v
         return TypedResults.Problem(problem);
     }
 
-    private async IAsyncEnumerable<ValidationResult> ValidateArgumentAsync(IValidator validator, IEnumerable<T> arguments, [EnumeratorCancellation] CancellationToken cancellationToken)
+    private async IAsyncEnumerable<ValidationResult> ValidateArgumentAsync(IValidator validator, IEnumerable<TArg> arguments, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         foreach (var argument in arguments.WithCancellation(cancellationToken))
         {
