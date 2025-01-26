@@ -158,7 +158,6 @@ public abstract class GivenContext<TGiven, TSut, TArg>(BaseTest test) : GivenCon
     protected abstract TSut CreateSut(TArg arg);
 }
 
-
 public abstract class GivenContext<TGiven, TSut, TArg1, TArg2>(BaseTest test) : GivenContext<TGiven>(test)
     where TGiven : GivenContext<TGiven, TSut, TArg1, TArg2>
     where TSut : notnull

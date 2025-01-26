@@ -22,14 +22,14 @@ public sealed class ValidationEndpointFilterTests() : BaseTest<ValidationEndpoin
             .SubstituteFor<IValidationContextFactory<Guid>>(out var contextFactoryVar)
             .SubstituteFor<IProblemDetailsFactory>(out var problemFactoryVar)
             .Sut(out var sutVar, contextFactoryVar, problemFactoryVar);
-        
+
         var then = await When
             .InvokedAsync(sutVar, contextVar, resultVar, static async (sut, ctx, r, _) => (await sut.InvokeAsync(ctx, x =>
             {
                 x.Should().BeSameAs(ctx);
                 return ValueTask.FromResult<object?>(r);
             }))!);
-        
+
         then
             .Result(resultVar, static (actual, expected) => actual.Should().BeSameAs(expected));
     }
@@ -63,15 +63,15 @@ public sealed class ValidationEndpointFilterTests() : BaseTest<ValidationEndpoin
             .SubstituteFor<IValidationContextFactory<Guid>, Guid, IValidationContext>(out var contextFactoryVar, argVar, validationContextVar, static (f, arg, ctx) => f.CreateContext(arg).Returns(ctx))
             .SubstituteFor<IProblemDetailsFactory>(out var problemFactoryVar)
             .Sut(out var sutVar, contextFactoryVar, problemFactoryVar);
-        
+
         var then = await When
             .InvokedAsync(sutVar, invocationContextVar, resultVar, static async (sut, ctx, r, _) => (await sut.InvokeAsync(ctx, _ => ValueTask.FromResult<object?>(r)))!);
-        
+
         then
             .Result(resultVar, static (actual, expected) => actual.Should().BeSameAs(expected))
             .Ensure(validatorVar, validationContextVar, tokenVar, static (v, ctx, ct) => v.Received(1).ValidateAsync(ctx, ct));
     }
-    
+
     [Fact]
     public async Task InvokeAsync_Should_ReturnProblem_When_ArgumentIsInvalid()
     {
@@ -106,10 +106,10 @@ public sealed class ValidationEndpointFilterTests() : BaseTest<ValidationEndpoin
             .SubstituteFor<IProblemDetailsFactory, ValidationFailure, string, ProblemDetails>(out var problemFactoryVar, failureVar, traceIdVar, detailsVar, static (p, f, t, d) =>
                 p.ConvertToProblem(Arg.Is((IReadOnlyCollection<Error> c) => c.Count == 1 && c.OfType<ValidationError>().Single().Message == f.ErrorMessage && c.OfType<ValidationError>().Single().Value == f.AttemptedValue), t).Returns(d))
             .Sut(out var sutVar, contextFactoryVar, problemFactoryVar);
-        
+
         var then = await When
             .InvokedAsync(sutVar, invocationContextVar, resultVar, static async (sut, ctx, r, _) => (await sut.InvokeAsync(ctx, _ => ValueTask.FromResult<object?>(r)))!);
-        
+
         then
             .Result(detailsVar, static (actual, expected) => actual.Should().BeOfType<ProblemHttpResult>().Which.ProblemDetails.Should().BeSameAs(expected))
             .Ensure(validatorVar, validationContextVar, tokenVar, static (v, ctx, ct) => v.Received(1).ValidateAsync(ctx, ct));
