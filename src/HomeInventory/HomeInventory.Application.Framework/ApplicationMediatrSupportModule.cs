@@ -22,6 +22,8 @@ public sealed class ApplicationMediatrSupportModule : BaseModule
             serviceConfig.RegisterServicesFromAssemblyContaining(module.GetType());
         }
 
+        context.Services.AddSingleton(serviceConfig);
+
         ServiceRegistrar.AddMediatRClasses(context.Services, serviceConfig, cancellationToken);
         ServiceRegistrar.AddRequiredServices(context.Services, serviceConfig);
     }

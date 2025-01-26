@@ -18,7 +18,7 @@ public abstract class BaseModuleTest<TGiven, TSut>(Func<BaseModuleTest<TGiven, T
             .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sutVar, servicesVar, configurationVar, featureManagerVar, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new ModuleServicesContext(services, configuration, featureManager, [])));
+            .Invoked(sutVar, servicesVar, configurationVar, featureManagerVar, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new ModuleServicesContext(services, configuration, featureManager, GetModules())));
 
         then
             .Ensure(servicesVar, services =>
@@ -29,6 +29,8 @@ public abstract class BaseModuleTest<TGiven, TSut>(Func<BaseModuleTest<TGiven, T
     }
 
     protected abstract void EnsureRegistered(IServiceCollection services);
+
+    protected virtual IReadOnlyCollection<IModule> GetModules() => [];
 }
 
 public abstract class BaseModuleTest<TSut>(Func<TSut> createModuleFunc) : BaseModuleTest<FunctionalModuleTestGivenContext<TSut>, TSut>(t => BaseModuleTestGivenContext.Create(t, createModuleFunc))
