@@ -14,6 +14,14 @@
     <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);CA1062;CA2007;CA1716</NoWarn>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IsCsProject>false</IsCsProject>
+    <IsCsProject Condition="$(MSBuildProjectFile.EndsWith('.csproj'))">true</IsCsProject>
+    <IsContractsProject>false</IsContractsProject>
+    <IsContractsProject Condition="$(MSBuildProjectName.Contains('Contracts')) AND '$(IsCsProject)' == 'true'">true</IsContractsProject>
+    <IsModulesProject>false</IsModulesProject>
+    <IsModulesProject Condition="$(MSBuildProjectName.Contains('Modules')) AND '$(IsCsProject)' == 'true'">true</IsModulesProject>
+    <IsTestsProject>false</IsTestsProject>
+    <IsTestsProject Condition="$(MSBuildProjectName.Contains('Tests')) AND '$(IsCsProject)' == 'true'">true</IsTestsProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,11 +32,18 @@
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
   </ItemGroup>
 
-  <ItemGroup Condition="$(MSBuildProjectFile.EndsWith('.csproj'))">
+  <ItemGroup Condition="'$(IsCsProject)' == 'true'">
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="All"/>
-    <Using Include="LanguageExt" Condition="$(MSBuildProjectName.Contains('Contracts')) != true"/>
-    <Using Include="LanguageExt.Common" Condition="$(MSBuildProjectName.Contains('Contracts')) != true"/>
-    <Using Include="HomeInventory.Core"  Condition="$(MSBuildProjectName.Contains('Contracts')) != true"/>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(IsTestsProject)' == 'true'">
+    <NoWarn>$(NoWarn);CA1515</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsContractsProject)' == 'false' AND '$(IsModulesProject)' == 'false'">
+    <Using Include="LanguageExt"/>
+    <Using Include="LanguageExt.Common"/>
+    <Using Include="HomeInventory.Core"/>
   </ItemGroup>
 
 </Project>

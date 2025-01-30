@@ -12,7 +12,7 @@ public abstract class TestingLogger<T> : ILogger<T>
     public bool IsEnabled(LogLevel logLevel) => true;
 
     void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
-        Log(logLevel, eventId, state!, exception, (object s, Exception? e) => formatter((TState)s, e));
+        Log(logLevel, eventId, state!, exception, (s, e) => formatter((TState)s, e));
 
     public abstract void Log(LogLevel logLevel, EventId eventId, object state, Exception? exception, Func<object, Exception?, string> formatter);
 
