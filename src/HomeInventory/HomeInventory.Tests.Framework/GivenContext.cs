@@ -15,86 +15,66 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
         where TCustomization : ICustomization, new() =>
         Customize(new TCustomization());
 
-    public TContext New<T>(out IVariable<T> variable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull =>
+    public TContext Null<T>(out IVariable<T?> variable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
+        New(out variable, () => default, count, name);
+
+    public TContext New<T>(out IVariable<T> variable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, () => CreateMany<T>(count), name);
 
-    public TContext New<T>(out IVariable<T> variable, Func<T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull =>
+    public TContext New<T>(out IVariable<T> variable, Func<T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, _ => create(), count, name);
 
-    public TContext New<T, TArg>(out IVariable<T> variable, IVariable<TArg> arg, Func<TArg, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull
-        where TArg : notnull =>
+    public TContext New<T, TArg>(out IVariable<T> variable, IVariable<TArg> arg, Func<TArg, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, _ => create(GetValue(arg)), count, name);
 
-    public TContext New<T, TArg1, TArg2>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, Func<TArg1, TArg2, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull
-        where TArg1 : notnull
-        where TArg2 : notnull =>
+    public TContext New<T, TArg1, TArg2>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, Func<TArg1, TArg2, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, _ => create(GetValue(arg1), GetValue(arg2)), count, name);
 
-    public TContext New<T, TArg1, TArg2, TArg3>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, Func<TArg1, TArg2, TArg3, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull
-        where TArg1 : notnull
-        where TArg2 : notnull
-        where TArg3 : notnull =>
+    public TContext New<T, TArg1, TArg2, TArg3>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, Func<TArg1, TArg2, TArg3, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, _ => create(GetValue(arg1), GetValue(arg2), GetValue(arg3)), count, name);
 
     public TContext EmptyHashCode(out IVariable<HashCode> emptyHash) =>
         New(out emptyHash, static () => new());
 
     public TContext SubstituteFor<T, TArg1, TArg2>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, Action<T, TArg1, TArg2> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : class
-        where TArg1 : notnull
-        where TArg2 : notnull =>
+        where T : class =>
         SubstituteFor(out variable, arg1, (value, arg) => setup(value, arg, GetValue(arg2)), name: name);
 
     public TContext SubstituteFor<T, TArg1, TArg2, TArg3>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, Action<T, TArg1, TArg2, TArg3> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : class
-        where TArg1 : notnull
-        where TArg2 : notnull
-        where TArg3 : notnull =>
+        where T : class =>
         SubstituteFor(out variable, arg1, arg2, (value, a1, a2) => setup(value, a1, a2, GetValue(arg3)), name: name);
 
     public TContext SubstituteFor<T, TArg>(out IVariable<T> variable, IVariable<TArg> argV, Action<T, TArg> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : class
-        where TArg : notnull =>
+        where T : class =>
         SubstituteFor(out variable, value => setup(value, GetValue(argV)), name: name);
 
     public TContext SubstituteFor<T>(out IVariable<T> variable, Action<T> setup, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : class
-    {
-        return New(out variable, () => CreateAndSetup(setup), name: name);
-
-        static T CreateAndSetup(Action<T> setup)
+        where T : class =>
+        New(out variable, () =>
         {
             var value = Substitute.For<T>();
             setup(value);
             return value;
-        }
-    }
+        }, name: name);
 
     public TContext SubstituteFor<T>(out IVariable<T> variable, [CallerArgumentExpression(nameof(variable))] string? name = null)
         where T : class =>
         New(out variable, static () => Substitute.For<T>(), name: name);
 
     public TContext AddAllToHashCode<T>(out IVariable<HashCode> hash, IVariable<T> variable, [CallerArgumentExpression(nameof(hash))] string? name = null)
-        where T : notnull
     {
-        name ??= nameof(AddAllToHashCode);
-        hash = new Variable<HashCode>(name);
-        var hashValue = Variables.TryGetOrAdd(hash[0], () => new())
-            .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{name}' of type {typeof(HashCode)}"))
+        var hashVar = CreateVariable<HashCode>(name); 
+        hash = hashVar;
+        var indexed = hashVar[0];
+
+        var hashValue = Variables.TryGetOrAdd(indexed, () => new())
+            .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{indexed.Name}' of type {typeof(HashCode)}"))
             .Value;
 
-        foreach (var value in Variables.GetMany(variable))
-        {
-            hashValue.Add(value);
-        }
+        Variables.GetMany(variable).ForEach(hashValue.Add);
 
-        Variables.TryUpdate(hash[0], () => hashValue)
-            .ThrowIfNone(() => new InvalidOperationException($"Failed to update variable '{name}' of type {typeof(HashCode)}"));
+        Variables.TryUpdate(indexed, () => hashValue)
+            .ThrowIfNone(() => new InvalidOperationException($"Failed to update variable '{indexed.Name}' of type {typeof(HashCode)}"));
 
         return This;
     }
@@ -102,8 +82,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     protected T Create<T>() => _fixture.Create<T>();
 
     [SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "False positive")]
-    protected TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull =>
+    protected TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, () => Enumerable.Range(0, count).Select(create), name);
 
     private TContext Customize(ICustomization customization)
@@ -113,12 +92,8 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     }
 
     private TContext Add<T>(IVariable<T> variable, Func<IEnumerable<T>> createValues)
-        where T : notnull
     {
-        foreach (var value in createValues())
-        {
-            Variables.Add(variable, () => value);
-        }
+        createValues().ForEach(value => Variables.Add(variable, () => value));
 
         return This;
     }
@@ -126,17 +101,16 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     private IEnumerable<T> CreateMany<T>(int count) => _fixture.CreateMany<T>(count);
 
     private TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
-        where T : notnull
     {
-        variable = new Variable<T>(name ?? typeof(T).Name);
-
+        variable = CreateVariable<T>(name);
         return Add(variable, createMany);
     }
+
+    private static Variable<T> CreateVariable<T>(string? name) => new(name ?? typeof(T).Name);
 }
 
 public abstract class GivenContext<TGiven, TSut>(BaseTest test) : GivenContext<TGiven>(test)
     where TGiven : GivenContext<TGiven, TSut>
-    where TSut : notnull
 {
     public TGiven Sut(out IVariable<TSut> sut, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
         New(out sut, CreateSut, count, name);
@@ -146,8 +120,6 @@ public abstract class GivenContext<TGiven, TSut>(BaseTest test) : GivenContext<T
 
 public abstract class GivenContext<TGiven, TSut, TArg>(BaseTest test) : GivenContext<TGiven>(test)
     where TGiven : GivenContext<TGiven, TSut, TArg>
-    where TSut : notnull
-    where TArg : notnull
 {
     public TGiven Sut(out IVariable<TSut> sut, IVariable<TArg> arg, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
         New(out sut, i => CreateSut(GetValue(arg[i])), count, name);
@@ -160,9 +132,6 @@ public abstract class GivenContext<TGiven, TSut, TArg>(BaseTest test) : GivenCon
 
 public abstract class GivenContext<TGiven, TSut, TArg1, TArg2>(BaseTest test) : GivenContext<TGiven>(test)
     where TGiven : GivenContext<TGiven, TSut, TArg1, TArg2>
-    where TSut : notnull
-    where TArg1 : notnull
-    where TArg2 : notnull
 {
     public TGiven Sut(out IVariable<TSut> sut, IVariable<TArg1> arg1, IVariable<TArg2> arg2, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
         New(out sut, i => CreateSut(GetValue(arg1[i]), GetValue(arg2[i])), count, name);

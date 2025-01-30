@@ -7,31 +7,31 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
 
-internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
+public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissionRequirement>
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DynamicPermissionRequirement requirement)
     {
         if (context.Resource is not HttpContext httpContext)
         {
-            context.Fail(new(this, "Context has invalid resource"));
+            Fail("Context has invalid resource");
             return;
         }
 
         if (httpContext.GetEndpoint() is not { } endpoint)
         {
-            context.Fail(new(this, "HTTP context has ho endpoint"));
+            Fail("HTTP context has ho endpoint");
             return;
         }
 
         if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) is not { } idText)
         {
-            context.Fail(new(this, "User has no id"));
+            Fail( $"User has no {ClaimTypes.NameIdentifier} claim");
             return;
         }
 
         if (!Ulid.TryParse(idText, out var id))
         {
-            context.Fail(new(this, $"User has no valid id '{idText}'"));
+            Fail($"User has {ClaimTypes.NameIdentifier} = '{idText}' with unknown format");
             return;
         }
 
@@ -42,23 +42,23 @@ internal class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermiss
                 var provider = scope.ServiceProvider;
                 var repository = provider.GetRequiredService<IUserRepository>();
 
-                var permissions = requirement.GetPermissions(endpoint);
-                foreach (var permission in permissions)
+                var permissions = requirement.GetPermissions(endpoint).ToAsyncEnumerable();
+                var hasPermission = await permissions.AnyAwaitAsync(async p => await repository.HasPermissionAsync(userId, p.ToString(), httpContext.RequestAborted), httpContext.RequestAborted);
+                if (hasPermission)
                 {
-                    if (await repository.HasPermissionAsync(userId, permission.ToString(), httpContext.RequestAborted))
-                    {
-                        context.Succeed(requirement);
-                        return Unit.Default;
-                    }
+                    context.Succeed(requirement);
+                    return Unit.Default;
                 }
 
-                context.Fail(new(this, $"User has no permission"));
+                Fail("User has no permission");
                 return Unit.Default;
             },
             errors =>
             {
-                context.Fail(new(this, errors.Head.Message));
+                Fail(errors.Head.Message);
                 return Unit.Default;
             });
+        
+        void Fail(string reason) => context.Fail(new(this, reason));
     }
 }
