@@ -3,23 +3,11 @@
 public sealed class DirectedAcyclicGraph<TNode, TEdge>
 {
     private readonly System.Collections.Generic.HashSet<Node> _nodes = [];
-    private readonly System.Collections.Generic.HashSet<Edge> _edges = [];
-
-    public IReadOnlyCollection<Node> Nodes => _nodes;
-
-    public IReadOnlyCollection<Edge> Edges => _edges;
-
-    public Node AddNode(TNode nodeValue)
-    {
-        var node = new Node(nodeValue);
-        _nodes.Add(node);
-        return node;
-    }
 
     public Node GetOrAdd(TNode nodeValue, Func<Node, TNode, bool> filter) =>
-        Nodes.FirstOrDefault(n => filter(n, nodeValue)) ?? AddNode(nodeValue);
+        _nodes.FirstOrDefault(n => filter(n, nodeValue)) ?? AddNode(nodeValue);
 
-    public Edge AddEdge(Node from, Node to, TEdge edgeValue)
+    public void AddEdge(Node from, Node to, TEdge edgeValue)
     {
         var edge = new Edge(edgeValue)
         {
@@ -28,15 +16,13 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         };
         from.OnOutgoing(edge);
         to.OnIncoming(edge);
-        _edges.Add(edge);
-        return edge;
     }
 
     public IReadOnlyCollection<Node> KahnTopologicalSort()
     {
         var sorted = new List<Node>();
         var nodesToSort = new Queue<Node>();
-        var lookup = Nodes.ToLookup(n => n.Incoming.Count);
+        var lookup = _nodes.ToLookup(n => n.Incoming.Count);
         var inDegree = lookup.SelectMany(g => g.Select(node => (g.Key, Node: node))).ToDictionary(x => x.Node, x => x.Key);
 
         foreach (var n in lookup[0])
@@ -65,7 +51,12 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         return sorted;
     }
 
-    public TopologicalSortResult DeepFirstTraversalKahnTopologicalSort() => DfsVisitor.Visit(Nodes);
+    private Node AddNode(TNode nodeValue)
+    {
+        var node = new Node(nodeValue);
+        _nodes.Add(node);
+        return node;
+    }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]
     public sealed class Node(TNode value)
@@ -104,88 +95,10 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]
     public sealed class Edge(TEdge value)
     {
+        private readonly TEdge _value = value;
         public required Node Source { get; init; }
         public required Node Destination { get; init; }
 
-        public TEdge Value { get; } = value;
-
-        public override string ToString() => $"{Source} -> [{Value}] -> {Destination}";
-    }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]
-    public sealed record TopologicalSortResult(IReadOnlyCollection<Node> Sorted, IReadOnlyCollection<IReadOnlyCollection<Node>> DetectedCycles)
-    {
-        public bool IsAcrylic => DetectedCycles.Count == 0;
-    }
-
-    private static class DfsVisitor
-    {
-        public static TopologicalSortResult Visit(IReadOnlyCollection<Node> nodes)
-        {
-            var state = new State([], [], []);
-            foreach (var node in nodes.Where(state.IsNotVisited))
-            {
-                Visit(state with { Path = [node] });
-            }
-
-            return state.CreateResult();
-        }
-
-        private static void Visit(State state)
-        {
-            var node = state.Path[^1];
-            foreach (var destination in node.Outgoing.Select(static e => e.Destination))
-            {
-                if (state.PathContains(destination))
-                {
-                    state.AddCycle(destination);
-                    continue;
-                }
-
-                if (state.IsNotVisited(destination))
-                {
-                    state.Path.Add(destination);
-                    Visit(state);
-                }
-            }
-
-            state.MakeSorted(node);
-        }
-
-        private sealed record State(List<Node> Path, List<Node> Sorted, List<IReadOnlyCollection<Node>> Cycles)
-        {
-            public bool PathContains(Node node) => Path.Contains(node);
-
-            public void AddCycle(Node node)
-            {
-                var index = Path.IndexOf(node);
-                var cycle = Path.GetRange(index, Path.Count - index);
-                Cycles.Add(cycle);
-            }
-
-            public bool IsNotVisited(Node node) => !Sorted.Contains(node);
-
-            public void MakeSorted(Node node)
-            {
-                Sorted.Add(node);
-                if (!Path[^1].Equals(node))
-                {
-                    throw new InvalidOperationException("The node to remove is not at the end of the path.");
-                }
-
-                Path.RemoveAt(Path.Count - 1);
-            }
-
-            public TopologicalSortResult CreateResult()
-            {
-                if (Cycles.Count > 0)
-                {
-                    return new([], Cycles);
-                }
-
-                Sorted.Reverse();
-                return new(Sorted, Cycles);
-            }
-        }
+        public override string ToString() => $"{Source} -> [{_value}] -> {Destination}";
     }
 }

@@ -10,11 +10,7 @@ public static class CollectionExtensions
                 list.AddRange(items);
                 break;
             default:
-                foreach (var item in items)
-                {
-                    collection.Add(item);
-                }
-
+                items.ForEach(collection.Add);
                 break;
         }
     }

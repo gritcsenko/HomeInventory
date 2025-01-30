@@ -2,6 +2,14 @@
 
 public static class EnumerableExtensions
 {
+    public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+    {
+        foreach (var item in collection)
+        {
+            action(item);
+        }
+    }
+
     public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item) => ConcatCore(source, item);
 
     public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? source) => source ?? [];

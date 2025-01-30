@@ -1,4 +1,5 @@
-﻿using HomeInventory.Tests.Framework.Attributes;
+﻿using System.Diagnostics.CodeAnalysis;
+using HomeInventory.Tests.Framework.Attributes;
 
 namespace HomeInventory.Tests.Framework;
 
@@ -11,13 +12,14 @@ public abstract class BaseTest : IAsyncLifetime
     private readonly Lazy<IFixture> _lazyFixture = new(static () => new Fixture());
     private readonly Lazy<TimeProvider> _lazyDateTime = new(static () => new FixedTimeProvider(TimeProvider.System));
 
+    [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "AddDisposable always disposes the object later.")]
     protected BaseTest() => AddDisposable(_lazyCancellation.ToDisposable());
 
     protected internal IFixture Fixture => _lazyFixture.Value;
 
     protected internal ICancellation Cancellation => _lazyCancellation.Value;
 
-    protected internal TimeProvider DateTime => _lazyDateTime.Value;
+    protected TimeProvider DateTime => _lazyDateTime.Value;
 
     public virtual Task InitializeAsync() => Task.CompletedTask;
 
@@ -29,10 +31,8 @@ public abstract class BaseTest : IAsyncLifetime
         }
     }
 
-    protected void AddDisposable(IDisposable disposable) => AddDisposable(disposable.ToAsyncDisposable());
-
-    protected void AddDisposable(IAsyncDisposable disposable) => AddAsyncDisposable(disposable);
-
+    protected void AddDisposable(IDisposable disposable) => AddAsyncDisposable(disposable.ToAsyncDisposable());
+    
     protected void AddAsyncDisposable(IAsyncDisposable disposable) => _asyncDisposables.Add(disposable);
 }
 
