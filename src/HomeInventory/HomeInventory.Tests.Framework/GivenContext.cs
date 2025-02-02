@@ -71,7 +71,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
             .ThrowIfNone(() => new InvalidOperationException($"Failed to add variable '{indexed.Name}' of type {typeof(HashCode)}"))
             .Value;
 
-        Variables.GetMany(variable).ForEach(hashValue.Add);
+        Variables.GetMany(variable).ForEach(v => hashValue.Add(v));
 
         Variables.TryUpdate(indexed, () => hashValue)
             .ThrowIfNone(() => new InvalidOperationException($"Failed to update variable '{indexed.Name}' of type {typeof(HashCode)}"));
