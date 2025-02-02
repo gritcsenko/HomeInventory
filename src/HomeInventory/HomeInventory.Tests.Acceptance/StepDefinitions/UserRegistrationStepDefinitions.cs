@@ -1,4 +1,4 @@
-﻿using HomeInventory.Contracts;
+﻿using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
 
@@ -18,16 +18,10 @@ internal sealed class UserRegistrationStepDefinitions(ScenarioContext context, I
     private readonly IHomeInventoryApiDriver _apiDriver = apiDriver;
 
     [Given(@$"User e-mail {Patterns.QuotedName}")]
-    public void GivenUserEmail(string email)
-    {
-        _context.Set(email, Keys.Email);
-    }
+    public void GivenUserEmail(string email) => _context.Set(email, Keys.Email);
 
     [Given(@$"User password {Patterns.QuotedName}")]
-    public void GivenUserPassword(string password)
-    {
-        _context.Set(password, Keys.Password);
-    }
+    public void GivenUserPassword(string password) => _context.Set(password, Keys.Password);
 
     [When(@"User registers new account")]
     public async Task WhenUserRegistersNewAccount()

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace HomeInventory.Contracts.Validations;
+namespace HomeInventory.Contracts.UserManagement.Validators;
 
 internal static class RuleBuilderExtensions
 {

@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
-    <PackageReference Include="Microsoft.FeatureManagement" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
+    <ProjectReference Include="..\HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj" />
+    <ProjectReference Include="..\HomeInventory.Modules.Interfaces\HomeInventory.Modules.Interfaces.csproj" />
   </ItemGroup>
 </Project>
