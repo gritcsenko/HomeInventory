@@ -36,7 +36,7 @@ public static class AssemblyReferences
     public static IAssemblyReference ModulesInterfaces { get; } = new BaseAssemblyReference(typeof(IModule));
     public static IAssemblyReference ApplicationUserManagement { get; } = new BaseAssemblyReference(typeof(ApplicationUserManagementMediatrModule));
     public static IAssemblyReference DomainUserManagement { get; } = new BaseAssemblyReference(typeof(User));
-    
+
     public static readonly IReadOnlyDictionary<string, IAssemblyReference> References = new Dictionary<string, IAssemblyReference>
     {
         [nameof(Core)] = Core,

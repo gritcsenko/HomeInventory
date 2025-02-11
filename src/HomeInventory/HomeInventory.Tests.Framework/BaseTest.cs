@@ -32,7 +32,7 @@ public abstract class BaseTest : IAsyncLifetime
     }
 
     protected void AddDisposable(IDisposable disposable) => AddAsyncDisposable(disposable.ToAsyncDisposable());
-    
+
     protected void AddAsyncDisposable(IAsyncDisposable disposable) => _asyncDisposables.Add(disposable);
 }
 

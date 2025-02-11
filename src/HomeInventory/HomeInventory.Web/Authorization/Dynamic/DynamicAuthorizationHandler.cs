@@ -25,7 +25,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
 
         if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) is not { } idText)
         {
-            Fail( $"User has no {ClaimTypes.NameIdentifier} claim");
+            Fail($"User has no {ClaimTypes.NameIdentifier} claim");
             return;
         }
 
@@ -58,7 +58,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
                 Fail(errors.Head.Message);
                 return Unit.Default;
             });
-        
+
         void Fail(string reason) => context.Fail(new(this, reason));
     }
 }

@@ -13,7 +13,7 @@ public static class LayerDependencies
         var modules = graph.AddNode(ApplicationLayers.ModulesSdk);
         var domain = graph.AddNode(ApplicationLayers.Domain);
         var application = graph.AddNode(ApplicationLayers.Application);
-        
+
         graph.AddEdge(modules, core, Unit.Default);
         graph.AddEdge(domain, core, Unit.Default);
         graph.AddEdge(domain, modules, Unit.Default);
@@ -25,7 +25,7 @@ public static class LayerDependencies
     }
 
     public static IEnumerable<IObjectProvider<IType>> GetAllLayers() => _dependencies.Nodes.Select(node => node.Value);
-    
+
     public static IEnumerable<IObjectProvider<IType>> NotDependsOn(IObjectProvider<IType> source)
     {
         var option = _dependencies.GetNodeOptional(source, static (n, v) => ReferenceEquals(n.Value, v));

@@ -7,7 +7,7 @@ public sealed class VariablesContainer
     public void Add<T>(IVariable<T> variable, Func<T> createValueFunc) =>
         AllFor(variable).Add(createValueFunc);
 
-    public async Task AddAsync<T>(IVariable<T> variable, Func<Task<T>> createValueFunc) => 
+    public async Task AddAsync<T>(IVariable<T> variable, Func<Task<T>> createValueFunc) =>
         await AllFor(variable).AddAsync(createValueFunc);
 
     public Option<PropertyValue<T>> TryGet<T>(IIndexedVariable<T> variable) =>

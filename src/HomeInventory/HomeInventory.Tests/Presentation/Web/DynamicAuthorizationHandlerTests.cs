@@ -25,7 +25,7 @@ public sealed class DynamicAuthorizationHandlerTests() : BaseTest<DynamicAuthori
             .InvokedAsync(sutVar, contextVar, static (sut, context, _) => sut.HandleAsync(context));
 
         then
-            .Ensure(contextVar,static context =>
+            .Ensure(contextVar, static context =>
             {
                 context.HasFailed.Should().BeTrue();
                 context.FailureReasons.Should().ContainSingle()
@@ -193,7 +193,8 @@ public sealed class DynamicAuthorizationHandlerTests() : BaseTest<DynamicAuthori
                 context.HasSucceeded.Should().BeTrue();
                 context.PendingRequirements.Should().NotContain(requirement);
             });
-    }}
+    }
+}
 
 public sealed class DynamicAuthorizationHandlerTestsGivenContext(BaseTest test) : GivenContext<DynamicAuthorizationHandlerTestsGivenContext, DynamicAuthorizationHandler>(test)
 {
@@ -218,7 +219,7 @@ public sealed class DynamicAuthorizationHandlerTestsGivenContext(BaseTest test) 
             var context = Substitute.For<HttpContext>();
 
             var services = new ServiceCollection();
-            
+
             context.Features.Returns(features);
             context.RequestServices.Returns(services.BuildServiceProvider());
             return context;
@@ -236,7 +237,7 @@ public sealed class DynamicAuthorizationHandlerTestsGivenContext(BaseTest test) 
 
             var services = new ServiceCollection();
             services.AddScoped(_ => GetValue(repositoryVariable));
-            
+
             context.Features.Returns(features);
             context.RequestServices.Returns(services.BuildServiceProvider());
             context.RequestAborted.Returns(cancellation.Token);
@@ -249,10 +250,10 @@ public sealed class DynamicAuthorizationHandlerTestsGivenContext(BaseTest test) 
     public DynamicAuthorizationHandlerTestsGivenContext Requirement(out IVariable<DynamicPermissionRequirement> variable, IVariable<Endpoint> endpointVariable, IVariable<PermissionType> permissionVariable, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, endpointVariable, permissionVariable, (endpoint, permission) => new(e => e == endpoint ? [permission] : []), 1, name);
 
-    public DynamicAuthorizationHandlerTestsGivenContext Context(out IVariable<AuthorizationHandlerContext> variable, IVariable<DynamicPermissionRequirement> requirementVariable, IVariable<HttpContext?> resourceVariable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) => 
+    public DynamicAuthorizationHandlerTestsGivenContext Context(out IVariable<AuthorizationHandlerContext> variable, IVariable<DynamicPermissionRequirement> requirementVariable, IVariable<HttpContext?> resourceVariable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, requirementVariable, resourceVariable, (req, res) => new([req], new([new()]), res), count, name);
 
-    public DynamicAuthorizationHandlerTestsGivenContext Context(out IVariable<AuthorizationHandlerContext> variable, IVariable<DynamicPermissionRequirement> requirementVariable, IVariable<HttpContext?> resourceVariable, IVariable<string> idVariable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) => 
+    public DynamicAuthorizationHandlerTestsGivenContext Context(out IVariable<AuthorizationHandlerContext> variable, IVariable<DynamicPermissionRequirement> requirementVariable, IVariable<HttpContext?> resourceVariable, IVariable<string> idVariable, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, requirementVariable, resourceVariable, (req, res) => new([req], new([new([new(ClaimTypes.NameIdentifier, GetValue(idVariable))])]), res), count, name);
 
     protected override DynamicAuthorizationHandler CreateSut() => new();

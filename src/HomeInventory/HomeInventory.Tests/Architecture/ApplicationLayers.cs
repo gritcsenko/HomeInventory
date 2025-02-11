@@ -20,7 +20,7 @@ public static class ApplicationLayers
     public static IObjectProvider<IType> Domain { get; } =
         CreateLayer("Domain Layer", AssemblyReferences.Domain, AssemblyReferences.DomainPrimitives, AssemblyReferences.DomainUserManagement);
 
-    public static IObjectProvider<IType> Application { get; } = 
+    public static IObjectProvider<IType> Application { get; } =
         CreateLayer("Application Layer", AssemblyReferences.Application, AssemblyReferences.ApplicationFramework, AssemblyReferences.ApplicationUserManagement);
 
     private static GivenTypesConjunctionWithDescription CreateLayer(string name, params IAssemblyReference[] references) =>

@@ -10,7 +10,7 @@ public sealed class CollectionExtensionsTests : BaseTest
     {
         // Given
         var collection = new CollectionSubject<Guid>();
-        
+
         CollectionExtensions.AddRange(collection, [Fixture.Create<Guid>()]);
 
         collection.IsAddCalled.Should().BeFalse();
@@ -22,7 +22,7 @@ public sealed class CollectionExtensionsTests : BaseTest
         // Given
         var collection = Substitute.For<ICollection<Guid>>();
         var item = Fixture.Create<Guid>();
-        
+
         CollectionExtensions.AddRange(collection, [item]);
 
         collection.Received(1).Add(item);
@@ -32,7 +32,7 @@ public sealed class CollectionExtensionsTests : BaseTest
     {
         public bool IsAddCalled { get; private set; }
 
-        bool ICollection<T>.IsReadOnly => false; 
+        bool ICollection<T>.IsReadOnly => false;
 
         void ICollection<T>.Add(T item) => IsAddCalled = true;
     }

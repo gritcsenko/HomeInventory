@@ -63,7 +63,7 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
 
     public TContext AddAllToHashCode<T>(out IVariable<HashCode> hash, IVariable<T> variable, [CallerArgumentExpression(nameof(hash))] string? name = null)
     {
-        var hashVar = CreateVariable<HashCode>(name); 
+        var hashVar = CreateVariable<HashCode>(name);
         hash = hashVar;
         var indexed = hashVar[0];
 

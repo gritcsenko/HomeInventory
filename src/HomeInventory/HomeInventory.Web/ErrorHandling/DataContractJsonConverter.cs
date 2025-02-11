@@ -27,7 +27,7 @@ internal class DataContractJsonConverter<T> : JsonConverter<T>
     private static string SerializeDataContract(T value)
     {
         var serializer = new DataContractJsonSerializer(value?.GetType() ?? typeof(T));
-        
+
         using var memoryStream = new MemoryStream();
         serializer.WriteObject(memoryStream, value);
         return Encoding.UTF8.GetString(memoryStream.ToArray());
