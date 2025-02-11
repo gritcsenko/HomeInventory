@@ -2,10 +2,20 @@
 
 public sealed class DirectedAcyclicGraph<TNode, TEdge>
 {
-    private readonly System.Collections.Generic.HashSet<Node> _nodes = [];
+    public System.Collections.Generic.HashSet<Node> Nodes { get; } = [];
 
-    public Node GetOrAdd(TNode nodeValue, Func<Node, TNode, bool> filter) =>
-        _nodes.FirstOrDefault(n => filter(n, nodeValue)) ?? AddNode(nodeValue);
+    public Node GetOrAddNode(TNode nodeValue, Func<Node, TNode, bool> filter) =>
+        GetNodeOptional(nodeValue, filter).IfNone(() => AddNode(nodeValue));
+
+    public Option<Node> GetNodeOptional(TNode nodeValue, Func<Node, TNode, bool> filter) =>
+        Nodes.FirstOrDefault(n => filter(n, nodeValue)) ?? Option<Node>.None;
+
+    public Node AddNode(TNode nodeValue)
+    {
+        var node = new Node(nodeValue);
+        Nodes.Add(node);
+        return node;
+    }
 
     public void AddEdge(Node from, Node to, TEdge edgeValue)
     {
@@ -22,7 +32,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
     {
         var sorted = new List<Node>();
         var nodesToSort = new Queue<Node>();
-        var lookup = _nodes.ToLookup(n => n.Incoming.Count);
+        var lookup = Nodes.ToLookup(n => n.Incoming.Count);
         var inDegree = lookup.SelectMany(g => g.Select(node => (g.Key, Node: node))).ToDictionary(x => x.Node, x => x.Key);
 
         foreach (var n in lookup[0])
@@ -49,13 +59,6 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         }
 
         return sorted;
-    }
-
-    private Node AddNode(TNode nodeValue)
-    {
-        var node = new Node(nodeValue);
-        _nodes.Add(node);
-        return node;
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "By design")]

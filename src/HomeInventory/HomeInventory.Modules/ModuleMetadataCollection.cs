@@ -24,12 +24,12 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
 
         foreach (var meta in loadable)
         {
-            var source = graph.GetOrAdd(meta, static (n, v) => n.Value == v);
+            var source = graph.GetOrAddNode(meta, static (n, v) => n.Value == v);
             foreach (var reference in meta.GetDependencies(loadable))
             {
                 reference.Do(r =>
                 {
-                    var target = graph.GetOrAdd(r, static (n, v) => n.Value == v);
+                    var target = graph.GetOrAddNode(r, static (n, v) => n.Value == v);
                     graph.AddEdge(source, target, r.ModuleType);
                 });
             }

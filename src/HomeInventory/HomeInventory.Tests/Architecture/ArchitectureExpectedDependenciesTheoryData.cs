@@ -1,10 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using HomeInventory.Application.UserManagement;
-using HomeInventory.Contracts;
-using HomeInventory.Contracts.UserManagement;
-using HomeInventory.Contracts.UserManagement.Validators;
-using HomeInventory.Modules;
-using HomeInventory.Modules.Interfaces;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -23,12 +17,12 @@ public sealed class ArchitectureExpectedDependenciesTheoryData : TheoryData<stri
         [nameof(AssemblyReferences.WebFramework)] = AssemblyReferences.WebFramework,
         [nameof(AssemblyReferences.DomainPrimitives)] = AssemblyReferences.DomainPrimitives,
         [nameof(AssemblyReferences.Domain)] = AssemblyReferences.Domain,
-        ["Contracts"] = new BaseAssemblyReference(typeof(LoginRequest)),
-        ["ContractsUserManagement"] = new BaseAssemblyReference(typeof(RegisterRequest)),
-        ["ContractsUserManagementValidators"] = new BaseAssemblyReference(typeof(ContractsUserManagementValidatorsModule)),
-        ["Modules"] = new BaseAssemblyReference(typeof(ModulesHost)),
-        ["ModulesInterfaces"] = new BaseAssemblyReference(typeof(IModule)),
-        ["ApplicationUserManagement"] = new BaseAssemblyReference(typeof(ApplicationUserManagementMediatrModule)),
+        [nameof(AssemblyReferences.Contracts)] = AssemblyReferences.Contracts,
+        [nameof(AssemblyReferences.ContractsUserManagement)] = AssemblyReferences.ContractsUserManagement,
+        [nameof(AssemblyReferences.ContractsUserManagementValidators)] = AssemblyReferences.ContractsUserManagementValidators,
+        [nameof(AssemblyReferences.Modules)] = AssemblyReferences.Modules,
+        [nameof(AssemblyReferences.ModulesInterfaces)] = AssemblyReferences.ModulesInterfaces,
+        [nameof(AssemblyReferences.ApplicationUserManagement)] = AssemblyReferences.ApplicationUserManagement,
     };
 
     private static readonly string[] _allowedNamespaces =

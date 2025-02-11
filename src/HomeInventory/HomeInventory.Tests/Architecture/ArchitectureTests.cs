@@ -1,9 +1,14 @@
 ﻿using NetArchTest.Rules;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using ArchUnitNET.Domain;
+using ArchUnitNET.Fluent;
+using ArchUnitNET.Loader;
+using ArchUnitNET.xUnit;
 using HomeInventory.Api;
 using HomeInventory.Modules.Interfaces;
 using Mono.Cecil;
+using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
 namespace HomeInventory.Tests.Architecture;
 
@@ -16,7 +21,7 @@ public class ArchitectureTests
     {
         var assemblyReference = ArchitectureExpectedDependenciesTheoryData.References[name];
         var assembly = assemblyReference.Assembly;
-        var types = Types.InAssembly(assembly);
+        var types = NetArchTest.Rules.Types.InAssembly(assembly);
         var conditions = types.Should();
         var conditionList = conditions.OnlyHaveDependenciesOn(allowed);
         var result = conditionList.GetResult();
@@ -32,11 +37,25 @@ public class ArchitectureTests
     }
 
     [Fact]
+    public void Layers_Dependencies() =>
+        LayerDependencies.GetAllLayers()
+            .SelectMany(layer =>
+                LayerDependencies.NotDependsOn(layer)
+                    .Select(unwanted => Types()
+                        .That()
+                        .Are(layer)
+                        .Should()
+                        .NotDependOnAny(unwanted)))
+            .Cast<IArchRule>()
+            .Aggregate((a, b) => a.And(b))
+            .Check(ApplicationLayers.Architecture);
+
+    [Fact]
     public void CommandHandlers_Should_HaveDependencyOn_Domain()
     {
         var assembly = AssemblyReferences.Application.Assembly;
 
-        var result = Types.InAssembly(assembly)
+        var result = NetArchTest.Rules.Types.InAssembly(assembly)
             .That().HaveNameEndingWith("CommandHandler", StringComparison.Ordinal)
             .Should().HaveDependencyOn(Namespaces.Domain)
             .GetResult();
@@ -49,7 +68,7 @@ public class ArchitectureTests
     {
         var assembly = AssemblyReferences.Application.Assembly;
 
-        var result = Types.InAssembly(assembly)
+        var result = NetArchTest.Rules.Types.InAssembly(assembly)
             .That().HaveNameEndingWith("QueryHandler", StringComparison.Ordinal)
             .Should().HaveDependencyOn(Namespaces.Domain)
             .GetResult();
@@ -62,7 +81,7 @@ public class ArchitectureTests
     {
         var assembly = AssemblyReferences.WebUserManagement.Assembly;
 
-        var result = Types.InAssembly(assembly)
+        var result = NetArchTest.Rules.Types.InAssembly(assembly)
             .That().HaveNameEndingWith("Controller", StringComparison.Ordinal)
             .And().AreNotAbstract()
             .Should().HaveDependencyOn(Namespaces.MediatR)
@@ -76,7 +95,7 @@ public class ArchitectureTests
     {
         var assembly = AssemblyReferences.WebUserManagement.Assembly;
 
-        var result = Types.InAssembly(assembly)
+        var result = NetArchTest.Rules.Types.InAssembly(assembly)
             .That().HaveNameEndingWith("Controller", StringComparison.Ordinal)
             .And().AreNotAbstract()
             .Should().HaveDependencyOn(Namespaces.AutoMapper)
@@ -89,7 +108,7 @@ public class ArchitectureTests
     public void Modules_Should_EndWithModule()
     {
         _ = ApplicationModules.Instance;
-        var result = Types.InCurrentDomain()
+        var result = NetArchTest.Rules.Types.InCurrentDomain()
             .That().MeetCustomRule(new RuntimeClassesRule())
             .And().AreClasses()
             .And().AreNotAbstract()
