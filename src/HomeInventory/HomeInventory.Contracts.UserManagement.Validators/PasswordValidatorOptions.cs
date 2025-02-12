@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Contracts.Validations;
+﻿namespace HomeInventory.Contracts.UserManagement.Validators;
 
 internal sealed class PasswordValidatorOptions
 {
@@ -16,14 +16,17 @@ internal sealed class PasswordValidatorOptions
         {
             yield return PasswordCharacterSets.Numeric;
         }
+
         if (Uppercase)
         {
             yield return PasswordCharacterSets.Uppercase;
         }
+
         if (Lowercase)
         {
             yield return PasswordCharacterSets.Lowercase;
         }
+
         if (NonAlphanumeric)
         {
             yield return PasswordCharacterSets.NonAlphanumeric;

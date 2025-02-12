@@ -19,8 +19,5 @@ internal class ApiRequestBuilder(RequestBuilder requestBuilder, HttpMethod httpM
         return this;
     }
 
-    public async Task<HttpResponseMessage> SendAsync()
-    {
-        return await _requestBuilder.SendAsync(_httpMethod.Method);
-    }
+    public async Task<HttpResponseMessage> SendAsync() => await _requestBuilder.SendAsync(_httpMethod.Method);
 }

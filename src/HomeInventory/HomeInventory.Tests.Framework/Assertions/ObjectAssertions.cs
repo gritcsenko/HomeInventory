@@ -1,5 +1,7 @@
-﻿namespace HomeInventory.Tests.Framework.Assertions;
+﻿using FluentAssertions.Execution;
 
-public class ObjectAssertions<T>(T? value) : ObjectAssertions<T, ObjectAssertions<T>>(value!)
+namespace HomeInventory.Tests.Framework.Assertions;
+
+public class ObjectAssertions<T>(T? value, AssertionChain assertionChain) : ObjectAssertions<T, ObjectAssertions<T>>(value!, assertionChain)
 {
 }
