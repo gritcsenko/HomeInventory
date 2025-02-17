@@ -1,6 +1,7 @@
 ﻿using HomeInventory.Domain.Primitives;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Infrastructure.Framework;
 
 public static class InfrastructureFrameworkServiceCollectionExtensions
 {

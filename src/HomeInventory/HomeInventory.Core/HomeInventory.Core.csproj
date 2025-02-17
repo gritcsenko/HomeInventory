@@ -5,8 +5,6 @@
     <PackageReference Include="LanguageExt.Parsec" />
     <PackageReference Include="LanguageExt.Rx" />
     <PackageReference Include="LanguageExt.Sys" />
-    <PackageReference Include="LanguageExt.SysX" />
-    <PackageReference Include="LanguageExt.Transformers" />
     <PackageReference Include="System.Interactive.Async" />
     <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="System.Reactive" />

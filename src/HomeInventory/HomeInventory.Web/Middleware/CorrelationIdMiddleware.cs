@@ -1,7 +1,6 @@
 ﻿using HomeInventory.Web.Configuration.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 
 namespace HomeInventory.Web.Middleware;
 
@@ -30,21 +29,11 @@ internal class CorrelationIdMiddleware(ICorrelationIdContainer container, ILogge
         }
     }
 
-    private void AddCorrelationIdTo(HttpResponse response)
-    {
+    private void AddCorrelationIdTo(HttpResponse response) =>
         response.OnStarting(() =>
         {
             _logger.CorrelationIdReturned(_container.CorrelationId);
-            response.Headers[HeaderNames.CorrelationId] = new StringValues(_container.CorrelationId);
+            response.Headers[HeaderNames.CorrelationId] = new(_container.CorrelationId);
             return Task.CompletedTask;
         });
-    }
-}
-
-internal class ProblemTraceIdentifierMiddleware : IMiddleware
-{
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-    {
-        await next(context);
-    }
 }

@@ -1,6 +1,7 @@
-﻿using HomeInventory.Domain.Events;
+﻿using HomeInventory.Application.Framework;
+using HomeInventory.Domain.UserManagement.Events;
 
-namespace HomeInventory.Application.Cqrs.DomainEvents;
+namespace HomeInventory.Application.UserManagement.DomainEvents;
 
 internal sealed class UserCreatedDomainEventHandler : INotificationHandler<DomainEventNotification<UserCreatedDomainEvent>>
 {

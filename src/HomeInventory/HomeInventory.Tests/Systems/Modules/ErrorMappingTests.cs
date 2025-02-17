@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.ErrorHandling;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -7,25 +7,25 @@ namespace HomeInventory.Tests.Systems.Modules;
 public class ErrorMappingTests() : BaseTest<ErrorMappingTests.ErrorMappingTestsGivenContext>(static t => new(t))
 {
     [Fact]
-    public void GetDefaultError_Shoud_Return500()
+    public void GetDefaultError_Should_Return500()
     {
         Given
-            .Sut(out var sut);
+            .Sut(out var sutVar);
 
         When
-            .Invoked(sut, static sut => sut.GetDefaultError())
+            .Invoked(sutVar, static sut => sut.GetDefaultError())
             .Result(static actual => actual.Should().Be(HttpStatusCode.InternalServerError));
     }
 
     [Theory]
     [ClassData<ErrorInstancesData>]
-    public void GetError_Shoud_ReturnExpected_When_Error(Type? errorType, HttpStatusCode expected)
+    public void GetError_Should_ReturnExpected_When_Error(Type? errorType, HttpStatusCode expected)
     {
         Given
-            .Sut(out var sut);
+            .Sut(out var sutVar);
 
         When
-            .Invoked(sut, sut => sut.GetError(errorType))
+            .Invoked(sutVar, sut => sut.GetError(errorType))
             .Result(actual => actual.Should().Be(expected));
     }
 
