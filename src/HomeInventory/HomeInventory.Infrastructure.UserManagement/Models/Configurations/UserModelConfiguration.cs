@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HomeInventory.Infrastructure.Framework.Models.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
+namespace HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 
 internal sealed class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
 {

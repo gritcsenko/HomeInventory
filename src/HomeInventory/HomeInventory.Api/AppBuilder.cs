@@ -1,4 +1,4 @@
-﻿using Serilog;
+﻿using HomeInventory.Modules;
 
 namespace HomeInventory.Api;
 
@@ -11,31 +11,21 @@ internal class AppBuilder(string[] args)
     {
     }
 
-    public WebApplication Build()
+    public async Task<WebApplication> BuildAsync(CancellationToken cancellationToken = default)
     {
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
 
-        AddServices(builder.Services)
-            .AddSerilog(builder.Configuration);
+        var modulesHost = new ModulesHost(ApplicationModules.Instance);
+
+        await modulesHost.AddModulesAsync(builder.Services, builder.Configuration, cancellationToken);
 
         var app = builder.Build();
-        app.UseSerilogRequestLogging(static options => options.IncludeQueryInRequestPath = true);
-        return app.UseWeb();
-    }
 
-    private static IServiceCollection AddServices(IServiceCollection services) =>
-        services
-            .AddMediatR(
-                Application.AssemblyReference.Assembly,
-                Application.UserManagement.AssemblyReference.Assembly)
-            .AddDomain()
-            .AddInfrastructure()
-            .AddApplication()
-            .AddWeb(
-                Web.AssemblyReference.Assembly,
-                Web.UserManagement.AssemblyReference.Assembly,
-                Contracts.Validations.AssemblyReference.Assembly,
-                Contracts.UserManagement.Validators.AssemblyReference.Assembly)
-            .AddUserManagementInfrastructure();
+        await modulesHost.BuildModulesAsync(app, cancellationToken);
+
+        app.UseHttpsRedirection();
+
+        return app;
+    }
 }

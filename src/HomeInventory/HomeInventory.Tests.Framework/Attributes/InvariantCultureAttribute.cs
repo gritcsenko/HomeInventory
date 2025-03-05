@@ -15,8 +15,5 @@ public sealed class InvariantCultureAttribute : BeforeAfterTestAttribute
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
     }
 
-    public override void After(MethodInfo methodUnderTest)
-    {
-        Thread.CurrentThread.CurrentCulture = _originalCulture;
-    }
+    public override void After(MethodInfo methodUnderTest) => Thread.CurrentThread.CurrentCulture = _originalCulture;
 }
