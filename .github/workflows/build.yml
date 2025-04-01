@@ -138,7 +138,7 @@ jobs:
         run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
         working-directory: ./src/HomeInventory
       - name: Test Report
-        uses: dorny/test-reporter@v1.9.1
+        uses: dorny/test-reporter@v2.0.0
         if: success() || failure()
         with:
           name: Unit tests # Name of the check run which will be created
