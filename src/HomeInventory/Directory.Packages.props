@@ -16,7 +16,7 @@
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="Carter" Version="9.0.0" />
-    <PackageVersion Include="FastExpressionCompiler" Version="5.0.2" />
+    <PackageVersion Include="FastExpressionCompiler" Version="5.1.0" />
     <PackageVersion Include="FluentValidation" Version="11.11.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
