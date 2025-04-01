@@ -5,27 +5,25 @@ using LanguageExt;
 
 namespace HomeInventory.Modules;
 
-public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadata>
+internal sealed class ModuleMetadataCollection(IEnumerable<IModule> modules) : IReadOnlyCollection<ModuleMetadata>
 {
-    private readonly List<ModuleMetadata> _metadata = [];
+    private readonly IReadOnlyCollection<ModuleMetadata> _metadata = [.. modules.Select(m => new ModuleMetadata(m))];
 
     public int Count => _metadata.Count;
-
-    public void Add(IModule module) => _metadata.Add(new(module));
 
     public IEnumerator<ModuleMetadata> GetEnumerator() => _metadata.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public async Task<DirectedAcyclicGraph<ModuleMetadata, Type>> CreateDependencyGraphAsync(Func<ModuleMetadata, CancellationToken, Task<bool>> canLoadAsync, CancellationToken cancellationToken = default)
+    public async Task<DirectedAcyclicGraph<ModuleMetadata, Type>> CreateDependencyGraphAsync(Func<ModuleMetadata, CancellationToken, Task<bool>> allowedToLoadAsync, CancellationToken cancellationToken = default)
     {
-        var graph = new DirectedAcyclicGraph<ModuleMetadata, Type>();
-        var loadable = await GetLoadableModulesAsync(canLoadAsync, cancellationToken);
+        var loadableModules = await GetLoadableModulesAsync(allowedToLoadAsync, cancellationToken);
 
-        foreach (var meta in loadable)
+        var graph = new DirectedAcyclicGraph<ModuleMetadata, Type>();
+        foreach (var meta in loadableModules)
         {
             var source = graph.GetOrAddNode(meta, static (n, v) => n.Value == v);
-            foreach (var reference in meta.GetDependencies(loadable))
+            foreach (var reference in meta.GetDependencies(loadableModules))
             {
                 reference.Do(r =>
                 {
@@ -38,39 +36,26 @@ public sealed class ModuleMetadataCollection : IReadOnlyCollection<ModuleMetadat
         return graph;
     }
 
-    private async Task<List<ModuleMetadata>> GetLoadableModulesAsync(Func<ModuleMetadata, CancellationToken, Task<bool>> canLoadAsync, CancellationToken cancellationToken)
+    private async Task<List<ModuleMetadata>> GetLoadableModulesAsync(Func<ModuleMetadata, CancellationToken, Task<bool>> allowedToLoadAsync, CancellationToken cancellationToken)
     {
         var loadable = _metadata.ToList();
         var canLoadCache = new Dictionary<Type, bool>();
-        while (true)
+        int initialCount;
+
+        do
         {
-            var initialCount = loadable.Count;
+            initialCount = loadable.Count;
             foreach (var meta in loadable.Memo())
             {
-                if (!await CanLoadAsync(meta))
+                if (!await AllowedToLoadAsync(meta) || !await meta.GetDependencies(_metadata).AllAsync(async o => o.IsSome && await AllowedToLoadAsync((ModuleMetadata)o)))
                 {
                     loadable.Remove(meta);
-                    continue;
-                }
-
-                foreach (var optional in meta.GetDependencies(_metadata))
-                {
-                    if (optional.IsSome && await CanLoadAsync((ModuleMetadata)optional))
-                    {
-                        continue;
-                    }
-
-                    loadable.Remove(meta);
-                    break;
                 }
             }
+        } while (loadable.Count != initialCount);
 
-            if (loadable.Count == initialCount)
-            {
-                return loadable;
-            }
-        }
+        return loadable;
 
-        ValueTask<bool> CanLoadAsync(ModuleMetadata metadata) => canLoadCache.GetOrAddAsync(metadata.ModuleType, _ => canLoadAsync(metadata, cancellationToken));
+        ValueTask<bool> AllowedToLoadAsync(ModuleMetadata metadata) => canLoadCache.GetOrAddAsync(metadata.ModuleType, _ => allowedToLoadAsync(metadata, cancellationToken));
     }
 }

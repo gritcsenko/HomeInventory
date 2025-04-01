@@ -14,11 +14,12 @@ public abstract class BaseModuleTest<TGiven, TSut>(Func<BaseModuleTest<TGiven, T
         Given
             .Services(out var servicesVar)
             .Configuration(out var configurationVar)
+            .Metrics(out var metricsVar)
             .FeatureManager(out var featureManagerVar)
             .Sut(out var sutVar);
 
         var then = When
-            .Invoked(sutVar, servicesVar, configurationVar, featureManagerVar, (sut, services, configuration, featureManager) => sut.AddServicesAsync(new ModuleServicesContext(services, configuration, featureManager, GetModules())));
+            .Invoked(sutVar, servicesVar, configurationVar, metricsVar, featureManagerVar, (sut, services, configuration, metrics, featureManager) => sut.AddServicesAsync(new ModuleServicesContext(services, configuration, metrics, featureManager, GetModules())));
 
         then
             .Ensure(servicesVar, services =>

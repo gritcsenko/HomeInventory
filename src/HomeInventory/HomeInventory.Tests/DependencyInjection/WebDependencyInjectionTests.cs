@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
@@ -31,6 +32,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
 {
     private readonly ModulesHost _host;
     private readonly IConfiguration _configuration;
+    private readonly IMetricsBuilder  _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     public WebDependencyInjectionTests()
     {
@@ -62,7 +64,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     [Fact]
     public async Task ShouldRegister()
     {
-        await _host.AddModulesAsync(Services, _configuration);
+        await _host.AddServicesAsync(Services, _configuration, _metricsBuilder);
 
         using var scope = new AssertionScope();
         Services.Should().ContainConfigureOptions<JwtOptions>();

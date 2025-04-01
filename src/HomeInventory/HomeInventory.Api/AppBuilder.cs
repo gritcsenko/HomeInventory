@@ -16,13 +16,13 @@ internal class AppBuilder(string[] args)
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
 
-        var modulesHost = new ModulesHost(ApplicationModules.Instance);
-
-        await modulesHost.AddModulesAsync(builder.Services, builder.Configuration, cancellationToken);
+        var modulesHost = ModulesHost.Create(ApplicationModules.Instance);
+        
+        var modules = await modulesHost.AddServicesAsync(builder.Services, builder.Configuration, builder.Metrics, cancellationToken);
 
         var app = builder.Build();
 
-        await modulesHost.BuildModulesAsync(app, cancellationToken);
+        await modules.BuildApplicationAsync(app, cancellationToken);
 
         app.UseHttpsRedirection();
 

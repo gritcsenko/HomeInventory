@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Diagnostics.Metrics;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -28,6 +29,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
     private readonly ICancellation _cancellation;
+    private readonly IMetricsBuilder  _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     protected BaseApiModuleGivenTestContext(BaseTest test)
         : base(test)
@@ -55,7 +57,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     public async Task<TGiven> InitializeHostAsync()
     {
-        await _host.AddModulesAsync(_services, _configuration);
+        await _host.AddServicesAsync(_services, _configuration, _metricsBuilder);
         return This;
     }
 

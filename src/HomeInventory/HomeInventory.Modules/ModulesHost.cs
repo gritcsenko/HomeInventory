@@ -3,48 +3,43 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.FeatureManagement;
 
 namespace HomeInventory.Modules;
 
-public sealed class ModulesHost(IReadOnlyCollection<IModule> modules)
+public sealed class ModulesHost(IReadOnlyCollection<IModule> modules) : IModulesHost
 {
-    private readonly IReadOnlyCollection<IModule> _modules = modules;
-    private readonly ModuleMetadataCollection _metadata = [];
-    private IModule[] _availableModules = [];
-
-    public async Task AddModulesAsync(IServiceCollection services, IConfiguration configuration, CancellationToken cancellationToken = default)
+    private readonly ModuleMetadataCollection _metadata = new(modules);
+    
+    public static IModulesHost Create(IReadOnlyCollection<IModule> modules) => new ModulesHost(modules);
+    
+    public async Task<IRegisteredModules> AddServicesAsync(IServiceCollection services, IConfiguration configuration, IMetricsBuilder metrics, CancellationToken cancellationToken = default)
     {
-        AddFeatures(services);
+        services.AddFeatureManagement(configuration);
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton(configuration);
-        AddFeatures(serviceCollection);
-
-        await using var serviceProvider = services.BuildServiceProvider();
+        serviceCollection.AddFeatureManagement(configuration);
+        await using var serviceProvider = serviceCollection.BuildServiceProvider();
         var featureManager = serviceProvider.GetRequiredService<IFeatureManager>();
 
-        foreach (var module in _modules)
-        {
-            _metadata.Add(module);
-        }
-
         var graph = await _metadata.CreateDependencyGraphAsync((m, _) => m.Module.Flag.IsEnabledAsync(featureManager), cancellationToken);
-        var nodes = graph.KahnTopologicalSort();
+        var sortedNodes = graph.KahnTopologicalSort();
+        var sortedMetadata = sortedNodes.Select(n => n.Value);
+        var availableModules = sortedMetadata.Select(m => m.Module).ToArray();
 
-        var sorted = nodes.Select(n => n.Value).ToArray();
-
-        _availableModules = sorted.Select(m => m.Module).ToArray();
-        var context = new ModuleServicesContext(services, configuration, featureManager, _availableModules);
-        await Task.WhenAll(_availableModules.Select(async m => await m.AddServicesAsync(context, cancellationToken)));
+        var context = new ModuleServicesContext(services, configuration, metrics, featureManager, availableModules);
+        await context.AddServicesAsync(cancellationToken);
+        return new RegisteredModules(context);
     }
 
-    public async Task BuildModulesAsync<TApp>(TApp app, CancellationToken cancellationToken = default)
-        where TApp : IApplicationBuilder, IEndpointRouteBuilder
+    private sealed class RegisteredModules(IModuleServicesContext context) : IRegisteredModules
     {
-        var context = new ModuleBuildContext<TApp>(app);
-        await Task.WhenAll(_availableModules.Select(async m => await m.BuildAppAsync(context, cancellationToken)));
-    }
+        private readonly IModuleServicesContext _context = context;
 
-    private static void AddFeatures(IServiceCollection services) => services.AddFeatureManagement();
+        public Task BuildApplicationAsync<TApp>(TApp app, CancellationToken cancellationToken = default)
+            where TApp : IApplicationBuilder, IEndpointRouteBuilder =>
+            new ModuleBuildContext<TApp>(app).BuildAppAsync(_context.Modules, cancellationToken);
+    }
 }

@@ -19,6 +19,19 @@ public static class EnumerableExtensions
     public static IEnumerable<T> WithCancellation<T>(this IEnumerable<T> source, CancellationToken cancellationToken) =>
         source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
 
+    public static async ValueTask<bool> AllAsync<T>(this IEnumerable<T> collection, Func<T, ValueTask<bool>> predicate)
+    {
+        foreach (var item in collection)
+        {
+            if (!await predicate(item))
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     private static IEnumerable<T> ConcatCore<T>(IEnumerable<T> source, T item)
     {
         foreach (var i in source)

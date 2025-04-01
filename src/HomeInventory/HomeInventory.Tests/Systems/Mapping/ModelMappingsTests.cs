@@ -9,6 +9,7 @@ using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Modules;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.Metrics;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -17,6 +18,7 @@ public class ModelMappingsTests : BaseMappingsTests
 {
     private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule(), new ApplicationMappingModule()]);
     private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IMetricsBuilder  _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     public ModelMappingsTests()
     {
@@ -36,7 +38,7 @@ public class ModelMappingsTests : BaseMappingsTests
     {
         await base.InitializeAsync();
 
-        await _host.AddModulesAsync(Services, _configuration);
+        await _host.AddServicesAsync(Services, _configuration, _metricsBuilder);
     }
 
     [Theory]

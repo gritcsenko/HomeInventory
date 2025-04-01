@@ -9,6 +9,7 @@ using HomeInventory.Infrastructure.UserManagement.Models;
 using HomeInventory.Modules;
 using HomeInventory.Web.UserManagement;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.Metrics;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
@@ -17,6 +18,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
 {
     private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule()]);
     private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IMetricsBuilder  _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     public UserManagementModelMappingsTests()
     {
@@ -28,7 +30,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
     {
         await base.InitializeAsync();
 
-        await _host.AddModulesAsync(Services, _configuration);
+        await _host.AddServicesAsync(Services, _configuration, _metricsBuilder);
     }
 
     [Theory]
