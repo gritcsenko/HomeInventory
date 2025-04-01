@@ -52,7 +52,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
 
         response.Should().BeNone();
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
             .Received(1)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
             .Received(0)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     private UnitOfWorkBehavior<RegisterCommand, Option<Error>> CreateSut() => new(_scopeAccessor, _logger);

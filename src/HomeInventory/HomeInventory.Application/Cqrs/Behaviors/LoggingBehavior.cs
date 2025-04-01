@@ -15,7 +15,7 @@ internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavi
     {
         using var scope = _logger.LoggingBehaviorScope(_requestName, _responseName);
         _logger.SendingRequest(request);
-        var response = await next();
+        var response = await next(cancellationToken);
 
         var consumer = GetResponseHandler(response);
         consumer.Invoke(_logger);
