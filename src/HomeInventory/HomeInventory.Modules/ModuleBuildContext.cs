@@ -10,6 +10,6 @@ public sealed record ModuleBuildContext<TApp>(TApp App) : IModuleBuildContext
     public IApplicationBuilder ApplicationBuilder => App;
 
     public IEndpointRouteBuilder EndpointRouteBuilder => App;
-    
+
     internal Task BuildAppAsync(IEnumerable<IModule> modules, CancellationToken cancellationToken = default) => Task.WhenAll(modules.Select(m => m.BuildAppAsync(this, cancellationToken)));
 }

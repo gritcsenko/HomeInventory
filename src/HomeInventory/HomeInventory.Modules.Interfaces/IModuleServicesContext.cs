@@ -10,10 +10,10 @@ public interface IModuleServicesContext
     IServiceCollection Services { get; }
 
     IConfiguration Configuration { get; }
-    
-    IMetricsBuilder Metrics { get; } 
-    
+
+    IMetricsBuilder Metrics { get; }
+
     IFeatureManager FeatureManager { get; }
-    
+
     IReadOnlyCollection<IModule> Modules { get; }
 }

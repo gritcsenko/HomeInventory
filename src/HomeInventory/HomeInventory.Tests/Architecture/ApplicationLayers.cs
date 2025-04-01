@@ -8,7 +8,7 @@ namespace HomeInventory.Tests.Architecture;
 public static class ApplicationLayers
 {
     public static ArchUnitNET.Domain.Architecture Architecture { get; } = new ArchLoader()
-        .LoadAssemblies(AssemblyReferences.References.Values.Select(r => r.Assembly).ToArray())
+        .LoadAssemblies([.. AssemblyReferences.References.Values.Select(r => r.Assembly)])
         .Build();
 
     public static IObjectProvider<IType> Core { get; } =
@@ -26,6 +26,6 @@ public static class ApplicationLayers
     private static GivenTypesConjunctionWithDescription CreateLayer(string name, params IAssemblyReference[] references) =>
         Types()
             .That()
-            .ResideInAssembly(references[0].Assembly, references[1..].Select(r => r.Assembly).ToArray())
+            .ResideInAssembly(references[0].Assembly, [.. references[1..].Select(r => r.Assembly)])
             .As(name);
 }

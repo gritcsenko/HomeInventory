@@ -11,7 +11,7 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
 {
     private readonly PublishDomainEventsInterceptor _interceptor = interceptor;
     private readonly TimeProvider _timeProvider = timeProvider;
-    private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = configurationAppliers.ToArray();
+    private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = [.. configurationAppliers];
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {

@@ -29,7 +29,7 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
     private readonly ICancellation _cancellation;
-    private readonly IMetricsBuilder  _metricsBuilder = Substitute.For<IMetricsBuilder>();
+    private readonly IMetricsBuilder _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     protected BaseApiModuleGivenTestContext(BaseTest test)
         : base(test)

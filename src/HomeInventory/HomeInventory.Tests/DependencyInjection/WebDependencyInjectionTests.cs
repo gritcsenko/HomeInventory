@@ -32,7 +32,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
 {
     private readonly ModulesHost _host;
     private readonly IConfiguration _configuration;
-    private readonly IMetricsBuilder  _metricsBuilder = Substitute.For<IMetricsBuilder>();
+    private readonly IMetricsBuilder _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     public WebDependencyInjectionTests()
     {

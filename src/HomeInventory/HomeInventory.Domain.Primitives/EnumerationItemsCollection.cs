@@ -21,7 +21,7 @@ internal sealed class EnumerationItemsCollection<T> : ISpannableCollection<T>
     public EnumerationItemsCollection(IEnumerable<T> items)
     {
         _items = items.ToLookup(e => e.Name);
-        _flattened = new(() => _items.Flatten().ToArray());
+        _flattened = new(() => [.. _items.Flatten()]);
     }
 
     public Option<T> this[string name] => _items[name].ToOption();

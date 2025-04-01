@@ -4,7 +4,7 @@ namespace HomeInventory.Domain.Primitives;
 
 public readonly struct EquatableComponent<T>(IEnumerable<object> components) : IEquatable<EquatableComponent<T>>
 {
-    private readonly object[] _components = components as object[] ?? components.ToArray();
+    private readonly object[] _components = components as object[] ?? [.. components];
 
     public object GetComponent(int index) => _components[index];
 

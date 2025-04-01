@@ -17,7 +17,7 @@ internal class AppBuilder(string[] args)
         builder.WebHost.CaptureStartupErrors(false);
 
         var modulesHost = ModulesHost.Create(ApplicationModules.Instance);
-        
+
         var modules = await modulesHost.AddServicesAsync(builder.Services, builder.Configuration, builder.Metrics, cancellationToken);
 
         var app = builder.Build();

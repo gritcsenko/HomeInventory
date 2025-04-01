@@ -11,9 +11,9 @@ namespace HomeInventory.Modules;
 public sealed class ModulesHost(IReadOnlyCollection<IModule> modules) : IModulesHost
 {
     private readonly ModuleMetadataCollection _metadata = new(modules);
-    
+
     public static IModulesHost Create(IReadOnlyCollection<IModule> modules) => new ModulesHost(modules);
-    
+
     public async Task<IRegisteredModules> AddServicesAsync(IServiceCollection services, IConfiguration configuration, IMetricsBuilder metrics, CancellationToken cancellationToken = default)
     {
         services.AddFeatureManagement(configuration);

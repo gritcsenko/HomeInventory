@@ -103,7 +103,7 @@ public sealed class EquatableComponentTestsGivenContext : GivenContext<Equatable
         Sut(out sut, new Variable<Ulid>("none"), count, name);
 
     public new EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, int count = 1, [CallerArgumentExpression(nameof(sut))] string? name = null) =>
-        Sut(out sut, variable, name ?? "sut", Enumerable.Repeat(.., count).ToArray());
+        Sut(out sut, variable, name ?? "sut", [.. Enumerable.Repeat(.., count)]);
 
     public EquatableComponentTestsGivenContext Sut(out IVariable<EquatableComponent<string>> sut, IVariable<Ulid> variable, params Range[] ranges) =>
         Sut(out sut, variable, "sut", ranges);

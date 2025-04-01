@@ -61,7 +61,7 @@ internal static class ProblemDetailsExtensions
         collection switch
         {
             { Count: 1 } => [collection[0].GetErrorMessage()],
-            not null => collection.Select(static e => e.GetErrorMessage()).ToArray(),
+            not null => [.. collection.Select(static e => e.GetErrorMessage())],
             _ => [],
         };
 

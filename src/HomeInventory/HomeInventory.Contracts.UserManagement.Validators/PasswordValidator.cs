@@ -6,7 +6,7 @@ namespace HomeInventory.Contracts.UserManagement.Validators;
 
 internal sealed class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> requiredSets) : PropertyValidator<T, string?>
 {
-    private readonly IEnumerable<IPasswordCharacterSet> _requiredSets = requiredSets.ToArray();
+    private readonly IEnumerable<IPasswordCharacterSet> _requiredSets = [.. requiredSets];
 
     public override string Name => "PasswordValidator";
 

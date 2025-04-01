@@ -18,7 +18,7 @@ public class ModelMappingsTests : BaseMappingsTests
 {
     private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule(), new ApplicationMappingModule()]);
     private readonly IConfiguration _configuration = new ConfigurationManager();
-    private readonly IMetricsBuilder  _metricsBuilder = Substitute.For<IMetricsBuilder>();
+    private readonly IMetricsBuilder _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     public ModelMappingsTests()
     {

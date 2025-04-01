@@ -14,7 +14,9 @@ internal sealed class ErrorMappingBuilder
     {
         _default = @default;
         _defaultValidation = validation;
+#pragma warning disable IDE0306
         _mapping = new(mapping);
+#pragma warning restore IDE0306
     }
 
     public ErrorMapping Build() => new(_default, _defaultValidation, _mapping);

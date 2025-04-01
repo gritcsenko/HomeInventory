@@ -25,5 +25,5 @@ public static class ProblemDetailsFactoryExtensions
             });
 
     private static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, IEnumerable<ValidationFailure> failures, string? traceIdentifier = null) =>
-        factory.ConvertToProblem(failures.Select(static x => new ValidationError(x.ErrorMessage, x.AttemptedValue)).ToArray(), traceIdentifier);
+        factory.ConvertToProblem([.. failures.Select(static x => new ValidationError(x.ErrorMessage, x.AttemptedValue))], traceIdentifier);
 }
