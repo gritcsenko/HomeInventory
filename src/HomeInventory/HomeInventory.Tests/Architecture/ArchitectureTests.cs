@@ -1,9 +1,7 @@
 ﻿using NetArchTest.Rules;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
-using ArchUnitNET.Loader;
 using ArchUnitNET.xUnit;
 using HomeInventory.Api;
 using HomeInventory.Modules.Interfaces;
