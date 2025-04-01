@@ -5,7 +5,7 @@ namespace HomeInventory.Web.OpenApi;
 
 internal class SwaggerDefaultValues(IEnumerable<ISwaggerOperationFilter> childFilters) : IOperationFilter
 {
-    private readonly IReadOnlyCollection<ISwaggerOperationFilter> _childFilters = childFilters.ToArray();
+    private readonly IReadOnlyCollection<ISwaggerOperationFilter> _childFilters = [.. childFilters];
 
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {

@@ -2,12 +2,11 @@
 
 namespace HomeInventory.Web.Framework;
 
-public sealed record class SectionPath(string Path)
+public sealed record SectionPath(string Path)
 {
     public Option<SectionPath> GetParentOptional() => ConfigurationPath.GetParentPath(Path).NoneIfNull().Map(ToSectionPath);
 
     public static implicit operator SectionPath(string path) => ToSectionPath(path);
-
 
     public static implicit operator string(SectionPath path) => path.ToString();
 

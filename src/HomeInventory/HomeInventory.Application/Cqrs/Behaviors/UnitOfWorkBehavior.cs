@@ -1,5 +1,5 @@
 ﻿using System.Transactions;
-using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.Primitives;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
@@ -16,7 +16,7 @@ internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scop
     {
         using var scope = new TransactionScope();
 
-        var result = await next();
+        var result = await next(cancellationToken);
         if (result.IsNone)
         {
             await SaveChangesAsync(scope, cancellationToken);

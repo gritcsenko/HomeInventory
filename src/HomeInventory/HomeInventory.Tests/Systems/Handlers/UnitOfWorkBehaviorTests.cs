@@ -1,12 +1,12 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
-using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Tests.Architecture;
 using MediatR;
 using MediatR.Registration;
 using Microsoft.Extensions.Logging;
-using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -31,7 +31,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
 
         var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
+            .RegisterServicesFromAssemblies(AssemblyReferences.Application.Assembly)
             .AddUnitOfWorkBehavior();
         ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
         ServiceRegistrar.AddRequiredServices(services, serviceConfig);
@@ -52,7 +52,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
 
         response.Should().BeNone();
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
             .Received(1)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
             .Received(0)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     private UnitOfWorkBehavior<RegisterCommand, Option<Error>> CreateSut() => new(_scopeAccessor, _logger);
