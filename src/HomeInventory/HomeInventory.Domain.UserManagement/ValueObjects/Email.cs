@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Domain.ValueObjects;
+namespace HomeInventory.Domain.UserManagement.ValueObjects;
 
 public sealed class Email(string value) : ValueObject<Email>(value)
 {

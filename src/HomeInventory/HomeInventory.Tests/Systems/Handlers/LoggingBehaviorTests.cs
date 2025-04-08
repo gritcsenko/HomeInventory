@@ -1,12 +1,12 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Tests.Architecture;
 using MediatR;
 using MediatR.Registration;
 using Microsoft.Extensions.Logging;
-using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -32,7 +32,7 @@ public class LoggingBehaviorTests : BaseTest
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
 
         var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
+            .RegisterServicesFromAssemblies(AssemblyReferences.Application.Assembly)
             .AddLoggingBehavior();
         ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
         ServiceRegistrar.AddRequiredServices(services, serviceConfig);
@@ -51,10 +51,7 @@ public class LoggingBehaviorTests : BaseTest
 
         response.Should().BeSameAs(_response);
 
-        Task<IQueryResult<AuthenticateResult>> Handler(CancellationToken _)
-        {
-            return Task.FromResult(_response);
-        }
+        Task<IQueryResult<AuthenticateResult>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     [Fact]

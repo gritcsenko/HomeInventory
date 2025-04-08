@@ -1,8 +1,9 @@
-﻿using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.Persistence;
+﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.UserManagement.Persistence;
 
-namespace HomeInventory.Application.Cqrs.Queries.UserId;
+namespace HomeInventory.Application.UserManagement.Queries;
 
 internal sealed class UserIdQueryHandler(IScopeAccessor scopeAccessor) : QueryHandler<UserIdQuery, UserIdResult>
 {

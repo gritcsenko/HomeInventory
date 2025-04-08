@@ -1,12 +1,12 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
-using HomeInventory.Application.Cqrs.Commands.Register;
+using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Tests.Architecture;
 using MediatR;
 using MediatR.Registration;
 using Microsoft.Extensions.Logging;
-using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -31,7 +31,7 @@ public class UnitOfWorkBehaviorTests : BaseTest
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
 
         var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
+            .RegisterServicesFromAssemblies(AssemblyReferences.Application.Assembly)
             .AddUnitOfWorkBehavior();
         ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
         ServiceRegistrar.AddRequiredServices(services, serviceConfig);

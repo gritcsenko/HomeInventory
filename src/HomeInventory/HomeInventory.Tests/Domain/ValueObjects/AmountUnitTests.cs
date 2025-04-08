@@ -10,10 +10,7 @@ public class AmountUnitTests : BaseTest
     private static readonly EnumerationItemsCollection<AmountUnit> _items = EnumerationItemsCollection.CreateFor<AmountUnit>();
 
     [Fact]
-    public void Items_Should_NotBeEmpty()
-    {
-        _items.Should().NotBeEmpty();
-    }
+    public void Items_Should_NotBeEmpty() => _items.Should().NotBeEmpty();
 
     [Fact]
     public void CreateShouldPassTheCallerMemberNameAndType()
@@ -52,14 +49,13 @@ public class AmountUnitTests : BaseTest
     }
 
     [Fact]
-    public void FieldsShoulHaveMatchedName()
+    public void FieldsShouldHaveMatchedName()
     {
         var fields = typeof(AmountUnit).GetFieldsOfType<AmountUnit>().ToArray();
 
         fields.Should().NotBeEmpty()
             .And.AllSatisfy(static t => t.Value!.Name.Should().Be(t.Field.Name));
     }
-
 
     [Fact]
     public void CanBeUsedAsDictionaryKey()

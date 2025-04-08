@@ -1,10 +1,10 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Infrastructure.Framework;
-using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Specifications;
+using HomeInventory.Infrastructure.Framework.Specifications;
+using HomeInventory.Infrastructure.UserManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -12,10 +12,7 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class RepositoryTests : BaseRepositoryTest
 {
-    public RepositoryTests()
-    {
-        Fixture.CustomizeId<UserId>();
-    }
+    public RepositoryTests() => Fixture.CustomizeId<UserId>();
 
     [Fact]
     public async Task AddAsync_ShouldAdd()
@@ -33,7 +30,7 @@ public class RepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task AddRangeAsync_ShouldAdd()
     {
-        var entities = Fixture.CreateMany<User>();
+        var entities = Fixture.CreateMany<User>().ToArray();
         var sut = CreateSut();
 
         await sut.AddRangeAsync(entities, Cancellation.Token);
@@ -61,7 +58,7 @@ public class RepositoryTests : BaseRepositoryTest
     [Fact]
     public async Task DeleteRangeAsync_ShouldRemoveExisting()
     {
-        var entities = Fixture.CreateMany<User>();
+        var entities = Fixture.CreateMany<User>().ToArray();
         var sut = CreateSut();
         await sut.AddRangeAsync(entities, Cancellation.Token);
         await Context.SaveChangesAsync(Cancellation.Token);

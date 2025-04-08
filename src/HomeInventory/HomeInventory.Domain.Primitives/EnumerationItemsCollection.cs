@@ -8,7 +8,7 @@ internal static class EnumerationItemsCollection
         where T : IEnumeration<T>
     {
         var items = typeof(T).GetFieldValuesOfType<T>();
-        return new EnumerationItemsCollection<T>(items);
+        return new(items);
     }
 }
 
@@ -21,10 +21,10 @@ internal sealed class EnumerationItemsCollection<T> : ISpannableCollection<T>
     public EnumerationItemsCollection(IEnumerable<T> items)
     {
         _items = items.ToLookup(e => e.Name);
-        _flattened = new(() => _items.Flatten().ToArray());
+        _flattened = new(() => [.. _items.Flatten()]);
     }
 
-    public Option<T> this[string name] => _items[name].HeadOrNone();
+    public Option<T> this[string name] => _items[name].ToOption();
 
     public Span<T> AsSpan() => new(_flattened.Value);
 

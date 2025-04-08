@@ -1,8 +1,9 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.Aggregates;
+﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Persistence;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Persistence;
 
 namespace HomeInventory.Application.Cqrs.Queries.Authenticate;
 
@@ -18,12 +19,8 @@ internal sealed class AuthenticateQueryHandler(IAuthenticationTokenGenerator tok
             .IfAsync((user, t) => IsPasswordMatchAsync(user, query.Password, t), cancellationToken)
             .ConvertAsync(async (user, t) => (token: await _tokenGenerator.GenerateTokenAsync(user, t), id: user.Id), cancellationToken);
 
-        if (!result.IsSome)
-        {
-            return new InvalidCredentialsError();
-        }
-
-        return result.Map(t => new AuthenticateResult(t.id, t.token)).ErrorIfNone(() => new InvalidCredentialsError());
+        return result.Map(t => new AuthenticateResult(t.id, t.token))
+            .ErrorIfNone(() => new InvalidCredentialsError());
     }
 
     private async Task<Option<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken) =>

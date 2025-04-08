@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Interfaces.Messaging;
+﻿using HomeInventory.Application.Framework.Messaging;
 using Unit = LanguageExt.Unit;
 
 namespace HomeInventory.Application.Cqrs.Behaviors;
@@ -26,10 +26,10 @@ internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavi
     private static Action<ILogger> GetResponseHandler(TResponse response) =>
         response switch
         {
-            Option<Error> option when option.IsNone => l => l.ValueReturned(Unit.Default),
-            Option<Error> option when option.IsSome => l => l.ErrorReturned(option),
-            IQueryResult result when result.IsSuccess => l => l.ValueReturned(result.Success),
-            IQueryResult result when result.IsFail => l => l.ErrorReturned(result.Fail),
+            Option<Error> { IsNone: true } => l => l.ValueReturned(Unit.Default),
+            Option<Error> { IsSome: true } option => l => l.ErrorReturned(option),
+            IQueryResult { IsSuccess: true } result => l => l.ValueReturned(result.Success),
+            IQueryResult { IsFail: true } result => l => l.ErrorReturned(result.Fail),
             var unknown => l => l.UnknownReturned(unknown),
         };
 }
