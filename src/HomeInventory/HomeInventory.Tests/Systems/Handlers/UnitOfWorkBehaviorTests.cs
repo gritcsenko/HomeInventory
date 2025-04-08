@@ -36,55 +36,55 @@ public class UnitOfWorkBehaviorTests : BaseTest
         ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
         ServiceRegistrar.AddRequiredServices(services, serviceConfig);
 
-        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<RegisterCommand, Option<Error>>>();
+        var actual = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<RegisterCommand, Option<Error>>>();
 
-        behavior.Should().NotBeNull();
+        actual.Should().NotBeNull();
     }
 
     [Fact]
     public async Task Handle_Should_ReturnResponseFromNext()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
-        var _response = Option<Error>.None;
+        var request = Fixture.Create<RegisterCommand>();
+        var response = Option<Error>.None;
 
-        var response = await sut.Handle(_request, Handler, Cancellation.Token);
+        var actual = await sut.Handle(request, Handler, Cancellation.Token);
 
-        response.Should().BeNone();
+        actual.Should().BeNone();
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(response);
     }
 
     [Fact]
     public async Task Handle_Should_CallSave_When_Success()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
-        var _response = Option<Error>.None;
+        var request = Fixture.Create<RegisterCommand>();
+        var response = Option<Error>.None;
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.Handle(request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(1)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(response);
     }
 
     [Fact]
     public async Task Handle_Should_NotCallSave_When_Error()
     {
         var sut = CreateSut();
-        var _request = Fixture.Create<RegisterCommand>();
-        var _response = Option<Error>.Some(new NotFoundError(Fixture.Create<string>()));
+        var request = Fixture.Create<RegisterCommand>();
+        var response = Option<Error>.Some(new NotFoundError(Fixture.Create<string>()));
 
-        _ = await sut.Handle(_request, Handler, Cancellation.Token);
+        _ = await sut.Handle(request, Handler, Cancellation.Token);
 
         _ = _unitOfWork
             .Received(0)
             .SaveChangesAsync(Cancellation.Token);
 
-        Task<Option<Error>> Handler() => Task.FromResult(_response);
+        Task<Option<Error>> Handler(CancellationToken _) => Task.FromResult(response);
     }
 
     private UnitOfWorkBehavior<RegisterCommand, Option<Error>> CreateSut() => new(_scopeAccessor, _logger);

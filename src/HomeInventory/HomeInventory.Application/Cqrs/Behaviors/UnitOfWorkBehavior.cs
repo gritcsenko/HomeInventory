@@ -16,7 +16,7 @@ internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scop
     {
         using var scope = new TransactionScope();
 
-        var result = await next();
+        var result = await next(cancellationToken);
         if (result.IsNone)
         {
             await SaveChangesAsync(scope, cancellationToken);
