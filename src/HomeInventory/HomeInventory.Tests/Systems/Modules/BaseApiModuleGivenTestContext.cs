@@ -1,14 +1,13 @@
 ﻿using Asp.Versioning;
 using AutoMapper;
 using Carter;
-using HomeInventory.Application.Interfaces.Messaging;
 using HomeInventory.Web.Infrastructure;
 using HomeInventory.Web.Modules;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.Runtime.CompilerServices;
+using HomeInventory.Application.Framework.Messaging;
 
 namespace HomeInventory.Tests.Systems.Modules;
 

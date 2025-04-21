@@ -1,10 +1,8 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Interfaces.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.ValueObjects;
-using MediatR;
-using MediatR.Registration;
 using Microsoft.Extensions.Logging;
 using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
@@ -23,23 +21,6 @@ public class LoggingBehaviorTests : BaseTest
         Fixture.CustomizeEmail();
         _request = Fixture.Create<AuthenticateQuery>();
         _response = Substitute.For<IQueryResult<AuthenticateResult>>();
-    }
-
-    [Fact]
-    public void Should_BeResolved()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
-
-        var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
-            .AddLoggingBehavior();
-        ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
-        ServiceRegistrar.AddRequiredServices(services, serviceConfig);
-
-        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>>();
-
-        behavior.Should().NotBeNull();
     }
 
     [Fact]

@@ -1,9 +1,9 @@
 ﻿using FluentValidation.Results;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.Primitives.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using HomeInventory.Application.Interfaces.Messaging;
 
 namespace HomeInventory.Web.Infrastructure;
 

@@ -1,11 +1,11 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
-using HomeInventory.Application;
+using HomeInventory.Application.Framework;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence;
-using MediatR;
 
 namespace HomeInventory.Tests.DependencyInjection;
 

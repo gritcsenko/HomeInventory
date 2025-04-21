@@ -1,5 +1,5 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Application.Interfaces.Messaging;
+﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.Persistence;

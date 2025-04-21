@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Application.Interfaces.Messaging;
+﻿namespace HomeInventory.Application.Framework.Messaging;
 
 public abstract class QueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TResponse>
     where TQuery : IQuery<TResponse>
@@ -8,7 +8,7 @@ public abstract class QueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TR
     {
     }
 
-    public async Task<IQueryResult<TResponse>> Handle(TQuery request, CancellationToken cancellationToken)
+    public async Task<IQueryResult<TResponse>> Handle(TQuery request, CancellationToken cancellationToken = default)
     {
         var validation = await InternalHandle(request, cancellationToken);
         return new QueryResult(validation);

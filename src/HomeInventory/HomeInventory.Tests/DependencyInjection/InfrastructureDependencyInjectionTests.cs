@@ -1,7 +1,8 @@
 ﻿using Ardalis.Specification;
 using AutoMapper;
 using FluentAssertions.Execution;
-using HomeInventory.Application;
+using HomeInventory.Application.Framework;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Framework;
@@ -9,7 +10,6 @@ using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
-using MediatR;
 using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.DependencyInjection;

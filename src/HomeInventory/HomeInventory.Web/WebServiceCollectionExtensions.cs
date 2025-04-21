@@ -4,6 +4,7 @@ using Carter;
 using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
 using HomeInventory.Application;
+using HomeInventory.Application.Framework;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;

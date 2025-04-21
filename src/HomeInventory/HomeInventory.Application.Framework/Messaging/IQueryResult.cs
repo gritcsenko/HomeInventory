@@ -1,6 +1,6 @@
 ﻿using Unit = LanguageExt.Unit;
 
-namespace HomeInventory.Application.Interfaces.Messaging;
+namespace HomeInventory.Application.Framework.Messaging;
 
 public interface IQueryResult<TResponse> : IQueryResult
     where TResponse : notnull

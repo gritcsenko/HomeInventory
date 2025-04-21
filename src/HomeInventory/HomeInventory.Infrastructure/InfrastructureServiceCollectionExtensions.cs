@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Application;
+using HomeInventory.Application.Framework;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence;

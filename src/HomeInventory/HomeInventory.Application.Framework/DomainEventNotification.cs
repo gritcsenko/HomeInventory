@@ -1,6 +1,7 @@
-﻿using HomeInventory.Domain.Primitives;
+﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Domain.Primitives;
 
-namespace HomeInventory.Application.Cqrs.DomainEvents;
+namespace HomeInventory.Application.Framework;
 
 public static class DomainEventNotification
 {

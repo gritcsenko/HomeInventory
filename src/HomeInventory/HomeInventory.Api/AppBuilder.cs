@@ -26,9 +26,6 @@ internal class AppBuilder(string[] args)
 
     private static IServiceCollection AddServices(IServiceCollection services) =>
         services
-            .AddMediatR(
-                Application.AssemblyReference.Assembly,
-                Application.UserManagement.AssemblyReference.Assembly)
             .AddDomain()
             .AddInfrastructure()
             .AddApplication()

@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
-using HomeInventory.Application;
 using HomeInventory.Application.Framework.Mapping;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Application.Framework;
 
 public static class ApplicationFrameworkServiceCollectionExtensions
 {

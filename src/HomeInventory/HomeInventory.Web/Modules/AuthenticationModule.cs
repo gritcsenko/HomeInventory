@@ -1,9 +1,9 @@
 using AutoMapper;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Contracts;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

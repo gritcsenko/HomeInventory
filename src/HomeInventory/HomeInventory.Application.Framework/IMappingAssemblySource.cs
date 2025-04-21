@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace HomeInventory.Application;
+namespace HomeInventory.Application.Framework;
 
 public interface IMappingAssemblySource
 {

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions.Execution;
 using HomeInventory.Application;
+using HomeInventory.Application.Framework;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
@@ -84,7 +85,6 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
     {
         Services
             .AddDomain()
-            .AddMediatR()
             .AddWeb(
             Web.AssemblyReference.Assembly,
             Web.UserManagement.AssemblyReference.Assembly,

@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
+﻿using HomeInventory.Application.Framework;
+using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Domain.Aggregates;
 using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Persistence;

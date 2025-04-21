@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Application.Interfaces.Messaging;
+﻿namespace HomeInventory.Application.Framework.Messaging;
 
 public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand>
     where TCommand : ICommand
@@ -7,7 +7,7 @@ public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand>
     {
     }
 
-    public async Task<Option<Error>> Handle(TCommand request, CancellationToken cancellationToken) =>
+    public async Task<Option<Error>> Handle(TCommand request, CancellationToken cancellationToken = default) =>
         await InternalHandle(request, cancellationToken);
 
     protected abstract Task<Option<Error>> InternalHandle(TCommand command, CancellationToken cancellationToken);

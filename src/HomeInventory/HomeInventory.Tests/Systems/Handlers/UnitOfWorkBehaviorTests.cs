@@ -1,12 +1,7 @@
-﻿using HomeInventory.Application;
-using HomeInventory.Application.Cqrs.Behaviors;
+﻿using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Commands.Register;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Errors;
-using MediatR;
-using MediatR.Registration;
-using Microsoft.Extensions.Logging;
-using AssemblyReference = HomeInventory.Application.AssemblyReference;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -21,24 +16,6 @@ public class UnitOfWorkBehaviorTests : BaseTest
     {
         Fixture.CustomizeUlid();
         AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
-    }
-
-    [Fact]
-    public void Should_BeResolvedForCommand()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<IScopeAccessor>(_scopeAccessor);
-        services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
-
-        var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReference.Assembly)
-            .AddUnitOfWorkBehavior();
-        ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
-        ServiceRegistrar.AddRequiredServices(services, serviceConfig);
-
-        var actual = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<RegisterCommand, Option<Error>>>();
-
-        actual.Should().NotBeNull();
     }
 
     [Fact]

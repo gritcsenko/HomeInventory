@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Interfaces.Messaging;
+﻿using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives.Errors;
 

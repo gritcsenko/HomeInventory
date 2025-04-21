@@ -1,5 +1,5 @@
-﻿using HomeInventory.Application.Cqrs.DomainEvents;
-using MediatR;
+﻿using HomeInventory.Application.Framework;
+using HomeInventory.Application.Framework.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -27,7 +27,7 @@ internal class PublishDomainEventsInterceptor(IPublisher publisher) : SaveChange
 
         foreach (var domainEvent in domainEvents)
         {
-            object notification = DomainEventNotification.Create(domainEvent);
+            var notification = DomainEventNotification.Create(domainEvent);
             await _publisher.Publish(notification, cancellationToken);
         }
     }

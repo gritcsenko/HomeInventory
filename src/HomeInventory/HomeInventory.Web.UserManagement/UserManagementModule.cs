@@ -6,13 +6,13 @@ using HomeInventory.Domain.Persistence;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System.Reactive.Disposables;
+using HomeInventory.Application.Framework.Messaging;
 
 namespace HomeInventory.Web.Modules;
 
