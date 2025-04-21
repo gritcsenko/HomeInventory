@@ -26,18 +26,11 @@ public class DbContextFactory
 
     public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options)
         where TContext : DbContext =>
-        CreateInMemory(
+        InternalCreateInMemory(
             dateTimeService,
             options,
             new OutboxDatabaseConfigurationApplier(new([new DomainEventJsonTypeInfo(typeof(DomainEvent), typeof(UserCreatedDomainEvent))])),
             new UserModelDatabaseConfigurationApplier());
-
-    public TContext CreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
-        where TContext : DbContext
-    {
-        var interceptor = new PublishDomainEventsInterceptor(Substitute.For<IPublisher>());
-        return _factory.Create(options, interceptor, dateTimeService, appliers);
-    }
 
     public static DbContextOptions<TContext> CreateInMemoryOptions<TContext>(string dbNamePrefix = "db", Ulid? id = null)
         where TContext : DbContext =>
@@ -45,4 +38,11 @@ public class DbContextFactory
             .UseInMemoryDatabase(databaseName: dbNamePrefix + (id ?? Ulid.NewUlid()))
             .EnableSensitiveDataLogging()
             .Options;
+
+    private TContext InternalCreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
+        where TContext : DbContext
+    {
+        var interceptor = new PublishDomainEventsInterceptor(Substitute.For<IPublisher>());
+        return _factory.Create(options, interceptor, dateTimeService, appliers);
+    }
 }
