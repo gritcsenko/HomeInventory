@@ -35,7 +35,7 @@ internal static class ApplicationModules
         new WebSwaggerModule(),
         new WebMappingModule(),
         new WebUserManagementModule(),
-        new WebUerManagementMappingModule(),
+        new WebUserManagementMappingModule(),
         new WebHealthCheckModule(),
         new WebCarterSupportModule(),
         new ApplicationMediatrSupportModule(),

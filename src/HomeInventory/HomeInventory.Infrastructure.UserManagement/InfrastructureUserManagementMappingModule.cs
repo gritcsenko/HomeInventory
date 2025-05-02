@@ -1,5 +1,6 @@
 ﻿using HomeInventory.Application.Framework;
 using HomeInventory.Modules.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Infrastructure.UserManagement;
 

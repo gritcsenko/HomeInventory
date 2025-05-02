@@ -23,7 +23,7 @@ public static class AssemblyReferences
     public static IAssemblyReference Domain { get; } = new BaseAssemblyReference(typeof(DomainModule));
     public static IAssemblyReference Application { get; } = new BaseAssemblyReference(typeof(ApplicationMediatrSupportModule));
     public static IAssemblyReference ApplicationFramework { get; } = new BaseAssemblyReference(typeof(ApplicationFrameworkServiceCollectionExtensions));
-    public static IAssemblyReference WebUserManagement { get; } = new BaseAssemblyReference(typeof(WebUerManagementMappingModule));
+    public static IAssemblyReference WebUserManagement { get; } = new BaseAssemblyReference(typeof(WebUserManagementMappingModule));
     public static IAssemblyReference ContractValidations { get; } = new BaseAssemblyReference(typeof(ContractsValidationsModule));
     public static IAssemblyReference Infrastructure { get; } = new BaseAssemblyReference(typeof(InfrastructureMappingModule));
     public static IAssemblyReference Api { get; } = new BaseAssemblyReference(typeof(LoggingModule));
