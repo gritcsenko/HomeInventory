@@ -28,7 +28,7 @@ public class RegisterRequestValidatorTests : BaseTest
 
         var results = sut.TestValidate(container);
 
-        results.ShouldHaveAnyValidationError();
+        results.ShouldHaveValidationErrors();
     }
 
     private static RegisterRequestValidator CreateSut() => new();
