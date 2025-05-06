@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using FluentAssertions.Execution;
 using HomeInventory.Application.Framework.Messaging;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,8 @@ public static class AssertionExtensions
     public static GenericCollectionAssertions<EndpointMetadataCollection, object> Should(this EndpointMetadataCollection actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
     public static ObjectAssertions<HttpMethodMetadata> Should(this HttpMethodMetadata? actualValue) => new(actualValue, AssertionChain.GetOrCreate());
+
+    public static ObjectAssertions<AuthorizeAttribute> Should(this AuthorizeAttribute? actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
     public static RouteEndpointAssertions Should(this RouteEndpoint actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
