@@ -1,8 +1,8 @@
-﻿using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.ValueObjects;
+﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
-namespace HomeInventory.Domain.Persistence;
+namespace HomeInventory.Domain.UserManagement.Persistence;
 
 public interface IUserRepository : IRepository<User>
 {

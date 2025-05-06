@@ -55,19 +55,18 @@ public class TypeExtensionsTests : BaseTest
     private class GenericClass<T1, T2> : Dictionary<T1, T2>
         where T1 : notnull
     {
-        public GenericClass() { }
     }
 
     private class GenericClass<T> : GenericClass<T, object>
         where T : notnull
     {
-        public GenericClass() { }
     }
 
+#pragma warning disable S2094
     private class NonGenericClass
     {
-        public NonGenericClass() { }
     }
+#pragma warning restore S2094
 
     private class E
     {

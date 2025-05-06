@@ -8,10 +8,10 @@ internal sealed class Scope<TContext> : IScope<TContext>
     public Option<TContext> Get()
     {
         var stack = GetStack();
-        return stack.TryPeek(out var context) ? context : OptionNone.Default;
+        return stack.TryPeek(out var context) ? context : Option<TContext>.None;
     }
 
-    public IDisposable Reset() => InternalSet(OptionNone.Default);
+    public IDisposable Reset() => InternalSet(Option<TContext>.None);
 
     public IDisposable Set(TContext context) => InternalSet(context);
 
@@ -22,5 +22,5 @@ internal sealed class Scope<TContext> : IScope<TContext>
         return System.Reactive.Disposables.Disposable.Create(() => stack.Pop());
     }
 
-    private Stack<Option<TContext>> GetStack() => _stack.Value ??= new Stack<Option<TContext>>();
+    private Stack<Option<TContext>> GetStack() => _stack.Value ??= new();
 }

@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Scrutor" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj" />
+    <ProjectReference Include="..\HomeInventory.Modules.Interfaces\HomeInventory.Modules.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

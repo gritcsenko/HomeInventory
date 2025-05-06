@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Contracts.Validations;
+﻿namespace HomeInventory.Contracts.UserManagement.Validators;
 
 internal static class PasswordCharacterSets
 {

@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using FluentAssertions.Execution;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Configuration;
 using Microsoft.Extensions.Options;
@@ -25,7 +25,7 @@ public class JwtTokenGeneratorTests : BaseTest
                 .With(static x => x.Expiry, TimeSpan.FromSeconds(Fixture.Create<int>()))
                 .With(static x => x.Algorithm, SecurityAlgorithms.HmacSha256)
                 .Create();
-        _expectedHeader = new JwtHeader(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
+        _expectedHeader = new(new SigningCredentials(_options.SecurityKey, _options.Algorithm));
         _user = Fixture.Create<User>();
     }
 

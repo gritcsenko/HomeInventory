@@ -1,0 +1,58 @@
+﻿<Solution>
+  <Folder Name="/Application/">
+    <Project Path="HomeInventory.Application.Framework\HomeInventory.Application.Framework.csproj" />
+    <Project Path="HomeInventory.Application\HomeInventory.Application.csproj" />
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="HomeInventory.Core\HomeInventory.Core.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj" />
+    <Project Path="HomeInventory.Domain\HomeInventory.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="HomeInventory.Infrastructure.Framework\HomeInventory.Infrastructure.Framework.csproj" />
+    <Project Path="HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Modules/">
+    <Project Path="HomeInventory.Modules.Interfaces\HomeInventory.Modules.Interfaces.csproj" Type="Classic C#" />
+    <Project Path="HomeInventory.Modules\HomeInventory.Modules.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="HomeInventory.Api\HomeInventory.Api.csproj" />
+    <Project Path="HomeInventory.Contracts.Validations\HomeInventory.Contracts.Validations.csproj" />
+    <Project Path="HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
+    <Project Path="HomeInventory.Web.Framework\HomeInventory.Web.Framework.csproj" />
+    <Project Path="HomeInventory.Web\HomeInventory.Web.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path=".editorconfig" />
+    <File Path="..\..\.github\ISSUE_TEMPLATE\BUG_REPORT.yml" />
+    <File Path="..\..\.github\workflows\build.yml" />
+    <File Path="..\..\.github\workflows\codeql-analysis.yml" />
+    <File Path="..\..\CODE_OF_CONDUCT.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Dockerfile" />
+    <File Path="..\..\.github\ISSUE_TEMPLATE\FEATURE_REQUEST.yml" />
+    <File Path="global.json" />
+    <File Path="..\..\README.md" />
+    <File Path="..\..\SECURITY.md" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="HomeInventory.Tests.Acceptance\HomeInventory.Tests.Acceptance.csproj" />
+    <Project Path="HomeInventory.Tests.Framework\HomeInventory.Tests.Framework.csproj" />
+    <Project Path="HomeInventory.Tests.Integration\HomeInventory.Tests.Integration.csproj" />
+    <Project Path="HomeInventory.Tests\HomeInventory.Tests.csproj" />
+  </Folder>
+  <Folder Name="/UserManagement/">
+    <Project Path="HomeInventory.Application.UserManagement.Interfaces\HomeInventory.Application.UserManagement.Interfaces.csproj" />
+    <Project Path="HomeInventory.Application.UserManagement\HomeInventory.Application.UserManagement.csproj" />
+    <Project Path="HomeInventory.Contracts.UserManagement.Validators\HomeInventory.Contracts.UserManagement.Validators.csproj" />
+    <Project Path="HomeInventory.Contracts.UserManagement\HomeInventory.Contracts.UserManagement.csproj" />
+    <Project Path="HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj" />
+    <Project Path="HomeInventory.Infrastructure.UserManagement\HomeInventory.Infrastructure.UserManagement.csproj" />
+    <Project Path="HomeInventory.Web.UserManagement\HomeInventory.Web.UserManagement.csproj" />
+  </Folder>
+</Solution>

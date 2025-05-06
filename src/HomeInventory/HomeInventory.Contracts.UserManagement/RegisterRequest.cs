@@ -1,5 +1,5 @@
-﻿namespace HomeInventory.Contracts;
+﻿namespace HomeInventory.Contracts.UserManagement;
 
-public record class RegisterRequest(
+public record RegisterRequest(
     string Email,
     string Password);

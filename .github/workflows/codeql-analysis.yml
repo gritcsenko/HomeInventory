@@ -82,10 +82,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Restore dependencies
-        run: dotnet restore HomeInventory.sln --verbosity minimal
+        run: dotnet restore --verbosity minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        run: dotnet build -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
 
       - name: Perform CodeQL Analysis

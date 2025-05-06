@@ -1,4 +1,4 @@
-using HomeInventory.Domain.Aggregates;
+using HomeInventory.Domain.UserManagement.Aggregates;
 
 namespace HomeInventory.Application.Interfaces.Authentication;
 
