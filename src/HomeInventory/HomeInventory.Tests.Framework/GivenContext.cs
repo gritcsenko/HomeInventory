@@ -81,6 +81,8 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
 
     protected T Create<T>() => _fixture.Create<T>();
 
+    protected IEnumerable<T> CreateMany<T>(int count) => _fixture.CreateMany<T>(count);
+
     [SuppressMessage("Minor Code Smell", "S2325:Methods and properties that don't access instance data should be static", Justification = "False positive")]
     protected TContext New<T>(out IVariable<T> variable, Func<int, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, () => Enumerable.Range(0, count).Select(create), name);
@@ -97,8 +99,6 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
 
         return This;
     }
-
-    private IEnumerable<T> CreateMany<T>(int count) => _fixture.CreateMany<T>(count);
 
     private TContext New<T>(out IVariable<T> variable, Func<IEnumerable<T>> createMany, [CallerArgumentExpression(nameof(variable))] string? name = null)
     {

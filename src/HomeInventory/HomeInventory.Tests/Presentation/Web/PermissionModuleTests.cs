@@ -1,4 +1,5 @@
 using HomeInventory.Tests.Systems.Modules;
+using HomeInventory.Web.Modules;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -9,7 +10,7 @@ namespace HomeInventory.Tests.Presentation.Web;
 public sealed class PermissionModuleTests() : BaseApiModuleTests<PermissionModuleTestsGivenContext>(t => new(t))
 {
     [Fact]
-    public async Task RequireDynamicAuthorizationShouldRegister()
+    public async Task AddRoutes_ShouldRegister()
     {
         await Given
             .DataSources(out var dataSourcesVar)
@@ -36,6 +37,19 @@ public sealed class PermissionModuleTests() : BaseApiModuleTests<PermissionModul
                     .And.Subject.GetMetadata<HttpMethodMetadata>().Should().NotBeNull()
                     .And.Subject.HttpMethods.Should().Contain(HttpMethod.Get.Method);
             });
+    }
 
+    [Fact]
+    public async Task GetPermissionsAsync_ShouldReturnPermissions()
+    {
+        Given
+            .Permissions(out var permissionsVar)
+            .PermissionList(out var permissionListVar, permissionsVar)
+            .Sut(out var sutVar);
+
+        var then = await When
+            .InvokedAsync(sutVar, permissionListVar, static (_, permissionList, ct) => PermissionModule.GetPermissionsAsync(permissionList, ct));
+
+        then.Result(permissionsVar, static (ok, permissions) => ok.Value.Should().BeEquivalentTo(permissions.Select(x => x.ToString())));
     }
 }
