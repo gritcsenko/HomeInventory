@@ -20,7 +20,7 @@ public sealed class PermissionModuleTests() : BaseApiModuleTests<PermissionModul
 
         var then = When
             .Invoked(sutVar, routeBuilderVar, static (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
-        
+
         then
             .Ensure(sutVar, dataSourcesVar, static (module, dataSources) =>
             {
