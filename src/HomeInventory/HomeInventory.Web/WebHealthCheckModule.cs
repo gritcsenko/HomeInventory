@@ -25,22 +25,22 @@ public sealed class WebHealthCheckModule : BaseModule
 
     public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
     {
-        await base.BuildAppAsync(context, cancellationToken);
+        await base.BuildAppAsync(context: context, cancellationToken: cancellationToken);
 
         context.EndpointRouteBuilder
-            .MapHealthChecks("/health", new()
+            .MapHealthChecks(pattern: "/health", options: new()
             {
                 Predicate = static _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
         context.EndpointRouteBuilder
-            .MapHealthChecks("/health/ready", new()
+            .MapHealthChecks(pattern: "/health/ready", options: new()
             {
-                Predicate = static x => x.Tags.Contains(HealthCheckTags.Ready),
+                Predicate = static x => x.Tags.Contains(item: HealthCheckTags.Ready),
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
         context.EndpointRouteBuilder
-            .MapHealthChecks("/health/live", new()
+            .MapHealthChecks(pattern: "/health/live", options: new()
             {
                 Predicate = static _ => false,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
