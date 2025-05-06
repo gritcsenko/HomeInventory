@@ -34,7 +34,7 @@ public sealed class WebErrorHandlingModule : BaseModule
         await base.BuildAppAsync(context, cancellationToken);
 
         context.ApplicationBuilder.UseMiddleware<CorrelationIdMiddleware>();
-        context.ApplicationBuilder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error", });
+        context.ApplicationBuilder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandlingPath = "/error" });
         context.EndpointRouteBuilder.Map("/error", static (HttpContext ctx) => Results.Problem(detail: GetFeature<IExceptionHandlerPathFeature>(ctx)?.Error.Message));
     }
 

@@ -31,13 +31,13 @@ public sealed class WebHealthCheckModule : BaseModule
             .MapHealthChecks("/health", new()
             {
                 Predicate = static _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
         context.EndpointRouteBuilder
             .MapHealthChecks("/health/ready", new()
             {
                 Predicate = static x => x.Tags.Contains(HealthCheckTags.Ready),
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
         context.EndpointRouteBuilder
             .MapHealthChecks("/health/live", new()

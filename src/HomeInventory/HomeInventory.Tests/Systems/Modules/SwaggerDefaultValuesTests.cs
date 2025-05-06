@@ -23,7 +23,7 @@ public class SwaggerDefaultValuesTests : BaseTest
     {
         var apiDescription = new ApiDescription
         {
-            ActionDescriptor = new()
+            ActionDescriptor = new(),
         };
         var schemaRegistry = Substitute.For<ISchemaGenerator>();
         var schemaRepository = new SchemaRepository();
@@ -42,7 +42,7 @@ public class SwaggerDefaultValuesTests : BaseTest
     {
         var operation = new OpenApiOperation
         {
-            Deprecated = false
+            Deprecated = false,
         };
         var sut = CreateSut();
         var deprecated = new ApiVersion(1, 0);
@@ -59,7 +59,7 @@ public class SwaggerDefaultValuesTests : BaseTest
     {
         var operation = new OpenApiOperation
         {
-            Deprecated = true
+            Deprecated = true,
         };
         var sut = CreateSut();
         var supported = new[] { new ApiVersion(2, 0) };
@@ -89,7 +89,7 @@ public class SwaggerDefaultValuesTests : BaseTest
                 new()
                 {
                     MediaType = supportedMediaType,
-                }
+                },
             },
         };
         var operation = new OpenApiOperation
@@ -101,9 +101,9 @@ public class SwaggerDefaultValuesTests : BaseTest
                     Content =
                     {
                         [notSupportedMediaType] = new(),
-                    }
+                    },
                 },
-            }
+            },
         };
         var sut = CreateSut();
         _context.ApiDescription.SupportedResponseTypes.Add(supported);
@@ -124,7 +124,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         };
         var operation = new OpenApiOperation
         {
-            Parameters = { parameter, },
+            Parameters = { parameter },
         };
         var sut = CreateSut();
         _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, IsRequired = true });
@@ -145,7 +145,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         };
         var operation = new OpenApiOperation
         {
-            Parameters = { parameter, },
+            Parameters = { parameter },
         };
         var sut = CreateSut();
         _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, IsRequired = false });
@@ -167,7 +167,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         };
         var operation = new OpenApiOperation
         {
-            Parameters = { parameter, },
+            Parameters = { parameter },
         };
         var sut = CreateSut();
         var metadataProvider = Substitute.For<IModelMetadataProvider>();
@@ -201,7 +201,7 @@ public class SwaggerDefaultValuesTests : BaseTest
         };
         var operation = new OpenApiOperation
         {
-            Parameters = { parameter, },
+            Parameters = { parameter },
         };
         var sut = CreateSut();
         var metadataProvider = Substitute.For<IModelMetadataProvider>();
@@ -236,11 +236,11 @@ public class SwaggerDefaultValuesTests : BaseTest
             Schema = new()
             {
                 Default = null,
-            }
+            },
         };
         var operation = new OpenApiOperation
         {
-            Parameters = { parameter, },
+            Parameters = { parameter },
         };
         var sut = CreateSut();
         _converter.Convert(defautValue, Arg.Any<Type>()).Returns(expected);
@@ -276,11 +276,11 @@ public class SwaggerDefaultValuesTests : BaseTest
             Schema = new()
             {
                 Default = expected,
-            }
+            },
         };
         var operation = new OpenApiOperation
         {
-            Parameters = { parameter, },
+            Parameters = { parameter },
         };
         var sut = CreateSut();
         _converter.Convert(defautValue, Arg.Any<Type>()).Returns(Substitute.For<IOpenApiAny>());

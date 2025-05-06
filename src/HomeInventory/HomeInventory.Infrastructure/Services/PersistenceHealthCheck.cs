@@ -58,7 +58,7 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
                     ["provider"] = ProviderName,
                     ["migrations.count"] = count,
                 },
-            }
+            },
         };
     }
 

@@ -13,7 +13,7 @@ public sealed class ApplicationMediatrSupportModule : BaseModule
 
         var serviceConfig = new MediatRServiceConfiguration
         {
-            NotificationPublisherType = typeof(TaskWhenAllPublisher)
+            NotificationPublisherType = typeof(TaskWhenAllPublisher),
         };
 
         foreach (var module in context.Modules.OfType<IModuleWithMediatr>())

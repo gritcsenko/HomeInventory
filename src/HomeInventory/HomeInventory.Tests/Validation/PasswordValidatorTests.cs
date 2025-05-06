@@ -55,7 +55,7 @@ public class PasswordValidatorTests : BaseTest
 #pragma warning disable IDE0028 // Simplify collection initialization
     private static InlineValidator<Container> CreateSut() =>
         new()
-        { static v => v.RuleFor(static x => x.Password).Password()
+        { static v => v.RuleFor(static x => x.Password).Password(),
         };
 #pragma warning restore IDE0028 // Simplify collection initialization
 }
