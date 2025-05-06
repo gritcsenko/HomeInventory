@@ -55,7 +55,4 @@
     <Project Path="HomeInventory.Infrastructure.UserManagement\HomeInventory.Infrastructure.UserManagement.csproj" />
     <Project Path="HomeInventory.Web.UserManagement\HomeInventory.Web.UserManagement.csproj" />
   </Folder>
-  <Project Path="docker-compose.dcproj">
-    <Configuration Solution="Debug|Any CPU" Project="Debug|Any CPU|NoBuild" />
-  </Project>
 </Solution>
