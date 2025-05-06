@@ -5,6 +5,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.FeatureManagement" />
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="WolverineFx.FluentValidation" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
