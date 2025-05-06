@@ -28,7 +28,7 @@ public class LoginRequestValidatorTests : BaseTest
 
         var results = sut.TestValidate(container);
 
-        results.ShouldHaveAnyValidationError();
+        results.ShouldHaveValidationErrors();
     }
 
     private static LoginRequestValidator CreateSut() => new();
