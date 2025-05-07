@@ -11,9 +11,9 @@ public static class RandomExtensions
         return collection switch
         {
             null => throw new ArgumentNullException(nameof(collection)),
-            { Count: 0 } => OptionNone.Default,
+            { Count: 0 } => Option<T>.None,
             { Count: 1 } => collection.ElementAt(0),
-            ISpannableCollection<T> spannable => random.Peek<T>(spannable.AsSpan()),
+            ISpannableCollection<T> s => random.Peek<T>(s.AsSpan()),
             T[] array => random.Peek<T>(array.AsSpan()),
             List<T> list => random.Peek<T>(CollectionsMarshal.AsSpan(list)),
             _ => PeekRandomSlow(random, collection),
@@ -28,23 +28,21 @@ public static class RandomExtensions
             for (var i = 0; enumerator.MoveNext(); i++)
             {
                 if (i == index)
+                {
                     return enumerator.Current;
+                }
             }
 #pragma warning restore S1994 // "for" loop increment clauses should modify the loops' counters
 
-            return OptionNone.Default;
+            return Option<T>.None;
         }
     }
 
-    public static Option<T> Peek<T>(this Random random, ReadOnlySpan<T> span)
-    {
-        var length = span.Length;
-
-        return length switch
+    public static Option<T> Peek<T>(this Random random, ReadOnlySpan<T> span) =>
+        span.Length switch
         {
-            0 => OptionNone.Default,
+            0 => Option<T>.None,
             1 => MemoryMarshal.GetReference(span),
-            _ => span[random.Next(length)],
+            var l => span[random.Next(l)],
         };
-    }
 }

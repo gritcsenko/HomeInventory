@@ -1,27 +1,21 @@
 ﻿using AutoMapper;
-using HomeInventory.Application.Framework;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 public abstract class BaseMappingsTests : BaseTest
 {
-    private readonly ServiceCollection _services = new();
-    private readonly DefaultServiceProviderFactory _factory = new();
+    private readonly ServiceCollection _services = [];
+    private readonly DefaultServiceProviderFactory _factory = new(new() { ValidateOnBuild = true, ValidateScopes = true });
 
-    protected BaseMappingsTests()
-    {
-        Services.AddMappingTypeConverter();
-    }
+    protected BaseMappingsTests() => _services.AddMappingAssemblySource();
 
-    public IServiceCollection Services => _services;
+    protected IServiceCollection Services => _services;
 
-    protected IMapper CreateSut<TMapper>()
+    protected virtual IMapper CreateSut<TMapper>()
         where TMapper : Profile, new()
     {
-        var config = new MapperConfiguration(static x =>
-        {
-            x.AddProfile<TMapper>();
-        });
+        var config = new MapperConfiguration(static x => x.AddProfile<TMapper>());
+
         var serviceProvider = _factory.CreateServiceProvider(_services);
         return new Mapper(config, serviceProvider.GetService);
     }
@@ -35,6 +29,7 @@ public abstract class BaseMappingsTests : BaseTest
             x.AddProfile<TMapper1>();
             x.AddProfile<TMapper2>();
         });
+
         var serviceProvider = _factory.CreateServiceProvider(_services);
         return new Mapper(config, serviceProvider.GetService);
     }

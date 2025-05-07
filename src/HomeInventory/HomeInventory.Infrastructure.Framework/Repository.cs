@@ -83,10 +83,9 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query, cancellationToken);
-        var entity = await projected.FirstOrDefaultAsync(cancellationToken);
-        return entity is null
-            ? OptionNone.Default
-            : entity;
+        return await projected.FirstOrDefaultAsync(cancellationToken) is { } entity
+            ? (Option<TAggregateRoot>)entity
+            : Option<TAggregateRoot>.None;
     }
 
     public async Task<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
@@ -107,7 +106,7 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         _evaluator.GetQuery(inputQuery, specification, evaluateCriteriaOnly);
 
     /// <summary>
-    /// Filters all entities of <typeparamref name="TResult" />, that matches the encapsulated query logic of the
+    /// Filters all entities of <typeparamref name="TModel" />, that matches the encapsulated query logic of the
     /// <paramref name="specification"/>, from the database.
     /// <para>
     /// Projects each entity into a new form, being <typeparamref name="TResult" />.

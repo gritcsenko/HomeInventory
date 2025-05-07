@@ -10,10 +10,7 @@ public class MeasurementTypeTests : BaseTest
     private static readonly EnumerationItemsCollection<MeasurementType> _items = EnumerationItemsCollection.CreateFor<MeasurementType>();
 
     [Fact]
-    public void Items_Should_NotBeEmpty()
-    {
-        _items.Should().NotBeEmpty();
-    }
+    public void Items_Should_NotBeEmpty() => _items.Should().NotBeEmpty();
 
     [Fact]
     public void CreateShouldPassTheCallerMemberName()

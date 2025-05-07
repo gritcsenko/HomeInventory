@@ -1,10 +1,11 @@
 ﻿using FluentAssertions.Execution;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain.Aggregates;
+using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
 namespace HomeInventory.Tests.Systems.Handlers;
 
@@ -51,7 +52,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
     {
         // Given
         var query = Fixture.Create<AuthenticateQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(OptionNone.Default);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Option<User>.None);
 
         var sut = CreateSut();
         // When

@@ -6,8 +6,5 @@ public sealed class PublicTestSubject
     {
     }
 
-    public PublicTestSubject(object arg)
-    {
-        _ = arg;
-    }
+    public PublicTestSubject(object arg) => _ = arg;
 }

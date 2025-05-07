@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Infrastructure.Persistence;
+namespace HomeInventory.Infrastructure.Framework.Models.Configuration;
 
 public abstract class BaseDatabaseConfigurationApplier<TConfiguration, TEntity>(Func<TConfiguration> configurationFactoryFunc) : IDatabaseConfigurationApplier
     where TConfiguration : class, IEntityTypeConfiguration<TEntity>

@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Domain.Primitives.Errors;
 
-namespace HomeInventory.Domain.Errors;
+namespace HomeInventory.Domain.UserManagement.Errors;
 
 public record DuplicateEmailError() : ConflictError(DefaultMessage)
 {

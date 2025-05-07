@@ -1,27 +1,49 @@
-﻿using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Models;
+﻿using AutoFixture.Kernel;
+using HomeInventory.Api;
+using HomeInventory.Domain;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.UserManagement.Mapping;
+using HomeInventory.Infrastructure.UserManagement.Models;
+using HomeInventory.Modules;
 using HomeInventory.Web.UserManagement;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.Metrics;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class UserManagementModelMappingsTests : BaseMappingsTests
 {
+    private readonly ModulesHost _host = new([new DomainModule(), new LoggingModule(), new InfrastructureMappingModule()]);
+    private readonly IConfiguration _configuration = new ConfigurationManager();
+    private readonly IMetricsBuilder _metricsBuilder = Substitute.For<IMetricsBuilder>();
+
     public UserManagementModelMappingsTests()
     {
-        Services.AddDomain();
-        Services.AddInfrastructure();
         Fixture.CustomizeId<UserId>();
+        Services.AddSingleton(_configuration);
+    }
+
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        await _host.AddServicesAsync(Services, _configuration, _metricsBuilder);
     }
 
     [Theory]
     [MemberData(nameof(MapData))]
-    public void ShouldMap(object instance, Type destination)
+    public void ShouldMap(Type source, Type destination)
     {
+        var timestamp = new DateTimeOffset(new(2024, 01, 01), TimeOnly.MinValue, TimeSpan.Zero);
+        var fixture = new Fixture();
+        fixture.CustomizeId<UserId>(timestamp);
+        fixture.CustomizeEmail(timestamp);
+        var instance = fixture.Create(source, new SpecimenContext(fixture));
+
         var sut = CreateSut<UserManagementContractsMappings, UserManagementModelMappings>();
-        var source = instance.GetType();
 
         var target = sut.Map(instance, source, destination);
 
@@ -54,28 +76,24 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
         target.Should().ContainSingle();
     }
 
-    public static TheoryData<object, Type> MapData()
+    public static TheoryData<Type, Type> MapData()
     {
-        var fixture = new Fixture();
-        fixture.CustomizeId<UserId>();
-        fixture.CustomizeEmail();
+        var data = new TheoryData<Type, Type>();
 
-        var data = new TheoryData<object, Type>();
+        Add<UserId, Ulid>(data);
 
-        Add<UserId, Ulid>(fixture, data);
+        Add<Email, string>(data);
 
-        Add<Email, string>(fixture, data);
-
-        Add<User, UserModel>(fixture, data);
+        Add<User, UserModel>(data);
 
         return data;
 
-        static void Add<T1, T2>(IFixture fixture, TheoryData<object, Type> data)
+        static void Add<T1, T2>(TheoryData<Type, Type> data)
             where T1 : notnull
             where T2 : notnull
         {
-            data.Add(fixture.Create<T1>(), typeof(T2));
-            data.Add(fixture.Create<T2>(), typeof(T1));
+            data.Add(typeof(T1), typeof(T2));
+            data.Add(typeof(T2), typeof(T1));
         }
     }
 }

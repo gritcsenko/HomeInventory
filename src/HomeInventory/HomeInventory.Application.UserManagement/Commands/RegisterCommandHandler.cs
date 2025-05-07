@@ -1,12 +1,13 @@
 ﻿using HomeInventory.Application.Framework.Messaging;
-using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Errors;
-using HomeInventory.Domain.Persistence;
+using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Domain.Primitives.Ids;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Errors;
+using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
-namespace HomeInventory.Application.Cqrs.Commands.Register;
+namespace HomeInventory.Application.UserManagement.Commands;
 
 internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, IIdSupplier<Ulid> eventIdSupplier) : CommandHandler<RegisterCommand>
 {

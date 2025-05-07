@@ -2,16 +2,14 @@
 
 namespace HomeInventory.Application.Framework.Messaging;
 
-public interface IQueryResult<TResponse> : IQueryResult
+public interface @IQueryResult<TResponse> : IQueryResult
     where TResponse : notnull
 {
     new TResponse Success { get; }
 
-    TResult Match<TResult>(Func<TResponse, TResult> Succ, Func<Seq<Error>, TResult> Fail);
+    TResult Match<TResult>(Func<TResponse, TResult> onSuccess, Func<Error, TResult> onFail);
 
-    Unit IfSuccess(Action<TResponse> Success);
-
-    Seq<TResponse> SuccessAsEnumerable();
+    Unit IfSuccess(Action<TResponse> onSuccess);
 
     bool Equals(TResponse other);
 }
@@ -22,9 +20,7 @@ public interface IQueryResult
 
     bool IsSuccess { get; }
 
-    Seq<Error> Fail { get; }
+    Error Fail { get; }
 
     object Success { get; }
-
-    Seq<Error> FailAsEnumerable();
 }

@@ -42,8 +42,11 @@
   
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application.UserManagement\HomeInventory.Application.UserManagement.csproj" />
+    <ProjectReference Include="..\HomeInventory.Contracts.UserManagement.Validators\HomeInventory.Contracts.UserManagement.Validators.csproj" />
+    <ProjectReference Include="..\HomeInventory.Contracts.Validations\HomeInventory.Contracts.Validations.csproj" />
     <ProjectReference Include="..\HomeInventory.Infrastructure.UserManagement\HomeInventory.Infrastructure.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\HomeInventory.Modules\HomeInventory.Modules.csproj" />
     <ProjectReference Include="..\HomeInventory.Web.UserManagement\HomeInventory.Web.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Web\HomeInventory.Web.csproj" />
   </ItemGroup>

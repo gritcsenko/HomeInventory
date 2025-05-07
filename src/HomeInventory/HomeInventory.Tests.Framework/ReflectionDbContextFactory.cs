@@ -1,4 +1,4 @@
-﻿using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using Microsoft.EntityFrameworkCore;
 

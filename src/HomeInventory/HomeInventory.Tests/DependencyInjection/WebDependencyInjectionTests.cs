@@ -1,19 +1,25 @@
 ﻿using AutoMapper;
 using FluentAssertions.Execution;
-using HomeInventory.Application;
 using HomeInventory.Application.Framework;
 using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Modules;
+using HomeInventory.Web;
 using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Configuration;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.ErrorHandling;
+using HomeInventory.Web.Framework;
+using HomeInventory.Web.Framework.Infrastructure;
+using HomeInventory.Web.Mapping;
+using HomeInventory.Web.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
@@ -24,9 +30,13 @@ namespace HomeInventory.Tests.DependencyInjection;
 [UnitTest]
 public class WebDependencyInjectionTests : BaseDependencyInjectionTest
 {
+    private readonly ModulesHost _host;
+    private readonly IConfiguration _configuration;
+    private readonly IMetricsBuilder _metricsBuilder = Substitute.For<IMetricsBuilder>();
+
     public WebDependencyInjectionTests()
     {
-        AddConfiguration(new Dictionary<string, string?>
+        _configuration = AddConfiguration(new Dictionary<string, string?>
         {
             [JwtOptions.Section / nameof(JwtOptions.Secret)] = "Some Secret",
             [JwtOptions.Section / nameof(JwtOptions.Issuer)] = "HomeInventory",
@@ -38,62 +48,51 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         env.WebRootFileProvider.Returns(new NullFileProvider());
         Services.AddSingleton(env);
         Services.AddSingleton<IHostEnvironment>(env);
+
+        _host = new([
+            new WebCarterSupportModule(),
+            new WebAuthenticationModule(),
+            new WebHealthCheckModule(),
+            new WebErrorHandlingModule(),
+            new ApplicationMappingModule(),
+            new WebMappingModule(),
+            new WebSwaggerModule(),
+            new DynamicWebAuthorizationModule(),
+        ]);
     }
 
     [Fact]
-    public void ShouldRegister()
+    public async Task ShouldRegister()
     {
-        Services.AddWeb(
-            Web.AssemblyReference.Assembly,
-            Web.UserManagement.AssemblyReference.Assembly,
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
-        var provider = CreateProvider();
+        await _host.AddServicesAsync(Services, _configuration, _metricsBuilder);
 
         using var scope = new AssertionScope();
-        Services.Should().ContainConfigureOptions<JwtOptions>(provider);
-        Services.Should().ContainConfigureOptions<JwtBearerOptions>(provider);
-        Services.Should().ContainSingleSingleton<IJwtIdentityGenerator>(provider);
-        Services.Should().ContainSingleScoped<IAuthenticationTokenGenerator>(provider);
-        Services.Should().ContainSingleSingleton<HealthCheckService>(provider);
-        Services.Should().ContainSingleTransient<HomeInventoryProblemDetailsFactory>(provider);
-        Services.Should().ContainSingleTransient<ProblemDetailsFactory>(provider);
-        Services.Should().ContainSingleTransient<IProblemDetailsFactory>(provider);
-        Services.Should().ContainSingleTransient<IMapper>(provider);
-        Services.Should().ContainSingleSingleton<IMappingAssemblySource>(provider);
-        Services.Should().ContainSingleSingleton<IControllerFactory>(provider);
-        Services.Should().ContainSingleTransient<ISwaggerProvider>(provider);
-        Services.Should().ContainSingleSingleton<PermissionList>(provider);
-        Services.Should().ContainTransient<IAuthorizationHandler>(provider);
-        Services.Should().ContainSingleTransient<IAuthorizationService>(provider);
-        Services.Should().ContainSingleTransient<IAuthorizationPolicyProvider>(provider);
-        Services.Should().ContainSingleTransient<IAuthorizationHandlerProvider>(provider);
-        Services.Should().ContainSingleTransient<IAuthorizationEvaluator>(provider);
-        Services.Should().ContainSingleTransient<IAuthorizationHandlerContextFactory>(provider);
-        Services.Should().ContainSingleTransient<IPolicyEvaluator>(provider);
-        Services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>(provider);
+        Services.Should().ContainConfigureOptions<JwtOptions>();
+        Services.Should().ContainConfigureOptions<JwtBearerOptions>();
+        Services.Should().ContainSingleSingleton<IJwtIdentityGenerator>();
+        Services.Should().ContainSingleScoped<IAuthenticationTokenGenerator>();
+        Services.Should().ContainSingleSingleton<HealthCheckService>();
+        Services.Should().ContainSingleTransient<HomeInventoryProblemDetailsFactory>();
+        Services.Should().ContainSingleTransient<ProblemDetailsFactory>();
+        Services.Should().ContainSingleTransient<IProblemDetailsFactory>();
+        Services.Should().ContainSingleTransient<IMapper>();
+        Services.Should().ContainSingleton<IMappingAssemblySource>();
+        Services.Should().ContainSingleTransient<ISwaggerProvider>();
+        Services.Should().ContainSingleSingleton<PermissionList>();
+        Services.Should().ContainTransient<IAuthorizationHandler>();
+        Services.Should().ContainSingleTransient<IAuthorizationService>();
+        Services.Should().ContainSingleTransient<IAuthorizationPolicyProvider>();
+        Services.Should().ContainSingleTransient<IAuthorizationHandlerProvider>();
+        Services.Should().ContainSingleTransient<IAuthorizationEvaluator>();
+        Services.Should().ContainSingleTransient<IAuthorizationHandlerContextFactory>();
+        Services.Should().ContainSingleTransient<IPolicyEvaluator>();
+        Services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>();
 
+        var provider = CreateProvider();
         var swaggerOptions = new SwaggerGenOptions();
         Services.Should().ContainConfigureOptions<SwaggerGenOptions>(provider)
             .Which.Configure(swaggerOptions);
         swaggerOptions.SwaggerGeneratorOptions.SwaggerDocs.Should().ContainKey("v1")
             .WhoseValue.Version.Should().Be("1");
-    }
-
-    [Fact]
-    public void ShouldUse()
-    {
-        Services
-            .AddDomain()
-            .AddWeb(
-            Web.AssemblyReference.Assembly,
-            Web.UserManagement.AssemblyReference.Assembly,
-            Contracts.Validations.AssemblyReference.Assembly,
-            Contracts.UserManagement.Validators.AssemblyReference.Assembly);
-        var appBuilder = new TestAppBuilder(Services);
-
-        Action action = () => appBuilder.UseWeb();
-
-        action.Should().NotThrow();
     }
 }
