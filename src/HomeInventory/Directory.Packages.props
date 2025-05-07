@@ -20,13 +20,13 @@
     <PackageVersion Include="FluentValidation" Version="12.0.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
-    <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
+    <PackageVersion Include="LanguageExt.CodeGen" Version="5.0.0-beta-45" />
     <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-45" />
     <PackageVersion Include="LanguageExt.Parsec" Version="5.0.0-beta-45" />
     <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-45" />
     <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-45" />
-    <PackageVersion Include="LanguageExt.SysX" Version="4.4.8" />
-    <PackageVersion Include="LanguageExt.Transformers" Version="4.4.8" />
+    <PackageVersion Include="LanguageExt.SysX" Version="5.0.0-beta-45" />
+    <PackageVersion Include="LanguageExt.Transformers" Version="5.0.0-beta-45" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
     <PackageVersion Include="Scrutor" Version="6.0.1" />
@@ -59,9 +59,7 @@
   <ItemGroup Label="Microsoft packages">
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.13.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.13.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.13.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.11.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
