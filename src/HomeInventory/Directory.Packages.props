@@ -24,7 +24,7 @@
     <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-54" />
     <PackageVersion Include="LanguageExt.Parsec" Version="5.0.0-beta-54" />
     <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-54" />
-    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-45" />
+    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-54" />
     <PackageVersion Include="MediatR" Version="12.5.0" />
     <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
