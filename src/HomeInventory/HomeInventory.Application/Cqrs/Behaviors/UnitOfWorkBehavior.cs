@@ -12,7 +12,7 @@ internal sealed class UnitOfWorkBehavior<TRequest, TIgnored>(IScopeAccessor scop
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly ILogger _logger = logger;
 
-    public async Task<Option<Error>> Handle(TRequest request, RequestHandlerDelegate<Option<Error>> next, CancellationToken cancellationToken)
+    public async Task<Option<Error>> Handle(TRequest request, Func<CancellationToken, Task< Option<Error>>> next, CancellationToken cancellationToken = default)
     {
         using var scope = new TransactionScope();
 

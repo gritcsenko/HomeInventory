@@ -8,7 +8,6 @@ using HomeInventory.Modules;
 using HomeInventory.Web.ErrorHandling;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Framework.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;

@@ -1,4 +1,5 @@
 ﻿using HomeInventory.Modules;
+using Wolverine;
 
 namespace HomeInventory.Api;
 
@@ -15,6 +16,7 @@ internal class AppBuilder(string[] args)
     {
         var builder = WebApplication.CreateBuilder(_args);
         builder.WebHost.CaptureStartupErrors(false);
+        builder.Host.UseWolverine();
 
         var modulesHost = ModulesHost.Create(ApplicationModules.Instance);
 

@@ -4,14 +4,14 @@ using Unit = LanguageExt.Unit;
 namespace HomeInventory.Application.Cqrs.Behaviors;
 
 internal sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger) : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
+    where TRequest : IRequest<TResponse>
 {
     private static readonly string _requestName = typeof(TRequest).GetFormattedName();
     private static readonly string _responseName = typeof(TResponse).GetFormattedName();
 
     private readonly ILogger _logger = logger;
 
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, Func<CancellationToken, Task<TResponse>> next, CancellationToken cancellationToken = default)
     {
         using var scope = _logger.LoggingBehaviorScope(_requestName, _responseName);
         _logger.SendingRequest(request);
