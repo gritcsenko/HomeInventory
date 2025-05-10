@@ -7,56 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8a3a5b5-2897-4c27-ba96-a89d235ec961" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/IRequestHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.HomeInventory/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HomeInventory/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Directory.Packages.props" beforeDir="false" afterPath="$PROJECT_DIR$/Directory.Packages.props" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Api/AppBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Api/AppBuilder.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Api/MediatRConfigurator.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/ApplicationFrameworkServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/ApplicationFrameworkServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/DomainEventNotification.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/DomainEventNotification.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/HomeInventory.Application.Framework.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/HomeInventory.Application.Framework.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/IMappingAssemblySource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/IMappingAssemblySource.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/ImplicitUsings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/ImplicitUsings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/MappingAssemblySource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/MappingAssemblySource.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/CommandHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/CommandHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/ICommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/ICommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/ICommandHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/ICommandHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/IQuery.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/IQuery.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/IQueryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/IQueryHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/IQueryResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/IQueryResult.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/QueryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/Messaging/QueryHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement.Interfaces/Commands/RegisterCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement.Interfaces/Commands/RegisterCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement.Interfaces/Queries/UserIdQuery.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement.Interfaces/Queries/UserIdQuery.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Commands/RegisterCommandHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Commands/RegisterCommandHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/DomainEvents/UserCreatedDomainEventHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/DomainEvents/UserCreatedDomainEventHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/ImplicitUsings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/ImplicitUsings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Queries/UserIdQueryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Queries/UserIdQueryHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Behaviors/LoggingBehavior.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Behaviors/LoggingBehavior.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Behaviors/UnitOfWorkBehavior.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Behaviors/UnitOfWorkBehavior.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Queries/Authenticate/AuthenticateQuery.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Queries/Authenticate/AuthenticateQuery.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Queries/Authenticate/AuthenticateQueryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application/Cqrs/Queries/Authenticate/AuthenticateQueryHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application/ImplicitUsings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application/ImplicitUsings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application/MediatRServiceConfigurationExtensions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Infrastructure.UserManagement/InfrastructureUserManagementServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Infrastructure.UserManagement/InfrastructureUserManagementServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Infrastructure/InfrastructureServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Infrastructure/InfrastructureServiceCollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Infrastructure/Persistence/Models/Interceptors/PublishDomainEventsInterceptor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Infrastructure/Persistence/Models/Interceptors/PublishDomainEventsInterceptor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests.Framework/Assertions/AssertionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests.Framework/Assertions/AssertionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests.Framework/Assertions/QueryResultAssertions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests.Framework/Assertions/QueryResultAssertions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests.Framework/DbContextFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests.Framework/DbContextFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/DependencyInjection/InfrastructureDependencyInjectionTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/DependencyInjection/InfrastructureDependencyInjectionTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/DependencyInjection/UserManagementInfrastructureDependencyInjectionTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/DependencyInjection/UserManagementInfrastructureDependencyInjectionTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/DependencyInjection/WebDependencyInjectionTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/DependencyInjection/WebDependencyInjectionTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Handlers/LoggingBehaviorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Handlers/LoggingBehaviorTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Handlers/UnitOfWorkBehaviorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Handlers/UnitOfWorkBehaviorTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Mapping/BaseMappingsTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Mapping/BaseMappingsTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/BaseApiModuleGivenTestContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/BaseApiModuleGivenTestContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Web.Framework/HomeInventory.Web.Framework.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web.Framework/HomeInventory.Web.Framework.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Web.Framework/Infrastructure/ProblemDetailsFactoryExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web.Framework/Infrastructure/ProblemDetailsFactoryExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Web.UserManagement/UserManagementModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web.UserManagement/UserManagementModule.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Web/Modules/AuthenticationModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web/Modules/AuthenticationModule.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Web/WebServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web/WebServiceCollectionExtensions.cs" afterDir="false" />
-    </list>
+    <list default="true" id="c8a3a5b5-2897-4c27-ba96-a89d235ec961" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -71,6 +22,13 @@
     &quot;assignee&quot;: &quot;gritcsenko&quot;
   }
 }</component>
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="main" />
+      </list>
+    </option>
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/gritcsenko/HomeInventory.git&quot;,
@@ -89,12 +47,12 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "1131-replaceremove-madiatr",
+    "git-widget-placeholder": "#1133 on 1131-replaceremove-madiatr",
     "ignore.virus.scanning.warn.message": "true",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected=".NET Launch Settings Profile.HomeInventory.Api">
     <configuration name="HomeInventory.Api" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/HomeInventory.Api/HomeInventory.Api.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
@@ -121,6 +79,7 @@
       <updated>1731499300524</updated>
       <workItem from="1731499301565" duration="33000" />
       <workItem from="1745240049249" duration="315000" />
+      <workItem from="1746581203872" duration="1791000" />
     </task>
     <servers />
   </component>
