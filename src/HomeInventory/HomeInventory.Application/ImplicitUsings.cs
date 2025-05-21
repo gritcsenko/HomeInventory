@@ -1,2 +1,2 @@
-global using MediatR;
+global using HomeInventory.Core;
 global using Microsoft.Extensions.Logging;
