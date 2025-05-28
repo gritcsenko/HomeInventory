@@ -1,6 +1,4 @@
-﻿using FluentAssertions.Execution;
-
-namespace HomeInventory.Tests.Core;
+﻿namespace HomeInventory.Tests.Core;
 
 [UnitTest]
 public class TypeExtensionsTests : BaseTest

@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using FluentAssertions.Execution;
 using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Web.Authentication;

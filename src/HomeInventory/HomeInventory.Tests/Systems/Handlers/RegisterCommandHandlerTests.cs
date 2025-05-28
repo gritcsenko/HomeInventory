@@ -1,4 +1,3 @@
-using FluentAssertions.Execution;
 using HomeInventory.Application.UserManagement.Commands;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;

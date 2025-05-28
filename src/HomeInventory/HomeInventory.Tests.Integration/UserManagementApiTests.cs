@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions.Execution;
+using AwesomeAssertions.Execution;
 using Flurl;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Domain.UserManagement.Errors;

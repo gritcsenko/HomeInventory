@@ -1,5 +1,4 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Infrastructure.Persistence;
+﻿using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

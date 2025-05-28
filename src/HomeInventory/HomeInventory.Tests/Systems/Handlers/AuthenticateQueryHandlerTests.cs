@@ -1,5 +1,4 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
+﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Domain.Errors;

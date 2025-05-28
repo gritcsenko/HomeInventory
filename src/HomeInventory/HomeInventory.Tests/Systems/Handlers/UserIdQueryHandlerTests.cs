@@ -1,5 +1,4 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Application.UserManagement.Interfaces.Queries;
+﻿using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Application.UserManagement.Queries;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.UserManagement.Aggregates;
