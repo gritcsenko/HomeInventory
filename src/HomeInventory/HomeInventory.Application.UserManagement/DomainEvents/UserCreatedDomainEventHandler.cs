@@ -1,9 +1,10 @@
 ﻿using HomeInventory.Application.Framework;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.UserManagement.Events;
 
 namespace HomeInventory.Application.UserManagement.DomainEvents;
 
 internal sealed class UserCreatedDomainEventHandler : INotificationHandler<DomainEventNotification<UserCreatedDomainEvent>>
 {
-    public Task Handle(DomainEventNotification<UserCreatedDomainEvent> notification, CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task Handle(DomainEventNotification<UserCreatedDomainEvent> notification, CancellationToken cancellationToken = default) => Task.CompletedTask;
 }

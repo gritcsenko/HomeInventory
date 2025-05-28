@@ -3,9 +3,6 @@ using HomeInventory.Application.Cqrs.Behaviors;
 using HomeInventory.Application.Cqrs.Queries.Authenticate;
 using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.UserManagement.ValueObjects;
-using HomeInventory.Tests.Architecture;
-using MediatR;
-using MediatR.Registration;
 using Microsoft.Extensions.Logging;
 
 namespace HomeInventory.Tests.Systems.Handlers;
@@ -30,12 +27,6 @@ public class LoggingBehaviorTests : BaseTest
     {
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
-
-        var serviceConfig = new MediatRServiceConfiguration()
-            .RegisterServicesFromAssemblies(AssemblyReferences.Application.Assembly)
-            .AddLoggingBehavior();
-        ServiceRegistrar.AddMediatRClasses(services, serviceConfig);
-        ServiceRegistrar.AddRequiredServices(services, serviceConfig);
 
         var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>>();
 
