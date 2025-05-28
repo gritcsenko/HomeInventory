@@ -5,12 +5,12 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
     private readonly Variable _result = new(nameof(_result));
     private readonly ICancellation _cancellation = cancellation;
 
-    internal ThenCatchedContext Catched<TSut, TArg>(IVariable<TSut> sut, IVariable<TArg> arg, Action<TSut, TArg> invoke)
+    internal ThenCaughtContext Catched<TSut, TArg>(IVariable<TSut> sut, IVariable<TArg> arg, Action<TSut, TArg> invoke)
         where TSut : notnull
         where TArg : notnull =>
         Catched(sut, sutValue => invoke(sutValue, GetValue(arg)));
 
-    public ThenCatchedContext Catched<TSut>(IVariable<TSut> sut, Action<TSut> invoke)
+    public ThenCaughtContext Catched<TSut>(IVariable<TSut> sut, Action<TSut> invoke)
         where TSut : notnull
     {
         var variable = _result.OfType<Action>();

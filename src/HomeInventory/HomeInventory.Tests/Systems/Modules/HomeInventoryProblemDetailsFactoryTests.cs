@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using FluentAssertions.Execution;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Web.ErrorHandling;
 using Microsoft.AspNetCore.Http;

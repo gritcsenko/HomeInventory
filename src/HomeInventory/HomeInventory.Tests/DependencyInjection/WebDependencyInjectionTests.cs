@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentAssertions.Execution;
 using HomeInventory.Application.Framework;
 using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Modules;

@@ -1,5 +1,5 @@
 global using AutoFixture;
-global using FluentAssertions;
+global using AwesomeAssertions;
 global using HomeInventory.Tests.Framework;
 global using HomeInventory.Tests.Framework.Assertions;
 global using HomeInventory.Tests.Framework.Attributes;
