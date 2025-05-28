@@ -14,10 +14,9 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
         where TSut : notnull
     {
         var variable = _result.OfType<Action>();
+        void Action() => invoke(GetValue(sut));
         Variables.Add(variable, () => Action);
         return new(Variables, variable);
-
-        void Action() => invoke(GetValue(sut));
     }
 
     internal ThenContext Invoked<TSut>(IVariable<TSut> sut, Action<TSut> invoke)
