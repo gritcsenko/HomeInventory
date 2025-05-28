@@ -1,4 +1,3 @@
-using FluentAssertions.Execution;
 using LanguageExt.Traits;
 
 namespace HomeInventory.Tests.Framework.Assertions;

@@ -1,5 +1,3 @@
-using FluentAssertions.Execution;
-
 namespace HomeInventory.Tests.Framework.Assertions;
 
 public class LanguageExtOptionAssertions<T>(Option<T> instance, AssertionChain assertionChain) : ReferenceTypeAssertions<Option<T>, LanguageExtOptionAssertions<T>>(instance, assertionChain)

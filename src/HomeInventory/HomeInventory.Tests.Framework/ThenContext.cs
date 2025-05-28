@@ -1,6 +1,4 @@
-﻿using FluentAssertions.Execution;
-
-namespace HomeInventory.Tests.Framework;
+﻿namespace HomeInventory.Tests.Framework;
 
 public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResult> resultVariable) : ThenContext(variables)
     where TResult : notnull

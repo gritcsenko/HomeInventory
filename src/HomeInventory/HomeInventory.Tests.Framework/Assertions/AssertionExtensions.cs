@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using FluentAssertions.Execution;
 using HomeInventory.Application.Framework.Messaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
