@@ -43,7 +43,7 @@ public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>
             .Empty(out var idVar);
 
         When
-            .Catched(sutVar, idVar, static (sut, id) => sut.Convert(id))
+            .Caught(sutVar, idVar, static (sut, id) => sut.Convert(id))
             .Exception<ValidationException>(static ex => ex.Which.Value.Should().Be(Ulid.Empty));
     }
 }
