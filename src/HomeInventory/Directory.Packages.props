@@ -70,8 +70,8 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.5" />
-    <PackageVersion Include="Microsoft.FeatureManagement" Version="4.0.0" />
-    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.0.0" />
+    <PackageVersion Include="Microsoft.FeatureManagement" Version="4.1.0" />
+    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup Label="Testing packages">
     <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
