@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="Run-time packages">
-    <PackageVersion Include="Ardalis.Specification" Version="9.1.0" />
+    <PackageVersion Include="Ardalis.Specification" Version="9.2.0" />
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.ApplicationStatus" Version="9.0.0" />
