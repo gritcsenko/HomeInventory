@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using Wolverine;
+using Wolverine.Runtime.Handlers;
 
 namespace HomeInventory.Application.Framework.Messaging;
 

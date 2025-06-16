@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 namespace HomeInventory.Tests.Systems.Handlers;
 
 [UnitTest]
-public class LoggingBehaviorTests : BaseTest
+public class LoggingMiddlewareTests : BaseTest
 {
-    private readonly TestingLogger<LoggingBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>> _logger = Substitute.For<TestingLogger<LoggingBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>>>();
+    private readonly TestingLogger<LoggingMiddleware<AuthenticateQuery, IQueryResult<AuthenticateResult>>> _logger = Substitute.For<TestingLogger<LoggingMiddleware<AuthenticateQuery, IQueryResult<AuthenticateResult>>>>();
     private readonly AuthenticateQuery _request;
     private readonly IQueryResult<AuthenticateResult> _response;
 
-    public LoggingBehaviorTests()
+    public LoggingMiddlewareTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
@@ -80,5 +80,5 @@ public class LoggingBehaviorTests : BaseTest
         }
     }
 
-    private LoggingBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>> CreateSut() => new(_logger);
+    private LoggingMiddleware<AuthenticateQuery, IQueryResult<AuthenticateResult>> CreateSut() => new(_logger);
 }
