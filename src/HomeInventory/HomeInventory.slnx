@@ -15,13 +15,16 @@
     <Project Path="HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Modules/">
-    <Project Path="HomeInventory.Modules.Interfaces\HomeInventory.Modules.Interfaces.csproj" Type="Classic C#" />
-    <Project Path="HomeInventory.Modules\HomeInventory.Modules.csproj" Type="Classic C#" />
+    <Project Path="HomeInventory.Modules.Interfaces\HomeInventory.Modules.Interfaces.csproj" />
+    <Project Path="HomeInventory.Modules\HomeInventory.Modules.csproj" />
   </Folder>
   <Folder Name="/Presentation/">
     <Project Path="HomeInventory.Api\HomeInventory.Api.csproj" />
     <Project Path="HomeInventory.Contracts.Validations\HomeInventory.Contracts.Validations.csproj" />
     <Project Path="HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
+    <Project Path="HomeInventory.UI.Desktop\HomeInventory.UI.Desktop.csproj" />
+    <Project Path="HomeInventory.UI.Web\HomeInventory.UI.Web.csproj"  />
+    <Project Path="HomeInventory.UI\HomeInventory.UI.csproj" />
     <Project Path="HomeInventory.Web.Framework\HomeInventory.Web.Framework.csproj" />
     <Project Path="HomeInventory.Web\HomeInventory.Web.csproj" />
   </Folder>
