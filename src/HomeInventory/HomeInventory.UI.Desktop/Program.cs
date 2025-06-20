@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using AvaloniaInside.Shell;
 
 namespace HomeInventory.UI.Desktop;
 
@@ -22,5 +23,6 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .UseReactiveUI()
-            .LogToTrace();
+            .LogToTrace()
+            .UseShell();
 }

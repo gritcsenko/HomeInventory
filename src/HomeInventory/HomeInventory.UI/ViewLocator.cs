@@ -29,6 +29,7 @@ public class ViewLocator : IDataTemplate
     public bool Match(object? data) => data is BaseViewModel && _viewModelToViewMap.ContainsKey(data.GetType());
 
     /// <inheritdoc/>
+    [return: NotNullIfNotNull(nameof(param))]
     public Control? Build(object? param) =>
         param switch
         {

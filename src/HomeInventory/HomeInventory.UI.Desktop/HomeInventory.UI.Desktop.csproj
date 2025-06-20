@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="AvaloniaInside.Shell" />
     </ItemGroup>
 
     <ItemGroup>
