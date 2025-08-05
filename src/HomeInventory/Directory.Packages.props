@@ -93,7 +93,7 @@
     <PackageVersion Include="xunit.core" Version="2.9.3" />
   </ItemGroup>
   <ItemGroup Label="Compile-time dependencies">
-    <PackageVersion Include="AwesomeAssertions.Analyzers" Version="9.0.0">
+    <PackageVersion Include="AwesomeAssertions.Analyzers" Version="9.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
