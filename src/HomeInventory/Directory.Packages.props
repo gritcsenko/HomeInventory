@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageVersionManagement>true</CentralPackageVersionManagement>
   </PropertyGroup>
   <ItemGroup Label="Run-time packages">
     <PackageVersion Include="Ardalis.Specification" Version="9.2.0" />
