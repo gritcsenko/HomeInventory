@@ -77,16 +77,16 @@
   </ItemGroup>
   <ItemGroup Label="Avalonia packages">
     <!-- Important: keep version in sync! -->
-    <PackageVersion Include="Avalonia" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.iOS" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.Browser" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.Android" Version="11.3.1" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.1" />
-    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.16" />
+    <PackageVersion Include="Avalonia" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.iOS" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.Browser" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.Android" Version="11.3.4" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.4" />
+    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.17" />
   </ItemGroup>
   <ItemGroup Label="Testing packages">
     <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
