@@ -4,8 +4,8 @@
     <CentralPackageVersionManagement>true</CentralPackageVersionManagement>
   </PropertyGroup>
   <ItemGroup Label="Run-time packages">
-    <PackageVersion Include="Ardalis.Specification" Version="9.3.0" />
-    <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.2.0" />
+    <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
+    <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.ApplicationStatus" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.System" Version="9.0.0" />
@@ -39,7 +39,7 @@
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageVersion Include="SpecFlow" Version="3.9.74" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.4" />
     <PackageVersion Include="TngTech.ArchUnitNET" Version="0.12.1" />
     <PackageVersion Include="TngTech.ArchUnitNET.xUnit" Version="0.12.1" />
     <PackageVersion Include="Ulid" Version="1.4.1" />
@@ -72,8 +72,8 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.FeatureManagement" Version="4.2.1" />
-    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.2.1" />
+    <PackageVersion Include="Microsoft.FeatureManagement" Version="4.3.0" />
+    <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup Label="Avalonia packages">
     <!-- Important: keep version in sync! -->
