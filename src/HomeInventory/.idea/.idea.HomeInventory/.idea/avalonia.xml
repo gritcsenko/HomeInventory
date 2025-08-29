@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="HomeInventory.UI/App.axaml" value="HomeInventory.UI.Desktop/HomeInventory.UI.Desktop.csproj" />
+        <entry key="HomeInventory.UI/Views/MainView.axaml" value="HomeInventory.UI.Desktop/HomeInventory.UI.Desktop.csproj" />
+        <entry key="HomeInventory.UI/Views/MainWindow.axaml" value="HomeInventory.UI.Desktop/HomeInventory.UI.Desktop.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

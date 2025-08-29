@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="AvaloniaInside.Shell" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\HomeInventory.UI\HomeInventory.UI.csproj" />
+    </ItemGroup>
+</Project>
