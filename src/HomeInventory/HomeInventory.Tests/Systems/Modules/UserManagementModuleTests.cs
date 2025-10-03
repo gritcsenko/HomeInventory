@@ -40,7 +40,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
             .Map(registerRequestVar).To<UserIdQuery>(out var userIdQueryVar)
             .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
-            .OnCommandReturnSuccess(registerCommandVar)
+            .OnRegistrationReturn(registerCommandVar)
             .OnQueryReturn(userIdQueryVar, userIdResultVar)
             .InitializeHostAsync();
         Given
@@ -62,7 +62,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
         await Given
             .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
             .New<DuplicateEmailError>(out var errorVar)
-            .OnCommandReturnError(registerCommandVar, errorVar)
+            .OnRegistrationReturnError(registerCommandVar, errorVar)
             .InitializeHostAsync();
         Given
             .HttpContext(out var contextVar)

@@ -7,7 +7,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8a3a5b5-2897-4c27-ba96-a89d235ec961" name="Changes" comment="" />
+    <list default="true" id="c8a3a5b5-2897-4c27-ba96-a89d235ec961" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.HomeInventory/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HomeInventory/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/ApplicationUserManagementModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/ApplicationUserManagementModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTestContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTestContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Web.UserManagement/UserManagementCarterModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web.UserManagement/UserManagementCarterModule.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,6 +45,9 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="2onJFChz0hkw1cbNBr1JPWHZtzh" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -49,7 +58,14 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "#1133 on 1131-replaceremove-madiatr",
     "ignore.virus.scanning.warn.message": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.github.copilot.settings.chat.ChatConfigurable",
+    "to.speed.mode.migration.done": "true"
   }
 }]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.HomeInventory.Api">
@@ -64,6 +80,7 @@
       <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
       <option name="SEND_DEBUG_REQUEST" value="1" />
       <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+      <option name="AUTO_ATTACH_CHILDREN" value="0" />
       <method v="2">
         <option name="Build" />
       </method>
@@ -80,9 +97,14 @@
       <workItem from="1731499301565" duration="33000" />
       <workItem from="1745240049249" duration="315000" />
       <workItem from="1746581203872" duration="1791000" />
+      <workItem from="1759452586552" duration="5991000" />
     </task>
     <servers />
   </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>

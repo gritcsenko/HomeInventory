@@ -12,7 +12,7 @@ public sealed class ApplicationUserManagementModule : BaseModule
         await base.AddServicesAsync(context, cancellationToken);
 
         context.Services
-            .AddScoped<IAuthenticationService, AuthenticationService>();
+            .AddScoped<IAuthenticationService, AuthenticationService>()
+            .AddScoped<IRegistrationService, RegistrationService>();
     }
 }
-

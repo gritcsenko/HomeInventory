@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts.UserManagement;
@@ -16,12 +17,13 @@ using HomeInventory.Application.Framework.Messaging;
 
 namespace HomeInventory.Web.UserManagement;
 
-public class UserManagementCarterModule(IMapper mapper, ISender sender, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/users/manage")
+public class UserManagementCarterModule(IMapper mapper, ISender sender, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory, IRegistrationService registrationService) : ApiCarterModule("/api/users/manage")
 {
     private readonly IMapper _mapper = mapper;
     private readonly ISender _sender = sender;
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
+    private readonly IRegistrationService _registrationService = registrationService;
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapPost("register", RegisterAsync)
@@ -35,7 +37,7 @@ public class UserManagementCarterModule(IMapper mapper, ISender sender, IScopeAc
             _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
         var command = _mapper.MapOrFail<RegisterCommand>(body);
-        var result = await _sender.Send(command, cancellationToken);
+        var result = await _registrationService.RegisterAsync(command, cancellationToken);
         return await result.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
             async error =>
             {
