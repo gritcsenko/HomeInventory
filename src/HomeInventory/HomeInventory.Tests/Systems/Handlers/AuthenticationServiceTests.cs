@@ -1,6 +1,7 @@
-﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Interfaces.Authentication;
+﻿using HomeInventory.Application.Interfaces.Authentication;
 using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
+using HomeInventory.Application.UserManagement.Services;
 using HomeInventory.Domain.Errors;
 using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Domain.UserManagement.Persistence;
@@ -9,21 +10,21 @@ using HomeInventory.Domain.UserManagement.ValueObjects;
 namespace HomeInventory.Tests.Systems.Handlers;
 
 [UnitTest]
-public class AuthenticateQueryHandlerTests : BaseTest
+public class AuthenticationServiceTests : BaseTest
 {
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IAuthenticationTokenGenerator _tokenGenerator = Substitute.For<IAuthenticationTokenGenerator>();
     private readonly IPasswordHasher _hasher = Substitute.For<IPasswordHasher>();
     private readonly User _user;
 
-    public AuthenticateQueryHandlerTests()
+    public AuthenticationServiceTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
         _user = Fixture.Create<User>();
     }
 
-    private AuthenticateQueryHandler CreateSut() => new(_tokenGenerator, _userRepository, _hasher);
+    private AuthenticationService CreateSut() => new(_tokenGenerator, _userRepository, _hasher);
 
     [Fact]
     public async Task Handle_OnSuccess_ReturnsResult()
@@ -38,7 +39,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, Cancellation.Token);
+        var result = await sut.AuthenticateAsync(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
         var subject = result.Should().BeSuccess().Subject;
@@ -55,7 +56,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, Cancellation.Token);
+        var result = await sut.AuthenticateAsync(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
         result.Should().BeFail()
@@ -74,7 +75,7 @@ public class AuthenticateQueryHandlerTests : BaseTest
 
         var sut = CreateSut();
         // When
-        var result = await sut.Handle(query, Cancellation.Token);
+        var result = await sut.AuthenticateAsync(query, Cancellation.Token);
         // Then
         using var scope = new AssertionScope();
         result.Should().BeFail()

@@ -4,5 +4,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application.UserManagement.Interfaces\HomeInventory.Application.UserManagement.Interfaces.csproj" />
+    <ProjectReference Include="..\HomeInventory.Application\HomeInventory.Application.csproj" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using HomeInventory.Application;
 using HomeInventory.Application.Cqrs.Behaviors;
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -10,16 +10,16 @@ namespace HomeInventory.Tests.Systems.Handlers;
 [UnitTest]
 public class LoggingMiddlewareTests : BaseTest
 {
-    private readonly TestingLogger<LoggingMiddleware<AuthenticateQuery, IQueryResult<AuthenticateResult>>> _logger = Substitute.For<TestingLogger<LoggingMiddleware<AuthenticateQuery, IQueryResult<AuthenticateResult>>>>();
-    private readonly AuthenticateQuery _request;
-    private readonly IQueryResult<AuthenticateResult> _response;
+    private readonly TestingLogger<LoggingMiddleware<UserIdQuery, IQueryResult<UserIdResult>>> _logger = Substitute.For<TestingLogger<LoggingMiddleware<UserIdQuery, IQueryResult<UserIdResult>>>>();
+    private readonly UserIdQuery _request;
+    private readonly IQueryResult<UserIdResult> _response;
 
     public LoggingMiddlewareTests()
     {
         Fixture.CustomizeId<UserId>();
         Fixture.CustomizeEmail();
-        _request = Fixture.Create<AuthenticateQuery>();
-        _response = Substitute.For<IQueryResult<AuthenticateResult>>();
+        _request = Fixture.Create<UserIdQuery>();
+        _response = Substitute.For<IQueryResult<UserIdResult>>();
     }
 
     [Fact]
@@ -27,8 +27,9 @@ public class LoggingMiddlewareTests : BaseTest
     {
         var services = new ServiceCollection();
         services.AddSingleton(typeof(ILogger<>), typeof(TestingLogger<>.Stub));
+        services.AddSingleton(typeof(LoggingMiddleware<,>));
 
-        var behavior = services.BuildServiceProvider().GetRequiredService<IPipelineBehavior<AuthenticateQuery, IQueryResult<AuthenticateResult>>>();
+        var behavior = services.BuildServiceProvider().GetRequiredService<LoggingMiddleware<UserIdQuery, IQueryResult<UserIdResult>>>();
 
         behavior.Should().NotBeNull();
     }
@@ -42,7 +43,7 @@ public class LoggingMiddlewareTests : BaseTest
 
         response.Should().BeSameAs(_response);
 
-        Task<IQueryResult<AuthenticateResult>> Handler(CancellationToken _) => Task.FromResult(_response);
+        Task<IQueryResult<UserIdResult>> Handler(CancellationToken _) => Task.FromResult(_response);
     }
 
     [Fact]
@@ -52,7 +53,7 @@ public class LoggingMiddlewareTests : BaseTest
 
         _ = await sut.Handle(_request, Handler, Cancellation.Token);
 
-        Task<IQueryResult<AuthenticateResult>> Handler(CancellationToken _)
+        Task<IQueryResult<UserIdResult>> Handler(CancellationToken _)
         {
             _logger
                 .Received(1)
@@ -73,12 +74,12 @@ public class LoggingMiddlewareTests : BaseTest
             .Received(1)
             .Log(LogLevel.Information, Arg.Any<EventId>(), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
 
-        Task<IQueryResult<AuthenticateResult>> Handler(CancellationToken _)
+        Task<IQueryResult<UserIdResult>> Handler(CancellationToken _)
         {
             _logger.ClearReceivedCalls();
             return Task.FromResult(_response);
         }
     }
 
-    private LoggingMiddleware<AuthenticateQuery, IQueryResult<AuthenticateResult>> CreateSut() => new(_logger);
+    private LoggingMiddleware<UserIdQuery, IQueryResult<UserIdResult>> CreateSut() => new(_logger);
 }

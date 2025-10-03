@@ -30,7 +30,8 @@ public class ArchitectureTests
             && !t.Name.EndsWith("Module", StringComparison.Ordinal)
             && !t.Name.EndsWith("Modules", StringComparison.Ordinal)
             && !t.Name.EndsWith("Mappings", StringComparison.Ordinal)
-            && !t.Name.EndsWith("HealthCheck", StringComparison.Ordinal)).ToArray();
+            && !t.Name.EndsWith("HealthCheck", StringComparison.Ordinal)
+            && !t.Name.EndsWith("Builder", StringComparison.Ordinal)).ToArray();
         failing.Should().BeNullOrEmpty();
     }
 

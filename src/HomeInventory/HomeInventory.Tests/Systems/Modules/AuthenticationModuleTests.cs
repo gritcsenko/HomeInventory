@@ -1,4 +1,5 @@
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -39,7 +40,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .HttpContext(out var contextVar)
             .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
             .Map<AuthenticateResult>(out var authenticateResultVar).To<LoginResponse>(out var loginResponseVar)
-            .OnQueryReturn(authenticateQueryVar, authenticateResultVar)
+            .OnAuthenticationReturn(authenticateQueryVar, authenticateResultVar)
             .Sut(out var sutVar)
             .InitializeHostAsync();
 
@@ -59,7 +60,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .HttpContext(out var contextVar)
             .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
             .New<InvalidCredentialsError>(out var errorVar)
-            .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(authenticateQueryVar, errorVar)
+            .OnAuthenticationReturnError(authenticateQueryVar, errorVar)
             .Sut(out var sutVar)
             .InitializeHostAsync();
 

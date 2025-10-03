@@ -24,6 +24,16 @@ public static class ProblemDetailsFactoryExtensions
                 return TypedResults.Problem(problem);
             });
 
+    public static Results<Ok<TResponse>, ProblemHttpResult> MatchToOk<T, TResponse>(this IProblemDetailsFactory factory, Validation<Error, T> validation, Func<T, TResponse> onValue, string? traceIdentifier = null)
+        where T : notnull =>
+        validation.Match<Results<Ok<TResponse>, ProblemHttpResult>>(
+            value => TypedResults.Ok(onValue(value)),
+            error =>
+            {
+                var problem = factory.ConvertToProblem([error], traceIdentifier);
+                return TypedResults.Problem(problem);
+            });
+
     private static ProblemDetails ConvertToProblem(this IProblemDetailsFactory factory, IEnumerable<ValidationFailure> failures, string? traceIdentifier = null) =>
         factory.ConvertToProblem([.. failures.Select(static x => new ValidationError(x.ErrorMessage, x.AttemptedValue))], traceIdentifier);
 }

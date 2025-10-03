@@ -1,6 +1,6 @@
 using AutoMapper;
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Framework.Infrastructure;
@@ -12,10 +12,10 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/authentication")
+public class AuthenticationModule(IMapper mapper, IAuthenticationService authenticationService, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/authentication")
 {
     private readonly IMapper _mapper = mapper;
-    private readonly ISender _sender = sender;
+    private readonly IAuthenticationService _authenticationService = authenticationService;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
@@ -26,7 +26,7 @@ public class AuthenticationModule(IMapper mapper, ISender sender, IProblemDetail
     public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, HttpContext context, CancellationToken cancellationToken = default)
     {
         var query = _mapper.MapOrFail<AuthenticateQuery>(body);
-        var result = await _sender.Send(query, cancellationToken);
+        var result = await _authenticationService.AuthenticateAsync(query, cancellationToken);
         return _problemDetailsFactory.MatchToOk(result, _mapper.MapOrFail<LoginResponse>, context.TraceIdentifier);
     }
 }

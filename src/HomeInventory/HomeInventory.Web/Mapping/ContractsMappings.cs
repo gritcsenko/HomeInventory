@@ -1,5 +1,5 @@
-﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
-using HomeInventory.Application.Framework.Mapping;
+﻿using HomeInventory.Application.Framework.Mapping;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
 
 namespace HomeInventory.Web.Mapping;

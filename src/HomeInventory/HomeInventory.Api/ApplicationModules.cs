@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Application.Framework;
+using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
 using HomeInventory.Contracts.Validations;
 using HomeInventory.Domain;
@@ -37,6 +38,7 @@ internal static class ApplicationModules
         new WebHealthCheckModule(),
         new WebCarterSupportModule(),
         new ApplicationMappingModule(),
+        new ApplicationUserManagementModule(),
         new InfrastructureMappingModule(),
         new InfrastructureDatabaseModule(),
         new InfrastructurePersistenceHealthCheckModule(),

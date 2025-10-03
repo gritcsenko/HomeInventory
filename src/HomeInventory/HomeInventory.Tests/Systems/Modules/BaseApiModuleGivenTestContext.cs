@@ -52,6 +52,29 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
         _lazyServiceProvider = new(_services.BuildServiceProvider);
     }
 
+    protected void AddSingleton<TService, TImplementation>(TImplementation implementation)
+        where TService : class
+        where TImplementation : class, TService
+    {
+        if (_lazyServiceProvider.IsValueCreated)
+        {
+            throw new InvalidOperationException("Cannot add services after the service provider has been created.");
+        }
+
+        _services.AddSingleton<TService>(implementation);
+    }
+
+    protected void AddSingleton<TService>(TService implementation)
+        where TService : class
+    {
+        if (_lazyServiceProvider.IsValueCreated)
+        {
+            throw new InvalidOperationException("Cannot add services after the service provider has been created.");
+        }
+
+        _services.AddSingleton(implementation);
+    }
+
     private IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
     public async Task<TGiven> InitializeHostAsync()
