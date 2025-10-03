@@ -12,10 +12,9 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IMapper mapper, IAuthenticationService authenticationService, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/authentication")
+public class AuthenticationModule(IMapper mapper, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/authentication")
 {
     private readonly IMapper _mapper = mapper;
-    private readonly IAuthenticationService _authenticationService = authenticationService;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
@@ -23,10 +22,10 @@ public class AuthenticationModule(IMapper mapper, IAuthenticationService authent
             .AllowAnonymous()
             .WithValidationOf<LoginRequest>(static s => s.IncludeAllRuleSets());
 
-    public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, HttpContext context, CancellationToken cancellationToken = default)
+    public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, [FromServices] IAuthenticationService authenticationService, HttpContext context, CancellationToken cancellationToken = default)
     {
         var query = _mapper.MapOrFail<AuthenticateQuery>(body);
-        var result = await _authenticationService.AuthenticateAsync(query, cancellationToken);
+        var result = await authenticationService.AuthenticateAsync(query, cancellationToken);
         return _problemDetailsFactory.MatchToOk(result, _mapper.MapOrFail<LoginResponse>, context.TraceIdentifier);
     }
 }

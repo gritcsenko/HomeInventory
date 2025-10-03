@@ -9,10 +9,16 @@
   <component name="ChangeListManager">
     <list default="true" id="c8a3a5b5-2897-4c27-ba96-a89d235ec961" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.HomeInventory/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HomeInventory/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/ApplicationUserManagementModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/ApplicationUserManagementModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Api/AppBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Api/AppBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.Framework/ApplicationFrameworkServiceCollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.Framework/ApplicationFrameworkServiceCollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Commands/RegisterCommandHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Commands/RegisterCommandHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Queries/UserIdQueryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Application.UserManagement/Queries/UserIdQueryHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/AuthenticationModuleTestContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/AuthenticationModuleTestContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/AuthenticationModuleTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/AuthenticationModuleTests.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTestContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTestContext.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Tests/Systems/Modules/UserManagementModuleTests.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HomeInventory.Web.UserManagement/UserManagementCarterModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web.UserManagement/UserManagementCarterModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HomeInventory.Web/Modules/AuthenticationModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HomeInventory.Web/Modules/AuthenticationModule.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,6 +104,7 @@
       <workItem from="1745240049249" duration="315000" />
       <workItem from="1746581203872" duration="1791000" />
       <workItem from="1759452586552" duration="5991000" />
+      <workItem from="1759497945241" duration="1075000" />
     </task>
     <servers />
   </component>

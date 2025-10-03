@@ -9,7 +9,7 @@ using HomeInventory.Domain.UserManagement.ValueObjects;
 
 namespace HomeInventory.Application.UserManagement.Commands;
 
-internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, IIdSupplier<Ulid> eventIdSupplier) : CommandHandler<RegisterCommand>
+public sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeProvider timeProvider, IPasswordHasher hasher, IIdSupplier<Ulid> eventIdSupplier) : CommandHandler<RegisterCommand>
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly TimeProvider _timeProvider = timeProvider;

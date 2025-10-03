@@ -45,7 +45,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sutVar, loginRequestVar, contextVar, static (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
+            .InvokedAsync(sutVar, loginRequestVar, contextVar, static (sut, body, context, ct) => sut.LoginAsync(body, context.RequestServices.GetRequiredService<IAuthenticationService>(), context, ct));
 
         then
             .Result(loginResponseVar, static (actual, expected) =>
@@ -65,7 +65,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sutVar, loginRequestVar, contextVar, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
+            .InvokedAsync(sutVar, loginRequestVar, contextVar, (sut, body, context, ct) => sut.LoginAsync(body, context.RequestServices.GetRequiredService<IAuthenticationService>(), context, ct));
 
         then
             .Result(errorVar, (actual, error) =>

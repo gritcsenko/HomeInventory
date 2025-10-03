@@ -5,7 +5,7 @@ using HomeInventory.Domain.UserManagement.Persistence;
 
 namespace HomeInventory.Application.UserManagement.Queries;
 
-internal sealed class UserIdQueryHandler(IScopeAccessor scopeAccessor) : QueryHandler<UserIdQuery, UserIdResult>
+public sealed class UserIdQueryHandler(IScopeAccessor scopeAccessor) : QueryHandler<UserIdQuery, UserIdResult>
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
 

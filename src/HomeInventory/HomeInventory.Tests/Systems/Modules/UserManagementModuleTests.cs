@@ -5,6 +5,8 @@ using HomeInventory.Domain.UserManagement.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
+using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.Framework.Messaging;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -48,7 +50,14 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sutVar, registerRequestVar, contextVar, static (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, contextVar, static (sut, body, context, ct) => sut.RegisterAsync(
+                body, 
+                null!, 
+                null!, 
+                context.RequestServices.GetRequiredService<ISender>(), 
+                context.RequestServices.GetRequiredService<IRegistrationService>(), 
+                context, 
+                ct));
 
         then
             .Result(registerResponseVar, static (actual, expected) =>
@@ -69,7 +78,14 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sutVar, registerRequestVar, contextVar, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, contextVar, (sut, body, context, ct) => sut.RegisterAsync(
+                body, 
+                null!, 
+                null!, 
+                context.RequestServices.GetRequiredService<ISender>(), 
+                context.RequestServices.GetRequiredService<IRegistrationService>(), 
+                context, 
+                ct));
 
         then
             .Result(errorVar, (actual, error) =>

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using HomeInventory.Application.Framework;
 using HomeInventory.Application.Framework.Mapping;
+using HomeInventory.Application.Framework.Messaging;
 
 // ReSharper disable once CheckNamespace
 #pragma warning disable IDE0130
@@ -17,4 +18,9 @@ public static class ApplicationFrameworkServiceCollectionExtensions
     private static IServiceCollection AddMappingTypeConverter(this IServiceCollection services) =>
         services
             .AddSingleton(typeof(TypeConverterAdapter<,,>));
+
+    public static IServiceCollection AddWolverineMessaging(this IServiceCollection services) =>
+        services
+            .AddScoped<ISender, WolverineSender>()
+            .AddScoped<IPublisher, WolverinePublisher>();
 }

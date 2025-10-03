@@ -1,4 +1,5 @@
-﻿using HomeInventory.Application.UserManagement.Interfaces;
+﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Web.Modules;
 
