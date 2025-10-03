@@ -27,7 +27,7 @@ public class AmountUnitTests : BaseTest
     {
         var expected = Ulid.NewUlid();
         var supplier = Substitute.For<IIdSupplier<Ulid>>();
-        supplier.Supply().Returns(expected);
+        supplier.SupplyNew().Returns(expected);
         var type = MeasurementType.Create();
         var sut = AmountUnit.Create(type, supplier);
 
@@ -40,7 +40,7 @@ public class AmountUnitTests : BaseTest
         var scale = Fixture.Create<decimal>();
         var expected = Ulid.NewUlid();
         var supplier = Substitute.For<IIdSupplier<Ulid>>();
-        supplier.Supply().Returns(expected);
+        supplier.SupplyNew().Returns(expected);
         var type = MeasurementType.Create();
         var baseUnit = AmountUnit.Create(type);
         var sut = AmountUnit.Create(baseUnit, x => x * scale, supplier);

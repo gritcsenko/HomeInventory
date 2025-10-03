@@ -4,5 +4,5 @@ public sealed class DelegatingIdSupplier<TId>(Func<TId> supplyFunc) : IIdSupplie
 {
     private readonly Func<TId> _supplyFunc = supplyFunc;
 
-    public TId Supply() => _supplyFunc();
+    public TId SupplyNew() => _supplyFunc();
 }

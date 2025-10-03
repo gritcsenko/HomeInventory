@@ -22,10 +22,10 @@ internal sealed class RegisterCommandHandler(IScopeAccessor scopeAccessor, TimeP
 
         if (await userRepository.IsUserHasEmailAsync(command.Email, cancellationToken))
         {
-            return new DuplicateEmailError();
+            return DuplicateEmailError.Instance;
         }
 
-        var userId = UserId.IdSupplier.Supply();
+        var userId = UserId.Supplier.SupplyNew();
         var user = await command.CreateUserAsync(userId, _hasher, cancellationToken);
         var result = await user
             .MapAsync(async u =>

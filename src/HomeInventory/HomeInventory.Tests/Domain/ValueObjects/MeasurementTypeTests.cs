@@ -25,7 +25,7 @@ public class MeasurementTypeTests : BaseTest
     {
         var expected = Ulid.NewUlid();
         var supplier = Substitute.For<IIdSupplier<Ulid>>();
-        supplier.Supply().Returns(expected);
+        supplier.SupplyNew().Returns(expected);
         var sut = MeasurementType.Create(supplier);
 
         sut.Value.Should().Be(expected);

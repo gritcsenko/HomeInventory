@@ -6,7 +6,7 @@ namespace HomeInventory.Domain.ValueObjects;
 public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 {
     private AmountUnit(string name, IIdSupplier<Ulid> supplier, MeasurementType measurement)
-        : base(name, supplier.Supply()) =>
+        : base(name, supplier.SupplyNew()) =>
         Measurement = measurement;
 
     public static readonly AmountUnit Kelvin = Create(MeasurementType.Temperature);

@@ -7,7 +7,7 @@ namespace HomeInventory.Domain.ValueObjects;
 public sealed class MeasurementType : BaseEnumeration<MeasurementType, Ulid>
 {
     private MeasurementType(string name, IIdSupplier<Ulid> supplier)
-        : base(name, supplier.Supply())
+        : base(name, supplier.SupplyNew())
     {
     }
 

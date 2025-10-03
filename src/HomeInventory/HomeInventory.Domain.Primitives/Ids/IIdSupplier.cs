@@ -2,5 +2,5 @@
 
 public interface IIdSupplier<out TId>
 {
-    TId Supply();
+    TId SupplyNew();
 }

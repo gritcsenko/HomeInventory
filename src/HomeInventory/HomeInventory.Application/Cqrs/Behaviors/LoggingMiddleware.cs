@@ -13,20 +13,6 @@ internal sealed class LoggingMiddleware<TRequest, TResponse>(ILogger<LoggingMidd
 
     private readonly ILogger _logger = logger;
 
-    public async Task BeforeAsync(TRequest message)
-    
-    public async Task InvokeAsync(T message, Envelope envelope, HandlerChain chain, IMessageContext context, CancellationToken cancellationToken = default)
-    {
-        using var scope = _logger.LoggingBehaviorScope(_requestName, _responseName);
-        _logger.SendingRequest(message);
-        var response = await chain.Next(context, cancellationToken);
-
-        var consumer = GetResponseHandler(response);
-        consumer.Invoke(_logger);
-
-        return response;
-    }
-
     public async Task<TResponse> Handle(TRequest request, Func<CancellationToken, Task<TResponse>> next, CancellationToken cancellationToken = default)
     {
         using var scope = _logger.LoggingBehaviorScope(_requestName, _responseName);
