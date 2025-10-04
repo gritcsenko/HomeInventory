@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Configuration;
+﻿using HomeInventory.Web.ErrorHandling;
 
 namespace HomeInventory.Tests.Middlewares;
 

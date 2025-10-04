@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using HomeInventory.Web.Configuration.Interfaces;
 using HomeInventory.Web.ErrorHandling;
+using HomeInventory.Web.ErrorHandling.Interfaces;
 using HomeInventory.Web.Framework.Infrastructure;
 using HomeInventory.Web.Middleware;
 using Microsoft.AspNetCore.Http.Json;

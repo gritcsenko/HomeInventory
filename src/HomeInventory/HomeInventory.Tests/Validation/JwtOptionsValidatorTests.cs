@@ -1,8 +1,6 @@
 using FluentValidation.TestHelper;
-using HomeInventory.Contracts;
-using HomeInventory.Contracts.Validations;
-using HomeInventory.Web.Configuration;
-using HomeInventory.Web.Configuration.Validation;
+using HomeInventory.Web.UserManagement.Configuration;
+using HomeInventory.Web.UserManagement.Configuration.Validation;
 
 namespace HomeInventory.Tests.Validation;
 

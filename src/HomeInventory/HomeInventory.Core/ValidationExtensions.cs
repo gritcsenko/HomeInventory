@@ -2,6 +2,13 @@
 
 public static class ValidationExtensions
 {
+    public static async Task<Validation<TFailure, TResult>> MapAsync<TFailure, TSuccess, TResult>(this Task<Validation<TFailure, TSuccess>> validationTask, Func<TSuccess, Task<TResult>> f)
+        where TFailure : LanguageExt.Traits.Monoid<TFailure>
+    {
+        var validation = await validationTask;
+        return await validation.MapAsync(f);
+    }
+
     public static async Task<Validation<TFailure, TResult>> MapAsync<TFailure, TSuccess, TResult>(this Validation<TFailure, TSuccess> validation, Func<TSuccess, Task<TResult>> f)
         where TFailure : LanguageExt.Traits.Monoid<TFailure>
         =>

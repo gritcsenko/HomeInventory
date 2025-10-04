@@ -96,4 +96,7 @@ public static class OptionExtensions
         option
             .Map(Validation<Error, T>.Success)
             .IfNone(() => Validation<Error, T>.Fail(errorsFactory()));
+    
+    public static Validation<Error, T> ErrorIfNone<T>(this Option<T> option, Error error) =>
+        option.ErrorIfNone(() => error);
 }

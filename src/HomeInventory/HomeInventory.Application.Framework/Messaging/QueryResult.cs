@@ -2,6 +2,17 @@ using Unit = LanguageExt.Unit;
 
 namespace HomeInventory.Application.Framework.Messaging;
 
+public static class QueryResult
+{
+    public static IQueryResult<TResponse> From<TResponse>(TResponse response)
+        where TResponse : notnull
+        => From(Validation<Error, TResponse>.Success(response));
+
+    public static IQueryResult<TResponse> From<TResponse>(Validation<Error, TResponse> validation)
+        where TResponse : notnull
+        => new QueryResult<TResponse>(validation);
+}
+
 public sealed class QueryResult<TResponse>(Validation<Error, TResponse> validation) : IQueryResult<TResponse>
     where TResponse : notnull
 {

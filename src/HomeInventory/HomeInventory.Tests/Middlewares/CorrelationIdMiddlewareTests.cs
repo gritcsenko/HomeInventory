@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Configuration;
+﻿using HomeInventory.Web.ErrorHandling;
 using HomeInventory.Web.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;

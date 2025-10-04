@@ -143,6 +143,14 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
         where TResult : notnull =>
         await InvokedAsync(sut[0], (s, t) => invoke(s, GetValue(arg1), GetValue(arg2), t));
 
+    public async Task<ThenContext<TResult>> InvokedAsync<TSut, TArg1, TArg2, TArg3, TResult>(IVariable<TSut> sut, IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, Func<TSut, TArg1, TArg2, TArg3, CancellationToken, Task<TResult>> invoke)
+        where TSut : notnull
+        where TArg1 : notnull
+        where TArg2 : notnull
+        where TArg3 : notnull
+        where TResult : notnull =>
+        await InvokedAsync(sut[0], (s, t) => invoke(s, GetValue(arg1), GetValue(arg2), GetValue(arg3), t));
+
     public async Task<ThenContext<TResult>> InvokedAsync<TSut, TResult>(IIndexedVariable<TSut> sut, Func<TSut, CancellationToken, Task<TResult>> invoke)
         where TSut : notnull
         where TResult : notnull =>

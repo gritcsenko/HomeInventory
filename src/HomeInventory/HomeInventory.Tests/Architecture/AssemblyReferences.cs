@@ -1,5 +1,5 @@
 ﻿using HomeInventory.Api;
-using HomeInventory.Application.Framework;
+using HomeInventory.Application;
 using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts;
 using HomeInventory.Contracts.UserManagement;
@@ -21,7 +21,7 @@ public static class AssemblyReferences
     public static IAssemblyReference Core { get; } = new BaseAssemblyReference(typeof(Execute));
     public static IAssemblyReference DomainPrimitives { get; } = new BaseAssemblyReference(typeof(ValueObject<>));
     public static IAssemblyReference Domain { get; } = new BaseAssemblyReference(typeof(DomainModule));
-    public static IAssemblyReference Application { get; } = new BaseAssemblyReference(typeof(ApplicationMediatrSupportModule));
+    public static IAssemblyReference Application { get; } = new BaseAssemblyReference(typeof(BaseHealthCheck));
     public static IAssemblyReference ApplicationFramework { get; } = new BaseAssemblyReference(typeof(ApplicationFrameworkServiceCollectionExtensions));
     public static IAssemblyReference WebUserManagement { get; } = new BaseAssemblyReference(typeof(WebUserManagementMappingModule));
     public static IAssemblyReference ContractValidations { get; } = new BaseAssemblyReference(typeof(ContractsValidationsModule));
@@ -34,7 +34,7 @@ public static class AssemblyReferences
     public static IAssemblyReference ContractsUserManagementValidators { get; } = new BaseAssemblyReference(typeof(ContractsUserManagementValidatorsModule));
     public static IAssemblyReference Modules { get; } = new BaseAssemblyReference(typeof(ModulesHost));
     public static IAssemblyReference ModulesInterfaces { get; } = new BaseAssemblyReference(typeof(IModule));
-    public static IAssemblyReference ApplicationUserManagement { get; } = new BaseAssemblyReference(typeof(ApplicationUserManagementMediatrModule));
+    public static IAssemblyReference ApplicationUserManagement { get; } = new BaseAssemblyReference(typeof(ApplicationUserManagementModule));
     public static IAssemblyReference DomainUserManagement { get; } = new BaseAssemblyReference(typeof(User));
 
     public static readonly IReadOnlyDictionary<string, IAssemblyReference> References = new Dictionary<string, IAssemblyReference>
