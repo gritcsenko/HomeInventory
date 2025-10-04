@@ -6,5 +6,5 @@ public record DuplicateEmailError() : ConflictError(DefaultMessage)
 {
     public static readonly string DefaultMessage = "Duplicate email";
 
-    public static Error Instance { get; } = new DuplicateEmailError();
+    public static readonly Error Instance = new DuplicateEmailError();
 };

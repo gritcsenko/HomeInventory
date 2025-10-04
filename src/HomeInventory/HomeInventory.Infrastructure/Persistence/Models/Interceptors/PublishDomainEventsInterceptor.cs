@@ -27,7 +27,7 @@ internal class PublishDomainEventsInterceptor : SaveChangesInterceptor
             var notification = DomainEventNotification.Create(domainEvent);
             _ = notification;
             await Task.Delay(TimeSpan.Zero, cancellationToken);
-            ////await _publisher.Publish(notification, cancellationToken);
+            // NOTE: Domain event publication is not implemented yet
         }
     }
 }

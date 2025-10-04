@@ -26,7 +26,7 @@ public class AuthenticationModule(IMapper mapper, IProblemDetailsFactory problem
             .AllowAnonymous()
             .WithValidationOf<LoginRequest>(static s => s.IncludeAllRuleSets());
 
-    public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, [FromServices]IUserService userService, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
+    public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, [FromServices] IUserService userService, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
     {
         using var scopes = new CompositeDisposable(
             _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),

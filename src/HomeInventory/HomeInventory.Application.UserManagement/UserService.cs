@@ -57,7 +57,7 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
             return DuplicateEmailError.Instance;
         }
 
-        using var scope = new TransactionScope();
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         var result = await CreateUserAsync(command, cancellationToken)
             .MapAsync(async user =>
             {
