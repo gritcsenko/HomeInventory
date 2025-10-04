@@ -1,4 +1,4 @@
-﻿using Ardalis.Specification;
+using Ardalis.Specification;
 using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;

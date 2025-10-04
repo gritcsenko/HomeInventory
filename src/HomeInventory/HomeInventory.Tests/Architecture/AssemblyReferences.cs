@@ -1,4 +1,4 @@
-﻿using HomeInventory.Api;
+using HomeInventory.Api;
 using HomeInventory.Application;
 using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts;

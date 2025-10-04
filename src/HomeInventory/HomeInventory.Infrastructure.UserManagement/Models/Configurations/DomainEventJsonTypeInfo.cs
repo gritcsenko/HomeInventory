@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization.Metadata;
+using System.Text.Json.Serialization.Metadata;
 using HomeInventory.Infrastructure.Framework;
 
 namespace HomeInventory.Infrastructure.UserManagement.Models.Configurations;

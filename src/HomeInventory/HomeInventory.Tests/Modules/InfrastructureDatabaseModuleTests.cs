@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure;
 using HomeInventory.Infrastructure.Framework;

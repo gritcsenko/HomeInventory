@@ -69,7 +69,7 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
 
         return result.IfFail(errors => Error.Many(errors));
     }
-    
+
     private async Task SaveChangesAsync<TRequest>(TransactionScope transactionScope, CancellationToken cancellationToken)
     {
         var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
@@ -102,7 +102,7 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
 
     private async Task<bool> IsPasswordMatchAsync(User user, string password, CancellationToken cancellationToken) =>
         await _hasher.VarifyHashAsync(password, user.Password, cancellationToken);
-    
+
     private async Task<Validation<Error, User>> CreateUserAsync(RegisterCommand command, CancellationToken cancellationToken = default) =>
         await UserId
             .CreateBuilder()

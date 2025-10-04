@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
+using HomeInventory.Domain.Primitives.Errors;
 
 namespace HomeInventory.Domain.UserManagement.Errors;
 

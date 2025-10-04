@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Domain.ValueObjects;
 
 namespace HomeInventory.Tests.Domain.ValueObjects;

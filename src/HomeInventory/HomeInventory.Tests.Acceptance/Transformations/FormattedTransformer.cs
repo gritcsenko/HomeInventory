@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using HomeInventory.Tests.Acceptance.Support;
 
 namespace HomeInventory.Tests.Acceptance.Transformations;

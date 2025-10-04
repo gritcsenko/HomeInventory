@@ -74,19 +74,29 @@ file static class Extensions
                 if (element.TryGetInt32(out var intValue))
                 {
                     writer.WriteNumberValue(intValue);
+                    break;
                 }
-                else if (element.TryGetInt64(out var longValue))
+
+                if (element.TryGetInt64(out var longValue))
                 {
                     writer.WriteNumberValue(longValue);
+                    break;
                 }
-                else if (element.TryGetDouble(out var doubleValue))
+
+                if (element.TryGetDouble(out var doubleValue))
                 {
                     writer.WriteNumberValue(doubleValue);
+                    break;
                 }
-                else
+
+                if (element.TryGetDecimal(out var decimalValue))
                 {
-                    writer.WriteNumberValue(element.GetDecimal());
+                    writer.WriteNumberValue(decimalValue);
+                    break;
                 }
+
+                // Fallback: write the raw number value if none of the specific types match
+                writer.WriteRawValue(element.GetRawText());
                 break;
 
             case JsonValueKind.True:
@@ -100,6 +110,7 @@ file static class Extensions
             case JsonValueKind.Null:
                 writer.WriteNullValue();
                 break;
+
             case JsonValueKind.Undefined:
             default:
                 break;
@@ -113,5 +124,5 @@ file static class Extensions
         using var memoryStream = new MemoryStream();
         serializer.WriteObject(memoryStream, value);
         return Encoding.UTF8.GetString(memoryStream.ToArray());
-    }    
+    }
 }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Api;
 using Microsoft.Extensions.Logging;
 using Serilog;

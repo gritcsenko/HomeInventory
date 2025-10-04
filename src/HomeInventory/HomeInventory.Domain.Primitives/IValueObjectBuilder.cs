@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Domain.Primitives;
 
 public interface IValueObjectBuilder<out TSelf, TObject, in TValue> : IObjectBuilder<TObject>
     where TSelf : IValueObjectBuilder<TSelf, TObject, TValue>

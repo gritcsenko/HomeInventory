@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using HomeInventory.Web.ErrorHandling;
 
 namespace HomeInventory.Tests.Systems.Modules;

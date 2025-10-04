@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.UserManagement.Authentication;
+using HomeInventory.Web.UserManagement.Authentication;
 
 namespace HomeInventory.Tests.Systems.Authentication;
 

@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using HomeInventory.Modules.Interfaces;
 using HomeInventory.Web.Framework;
 using Microsoft.AspNetCore.Builder;

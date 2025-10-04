@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Core;
+namespace HomeInventory.Tests.Core;
 
 [UnitTest]
 public sealed class ScopeTests

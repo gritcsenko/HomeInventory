@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Domain.Primitives;
 
 public interface IRepository<TAggregateRoot> : IReadOnlyRepository<TAggregateRoot>
     where TAggregateRoot : class, IEntity<TAggregateRoot>

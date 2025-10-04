@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;

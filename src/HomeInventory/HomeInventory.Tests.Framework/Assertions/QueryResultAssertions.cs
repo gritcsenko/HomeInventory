@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 

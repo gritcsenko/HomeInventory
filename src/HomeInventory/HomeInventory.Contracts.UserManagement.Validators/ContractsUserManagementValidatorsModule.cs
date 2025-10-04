@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using HomeInventory.Web.Framework;
 
 namespace HomeInventory.Contracts.UserManagement.Validators;

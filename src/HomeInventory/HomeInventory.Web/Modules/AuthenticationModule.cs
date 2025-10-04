@@ -31,7 +31,7 @@ public class AuthenticationModule(IMapper mapper, IProblemDetailsFactory problem
         using var scopes = new CompositeDisposable(
             _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
             _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
-        
+
         var query = _mapper.MapOrFail<AuthenticateQuery>(body);
         var result = await userService.AuthenticateAsync(query, cancellationToken);
         return _problemDetailsFactory.MatchToOk(result, _mapper.MapOrFail<LoginResponse>, context.TraceIdentifier);

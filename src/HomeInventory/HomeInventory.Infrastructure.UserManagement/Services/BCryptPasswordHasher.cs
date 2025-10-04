@@ -1,4 +1,4 @@
-﻿using BCrypt.Net;
+using BCrypt.Net;
 using HomeInventory.Application.UserManagement.Interfaces;
 using static BCrypt.Net.BCrypt;
 

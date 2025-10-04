@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Internal;
 using FluentValidation.Results;
 using Microsoft.Extensions.Options;

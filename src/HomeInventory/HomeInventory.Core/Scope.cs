@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Core;
+namespace HomeInventory.Core;
 
 internal sealed class Scope<TContext> : IScope<TContext>
     where TContext : class

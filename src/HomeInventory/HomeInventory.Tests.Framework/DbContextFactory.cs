@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.UserManagement.Events;
 using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;

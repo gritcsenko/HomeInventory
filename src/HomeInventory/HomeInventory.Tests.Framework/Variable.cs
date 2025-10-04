@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework;
+namespace HomeInventory.Tests.Framework;
 
 public class Variable(string name) : IVariable
 {

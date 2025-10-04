@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 using HomeInventory.Domain.Entities;
 using HomeInventory.Domain.Primitives.Errors;
 

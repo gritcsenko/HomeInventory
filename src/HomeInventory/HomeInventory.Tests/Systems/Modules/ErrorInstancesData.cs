@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using HomeInventory.Domain.Primitives.Errors;
 using HomeInventory.Domain.UserManagement.Errors;
 

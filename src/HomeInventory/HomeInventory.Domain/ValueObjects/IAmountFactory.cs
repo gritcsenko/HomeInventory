@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.ValueObjects;
+namespace HomeInventory.Domain.ValueObjects;
 
 public interface IAmountFactory
 {

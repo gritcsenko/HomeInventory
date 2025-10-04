@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Domain.Primitives;
 
 public interface IEnumeration<TSelf> : IValueObject<TSelf>, IParseable<TSelf>
     where TSelf : IEnumeration<TSelf>

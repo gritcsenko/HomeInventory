@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using AutoMapper;
 using Carter;
 using HomeInventory.Api;

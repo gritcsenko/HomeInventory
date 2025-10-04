@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework;
+using HomeInventory.Application.Framework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

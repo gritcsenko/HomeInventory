@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Application.UserManagement.Interfaces;
+namespace HomeInventory.Application.UserManagement.Interfaces;
 
 public interface IJwtIdentityGenerator
 {

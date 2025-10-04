@@ -1,4 +1,4 @@
-﻿using Disposable = System.Reactive.Disposables.Disposable;
+using Disposable = System.Reactive.Disposables.Disposable;
 
 namespace HomeInventory.Tests.Framework;
 

@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Ids;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HomeInventory.Infrastructure.Framework.Models.Configuration;

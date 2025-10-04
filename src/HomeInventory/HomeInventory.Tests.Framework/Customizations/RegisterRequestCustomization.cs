@@ -1,4 +1,4 @@
-﻿using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Contracts.UserManagement;
 
 namespace HomeInventory.Tests.Framework.Customizations;
 

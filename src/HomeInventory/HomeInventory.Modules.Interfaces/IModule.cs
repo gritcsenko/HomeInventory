@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Modules.Interfaces;
+namespace HomeInventory.Modules.Interfaces;
 
 public interface IModule
 {

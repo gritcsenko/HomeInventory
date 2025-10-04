@@ -1,4 +1,4 @@
-﻿using Ardalis.Specification;
+using Ardalis.Specification;
 using HomeInventory.Domain.Primitives.Ids;
 using HomeInventory.Infrastructure.Framework.Models;
 using Microsoft.EntityFrameworkCore;

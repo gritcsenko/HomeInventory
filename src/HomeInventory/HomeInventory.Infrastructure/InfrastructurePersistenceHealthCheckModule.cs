@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application;
+using HomeInventory.Application;
 using HomeInventory.Infrastructure.Services;
 using HomeInventory.Modules.Interfaces;
 using Microsoft.Extensions.DependencyInjection;

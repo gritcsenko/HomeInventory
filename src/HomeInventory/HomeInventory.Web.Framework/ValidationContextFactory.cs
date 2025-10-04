@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Internal;
 
 namespace HomeInventory.Web.Framework;

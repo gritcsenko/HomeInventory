@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Web.ErrorHandling.Interfaces;
+namespace HomeInventory.Web.ErrorHandling.Interfaces;
 
 public interface ICorrelationIdContainer
 {

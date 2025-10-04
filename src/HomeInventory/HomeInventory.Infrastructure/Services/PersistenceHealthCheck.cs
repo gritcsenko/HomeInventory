@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application;
+using HomeInventory.Application;
 using HomeInventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;

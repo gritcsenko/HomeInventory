@@ -1,4 +1,4 @@
-﻿using HomeInventory.Modules.Interfaces;
+using HomeInventory.Modules.Interfaces;
 using HomeInventory.Web.ErrorHandling.Interfaces;
 using HomeInventory.Web.Framework.Infrastructure;
 using HomeInventory.Web.Middleware;

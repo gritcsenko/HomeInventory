@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework.Mapping;
+using HomeInventory.Application.Framework.Mapping;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
 

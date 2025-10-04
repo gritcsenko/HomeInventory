@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Domain.UserManagement.Persistence;
 using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.UserManagement;

@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces;
 
 namespace HomeInventory.Web.UserManagement.Authentication;
 

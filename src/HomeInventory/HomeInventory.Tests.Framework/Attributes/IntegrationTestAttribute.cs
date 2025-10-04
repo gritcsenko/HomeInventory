@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework.Attributes;
+namespace HomeInventory.Tests.Framework.Attributes;
 
 /// <summary>
 /// Indicates the test has external dependencies.

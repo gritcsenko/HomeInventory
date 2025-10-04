@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.UserManagement.Configuration;
+using HomeInventory.Web.UserManagement.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 

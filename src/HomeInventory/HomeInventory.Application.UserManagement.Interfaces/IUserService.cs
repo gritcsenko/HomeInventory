@@ -7,8 +7,8 @@ namespace HomeInventory.Application.UserManagement.Interfaces;
 public interface IUserService
 {
     Task<IQueryResult<AuthenticateResult>> AuthenticateAsync(AuthenticateQuery query, CancellationToken cancellationToken = default);
-    
+
     Task<IQueryResult<UserIdResult>> GetUserIdAsync(UserIdQuery query, CancellationToken cancellationToken = default);
-    
+
     Task<Option<Error>> RegisterAsync(RegisterCommand command, CancellationToken cancellationToken = default);
 }

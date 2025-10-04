@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework.Mapping;
+using HomeInventory.Application.Framework.Mapping;
 using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Infrastructure.UserManagement.Models;
 

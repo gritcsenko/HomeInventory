@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using HomeInventory.Web.Framework;
 using Microsoft.IdentityModel.Tokens;
 

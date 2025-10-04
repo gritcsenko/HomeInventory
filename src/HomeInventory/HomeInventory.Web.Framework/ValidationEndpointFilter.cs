@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Results;
 using HomeInventory.Web.Framework.Infrastructure;
 using Microsoft.AspNetCore.Http;

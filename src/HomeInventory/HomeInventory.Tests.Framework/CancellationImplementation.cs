@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework;
+namespace HomeInventory.Tests.Framework;
 
 internal sealed class CancellationImplementation(CancellationTokenSource? source = null) : ICancellation, IDisposable
 {

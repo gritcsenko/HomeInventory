@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.ErrorHandling.Interfaces;
+using HomeInventory.Web.ErrorHandling.Interfaces;
 
 namespace HomeInventory.Web.ErrorHandling;
 

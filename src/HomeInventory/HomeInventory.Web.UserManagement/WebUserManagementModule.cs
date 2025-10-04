@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Modules.Interfaces;
 using HomeInventory.Web.Framework;
@@ -32,12 +32,12 @@ public sealed class WebUserManagementModule : BaseModuleWithCarter
         AddValidatorsFromCurrentAssembly(configurator);
         AddCarterModulesFromCurrentAssembly(configurator);
     }
-    
+
     public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
     {
         await base.BuildAppAsync(context, cancellationToken);
 
         context.ApplicationBuilder.UseAuthentication();
     }
-    
+
 }

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using HomeInventory.Infrastructure.Framework.Models.Configuration;
 
 namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;

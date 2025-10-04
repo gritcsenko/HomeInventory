@@ -1,4 +1,4 @@
-﻿using Flurl;
+using Flurl;
 using HomeInventory.Contracts.UserManagement;
 using Microsoft.AspNetCore.TestHost;
 

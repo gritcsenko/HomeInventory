@@ -31,7 +31,7 @@ public class UserServiceTests : BaseTest
         Fixture.CustomizeEmail();
         Fixture.CustomizeUlid();
         _user = Fixture.Create<User>();
-        
+
         AddDisposable(_scopeAccessor.GetScope<IUserRepository>().Set(_userRepository));
         AddDisposable(_scopeAccessor.GetScope<IUnitOfWork>().Set(_unitOfWork));
     }
@@ -156,7 +156,7 @@ public class UserServiceTests : BaseTest
         // Given
         Fixture.CustomizeFromFactory<RegisterCommand, Email, IIdSupplier<Ulid>>(static (e, s) => new(e, s.Supply().ToString()));
         var command = Fixture.Create<RegisterCommand>();
-        
+
         _userRepository.IsUserHasEmailAsync(command.Email, Cancellation.Token).Returns(false);
 #pragma warning disable CA2012 // Use ValueTasks correctly
         _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(Task.CompletedTask);
@@ -171,7 +171,7 @@ public class UserServiceTests : BaseTest
         // Then
         using var scope = new AssertionScope();
         result.Should().BeNone();
-        
+
         await _userRepository.Received(1).AddAsync(Arg.Any<User>(), Cancellation.Token);
         _ = _unitOfWork.Received(1).SaveChangesAsync(Cancellation.Token);
     }
@@ -182,7 +182,7 @@ public class UserServiceTests : BaseTest
         // Given
         Fixture.CustomizeFromFactory<RegisterCommand, Email, IIdSupplier<Ulid>>(static (e, s) => new(e, s.Supply().ToString()));
         var command = Fixture.Create<RegisterCommand>();
-        
+
         _userRepository.IsUserHasEmailAsync(command.Email, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();
@@ -203,7 +203,7 @@ public class UserServiceTests : BaseTest
         // Given
         Fixture.CustomizeFromFactory<RegisterCommand, Email, IIdSupplier<Ulid>>(static (e, s) => new(e, s.Supply().ToString()));
         var command = Fixture.Create<RegisterCommand>();
-        
+
         _userRepository.IsUserHasEmailAsync(command.Email, Cancellation.Token).Returns(false);
 #pragma warning disable CA2012 // Use ValueTasks correctly
         _userRepository.AddAsync(Arg.Any<User>(), Cancellation.Token).Returns(Task.CompletedTask);
@@ -225,7 +225,7 @@ public class UserServiceTests : BaseTest
         // Given
         Fixture.CustomizeFromFactory<RegisterCommand, Email, IIdSupplier<Ulid>>(static (e, s) => new(e, s.Supply().ToString()));
         var command = Fixture.Create<RegisterCommand>();
-        
+
         _userRepository.IsUserHasEmailAsync(command.Email, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();

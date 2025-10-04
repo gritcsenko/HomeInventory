@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Domain.UserManagement.Aggregates;

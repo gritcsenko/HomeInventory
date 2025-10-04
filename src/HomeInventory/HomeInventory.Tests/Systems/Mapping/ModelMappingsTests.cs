@@ -1,4 +1,4 @@
-﻿using AutoFixture.Kernel;
+using AutoFixture.Kernel;
 using HomeInventory.Api;
 using HomeInventory.Application.Framework;
 using HomeInventory.Domain;

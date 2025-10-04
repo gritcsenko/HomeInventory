@@ -1,4 +1,4 @@
-﻿
+
 namespace HomeInventory.Tests.Framework;
 
 public abstract class BaseContext(VariablesContainer variables)
