@@ -160,6 +160,205 @@ public sealed class DataContractJsonConverterTests() : BaseTest<DataContractJson
                 actual.Should().Contain(data.NestedData!.NestedProperty);
             });
     }
+
+    [Fact]
+    public void Write_Should_SerializeLongNumber()
+    {
+        Given
+            .New<long>(out var longValueVar)
+            .New(out var testDataVar, longValueVar, static longValue => new TestDataContractWithLong
+            {
+                LongValue = longValue,
+            })
+            .New(out var converterVar, static () => new DataContractJsonConverter<TestDataContractWithLong>())
+            .New(out var optionsVar, converterVar, static converter => new JsonSerializerOptions
+            {
+                Converters = { converter },
+                WriteIndented = true,
+            });
+
+        var then = When
+            .Invoked(testDataVar, optionsVar, static (data, options) =>
+                JsonSerializer.Serialize(data, options));
+
+        then
+            .Result(testDataVar, static (actual, data) =>
+            {
+                actual.Should().Contain(nameof(TestDataContractWithLong.LongValue).ToCamelCase());
+                actual.Should().Contain(data.LongValue.ToString(CultureInfo.InvariantCulture));
+            });
+    }
+
+    [Fact]
+    public void Write_Should_SerializeDoubleNumber()
+    {
+        Given
+            .New<double>(out var doubleValueVar)
+            .New(out var testDataVar, doubleValueVar, static doubleValue => new TestDataContractWithDouble
+            {
+                DoubleValue = doubleValue,
+            })
+            .New(out var converterVar, static () => new DataContractJsonConverter<TestDataContractWithDouble>())
+            .New(out var optionsVar, converterVar, static converter => new JsonSerializerOptions
+            {
+                Converters = { converter },
+                WriteIndented = true,
+            });
+
+        var then = When
+            .Invoked(testDataVar, optionsVar, static (data, options) =>
+                JsonSerializer.Serialize(data, options));
+
+        then
+            .Result(testDataVar, static (actual, data) =>
+            {
+                actual.Should().Contain(nameof(TestDataContractWithDouble.DoubleValue).ToCamelCase());
+                actual.Should().Contain(data.DoubleValue.ToString(CultureInfo.InvariantCulture));
+            });
+    }
+
+    [Fact]
+    public void Write_Should_SerializeDecimalNumber()
+    {
+        Given
+            .New<decimal>(out var decimalValueVar)
+            .New(out var testDataVar, decimalValueVar, static decimalValue => new TestDataContractWithDecimal
+            {
+                DecimalValue = decimalValue,
+            })
+            .New(out var converterVar, static () => new DataContractJsonConverter<TestDataContractWithDecimal>())
+            .New(out var optionsVar, converterVar, static converter => new JsonSerializerOptions
+            {
+                Converters = { converter },
+                WriteIndented = true,
+            });
+
+        var then = When
+            .Invoked(testDataVar, optionsVar, static (data, options) =>
+                JsonSerializer.Serialize(data, options));
+
+        then
+            .Result(testDataVar, static (actual, data) =>
+            {
+                actual.Should().Contain(nameof(TestDataContractWithDecimal.DecimalValue).ToCamelCase());
+                actual.Should().Contain(data.DecimalValue.ToString(CultureInfo.InvariantCulture));
+            });
+    }
+
+    [Fact]
+    public void Write_Should_SerializeArray()
+    {
+        Given
+            .New<string>(out var item1Var)
+            .New<string>(out var item2Var)
+            .New(out var testDataVar, item1Var, item2Var, static (item1, item2) => new TestDataContractWithArray
+            {
+                Items = [item1, item2],
+            })
+            .New(out var converterVar, static () => new DataContractJsonConverter<TestDataContractWithArray>())
+            .New(out var optionsVar, converterVar, static converter => new JsonSerializerOptions
+            {
+                Converters = { converter },
+                WriteIndented = true,
+            });
+
+        var then = When
+            .Invoked(testDataVar, optionsVar, static (data, options) =>
+                JsonSerializer.Serialize(data, options));
+
+        then
+            .Result(testDataVar, static (actual, data) =>
+            {
+                actual.Should().Contain(nameof(TestDataContractWithArray.Items).ToCamelCase());
+                actual.Should().Contain(data.Items[0]);
+                actual.Should().Contain(data.Items[1]);
+            });
+    }
+
+    [Fact]
+    public void Write_Should_SerializeBooleanTrue()
+    {
+        Given
+            .New(out var testDataVar, () => new TestDataContractWithBool
+            {
+                BoolValue = true,
+            })
+            .New(out var converterVar, static () => new DataContractJsonConverter<TestDataContractWithBool>())
+            .New(out var optionsVar, converterVar, static converter => new JsonSerializerOptions
+            {
+                Converters = { converter },
+                WriteIndented = true,
+            });
+
+        var then = When
+            .Invoked(testDataVar, optionsVar, static (data, options) =>
+                JsonSerializer.Serialize(data, options));
+
+        then
+            .Result(actual =>
+            {
+                actual.Should().Contain(nameof(TestDataContractWithBool.BoolValue).ToCamelCase());
+                actual.Should().Contain("true");
+            });
+    }
+
+    [Fact]
+    public void Write_Should_SerializeBooleanFalse()
+    {
+        Given
+            .New(out var testDataVar, () => new TestDataContractWithBool
+            {
+                BoolValue = false,
+            })
+            .New(out var converterVar, static () => new DataContractJsonConverter<TestDataContractWithBool>())
+            .New(out var optionsVar, converterVar, static converter => new JsonSerializerOptions
+            {
+                Converters = { converter },
+                WriteIndented = true,
+            });
+
+        var then = When
+            .Invoked(testDataVar, optionsVar, static (data, options) =>
+                JsonSerializer.Serialize(data, options));
+
+        then
+            .Result(actual =>
+            {
+                actual.Should().Contain(nameof(TestDataContractWithBool.BoolValue).ToCamelCase());
+                actual.Should().Contain("false");
+            });
+    }
+
+    [Fact]
+    public void Write_Should_NotIndent_When_WriterAlreadyIndented()
+    {
+        Given
+            .Sut(out var sutVar)
+            .New<string>(out var propertyNameVar)
+            .New(out var testDataVar, propertyNameVar, static propName => new TestDataContract
+            {
+                PropertyName = propName,
+            });
+
+        var then = When
+            .Invoked(sutVar, testDataVar, static (sut, data) =>
+            {
+                using var memoryStream = new MemoryStream();
+                using var writer = new Utf8JsonWriter(memoryStream, new() { Indented = true });
+
+                sut.Write(writer, data, new() { WriteIndented = true });
+                writer.Flush();
+
+                return Encoding.UTF8.GetString(memoryStream.ToArray());
+            });
+
+        then
+            .Result(propertyNameVar, static (actual, propName) =>
+            {
+                actual.Should().Contain(nameof(TestDataContract.PropertyName).ToCamelCase());
+                actual.Should().Contain(propName);
+            });
+    }
 }
 
 public sealed class DataContractJsonConverterTestsGivenContext(BaseTest test)
@@ -191,9 +390,45 @@ public sealed class TestDataContract
 }
 
 [DataContract]
+public sealed class TestDataContractWithLong
+{
+    [DataMember]
+    public long LongValue { get; set; }
+}
+
+[DataContract]
+public sealed class TestDataContractWithDouble
+{
+    [DataMember]
+    public double DoubleValue { get; set; }
+}
+
+[DataContract]
+public sealed class TestDataContractWithDecimal
+{
+    [DataMember]
+    public decimal DecimalValue { get; set; }
+}
+
+[DataContract]
+public sealed class TestDataContractWithArray
+{
+    [DataMember]
+#pragma warning disable CA1819 // Properties should not return arrays
+    public string[] Items { get; set; } = [];
+#pragma warning restore CA1819
+}
+
+[DataContract]
+public sealed class TestDataContractWithBool
+{
+    [DataMember]
+    public bool BoolValue { get; set; }
+}
+
+[DataContract]
 public sealed class NestedDataContract
 {
     [DataMember]
     public string NestedProperty { get; set; } = string.Empty;
 }
-
