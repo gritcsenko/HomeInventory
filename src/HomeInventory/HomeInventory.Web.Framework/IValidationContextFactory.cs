@@ -1,8 +1,8 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace HomeInventory.Web.Framework;
 
-internal interface IValidationContextFactory<in TOptions>
+public interface IValidationContextFactory<in TObject>
 {
-    IValidationContext CreateContext(TOptions options);
+    IValidationContext CreateContext(TObject obj);
 }

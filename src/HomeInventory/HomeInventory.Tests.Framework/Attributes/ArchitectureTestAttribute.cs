@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework.Attributes;
+namespace HomeInventory.Tests.Framework.Attributes;
 
 /// <summary>
 /// Indicates a test is a architecture test.
@@ -7,7 +7,7 @@
 public sealed class ArchitectureTestAttribute : CategoryTraitAttribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AcceptanceTestAttribute"/> class.
+    /// Initializes a new instance of the <see cref="ArchitectureTestAttribute"/> class.
     /// </summary>
     public ArchitectureTestAttribute()
         : base("Architecture")

@@ -1,3 +1,9 @@
-﻿namespace HomeInventory.Domain.Errors;
+using System.Runtime.Serialization;
 
-public record InvalidCredentialsError() : Exceptional("Invalid credentials", -1_000_000_005);
+namespace HomeInventory.Domain.Errors;
+
+[DataContract]
+public record InvalidCredentialsError() : Exceptional("Invalid credentials", -1_000_000_005)
+{
+    public static readonly Error Instance = new InvalidCredentialsError();
+}

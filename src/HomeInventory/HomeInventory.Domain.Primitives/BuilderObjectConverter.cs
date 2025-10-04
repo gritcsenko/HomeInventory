@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Application.Mapping;
+namespace HomeInventory.Domain.Primitives;
 
 public class BuilderObjectConverter<TBuilder, TObject, TValue> : ObjectConverter<TValue, TObject>
     where TValue : notnull

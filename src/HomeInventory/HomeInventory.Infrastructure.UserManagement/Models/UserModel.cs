@@ -1,7 +1,8 @@
-﻿using HomeInventory.Domain.Primitives;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure.Framework.Models;
 
-namespace HomeInventory.Infrastructure.Persistence.Models;
+namespace HomeInventory.Infrastructure.UserManagement.Models;
 
 internal sealed class UserModel : IPersistentModel<UserId>, IHasCreationAudit, IHasModificationAudit
 {

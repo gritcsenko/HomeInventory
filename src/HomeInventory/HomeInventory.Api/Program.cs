@@ -1,19 +1,26 @@
-using HomeInventory.Api;
+using System.Diagnostics.CodeAnalysis;
 
-using var log = SerilogConfigurator.CreateBootstrapLogger();
+namespace HomeInventory.Api;
 
-var builder = new AppBuilder(args);
-await Execute.AndCatchAsync(
-    async () =>
-    {
-        await using var app = builder.Build();
-        await app.RunAsync();
-    },
-    (Exception ex) => log.Fatal(ex, "An unhandled exception occurred during bootstrapping"));
-
-public partial class Program
+[SuppressMessage("Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "By design")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+internal class Program
 {
     protected Program()
     {
+    }
+
+    public static async Task Main(string[] args)
+    {
+        await using var log = LoggingModule.CreateBootstrapLogger();
+
+        var builder = new AppBuilder(args);
+        await Execute.AndCatchAsync(
+            async () =>
+            {
+                await using var app = await builder.BuildAsync();
+                await app.RunAsync();
+            },
+            (Exception ex) => log.Fatal(ex, "An unhandled exception occurred during bootstrapping"));
     }
 }

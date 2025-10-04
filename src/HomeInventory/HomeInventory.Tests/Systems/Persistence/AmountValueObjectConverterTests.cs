@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.Persistence.Models;
@@ -18,44 +18,40 @@ public class AmountValueObjectConverterTests : IAsyncLifetime
     public void TryConvert() => _test.TryConvert();
 }
 
-internal class InternalAmountValueObjectConverterTests() : BaseTest<AmountValueObjectConverterTestsGivenContext>(t => new(t))
+internal class InternalAmountValueObjectConverterTests() : BaseTest<AmountValueObjectConverterTestsGivenContext>(static t => new(t))
 {
     public void TryConvert()
     {
         Given
-            .New<Amount>(out var amount)
-            .New<ProductAmountModel>(out var amountModel)
-            .SubstituteFor(out IVariable<IAmountFactory> factory, amount,
+            .New<Amount>(out var amountVar)
+            .New<ProductAmountModel>(out var amountModelVar)
+            .SubstituteFor(out IVariable<IAmountFactory> factoryVar, amountVar,
                 (factory, amount) => factory
                     .Create(Arg.Any<decimal>(), Arg.Any<AmountUnit>())
                     .Returns(amount))
-            .Sut(out var sut, factory);
+            .Sut(out var sutVar, factoryVar);
 
         When
-            .Invoked(sut, amountModel, (sut, amount) => sut.TryConvert(amount))
-            .Result(amount, (r, a) => r.Should().BeSuccess(x => x.Should().BeSameAs(a)));
+            .Invoked(sutVar, amountModelVar, (sut, amount) => sut.TryConvert(amount))
+            .Result(amountVar, (r, a) => r.Should().BeSuccess(x => x.Should().BeSameAs(a)));
     }
 }
 
 internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext<AmountValueObjectConverterTestsGivenContext, AmountObjectConverter, IAmountFactory>
 {
     public AmountValueObjectConverterTestsGivenContext(BaseTest test)
-        : base(test)
-    {
-        Customize(new AmountUnitCustomization());
-        Customize(new ProductAmountModelCustomization());
-        Customize(new AmountCustomization());
-    }
+        : base(test) =>
+        Customize<AmountUnitCustomization>()
+            .Customize<ProductAmountModelCustomization>()
+            .Customize<AmountCustomization>();
 
     protected override AmountObjectConverter CreateSut(IAmountFactory factory) => new(factory);
 
     private sealed class ProductAmountModelCustomization : ICustomization
     {
-        public void Customize(IFixture fixture)
-        {
-            fixture.Customize<ProductAmountModel>(c => c
-                .With<string, AmountUnit>(m => m.UnitName, u => u.Name));
-        }
+        public void Customize(IFixture fixture) =>
+            fixture.Customize<ProductAmountModel>(static c => c
+                .With<string, AmountUnit>(static m => m.UnitName, static u => u.Name));
     }
     private sealed class AmountUnitCustomization : ICustomization
     {
@@ -69,9 +65,6 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
 
     private sealed class AmountCustomization : ICustomization
     {
-        public void Customize(IFixture fixture)
-        {
-            fixture.Customize<Amount>(c => c.FromFactory<decimal, AmountUnit>((v, u) => new Amount(v, u)));
-        }
+        public void Customize(IFixture fixture) => fixture.Customize<Amount>(static c => c.FromFactory<decimal, AmountUnit>(static (v, u) => new(v, u)));
     }
 }

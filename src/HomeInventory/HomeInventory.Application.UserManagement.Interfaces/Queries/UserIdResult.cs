@@ -1,3 +1,5 @@
-﻿namespace HomeInventory.Application.Cqrs.Queries.UserId;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
-public record UserIdResult(Domain.ValueObjects.UserId UserId);
+namespace HomeInventory.Application.UserManagement.Interfaces.Queries;
+
+public record UserIdResult(UserId UserId);

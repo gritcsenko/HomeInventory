@@ -1,5 +1,5 @@
-﻿using HomeInventory.Contracts;
-using HomeInventory.Contracts.Validations;
+using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Contracts.UserManagement.Validators;
 
 namespace HomeInventory.Tests.Framework.Customizations;
 

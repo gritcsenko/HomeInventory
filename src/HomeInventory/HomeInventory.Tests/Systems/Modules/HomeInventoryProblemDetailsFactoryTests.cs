@@ -1,7 +1,6 @@
-﻿using System.Diagnostics;
-using FluentAssertions.Execution;
+using System.Diagnostics;
 using HomeInventory.Domain.Primitives.Errors;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.ErrorHandling;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -64,7 +63,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     {
         var sut = CreateSut();
         var statusCode = StatusCodes.Status501NotImplemented;
-        _options.ClientErrorMapping[statusCode] = new ClientErrorData { Title = _title, Link = _type };
+        _options.ClientErrorMapping[statusCode] = new() { Title = _title, Link = _type };
 
         var details = sut.CreateProblemDetails(_context, statusCode, title: null, type: null);
 
@@ -111,9 +110,8 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
     public void ConvertToProblem_Should_ThrowInvalidOperationException_When_NoErrors()
     {
         var sut = CreateSut();
-        var errors = Seq<Error>.Empty;
 
-        Action action = () => sut.ConvertToProblem(errors);
+        Action action = () => sut.ConvertToProblem([]);
 
         action.Should().ThrowExactly<InvalidOperationException>();
     }
@@ -129,12 +127,11 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
             ["errorCodes"] = new[] { error.GetType().Name },
             ["errors"] = new Error[] { error },
         };
-        var errors = Seq<Error>.Empty.Add(error);
         var errorType = error.GetType();
         var expectedStatus = (int)_mapping.GetError(errorType);
         var expectedTitle = errorType.Name;
 
-        var details = sut.ConvertToProblem(errors);
+        var details = sut.ConvertToProblem([error]);
 
         using var scope = new AssertionScope();
         details.Status.Should().Be(expectedStatus);
@@ -155,7 +152,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var messages = Fixture.CreateMany<string>(2).ToArray();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
-        var errors = Seq<Error>.Empty.Add(new ValidationError(messages[0], metadata)).Add(new ConflictError(messages[1]));
+        var errors = new Error[] { new ValidationError(messages[0], metadata), new ConflictError(messages[1]) };
         var expectedStatus = (int)_mapping.GetDefaultError();
 
         var details = sut.ConvertToProblem(errors);
@@ -177,8 +174,8 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var messages = Fixture.CreateMany<string>(2).ToArray();
         var metadata = Fixture.Create<Dictionary<string, object?>>();
-        var errors = Seq<Error>.Empty.Add(new ValidationError(messages[0], metadata)).Add(new ValidationError(messages[1], default!));
-        var expectedStatus = (int)_mapping.GetError(errors.First().GetType());
+        var errors = new Error[] { new ValidationError(messages[0], metadata), new ValidationError(messages[1], default!) };
+        var expectedStatus = (int)_mapping.GetError(errors[0].GetType());
 
         var details = sut.ConvertToProblem(errors);
 
@@ -224,7 +221,7 @@ public class HomeInventoryProblemDetailsFactoryTests : BaseTest
         var sut = CreateSut();
         var statusCode = StatusCodes.Status402PaymentRequired;
         var title = new HttpValidationProblemDetails().Title;
-        _options.ClientErrorMapping[statusCode] = new ClientErrorData { Title = Fixture.Create<string>(), Link = _type };
+        _options.ClientErrorMapping[statusCode] = new() { Title = Fixture.Create<string>(), Link = _type };
 
         var details = sut.CreateValidationProblemDetails(_context, _state, statusCode, title: null, type: null);
 

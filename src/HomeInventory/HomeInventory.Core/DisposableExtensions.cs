@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Core;
+namespace HomeInventory.Core;
 
 public static class DisposableExtensions
 {
@@ -7,10 +7,6 @@ public static class DisposableExtensions
         subject switch
         {
             IAsyncDisposable asyncDisposable => asyncDisposable,
-            _ => new AnonymousAsyncDisposable(() =>
-            {
-                subject.Dispose();
-                return ValueTask.CompletedTask;
-            })
+            IDisposable disposable => new DisposableAdapter(disposable),
         };
 }

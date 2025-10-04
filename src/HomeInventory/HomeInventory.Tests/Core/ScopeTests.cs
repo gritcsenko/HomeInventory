@@ -1,5 +1,6 @@
-﻿namespace HomeInventory.Tests.Core;
+namespace HomeInventory.Tests.Core;
 
+[UnitTest]
 public sealed class ScopeTests
 {
     private readonly ScopeAccessor _scopeAccessor = new(new ScopeContainer(new ScopeFactory()));
@@ -30,7 +31,7 @@ public sealed class ScopeTests
     public void Get_ShouldReturnNull_WhenResetIsCalled()
     {
         var sut = _scopeAccessor.GetScope<ResetContext>();
-        sut.Set(new ResetContext());
+        sut.Set(new());
 
         sut.Reset();
         var actual = sut.Get();
@@ -42,14 +43,13 @@ public sealed class ScopeTests
     public void Get_ShouldReturnNull_WhenSetAndDisposed()
     {
         var sut = _scopeAccessor.GetScope<SetNullDisposedContext>();
-        var token = sut.Set(new SetNullDisposedContext());
+        var token = sut.Set(new());
 
         token.Dispose();
         var actual = sut.Get();
 
         actual.Should().BeNone();
     }
-
 
     [Fact]
     public void Get_ShouldReturnContext_WhenResetAndDisposed()
@@ -94,38 +94,33 @@ public sealed class ScopeTests
         actual.Should().Be(expected);
     }
 
+#pragma warning disable S2094
     private sealed class GetNullContext
     {
-        public GetNullContext() { }
     };
 
     private sealed class GetNotNullContext
     {
-        public GetNotNullContext() { }
     };
 
     private sealed class ResetContext
     {
-        public ResetContext() { }
     };
 
     private sealed class SetNullDisposedContext
     {
-        public SetNullDisposedContext() { }
     };
 
     private sealed class ResetNullDisposedContext
     {
-        public ResetNullDisposedContext() { }
     };
 
     private sealed class SetTwiceContext
     {
-        public SetTwiceContext() { }
     };
 
     private sealed class SetTwiceDisposedContext
     {
-        public SetTwiceDisposedContext() { }
     };
+#pragma warning restore S2094
 }

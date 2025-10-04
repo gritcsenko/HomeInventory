@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Contracts\HomeInventory.Contracts.csproj" />
+    <ProjectReference Include="..\HomeInventory.Web.Framework\HomeInventory.Web.Framework.csproj" />
   </ItemGroup>
 
 </Project>

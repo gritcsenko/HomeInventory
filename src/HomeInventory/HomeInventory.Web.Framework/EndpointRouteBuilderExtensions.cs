@@ -1,9 +1,9 @@
-﻿using Asp.Versioning.Builder;
+using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Framework;
 
 internal static class EndpointRouteBuilderExtensions
 {

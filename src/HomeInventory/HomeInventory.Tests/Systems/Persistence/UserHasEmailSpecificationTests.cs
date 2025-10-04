@@ -1,7 +1,7 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Specifications;
+using Ardalis.Specification.EntityFrameworkCore;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure.UserManagement.Models;
+using HomeInventory.Infrastructure.UserManagement.Specifications;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -10,20 +10,17 @@ public class UserHasEmailSpecificationTests : BaseTest
 {
     private readonly SpecificationEvaluator _evaluator = SpecificationEvaluator.Default;
 
-    public UserHasEmailSpecificationTests()
-    {
-        Fixture.CustomizeId<UserId>();
-    }
+    public UserHasEmailSpecificationTests() => Fixture.CustomizeId<UserId>();
 
     [Fact]
     public void Should_SatisfyWithCorrectEmail()
     {
         var email = Fixture.Create<string>();
         var user = Fixture.Build<UserModel>()
-            .With(x => x.Email, email)
+            .With(static x => x.Email, email)
             .Create();
         var query = new[] { user }.AsQueryable();
-        var sut = new UserHasEmailSpecification(new Email(email));
+        var sut = new UserHasEmailSpecification(new(email));
 
         var actual = _evaluator.GetQuery(query, sut).Any();
 
@@ -34,10 +31,10 @@ public class UserHasEmailSpecificationTests : BaseTest
     public void Should_NotSatisfyWithWrongEmail()
     {
         var query = Fixture.Build<UserModel>()
-            .With(x => x.Email, Fixture.Create<string>())
+            .With(static x => x.Email, Fixture.Create<string>())
             .CreateMany()
             .AsQueryable();
-        var sut = new UserHasEmailSpecification(new Email(Fixture.Create<string>()));
+        var sut = new UserHasEmailSpecification(new(Fixture.Create<string>()));
 
         var actual = _evaluator.GetQuery(query, sut).Any();
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace HomeInventory.Web.Authorization.Dynamic;
@@ -7,8 +7,5 @@ public class DynamicPermissionRequirement(Func<Endpoint, IEnumerable<PermissionT
 {
     private readonly Func<Endpoint, IEnumerable<PermissionType>> _extractPermissionsFunc = extractPermissionsFunc;
 
-    public IEnumerable<PermissionType> GetPermissions(Endpoint endpoint)
-    {
-        return _extractPermissionsFunc(endpoint);
-    }
+    public IEnumerable<PermissionType> GetPermissions(Endpoint endpoint) => _extractPermissionsFunc(endpoint);
 }

@@ -1,6 +1,7 @@
-﻿using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using AutoFixture.Kernel;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Web.Mapping;
 
 namespace HomeInventory.Tests.Systems.Mapping;
@@ -10,25 +11,24 @@ public class ContractsMappingsTests : BaseMappingsTests
 {
     [Theory]
     [MemberData(nameof(Data))]
-    public void ShouldMap(object instance, Type destination)
+    public void ShouldMap(Type source, Type destination)
     {
+        var fixture = new Fixture();
+        fixture.CustomizeId<UserId>();
+        fixture.CustomizeEmail();
+        var instance = fixture.Create(source, new SpecimenContext(fixture));
+
         var sut = CreateSut<ContractsMappings>();
-        var source = instance.GetType();
 
         var target = sut.Map(instance, source, destination);
 
         target.Should().BeAssignableTo(destination);
     }
 
-    public static TheoryData<object, Type> Data()
-    {
-        var fixture = new Fixture();
-        fixture.CustomizeId<UserId>();
-        fixture.CustomizeEmail();
-        return new()
+    public static TheoryData<Type, Type> Data() =>
+        new()
         {
-            { fixture.Create<LoginRequest>(), typeof(AuthenticateQuery) },
-            { fixture.Create<AuthenticateResult>(), typeof(LoginResponse) },
+            { typeof(LoginRequest), typeof(AuthenticateQuery) },
+            { typeof(AuthenticateResult), typeof(LoginResponse) },
         };
-    }
 }

@@ -1,6 +1,7 @@
-﻿using HomeInventory.Application;
+using HomeInventory.Application;
 using HomeInventory.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace HomeInventory.Infrastructure.Services;
 
@@ -22,11 +23,12 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
         var canConnect = await database.CanConnectAsync(cancellationToken);
         if (!canConnect)
         {
-            return new HealthCheckStatus
+            return new()
             {
                 IsFailed = true,
                 Description = "Cannot connect to the database",
-                Data = {
+                Data =
+                {
                     ["provider"] = ProviderName,
                 },
             };
@@ -34,28 +36,39 @@ internal sealed class PersistenceHealthCheck(DatabaseContext context) : BaseHeal
 
         if (database.IsRelational())
         {
-            var pendingMigrations = await database.GetPendingMigrationsAsync(cancellationToken);
-            var count = pendingMigrations.Count();
-            if (count != 0)
-            {
-                return new HealthCheckStatus
-                {
-                    IsFailed = true,
-                    Description = $"Database has {count} pending migrations",
-                    Data = {
-                        ["provider"] = ProviderName,
-                        ["migrations.count"] = count,
-                    },
-                };
-            }
+            return await CheckRelationalStateAsync(database, cancellationToken);
         }
 
-        return new HealthCheckStatus
+        return ReportHealthy();
+
+    }
+
+    private async Task<HealthCheckStatus> CheckRelationalStateAsync(DatabaseFacade database, CancellationToken cancellationToken)
+    {
+        var pendingMigrations = await database.GetPendingMigrationsAsync(cancellationToken);
+        return pendingMigrations.Count() switch
         {
-            Description = "Database is healthy",
-            Data = {
-                ["provider"] = ProviderName,
+            0 => ReportHealthy(),
+            var count => new()
+            {
+                IsFailed = true,
+                Description = $"Database has {count} pending migrations",
+                Data =
+                {
+                    ["provider"] = ProviderName,
+                    ["migrations.count"] = count,
+                },
             },
         };
     }
+
+    private HealthCheckStatus ReportHealthy() =>
+        new()
+        {
+            Description = "Database is healthy",
+            Data =
+            {
+                ["provider"] = ProviderName,
+            },
+        };
 }

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
 
@@ -6,10 +6,8 @@ namespace HomeInventory.Domain.ValueObjects;
 public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 {
     private AmountUnit(string name, IIdSupplier<Ulid> supplier, MeasurementType measurement)
-        : base(name, supplier.Supply())
-    {
+        : base(name, supplier.Supply()) =>
         Measurement = measurement;
-    }
 
     public static readonly AmountUnit Kelvin = Create(MeasurementType.Temperature);
     public static readonly AmountUnit Celsius = Create(Kelvin, static x => x - 272.15M);
@@ -40,13 +38,8 @@ public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 
     internal static AmountUnit Create(MeasurementType measurement, IIdSupplier<Ulid> supplier, [CallerMemberName] string name = "") => new(name, supplier, measurement);
 
-    internal static AmountUnit Create(AmountUnit baseUnit, Func<decimal, decimal> fromBase, [CallerMemberName] string name = "") => Create(baseUnit, fromBase, IdSuppliers.Ulid, name);
+    private static AmountUnit Create(AmountUnit baseUnit, Func<decimal, decimal> fromBase, [CallerMemberName] string name = "") => Create(baseUnit, fromBase, IdSuppliers.Ulid, name);
 
-    internal static AmountUnit Create(AmountUnit baseUnit, Func<decimal, decimal> _, IIdSupplier<Ulid> supplier, [CallerMemberName] string name = "")
-    {
-        return new(
-            name,
-            supplier,
-            baseUnit.Measurement);
-    }
+    internal static AmountUnit Create(AmountUnit baseUnit, Func<decimal, decimal> _, IIdSupplier<Ulid> supplier, [CallerMemberName] string name = "") =>
+        new(name, supplier, baseUnit.Measurement);
 }

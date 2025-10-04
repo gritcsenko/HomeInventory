@@ -1,5 +1,5 @@
-﻿using Flurl;
-using HomeInventory.Contracts;
+using Flurl;
+using HomeInventory.Contracts.UserManagement;
 using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;

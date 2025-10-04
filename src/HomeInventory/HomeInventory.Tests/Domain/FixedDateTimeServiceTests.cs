@@ -1,6 +1,3 @@
-﻿using FluentAssertions.Execution;
-using HomeInventory.Domain;
-
 namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
@@ -9,9 +6,8 @@ public class FixedDateTimeServiceTests : BaseTest
     [Fact]
     public void UtcNow_ShouldReturnSuppliedTime()
     {
-        var parent = new FixedTimeProvider(TimeProvider.System);
-        var expected = parent.GetUtcNow();
-        var sut = new FixedTimeProvider(parent);
+        var expected = DateTime.GetUtcNow();
+        var sut = new FixedTimeProvider(DateTime);
 
         var actual = sut.GetUtcNow();
 
@@ -21,9 +17,8 @@ public class FixedDateTimeServiceTests : BaseTest
     [Fact]
     public void UtcNow_ShouldReturnSuppliedTimeInUTC()
     {
-        var parent = new FixedTimeProvider(TimeProvider.System);
-        var expected = parent.GetUtcNow();
-        var sut = new FixedTimeProvider(parent);
+        var expected = DateTime.GetUtcNow();
+        var sut = new FixedTimeProvider(DateTime);
 
         var actual = sut.GetUtcNow();
 
@@ -35,9 +30,8 @@ public class FixedDateTimeServiceTests : BaseTest
     [Fact]
     public void UtcNow_ShouldReturnSuppliedTimeFromOther()
     {
-        var parent = new FixedTimeProvider(TimeProvider.System);
-        var expected = parent.GetUtcNow();
-        var other = new FixedTimeProvider(parent);
+        var expected = DateTime.GetUtcNow();
+        var other = new FixedTimeProvider(DateTime);
         var sut = new FixedTimeProvider(other);
 
         var actual = sut.GetUtcNow();

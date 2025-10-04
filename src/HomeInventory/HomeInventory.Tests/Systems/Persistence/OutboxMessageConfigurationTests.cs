@@ -1,7 +1,7 @@
-﻿using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Events;
 using HomeInventory.Domain.Primitives.Ids;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Events;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Infrastructure.Persistence.Models;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
@@ -12,12 +12,10 @@ namespace HomeInventory.Tests.Systems.Persistence;
 [UnitTest]
 public class OutboxMessageConfigurationTests : BaseTest
 {
-    private static readonly PolymorphicDomainEventTypeResolver _typeResolver = new(new[] { new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)) });
+    private static readonly PolymorphicDomainEventTypeResolver _typeResolver = new([new DomainEventJsonTypeInfo(typeof(UserCreatedDomainEvent)),
+    ]);
 
-    public OutboxMessageConfigurationTests()
-    {
-        Fixture.CustomizeId<UserId>();
-    }
+    public OutboxMessageConfigurationTests() => Fixture.CustomizeId<UserId>();
 
     [Fact]
     public void UserModel_Should_HavePrimaryKey()
@@ -30,9 +28,9 @@ public class OutboxMessageConfigurationTests : BaseTest
         var model = builder.FinalizeModel();
         var type = model.FindRuntimeEntityType(typeof(OutboxMessage));
         type.Should().NotBeNull();
-        var primaryKey = type!.FindPrimaryKey();
+        var primaryKey = type.FindPrimaryKey();
         primaryKey.Should().NotBeNull();
-        primaryKey!.Properties.Should().ContainSingle(x => x.Name == nameof(OutboxMessage.Id));
+        primaryKey.Properties.Should().ContainSingle(static x => x.Name == nameof(OutboxMessage.Id));
     }
 
     [Fact]
@@ -46,11 +44,11 @@ public class OutboxMessageConfigurationTests : BaseTest
         var model = builder.FinalizeModel();
         var type = model.FindRuntimeEntityType(typeof(OutboxMessage));
         type.Should().NotBeNull();
-        var property = type!.FindProperty(nameof(OutboxMessage.Content));
+        var property = type.FindProperty(nameof(OutboxMessage.Content));
         property.Should().NotBeNull();
-        var converter = property!.GetValueConverter();
+        var converter = property.GetValueConverter();
         converter.Should().NotBeNull();
-        var text = converter!.ConvertToProvider(new UserCreatedDomainEvent(IdSuppliers.Ulid, DateTime, Fixture.Create<User>()));
+        var text = converter.ConvertToProvider(new UserCreatedDomainEvent(IdSuppliers.Ulid, DateTime, Fixture.Create<User>()));
         text.Should().NotBeNull();
     }
 

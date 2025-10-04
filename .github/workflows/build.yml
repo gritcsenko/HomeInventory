@@ -35,12 +35,12 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -55,10 +55,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Restore dependencies
-        run: dotnet restore HomeInventory.sln -v minimal
+        run: dotnet restore -v minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build HomeInventory.sln -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        run: dotnet build -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cache build results
         uses: actions/cache@v4
@@ -73,12 +73,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -93,7 +93,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Check formatting
-        run: dotnet format --verify-no-changes --severity error --verbosity diag HomeInventory.sln || (echo "Run 'dotnet format' to fix issues" && exit 1)
+        run: dotnet format --verify-no-changes --severity error --verbosity diag || (echo "Run 'dotnet format' to fix issues" && exit 1)
         working-directory: ./src/HomeInventory
 
   unit-test:
@@ -106,12 +106,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -138,7 +138,7 @@ jobs:
         run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
         working-directory: ./src/HomeInventory
       - name: Test Report
-        uses: dorny/test-reporter@v1.9.1
+        uses: dorny/test-reporter@v2.1.1
         if: success() || failure()
         with:
           name: Unit tests # Name of the check run which will be created
@@ -178,7 +178,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.3.8
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.16
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
@@ -207,7 +207,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       - name: Upload coverage report artifact
-        uses: actions/upload-artifact@v4.3.6
+        uses: actions/upload-artifact@v4.6.2
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           name: CoverageReport # Artifact name
@@ -225,12 +225,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -263,12 +263,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -293,11 +293,11 @@ jobs:
       - name: Install Living Documentation Tool
         run: dotnet tool install --global SpecFlow.Plus.LivingDoc.CLI
       - name: Generate Living Documentation Specification
-        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net8/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net8/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
+        run: livingdoc test-assembly "HomeInventory.Tests.Acceptance/bin/Release/net9/HomeInventory.Tests.Acceptance.dll" -t "HomeInventory.Tests.Acceptance/bin/Release/net9/TestExecution.json" -o "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
       - name: Publish Specflow Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v4.3.6
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: "Specflow Test Results"
           path: ./Acceptance/AcceptanceTestResults.html

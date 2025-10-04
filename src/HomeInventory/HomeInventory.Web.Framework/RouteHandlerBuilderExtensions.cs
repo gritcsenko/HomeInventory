@@ -1,13 +1,12 @@
-﻿using Carter;
+using Carter;
 using FluentValidation;
 using FluentValidation.Internal;
-using HomeInventory.Web.Framework;
-using HomeInventory.Web.Infrastructure;
+using HomeInventory.Web.Framework.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HomeInventory.Web;
+namespace HomeInventory.Web.Framework;
 
 public static class RouteHandlerBuilderExtensions
 {

@@ -1,4 +1,6 @@
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -8,21 +10,22 @@ using Microsoft.AspNetCore.Routing;
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModuleTestContext>(t => new(t))
+public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModuleTestContext>(static t => new(t))
 {
     [Fact]
-    public void AddRoutes_ShouldRegister()
+    public async Task AddRoutes_ShouldRegister()
     {
-        Given
-            .DataSources(out var dataSources)
-            .RouteBuilder(out var routeBuilder, dataSources)
-            .Sut(out var sut);
+        await Given
+            .DataSources(out var dataSourcesVar)
+            .RouteBuilder(out var routeBuilderVar, dataSourcesVar)
+            .Sut(out var sutVar)
+            .InitializeHostAsync();
 
         var then = When
-            .Invoked(sut, routeBuilder, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
+            .Invoked(sutVar, routeBuilderVar, static (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
 
         then
-            .Ensure(sut, dataSources, (module, dataSources) =>
+            .Ensure(sutVar, dataSourcesVar, static (module, dataSources) =>
                 dataSources.Should().ContainSingle()
                     .Which.Endpoints.OfType<RouteEndpoint>().Should().ContainSingle()
                     .Which.Should().HaveRoutePattern(module.GroupPrefix, RoutePatternFactory.Parse("login"))
@@ -34,19 +37,19 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     [Fact]
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
-        Given
-            .HttpContext(out var context)
-            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
-            .Map<AuthenticateResult>(out var authenticateResult).To<LoginResponse>(out var loginResponse)
-            .OnQueryReturn(authenticateQuery, authenticateResult)
-            .Sut(out var sut);
-
+        await Given
+            .HttpContext(out var contextVar)
+            .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
+            .Map<AuthenticateResult>(out var authenticateResultVar).To<LoginResponse>(out var loginResponseVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, authenticateQueryVar, authenticateResultVar, (s, q, r) => s.AuthenticateAsync(q, Cancellation.Token).Returns(QueryResult.From(r)))
+            .Sut(out var sutVar)
+            .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sut, loginRequest, context, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
+            .InvokedAsync(sutVar, loginRequestVar, userServiceVar, contextVar, static (sut, body, userService, context, ct) => sut.LoginAsync(body, userService, null!, null!, context, ct));
 
         then
-            .Result(loginResponse, (actual, expected) =>
+            .Result(loginResponseVar, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<LoginResponse>>()
                     .Which.Should().HaveValue(expected));
     }
@@ -54,18 +57,19 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     [Fact]
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
-        Given
-            .HttpContext(out var context)
-            .Map<LoginRequest>(out var loginRequest).To<AuthenticateQuery>(out var authenticateQuery)
-            .New<InvalidCredentialsError>(out var error)
-            .OnQueryReturnError<AuthenticateQuery, AuthenticateResult, InvalidCredentialsError>(authenticateQuery, error)
-            .Sut(out var sut);
+        await Given
+            .HttpContext(out var contextVar)
+            .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
+            .New<InvalidCredentialsError>(out var errorVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, authenticateQueryVar, errorVar, (s, q, e) => s.AuthenticateAsync(q, Cancellation.Token).Returns(QueryResult.From<AuthenticateResult>(e)))
+            .Sut(out var sutVar)
+            .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sut, loginRequest, context, (sut, body, context, ct) => sut.LoginAsync(body, context, ct));
+            .InvokedAsync(sutVar, loginRequestVar, userServiceVar, contextVar, (sut, body, userService, context, ct) => sut.LoginAsync(body, userService, null!, null!, context, ct));
 
         then
-            .Result(error, (actual, error) =>
+            .Result(errorVar, (actual, error) =>
                 actual.Result.Should().BeOfType<ProblemHttpResult>()
                     .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
                     .And.Match(x => x.Detail == error.Message));

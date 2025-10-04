@@ -1,8 +1,6 @@
-﻿using FluentAssertions.Execution;
-
 namespace HomeInventory.Tests.Framework;
 
-public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResult> resultVariable) : BaseContext(variables)
+public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResult> resultVariable) : ThenContext(variables)
     where TResult : notnull
 {
     private readonly IVariable<TResult> _resultVariable = resultVariable;
@@ -36,6 +34,12 @@ public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResul
 
 public class ThenContext(VariablesContainer variables) : BaseContext(variables)
 {
+    public ThenContext Ensure<TArg1, TArg2, TArg3>(IVariable<TArg1> arg1Variable, IVariable<TArg2> arg2Variable, IVariable<TArg3> arg3Variable, Action<TArg1, TArg2, TArg3> assert)
+        where TArg1 : notnull
+        where TArg2 : notnull
+        where TArg3 : notnull =>
+        Ensure(arg1Variable, arg2Variable, (arg1, arg2) => assert(arg1, arg2, GetValue(arg3Variable)));
+
     public ThenContext Ensure<TArg1, TArg2>(IVariable<TArg1> arg1Variable, IVariable<TArg2> arg2Variable, Action<TArg1, TArg2> assert)
         where TArg1 : notnull
         where TArg2 : notnull =>

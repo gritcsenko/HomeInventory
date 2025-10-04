@@ -1,13 +1,9 @@
-﻿namespace HomeInventory.Tests.Framework.Assertions;
+namespace HomeInventory.Tests.Framework.Assertions;
 
 [UnitTest]
 public class ServiceDescriptorExtensionsTests : BaseTest
 {
     private readonly IServiceProvider _serviceProvider = Substitute.For<IServiceProvider>();
-
-    public ServiceDescriptorExtensionsTests()
-    {
-    }
 
     [Fact]
     public void GetInstance_ShouldReturnFromImplementationInstance()
@@ -39,7 +35,9 @@ public class ServiceDescriptorExtensionsTests : BaseTest
     public void GetInstance_ShouldReturnFromImplementationType()
     {
         var expectedType = typeof(object);
+#pragma warning disable CA2263 // Prefer generic overload when type is known
         var descriptor = ServiceDescriptor.Singleton(typeof(object), expectedType);
+#pragma warning restore CA2263 // Prefer generic overload when type is known
 
         var actual = ServiceDescriptorExtensions.GetInstance(descriptor, _serviceProvider);
 

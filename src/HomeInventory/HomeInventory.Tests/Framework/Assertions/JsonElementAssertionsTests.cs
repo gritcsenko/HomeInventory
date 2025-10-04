@@ -1,16 +1,17 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
 [UnitTest]
 public class JsonElementAssertionsTests : BaseTest
 {
+    private const string _rootProperty = "key";
+
     [Fact]
-    public void BeArrayEqualTo_ShoudPass_WhenBothNull()
+    public void BeArrayEqualTo_ShouldPass_WhenBothNull()
     {
-        var rootProperty = "key";
-        using var document = JsonDocument.Parse($$"""{"{{rootProperty}}":null}""");
-        var sut = CreateSut(document, rootProperty);
+        using var document = JsonDocument.Parse($$"""{"{{_rootProperty}}":null}""");
+        var sut = CreateSut(document, _rootProperty);
 
         Action action = () => sut.BeArrayEqualTo(null);
 
@@ -18,11 +19,10 @@ public class JsonElementAssertionsTests : BaseTest
     }
 
     [Fact]
-    public void BeArrayEqualTo_ShoudPass_WhenBothEmpty()
+    public void BeArrayEqualTo_ShouldPass_WhenBothEmpty()
     {
-        var rootProperty = "key";
-        using var document = JsonDocument.Parse($$"""{"{{rootProperty}}":[]}""");
-        var sut = CreateSut(document, rootProperty);
+        using var document = JsonDocument.Parse($$"""{"{{_rootProperty}}":[]}""");
+        var sut = CreateSut(document, _rootProperty);
 
         Action action = () => sut.BeArrayEqualTo([]);
 
@@ -30,17 +30,16 @@ public class JsonElementAssertionsTests : BaseTest
     }
 
     [Fact]
-    public void BeArrayEqualTo_ShoudPass_WhenBothHasSameValue()
+    public void BeArrayEqualTo_ShouldPass_WhenBothHasSameValue()
     {
-        var rootProperty = "key";
         var expected = new[] { "value" };
-        using var document = JsonDocument.Parse($$"""{"{{rootProperty}}":["{{expected[0]}}"]}""");
-        var sut = CreateSut(document, rootProperty);
+        using var document = JsonDocument.Parse($$"""{"{{_rootProperty}}":["{{expected[0]}}"]}""");
+        var sut = CreateSut(document, _rootProperty);
 
         Action action = () => sut.BeArrayEqualTo(expected);
 
         action.Should().NotThrow();
     }
 
-    private static JsonElementAssertions CreateSut(JsonDocument document, string rootProperty) => new(document.RootElement.GetProperty(rootProperty));
+    private static JsonElementAssertions CreateSut(JsonDocument document, string rootProperty) => document.RootElement.GetProperty(rootProperty).Should();
 }

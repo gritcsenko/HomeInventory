@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace HomeInventory.Application;
@@ -11,7 +11,7 @@ public abstract class BaseHealthCheck : IHealthCheck
             {
                 var status = await CheckHealthAsync(cancellationToken);
                 var healthStatus = status.IsFailed ? context.Registration.FailureStatus : HealthStatus.Healthy;
-                return new HealthCheckResult(healthStatus, status.Description, exception: null, status.Data);
+                return new(healthStatus, status.Description, exception: null, status.Data);
             },
             (Exception ex) => new HealthCheckResult(context.Registration.FailureStatus, "Failed to perform healthcheck", ex, ExceptionData));
 

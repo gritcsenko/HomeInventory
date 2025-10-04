@@ -1,9 +1,10 @@
-﻿using Ardalis.Specification;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Models;
+using Ardalis.Specification;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure.Framework.Specifications;
+using HomeInventory.Infrastructure.UserManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Infrastructure.Specifications;
+namespace HomeInventory.Infrastructure.UserManagement.Specifications;
 
 internal sealed class UserHasEmailSpecification : Specification<UserModel>, ISingleResultSpecification<UserModel>, ICompiledSingleResultSpecification<UserModel>
 {

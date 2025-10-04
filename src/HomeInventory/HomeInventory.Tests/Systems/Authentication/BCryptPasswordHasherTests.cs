@@ -1,23 +1,20 @@
-﻿using HomeInventory.Application.Interfaces.Authentication;
-using HomeInventory.Infrastructure.Services;
-
 namespace HomeInventory.Tests.Systems.Authentication;
 
 [UnitTest]
-public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGivenContext>(t => new(t))
+public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGivenContext>(static t => new(t))
 {
     [Fact]
     public async Task HashAsync_ShouldReturnSomethingDifferentFromInput()
     {
         Given
-            .New<string>(out var password)
-            .Sut(out var sut);
+            .New<string>(out var passwordVar)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, password, async (sut, password, ct) => await sut.HashAsync(password, ct));
+            .InvokedAsync(sutVar, passwordVar, static async (sut, password, ct) => await sut.HashAsync(password, ct));
 
         then
-            .Result(password, (actual, password) =>
+            .Result(passwordVar, static (actual, password) =>
                 actual.Should().NotBe(password));
     }
 
@@ -25,17 +22,15 @@ public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGiv
     public async Task HashAsync_ShouldReturnDifferentHashesForDifferentInputs()
     {
         Given
-            .New<string>(out var password, 2)
-            .Sut(out var sut);
+            .New<string>(out var passwordVar, 2)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, password[0], password[1], async (sut, password1, password2, ct) =>
-            {
-                return new[] { await sut.HashAsync(password1, ct), await sut.HashAsync(password2, ct) };
-            });
+            .InvokedAsync(sutVar, passwordVar[0], passwordVar[1], static async (sut, password1, password2, ct) =>
+                new[] { await sut.HashAsync(password1, ct), await sut.HashAsync(password2, ct) });
 
         then
-            .Result(actual =>
+            .Result(static actual =>
                 actual[0].Should().NotBe(actual[1]));
     }
 
@@ -43,23 +38,18 @@ public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGiv
     public async Task VerifyAsync_ShouldConfirmHashed()
     {
         Given
-            .New<string>(out var password)
-            .Sut(out var sut);
+            .New<string>(out var passwordVar)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, password, async (sut, password, ct) =>
+            .InvokedAsync(sutVar, passwordVar, static async (sut, password, ct) =>
             {
                 var hash = await sut.HashAsync(password, ct);
                 return await sut.VarifyHashAsync(password, hash, ct);
             });
 
         then
-            .Result(actual =>
+            .Result(static actual =>
                 actual.Should().BeTrue());
     }
-}
-
-public sealed class BCryptPasswordHasherTestsGivenContext(BaseTest test) : GivenContext<BCryptPasswordHasherTestsGivenContext, IPasswordHasher>(test)
-{
-    protected override IPasswordHasher CreateSut() => new BCryptPasswordHasher() { WorkFactor = 6 };
 }

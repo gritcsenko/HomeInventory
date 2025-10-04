@@ -1,5 +1,3 @@
-﻿using LanguageExt.SomeHelp;
-
 namespace HomeInventory.Core;
 
 public static class OptionExtensions
@@ -53,6 +51,21 @@ public static class OptionExtensions
             : Option<T>.None;
     }
 
+    public static async Task<TMatch> MatchAsync<T, TMatch>(this Option<T> option, Func<T, Task<TMatch>> onValue, Func<Task<TMatch>> onNone) =>
+        option.IsSome
+            ? await onValue((T)option)
+            : await onNone();
+
+    public static async Task<TMatch> MatchAsync<T, TMatch>(this Option<T> option, Func<T, Task<TMatch>> onValue, Func<TMatch> onNone) =>
+        option.IsSome
+            ? await onValue((T)option)
+            : onNone();
+
+    public static async Task<Option<TMatch>> MatchAsync<T, TMatch>(this Option<T> option, Func<T, Task<TMatch>> onValue) =>
+        option.IsSome
+            ? await onValue((T)option)
+            : Option<TMatch>.None;
+
     public static async Task<Option<TResult>> ConvertAsync<T, TResult>(this Task<Option<T>> optionTask, Func<T, CancellationToken, Task<TResult>> asyncConverter, CancellationToken cancellationToken = default)
     {
         var option = await optionTask;
@@ -61,7 +74,7 @@ public static class OptionExtensions
 
     public static async Task<Option<TResult>> ConvertAsync<T, TResult>(this Option<T> option, Func<T, CancellationToken, Task<TResult>> asyncConverter, CancellationToken cancellationToken = default) =>
         await option
-            .MatchAsync<T, Option<TResult>>(async x => await asyncConverter(x, cancellationToken), () => OptionNone.Default);
+            .MatchAsync(async x => await asyncConverter(x, cancellationToken));
 
     public static async Task<Option<TResult>> Convert<T, TResult>(this Task<Option<T>> optionTask, Func<T, TResult> converter)
     {
@@ -71,7 +84,7 @@ public static class OptionExtensions
 
     public static Option<T> Coalesce<T>(this Option<T> first, Func<Option<T>> secondFunc) => first ? first : secondFunc();
 
-    public static Option<T> NoneIfNull<T>(this T? value) where T : class => value is null ? OptionNone.Default : value.ToSome();
+    public static Option<T> NoneIfNull<T>(this T? value) where T : class => value ?? Option<T>.None;
 
     public static T ThrowIfNone<T>(this Option<T> option, Func<Exception> exceptionFactory) =>
         option.IfNone(() => exceptionFactory().Rethrow<T>());
@@ -79,11 +92,11 @@ public static class OptionExtensions
     public static Validation<Error, T> ErrorIfNone<T>(this Option<Validation<Error, T>> option, Func<Error> errorFactory) =>
         option.IfNone(() => errorFactory());
 
-    public static Validation<Error, T> ErrorIfNone<T>(this Option<T> option, Func<Error> errorFactory) =>
-        option.ErrorIfNone(() => Seq<Error>.Empty.Add(errorFactory()));
-
-    public static Validation<Error, T> ErrorIfNone<T>(this Option<T> option, Func<Seq<Error>> errorsFactory) =>
+    public static Validation<Error, T> ErrorIfNone<T>(this Option<T> option, Func<Error> errorsFactory) =>
         option
             .Map(Validation<Error, T>.Success)
             .IfNone(() => Validation<Error, T>.Fail(errorsFactory()));
+
+    public static Validation<Error, T> ErrorIfNone<T>(this Option<T> option, Error error) =>
+        option.ErrorIfNone(() => error);
 }

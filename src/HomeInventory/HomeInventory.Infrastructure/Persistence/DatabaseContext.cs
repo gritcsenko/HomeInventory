@@ -1,19 +1,21 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Framework;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.Persistence;
 
-internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, TimeProvider dateTimeService, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
+internal class DatabaseContext(DbContextOptions<DatabaseContext> options, PublishDomainEventsInterceptor interceptor, TimeProvider timeProvider, IEnumerable<IDatabaseConfigurationApplier> configurationAppliers) : DbContext(options), IDatabaseContext, IUnitOfWork
 {
     private readonly PublishDomainEventsInterceptor _interceptor = interceptor;
-    private readonly TimeProvider _dateTimeService = dateTimeService;
-    private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = configurationAppliers.ToArray();
+    private readonly TimeProvider _timeProvider = timeProvider;
+    private readonly IReadOnlyCollection<IDatabaseConfigurationApplier> _configurationAppliers = [.. configurationAppliers];
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        UpdateAuditableEntities(_dateTimeService.GetUtcNow());
+        UpdateAuditableEntities(_timeProvider.GetUtcNow());
 
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
@@ -22,9 +24,9 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
         where TEntity : class =>
         ChangeTracker
             .Entries<TEntity>()
-            .Select(e => e.Entity)
+            .Select(static e => e.Entity)
             .Where(condition)
-            .HeadOrNone();
+            .ToOption();
 
     public DbSet<TEntity> GetDbSet<TEntity>()
         where TEntity : class =>
@@ -47,8 +49,8 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
 
     private void UpdateAuditableEntities(DateTimeOffset now)
     {
-        UpdateTimeAuditEntities<IHasCreationAudit>(now, EntityState.Added, x => x.CreatedOn);
-        UpdateTimeAuditEntities<IHasModificationAudit>(now, EntityState.Modified, x => x.ModifiedOn);
+        UpdateTimeAuditEntities<IHasCreationAudit>(now, EntityState.Added, static x => x.CreatedOn);
+        UpdateTimeAuditEntities<IHasModificationAudit>(now, EntityState.Modified, static x => x.ModifiedOn);
     }
 
     private void UpdateTimeAuditEntities<TEntity>(DateTimeOffset now, EntityState state, Expression<Func<TEntity, DateTimeOffset>> propertyExpression)

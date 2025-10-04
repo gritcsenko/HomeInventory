@@ -1,5 +1,6 @@
-﻿namespace HomeInventory.Tests.Framework;
+namespace HomeInventory.Tests.Framework;
 
-public interface IVariableValues : IAsyncDisposable
+public interface IVariableValues
 {
+    int Count { get; }
 }

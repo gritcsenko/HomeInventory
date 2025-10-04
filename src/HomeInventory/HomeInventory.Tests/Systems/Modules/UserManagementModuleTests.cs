@@ -1,7 +1,9 @@
-﻿using HomeInventory.Application.Cqrs.Commands.Register;
-using HomeInventory.Application.Cqrs.Queries.UserId;
-using HomeInventory.Contracts;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces.Commands;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
+using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Domain.UserManagement.Errors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -9,21 +11,22 @@ using Microsoft.AspNetCore.Routing.Patterns;
 namespace HomeInventory.Tests.Systems.Modules;
 
 [UnitTest]
-public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModuleTestContext>(t => new(t))
+public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModuleTestContext>(static t => new(t))
 {
     [Fact]
-    public void AddRoutes_ShouldRegister()
+    public async Task AddRoutes_ShouldRegister()
     {
-        Given
-            .DataSources(out var dataSources)
-            .RouteBuilder(out var routeBuilder, dataSources)
-            .Sut(out var sut);
+        await Given
+            .DataSources(out var dataSourcesVar)
+            .RouteBuilder(out var routeBuilderVar, dataSourcesVar)
+            .InitializeHostAsync();
+        Given.Sut(out var sutVar);
 
         var then = When
-            .Invoked(sut, routeBuilder, (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
+            .Invoked(sutVar, routeBuilderVar, static (sut, routeBuilder) => sut.AddRoutes(routeBuilder));
 
         then
-            .Ensure(sut, dataSources, (module, dataSources) =>
+            .Ensure(sutVar, dataSourcesVar, static (module, dataSources) =>
                 dataSources.Should().ContainSingle()
                     .Which.Endpoints.OfType<RouteEndpoint>().Should().ContainSingle()
                     .Which.Should().HaveRoutePattern(module.GroupPrefix, RoutePatternFactory.Parse("register"))
@@ -35,20 +38,25 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     [Fact]
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
+        await Given
+            .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
+            .Map(registerRequestVar).To<UserIdQuery>(out var userIdQueryVar)
+            .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerCommandVar, userIdQueryVar, userIdResultVar, (s, c, q, r) =>
+            {
+                s.RegisterAsync(c, Cancellation.Token).Returns(Option<Error>.None);
+                s.GetUserIdAsync(q, Cancellation.Token).Returns(QueryResult.From(r));
+            })
+            .InitializeHostAsync();
         Given
-            .HttpContext(out var context)
-            .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
-            .Map(registerRequest).To<UserIdQuery>(out var userIdQuery)
-            .Map<UserIdResult>(out var userIdResult).To<RegisterResponse>(out var registerResponse)
-            .OnCommandReturnSuccess(registerCommand)
-            .OnQueryReturn(userIdQuery, userIdResult)
-            .Sut(out var sut);
+            .HttpContext(out var contextVar)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, static (sut, body, userService, context, ct) => sut.RegisterAsync(body, userService, null!, null!, context, ct));
 
         then
-            .Result(registerResponse, (actual, expected) =>
+            .Result(registerResponseVar, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<RegisterResponse>>()
                     .Which.Should().HaveValue(expected));
     }
@@ -56,18 +64,20 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     [Fact]
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
+        await Given
+            .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
+            .New<DuplicateEmailError>(out var errorVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerCommandVar, errorVar, (s, c, e) => s.RegisterAsync(c, Cancellation.Token).Returns(e))
+            .InitializeHostAsync();
         Given
-            .HttpContext(out var context)
-            .Map<RegisterRequest>(out var registerRequest).To<RegisterCommand>(out var registerCommand)
-            .New<DuplicateEmailError>(out var error)
-            .OnCommandReturnError(registerCommand, error)
-            .Sut(out var sut);
+            .HttpContext(out var contextVar)
+            .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sut, registerRequest, context, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, (sut, body, userService, context, ct) => sut.RegisterAsync(body, userService, null!, null!, context, ct));
 
         then
-            .Result(error, (actual, error) =>
+            .Result(errorVar, (actual, error) =>
                 actual.Result.Should().BeOfType<ProblemHttpResult>()
                     .Which.ProblemDetails.Should().Match(x => x.Title == error.GetType().Name)
                     .And.Match(x => x.Detail == error.Message));

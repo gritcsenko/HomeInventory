@@ -1,7 +1,7 @@
-﻿using HomeInventory.Domain.Primitives.Ids;
+using HomeInventory.Domain.Primitives.Ids;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
+namespace HomeInventory.Infrastructure.Framework.Models.Configuration;
 
 public static class EntityTypeBuilderExtensions
 {

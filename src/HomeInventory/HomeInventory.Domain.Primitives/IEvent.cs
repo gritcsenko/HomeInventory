@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Domain.Primitives;
 
 public interface IEvent
 {

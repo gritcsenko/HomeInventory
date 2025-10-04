@@ -1,4 +1,3 @@
-﻿using Carter;
 using FluentValidation;
 using FluentValidation.Internal;
 using FluentValidation.Results;
@@ -8,19 +7,13 @@ namespace HomeInventory.Web.Framework;
 
 internal static class FluentOptionsValidator
 {
-    public static IValidateOptions<TOptions> Create<TOptions>(string name, IValidatorLocator validatorLocator, Action<ValidationStrategy<TOptions>>? validationOptions = null)
-        where TOptions : class
-    {
-        var validator = validatorLocator.GetValidator<TOptions>();
-        return Create(name, validator, validationOptions);
-    }
-
     public static IValidateOptions<TOptions> Create<TOptions>(string name, IValidator validator, Action<ValidationStrategy<TOptions>>? validationOptions = null)
-        where TOptions : class
-    {
-        var factory = new ValidationContextFactory<TOptions>(validationOptions);
-        return new FluentOptionsValidator<TOptions>(name, validator, factory);
-    }
+        where TOptions : class =>
+        Create(name, validator, new ValidationContextFactory<TOptions>(validationOptions));
+
+    public static IValidateOptions<TOptions> Create<TOptions>(string name, IValidator validator, IValidationContextFactory<TOptions> factory)
+        where TOptions : class =>
+        new FluentOptionsValidator<TOptions>(name, validator, factory);
 }
 
 internal sealed class FluentOptionsValidator<TOptions>(string name, IValidator validator, IValidationContextFactory<TOptions> validationContextFactory) : IValidateOptions<TOptions>
@@ -43,11 +36,7 @@ internal sealed class FluentOptionsValidator<TOptions>(string name, IValidator v
         return ToValidateOptionsResult(result);
     }
 
-    private bool ShouldSkip(string? name)
-    {
-        var validateAll = name is null;
-        return !validateAll && name != _name;
-    }
+    private bool ShouldSkip(string? name) => name is not null && name != _name;
 
     private static ValidateOptionsResult ToValidateOptionsResult(ValidationResult result) =>
         result.IsValid

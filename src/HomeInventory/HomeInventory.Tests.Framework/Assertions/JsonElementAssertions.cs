@@ -1,9 +1,8 @@
-﻿using System.Text.Json;
-using HomeInventory.Tests.Framework.Assertions;
+using System.Text.Json;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonElement, JsonElementAssertions>(value)
+public class JsonElementAssertions(JsonElement value, AssertionChain assertionChain) : ObjectAssertions<JsonElement, JsonElementAssertions>(value, assertionChain)
 {
     public AndConstraint<JsonElementAssertions> BeArrayEqualTo(IReadOnlyCollection<string>? items, string because = "", params object[] becauseArgs) =>
         BeArrayEqualTo(items, (actual, expected) => actual.GetString().Should().Be(expected, because, becauseArgs), because, becauseArgs);
@@ -13,41 +12,47 @@ public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonEle
         if (items is null)
         {
             Subject.ValueKind.Should().Be(JsonValueKind.Null, because, becauseArgs);
-            return new AndConstraint<JsonElementAssertions>(this);
+            return new(this);
         }
 
         ShouldBeArray(because, becauseArgs);
-        ShouldHanveCount(items.Count, because, becauseArgs);
+        ShouldHaveCount(items.Count, because, becauseArgs);
 
-        Subject.EnumerateArray().Zip(items).Iter(tuple => assert(tuple.Item1, tuple.Item2));
+        foreach (var (element, item) in Subject.EnumerateArray().Zip(items))
+        {
+            assert(element, item);
+        }
 
-        return new AndConstraint<JsonElementAssertions>(this);
+        return new(this);
     }
 
     public AndConstraint<JsonElementAssertions> BeArray(Action<JsonElement> assert, string because = "", params object[] becauseArgs)
     {
         ShouldBeArray(because, becauseArgs);
-        Subject.EnumerateArray().Iter(assert);
+        foreach (var element in Subject.EnumerateArray())
+        {
+            assert(element);
+        }
 
-        return new AndConstraint<JsonElementAssertions>(this);
+        return new(this);
     }
 
     public AndWhichConstraint<JsonElementAssertions, JsonElement> BeObject(string because = "", params object[] becauseArgs)
     {
         ShouldBeOfKind(JsonValueKind.Object, because, becauseArgs);
 
-        return new AndWhichConstraint<JsonElementAssertions, JsonElement>(this, Subject);
+        return new(this, Subject);
     }
 
     public AndWhichConstraint<JsonElementAssertions, JsonElement> HaveProperty(string propertyName, string because = "", params object[] becauseArgs)
     {
         var hasProperty = Subject.TryGetProperty(propertyName, out var propertyValue);
-        FluentAssertions.Execution.Execute.Assertion
+        CurrentAssertionChain
             .ForCondition(hasProperty)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context} to contain {0} property{reason}.", propertyName);
 
-        return new AndWhichConstraint<JsonElementAssertions, JsonElement>(this, propertyValue);
+        return new(this, propertyValue);
     }
 
     public AndWhichConstraint<JsonElementAssertions, string> HaveValue(string value, string because = "", params object[] becauseArgs)
@@ -55,18 +60,18 @@ public class JsonElementAssertions(JsonElement value) : ObjectAssertions<JsonEle
         ShouldBeOfKind(JsonValueKind.String, because, becauseArgs);
 
         var sameValue = Subject.ValueEquals(value);
-        FluentAssertions.Execution.Execute.Assertion
+        CurrentAssertionChain
             .ForCondition(sameValue)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context} to contain {0} value{reason}, but found {1}.", Subject.GetString());
 
-        return new AndWhichConstraint<JsonElementAssertions, string>(this, value);
+        return new(this, value);
     }
 
-    private void ShouldHanveCount(int expectedCount, string because, object[] becauseArgs)
+    private void ShouldHaveCount(int expectedCount, string because, object[] becauseArgs)
     {
         var actualCount = Subject.GetArrayLength();
-        FluentAssertions.Execution.Execute.Assertion
+        CurrentAssertionChain
             .ForCondition(actualCount == expectedCount)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context} to have an array with {0} item(s){reason}, but found {1}: {2}.", expectedCount, actualCount, Subject);

@@ -1,6 +1,6 @@
-﻿using FluentValidation.TestHelper;
-using HomeInventory.Contracts;
-using HomeInventory.Contracts.Validations;
+using FluentValidation.TestHelper;
+using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Contracts.UserManagement.Validators;
 
 namespace HomeInventory.Tests.Validation;
 
@@ -28,7 +28,7 @@ public class RegisterRequestValidatorTests : BaseTest
 
         var results = sut.TestValidate(container);
 
-        results.ShouldHaveAnyValidationError();
+        results.ShouldHaveValidationErrors();
     }
 
     private static RegisterRequestValidator CreateSut() => new();

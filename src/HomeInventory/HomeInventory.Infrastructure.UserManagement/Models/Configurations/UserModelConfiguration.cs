@@ -1,20 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace HomeInventory.Infrastructure.Persistence.Models.Configurations;
+namespace HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 
 internal sealed class UserModelConfiguration : IEntityTypeConfiguration<UserModel>
 {
     public void Configure(EntityTypeBuilder<UserModel> builder)
     {
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
+        builder.HasKey(static x => x.Id);
+        builder.Property(static x => x.Id)
             .HasIdConversion();
 
-        builder.Property(x => x.Email)
+        builder.Property(static x => x.Email)
             .IsRequired();
 
-        builder.Property(x => x.Password)
+        builder.Property(static x => x.Password)
             .IsRequired();
     }
 }

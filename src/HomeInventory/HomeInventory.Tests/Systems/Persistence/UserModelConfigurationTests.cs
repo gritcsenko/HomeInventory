@@ -1,5 +1,5 @@
-﻿using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Persistence.Models.Configurations;
+using HomeInventory.Infrastructure.UserManagement.Models;
+using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Systems.Persistence;
@@ -18,9 +18,9 @@ public class UserModelConfigurationTests : BaseTest
         var model = builder.FinalizeModel();
         var type = model.FindRuntimeEntityType(typeof(UserModel));
         type.Should().NotBeNull();
-        var primaryKey = type!.FindPrimaryKey();
+        var primaryKey = type.FindPrimaryKey();
         primaryKey.Should().NotBeNull();
-        primaryKey!.Properties.Should().ContainSingle(x => x.Name == nameof(UserModel.Id));
+        primaryKey.Properties.Should().ContainSingle(static x => x.Name == nameof(UserModel.Id));
     }
 
     private static UserModelConfiguration CreateSut() => new();

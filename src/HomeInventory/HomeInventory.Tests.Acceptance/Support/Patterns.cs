@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Acceptance.Support;
+namespace HomeInventory.Tests.Acceptance.Support;
 
 internal static class Patterns
 {

@@ -1,6 +1,7 @@
-﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace HomeInventory.Infrastructure.Framework;
 
 public static class InfrastructureFrameworkServiceCollectionExtensions
 {
@@ -10,6 +11,6 @@ public static class InfrastructureFrameworkServiceCollectionExtensions
         where TRepositoryImplementation : class, TRepository =>
         services
             .AddScoped<TRepository, TRepositoryImplementation>()
-            .AddScoped<IRepository<TEntity>>(sp => sp.GetRequiredService<TRepository>())
-            .AddScoped<IReadOnlyRepository<TEntity>>(sp => sp.GetRequiredService<IRepository<TEntity>>());
+            .AddScoped<IRepository<TEntity>>(static sp => sp.GetRequiredService<TRepository>())
+            .AddScoped<IReadOnlyRepository<TEntity>>(static sp => sp.GetRequiredService<IRepository<TEntity>>());
 }

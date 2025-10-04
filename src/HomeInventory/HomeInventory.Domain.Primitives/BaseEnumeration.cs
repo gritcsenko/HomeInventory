@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Domain.Primitives;
 
 public abstract class BaseEnumeration<TSelf>(string name, object key) : ValueObject<TSelf>(name, key), IEnumeration<TSelf>
     where TSelf : BaseEnumeration<TSelf>
@@ -22,7 +22,7 @@ public abstract class BaseEnumeration<TSelf>(string name, object key) : ValueObj
 
 public abstract class BaseEnumeration<TSelf, TValue>(string name, TValue value) : BaseEnumeration<TSelf>(name, value), IEnumeration<TSelf, TValue>
     where TSelf : BaseEnumeration<TSelf, TValue>
-    where TValue : notnull, IEquatable<TValue>
+    where TValue : IEquatable<TValue>
 {
     public TValue Value => GetComponent<TValue>(1);
 }

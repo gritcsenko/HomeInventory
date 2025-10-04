@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Core;
+namespace HomeInventory.Tests.Core;
 
 public sealed class PublicTestSubject
 {
@@ -6,8 +6,5 @@ public sealed class PublicTestSubject
     {
     }
 
-    public PublicTestSubject(object arg)
-    {
-        _ = arg;
-    }
+    public PublicTestSubject(object arg) => _ = arg;
 }

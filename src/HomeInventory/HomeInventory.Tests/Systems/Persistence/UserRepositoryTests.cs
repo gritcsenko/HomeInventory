@@ -1,8 +1,8 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence;
-using HomeInventory.Infrastructure.Persistence.Models;
+using Ardalis.Specification.EntityFrameworkCore;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure.UserManagement;
+using HomeInventory.Infrastructure.UserManagement.Models;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -19,9 +19,9 @@ public class UserRepositoryTests : BaseRepositoryTest
 
         _user = Fixture.Create<User>();
         _userModel = Fixture.Build<UserModel>()
-            .With(x => x.Id, _user.Id)
-            .With(x => x.Email, _user.Email.Value)
-            .With(x => x.Password, _user.Password)
+            .With(static x => x.Id, _user.Id)
+            .With(static x => x.Email, _user.Email.Value)
+            .With(static x => x.Password, _user.Password)
             .Create();
     }
 

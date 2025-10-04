@@ -1,5 +1,3 @@
-﻿using HomeInventory.Domain.Primitives.Errors;
-
 namespace HomeInventory.Domain.ValueObjects;
 
 internal sealed class AmountFactory : IAmountFactory
@@ -7,7 +5,7 @@ internal sealed class AmountFactory : IAmountFactory
     public Validation<Error, Amount> Create(decimal value, AmountUnit unit) =>
         new UnitValidator(unit)
             .Validate(value)
-            .Bind<Amount>(t => new Amount(t.Value, t.Unit));
+            .Bind<Amount>(static t => new Amount(t.Value, t.Unit));
 
     private readonly ref struct UnitValidator(AmountUnit unit)
     {

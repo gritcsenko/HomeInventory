@@ -1,8 +1,8 @@
-﻿using HomeInventory.Application.Interfaces.Messaging;
-using HomeInventory.Domain.ValueObjects;
+using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
-namespace HomeInventory.Application.Cqrs.Commands.Register;
+namespace HomeInventory.Application.UserManagement.Interfaces.Commands;
 
-public sealed record class RegisterCommand(
+public sealed record RegisterCommand(
     Email Email,
     string Password) : ICommand;

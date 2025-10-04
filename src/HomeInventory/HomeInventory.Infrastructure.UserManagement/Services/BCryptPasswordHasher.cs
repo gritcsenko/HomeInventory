@@ -1,8 +1,8 @@
-﻿using BCrypt.Net;
-using HomeInventory.Application.Interfaces.Authentication;
+using BCrypt.Net;
+using HomeInventory.Application.UserManagement.Interfaces;
 using static BCrypt.Net.BCrypt;
 
-namespace HomeInventory.Infrastructure.Services;
+namespace HomeInventory.Infrastructure.UserManagement.Services;
 
 internal sealed class BCryptPasswordHasher : IPasswordHasher
 {

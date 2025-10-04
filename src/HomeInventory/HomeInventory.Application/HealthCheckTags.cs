@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Application;
+namespace HomeInventory.Application;
 
 public static class HealthCheckTags
 {

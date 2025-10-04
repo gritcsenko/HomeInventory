@@ -1,12 +1,14 @@
-﻿using Ardalis.Specification;
+using Ardalis.Specification;
 using AutoMapper;
-using HomeInventory.Domain.Aggregates;
-using HomeInventory.Domain.Persistence;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Specifications;
+using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure.Framework;
+using HomeInventory.Infrastructure.Framework.Specifications;
+using HomeInventory.Infrastructure.UserManagement.Models;
+using HomeInventory.Infrastructure.UserManagement.Specifications;
 
-namespace HomeInventory.Infrastructure.Persistence;
+namespace HomeInventory.Infrastructure.UserManagement;
 
 internal sealed class UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService)
     : Repository<UserModel, User, UserId>(context, mapper, evaluator, eventsPersistenceService), IUserRepository
@@ -20,7 +22,7 @@ internal sealed class UserRepository(IDatabaseContext context, IMapper mapper, I
     public async Task<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
         var userResult = await FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken)
-            .Convert(x => true);
+            .Convert(static _ => true);
 #pragma warning disable CA1849 // Call async methods when in an async method
         return userResult.IfNone(false);
 #pragma warning restore CA1849 // Call async methods when in an async method

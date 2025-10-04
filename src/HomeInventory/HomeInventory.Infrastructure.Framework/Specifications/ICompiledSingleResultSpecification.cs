@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-namespace HomeInventory.Infrastructure.Specifications;
+namespace HomeInventory.Infrastructure.Framework.Specifications;
 
 public interface ICompiledSingleResultSpecification<T>
 {

@@ -1,4 +1,4 @@
-﻿using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Tests.Framework;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;
 
-internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, IHomeInventoryApiDriver
+internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Api.AppBuilder>, IHomeInventoryApiDriver
 {
     private readonly ITestingConfiguration _configuration;
     private readonly Lazy<IUserManagementApiDriver> _lazyUserManagement;
@@ -20,7 +20,7 @@ internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, I
     public IUserManagementApiDriver UserManagement => _lazyUserManagement.Value;
 
     public void SetToday(DateOnly today) =>
-        Services.GetRequiredService<MutableDateTimeService>().SetUtcNow(today.ToDateTime(new TimeOnly(12, 0, 0)));
+        Services.GetRequiredService<MutableDateTimeService>().SetUtcNow(today.ToDateTime(new(12, 0, 0)));
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -31,7 +31,7 @@ internal sealed class HomeInventoryApiDriver : WebApplicationFactory<Program>, I
         {
             var id = Ulid.NewUlid();
             // Replace real database with in-memory database for tests
-            services.ReplaceWithSingleton(sp => DbContextFactory.CreateInMemoryOptions<DatabaseContext>("HomeInventory", id));
+            services.ReplaceWithSingleton(_ => DbContextFactory.CreateInMemoryOptions<DatabaseContext>("HomeInventory", id));
             services.AddSingleton<MutableDateTimeService>();
             services.ReplaceWithScoped<TimeProvider>(sp => sp.GetRequiredService<MutableDateTimeService>());
         });

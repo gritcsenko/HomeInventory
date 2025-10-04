@@ -5,8 +5,8 @@
     <PackageReference Include="Carter" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.AspNetCore" />
-    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
   </ItemGroup>
 

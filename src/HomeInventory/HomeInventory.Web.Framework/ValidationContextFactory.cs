@@ -1,12 +1,12 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Internal;
 
 namespace HomeInventory.Web.Framework;
 
-internal sealed class ValidationContextFactory<TOptions>(Action<ValidationStrategy<TOptions>>? validationOptions = null) : IValidationContextFactory<TOptions>
+internal sealed class ValidationContextFactory<TObject>(Action<ValidationStrategy<TObject>>? validationOptions = null) : IValidationContextFactory<TObject>
 {
-    private readonly Action<ValidationStrategy<TOptions>> _validationOptions = validationOptions ?? (_ => { });
+    private readonly Action<ValidationStrategy<TObject>> _validationOptions = validationOptions ?? (static _ => { });
 
-    public IValidationContext CreateContext(TOptions options) =>
-        ValidationContext<TOptions>.CreateWithOptions(options, _validationOptions);
+    public IValidationContext CreateContext(TObject obj) =>
+        ValidationContext<TObject>.CreateWithOptions(obj, _validationOptions);
 }

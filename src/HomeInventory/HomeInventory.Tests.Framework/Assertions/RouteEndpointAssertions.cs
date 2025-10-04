@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public sealed class RouteEndpointAssertions(RouteEndpoint value) : ObjectAssertions<RouteEndpoint, RouteEndpointAssertions>(value)
+public sealed class RouteEndpointAssertions(RouteEndpoint value, AssertionChain assertionChain) : ObjectAssertions<RouteEndpoint, RouteEndpointAssertions>(value, assertionChain)
 {
     public AndWhichConstraint<RouteEndpointAssertions, RoutePattern> HaveRoutePattern(RoutePattern prefix, RoutePattern expectedPattern) =>
         HaveRoutePattern(RoutePatternFactory.Combine(prefix, expectedPattern));

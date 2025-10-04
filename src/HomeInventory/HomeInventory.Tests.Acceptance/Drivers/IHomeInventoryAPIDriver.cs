@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Acceptance.Drivers;
+namespace HomeInventory.Tests.Acceptance.Drivers;
 
 internal interface IHomeInventoryApiDriver : IApiDriver
 {

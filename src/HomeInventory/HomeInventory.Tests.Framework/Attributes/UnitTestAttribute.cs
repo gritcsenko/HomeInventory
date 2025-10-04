@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework.Attributes;
+namespace HomeInventory.Tests.Framework.Attributes;
 
 /// <summary>
 /// Indicates a test is a unit test.

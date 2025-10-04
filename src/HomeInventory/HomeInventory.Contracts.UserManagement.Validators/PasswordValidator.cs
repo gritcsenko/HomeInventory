@@ -1,11 +1,12 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Validators;
+using LanguageExt;
 
-namespace HomeInventory.Contracts.Validations;
+namespace HomeInventory.Contracts.UserManagement.Validators;
 
 internal sealed class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> requiredSets) : PropertyValidator<T, string?>
 {
-    private readonly IEnumerable<IPasswordCharacterSet> _requiredSets = requiredSets.ToArray();
+    private readonly IEnumerable<IPasswordCharacterSet> _requiredSets = [.. requiredSets];
 
     public override string Name => "PasswordValidator";
 
@@ -13,7 +14,7 @@ internal sealed class PasswordValidator<T>(IEnumerable<IPasswordCharacterSet> re
         value == null
         || _requiredSets
             .Where(set => !set.ContainsAny(value))
-            .HeadOrNone()
+            .ToOption()
             .Map(set =>
             {
                 context.MessageFormatter.AppendArgument("Category", set.Name);

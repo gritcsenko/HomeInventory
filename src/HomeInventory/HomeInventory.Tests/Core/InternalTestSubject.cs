@@ -1,13 +1,10 @@
-﻿namespace HomeInventory.Tests.Core;
+namespace HomeInventory.Tests.Core;
 
-public sealed class InternalTestSubject
+internal sealed class InternalTestSubject
 {
     internal InternalTestSubject()
     {
     }
 
-    internal InternalTestSubject(object arg)
-    {
-        _ = arg;
-    }
+    internal InternalTestSubject(object arg) => _ = arg;
 }

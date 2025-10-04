@@ -1,5 +1,3 @@
-﻿using FluentAssertions.Execution;
-
 namespace HomeInventory.Tests.Framework.Assertions;
 
 [UnitTest]

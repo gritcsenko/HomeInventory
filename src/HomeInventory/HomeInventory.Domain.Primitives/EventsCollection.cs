@@ -1,12 +1,8 @@
-﻿namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Domain.Primitives;
 
 internal sealed class EventsCollection
 {
     private readonly List<IDomainEvent> _events = [];
-
-    public EventsCollection()
-    {
-    }
 
     public void Push(IDomainEvent domainEvent) => _events.Add(domainEvent);
 

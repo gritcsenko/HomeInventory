@@ -1,11 +1,5 @@
-﻿namespace HomeInventory.Tests.Framework.Attributes;
+namespace HomeInventory.Tests.Framework.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class ClassDataAttribute<TTheoryData> : ClassDataAttribute
-    where TTheoryData : TheoryData
-{
-    public ClassDataAttribute()
-        : base(typeof(TTheoryData))
-    {
-    }
-}
+public sealed class ClassDataAttribute<TTheoryData>() : ClassDataAttribute(typeof(TTheoryData))
+    where TTheoryData : TheoryData;

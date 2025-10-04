@@ -1,9 +1,10 @@
-﻿using System.Net;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions.Execution;
+using AwesomeAssertions.Execution;
 using Flurl;
-using HomeInventory.Contracts;
-using HomeInventory.Domain.Errors;
+using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Domain.UserManagement.Errors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,8 @@ using Xunit.Abstractions;
 
 namespace HomeInventory.Tests.Integration;
 
-public class UserManagementApiTests : BaseIntegrationTest
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Test")]
+public sealed class UserManagementApiTests : BaseIntegrationTest
 {
     private static readonly string _registerRoute = "/".AppendPathSegments("api", "users", "manage", "register");
     private readonly JsonContent _content;
@@ -33,7 +35,7 @@ public class UserManagementApiTests : BaseIntegrationTest
 
         using var scope = new AssertionScope();
         endpoints.Should().ContainEndpoint(_registerRoute, HttpMethods.Post)
-            .Which.Metadata.Should().ContainSingle(x => x is AllowAnonymousAttribute);
+            .Which.Metadata.Should().ContainSingle(static x => x is AllowAnonymousAttribute);
     }
 
     [Fact]
@@ -55,6 +57,10 @@ public class UserManagementApiTests : BaseIntegrationTest
     {
         _ = await PostAsync(_registerRoute, _content);
         var response = await PostAsync(_registerRoute, _content);
+        // ReSharper disable once UnusedVariable
+#pragma warning disable S1481
+        var text = await response.Content.ReadAsStringAsync();
+#pragma warning restore S1481
         var body = (await response.Content.ReadFromJsonAsync<ProblemDetails>(options: null, Cancellation.Token))!;
 
         using var scope = new AssertionScope();
@@ -74,7 +80,7 @@ public class UserManagementApiTests : BaseIntegrationTest
 #pragma warning disable CA1308 // Normalize strings to uppercase
         body.Extensions.Should().ContainKey("errors")
             .WhoseValue.Should().BeJsonElement()
-            .Which.Should().BeArray(e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message).ToLowerInvariant())
+            .Which.Should().BeArray(static e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message).ToCamelCase())
                 .Which.Should().HaveValue(DuplicateEmailError.DefaultMessage));
 #pragma warning restore CA1308 // Normalize strings to uppercase
     }

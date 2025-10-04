@@ -1,7 +1,7 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
-using HomeInventory.Domain.ValueObjects;
-using HomeInventory.Infrastructure.Persistence.Models;
-using HomeInventory.Infrastructure.Specifications;
+using Ardalis.Specification.EntityFrameworkCore;
+using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Infrastructure.Framework.Specifications;
+using HomeInventory.Infrastructure.UserManagement.Models;
 
 namespace HomeInventory.Tests.Systems.Persistence;
 
@@ -21,7 +21,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
     public void Should_SatisfyWithCorrectId()
     {
         var user = Fixture.Build<UserModel>()
-            .With(m => m.Id, _id)
+            .With(static m => m.Id, _id)
             .Create();
         var query = new[] { user }.AsQueryable();
         var sut = CreateSut();
@@ -47,7 +47,7 @@ public class ByIdFilterSpecificationTests : BaseDatabaseContextTest
     public async Task ExecuteAsync_Should_SatisfyWithCorrectId()
     {
         var user = Fixture.Build<UserModel>()
-            .With(m => m.Id, _id)
+            .With(static m => m.Id, _id)
             .Create();
         await Context.Set<UserModel>().AddAsync(user, Cancellation.Token);
         await Context.SaveChangesAsync();

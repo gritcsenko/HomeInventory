@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace HomeInventory.Core;
 
@@ -29,7 +29,6 @@ public static class TypeExtensions
             { IsGenericType: true } => FormatGenericType(type),
             _ => type.Name,
         };
-
 
     private static string FormatGenericType(Type type)
     {

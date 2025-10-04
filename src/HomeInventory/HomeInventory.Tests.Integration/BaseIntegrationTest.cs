@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,10 +8,11 @@ using Xunit.Abstractions;
 namespace HomeInventory.Tests.Integration;
 
 [IntegrationTest]
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "See InitializeDisposables")]
+[SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "See InitializeDisposables")]
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Test")]
 public abstract class BaseIntegrationTest : BaseTest
 {
-    private readonly WebApplicationFactory<Program> _appFactory = new();
+    private readonly WebApplicationFactory<Api.AppBuilder> _appFactory = new();
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _testOutputHelper;
 
@@ -27,7 +29,7 @@ public abstract class BaseIntegrationTest : BaseTest
         _appFactory
             .Services
             .GetServices<EndpointDataSource>()
-            .SelectMany(s => s.Endpoints)
+            .SelectMany(static s => s.Endpoints)
             .OfType<RouteEndpoint>();
 
     protected async Task<HttpResponseMessage> PostAsync(string route, JsonContent content)

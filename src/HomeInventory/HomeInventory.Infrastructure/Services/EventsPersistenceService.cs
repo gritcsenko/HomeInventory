@@ -1,5 +1,5 @@
-﻿using HomeInventory.Domain.Primitives;
-using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Domain.Primitives;
+using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence.Models;
 
 namespace HomeInventory.Infrastructure.Services;

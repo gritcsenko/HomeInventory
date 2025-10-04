@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application.UserManagement.Interfaces\HomeInventory.Application.UserManagement.Interfaces.csproj" />
+    <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
   </ItemGroup>
 </Project>

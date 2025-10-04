@@ -1,11 +1,13 @@
-﻿using HomeInventory.Tests.Framework.Attributes;
+using HomeInventory.Tests.Framework.Attributes;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace HomeInventory.Tests.Framework;
 
-internal class PriorityTestOrderer : ITestCaseOrderer
+internal class PriorityTestOrderer(IMessageSink sink) : ITestCaseOrderer
 {
+    public IMessageSink Sink { get; } = sink;
+
     public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
         where TTestCase : ITestCase
     {

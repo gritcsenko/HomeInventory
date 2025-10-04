@@ -1,5 +1,5 @@
-﻿namespace HomeInventory.Contracts;
+namespace HomeInventory.Contracts;
 
-public record class LoginResponse(
+public record LoginResponse(
     string Id,
     string Token);

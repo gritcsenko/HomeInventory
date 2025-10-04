@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests;
+namespace HomeInventory.Tests;
 
 public static class DateTimeOffsetExtensions
 {
