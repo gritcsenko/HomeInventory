@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives;
+namespace HomeInventory.Domain.Primitives;
 
 public abstract class BaseEnumeration<TSelf>(string name, object key) : ValueObject<TSelf>(name, key), IEnumeration<TSelf>
     where TSelf : BaseEnumeration<TSelf>

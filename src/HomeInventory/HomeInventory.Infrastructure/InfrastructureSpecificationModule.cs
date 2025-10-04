@@ -1,4 +1,4 @@
-﻿using Ardalis.Specification;
+using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Modules.Interfaces;
 using Microsoft.Extensions.DependencyInjection.Extensions;

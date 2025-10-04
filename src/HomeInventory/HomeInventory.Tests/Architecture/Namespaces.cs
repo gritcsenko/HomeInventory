@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Architecture;
+namespace HomeInventory.Tests.Architecture;
 
 internal static class Namespaces
 {

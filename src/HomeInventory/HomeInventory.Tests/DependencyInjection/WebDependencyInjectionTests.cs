@@ -1,16 +1,16 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HomeInventory.Application.Framework;
-using HomeInventory.Application.Interfaces.Authentication;
+using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Modules;
 using HomeInventory.Web;
-using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
-using HomeInventory.Web.Configuration;
 using HomeInventory.Web.ErrorHandling;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Framework.Infrastructure;
 using HomeInventory.Web.Mapping;
 using HomeInventory.Web.OpenApi;
+using HomeInventory.Web.UserManagement;
+using HomeInventory.Web.UserManagement.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
@@ -50,7 +50,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
 
         _host = new([
             new WebCarterSupportModule(),
-            new WebAuthenticationModule(),
+            new WebUserManagementModule(),
             new WebHealthCheckModule(),
             new WebErrorHandlingModule(),
             new ApplicationMappingModule(),

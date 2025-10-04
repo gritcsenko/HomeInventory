@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 
 namespace HomeInventory.Application.UserManagement.Interfaces.Commands;

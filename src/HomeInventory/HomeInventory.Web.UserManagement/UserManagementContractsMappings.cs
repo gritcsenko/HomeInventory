@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HomeInventory.Application.Framework.Mapping;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;

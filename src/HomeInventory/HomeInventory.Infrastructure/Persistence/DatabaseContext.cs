@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Framework.Models.Configuration;

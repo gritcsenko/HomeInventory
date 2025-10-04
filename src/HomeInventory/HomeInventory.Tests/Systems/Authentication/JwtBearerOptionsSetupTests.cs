@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Configuration;
+using HomeInventory.Web.UserManagement.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 
@@ -26,7 +26,7 @@ public class JwtBearerOptionsSetupTests : BaseTest
         parameters.ValidateAudience.Should().BeTrue();
         parameters.ValidAudiences.Should().BeEquivalentTo(jwtOptions.Audience);
         parameters.ValidateIssuerSigningKey.Should().BeTrue();
-        parameters.IssuerSigningKey.Should().Be(jwtOptions.SecurityKey);
+        parameters.IssuerSigningKey.Should().Be(jwtOptions.CreateSecurityKey());
         parameters.ValidAlgorithms.Should().BeEquivalentTo(jwtOptions.Algorithm);
     }
 }

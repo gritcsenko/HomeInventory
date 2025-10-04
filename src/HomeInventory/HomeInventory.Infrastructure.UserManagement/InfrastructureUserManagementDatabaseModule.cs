@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.UserManagement.Aggregates;
+using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Domain.UserManagement.Persistence;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Framework.Models.Configuration;

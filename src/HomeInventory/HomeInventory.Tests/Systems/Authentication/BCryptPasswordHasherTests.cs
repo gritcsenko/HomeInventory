@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Systems.Authentication;
+namespace HomeInventory.Tests.Systems.Authentication;
 
 [UnitTest]
 public class BCryptPasswordHasherTests() : BaseTest<BCryptPasswordHasherTestsGivenContext>(static t => new(t))

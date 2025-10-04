@@ -1,4 +1,4 @@
-﻿using AutoFixture.Kernel;
+using AutoFixture.Kernel;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts.UserManagement;

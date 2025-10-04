@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Authorization.Dynamic;
+using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.Framework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

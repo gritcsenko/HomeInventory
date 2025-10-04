@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives.Ids;
+namespace HomeInventory.Domain.Primitives.Ids;
 
 public sealed class DelegatingIdSupplier<TId>(Func<TId> supplyFunc) : IIdSupplier<TId>
 {

@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Contracts;
+namespace HomeInventory.Contracts;
 
 public record LoginRequest(
     string Email,

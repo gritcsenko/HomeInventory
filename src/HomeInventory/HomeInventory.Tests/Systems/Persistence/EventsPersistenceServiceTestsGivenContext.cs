@@ -1,4 +1,4 @@
-﻿using HomeInventory.Infrastructure.Persistence;
+using HomeInventory.Infrastructure.Persistence;
 using HomeInventory.Infrastructure.Services;
 using System.Runtime.CompilerServices;
 

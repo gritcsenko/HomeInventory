@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Infrastructure.Framework.Models;
 

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HomeInventory.Application.Framework;
+using AutoMapper;
 
 namespace HomeInventory.Tests.Systems.Mapping;
 

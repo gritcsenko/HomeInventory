@@ -1,4 +1,4 @@
-﻿using FluentValidation.TestHelper;
+using FluentValidation.TestHelper;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
 

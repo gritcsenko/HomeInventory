@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Domain;
+namespace HomeInventory.Tests.Domain;
 
 [UnitTest]
 public class FixedDateTimeServiceTests : BaseTest

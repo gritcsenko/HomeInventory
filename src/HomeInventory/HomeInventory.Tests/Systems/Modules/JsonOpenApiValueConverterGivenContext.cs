@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.OpenApi;
+using HomeInventory.Web.OpenApi;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Systems.Modules;

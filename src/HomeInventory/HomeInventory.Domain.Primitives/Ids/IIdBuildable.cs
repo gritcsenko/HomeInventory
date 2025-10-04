@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives.Ids;
+namespace HomeInventory.Domain.Primitives.Ids;
 
 public interface IIdBuildable<out TSelf, in TId, TBuilder>
     where TSelf : class, IIdBuildable<TSelf, TId, TBuilder>, IBuildableIdentifierObject<TSelf, TId, TBuilder>, IValuableIdentifierObject<TSelf, TId>

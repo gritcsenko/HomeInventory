@@ -1,4 +1,4 @@
-﻿using NetArchTest.Rules;
+using NetArchTest.Rules;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using ArchUnitNET.Fluent;

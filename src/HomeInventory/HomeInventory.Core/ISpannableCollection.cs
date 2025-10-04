@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Core;
+namespace HomeInventory.Core;
 
 public interface ISpannableCollection<T> : IReadOnlyCollection<T>
 {

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.UserManagement;

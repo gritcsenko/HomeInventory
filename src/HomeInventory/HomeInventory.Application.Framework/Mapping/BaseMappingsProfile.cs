@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System.Linq.Expressions;
 using HomeInventory.Domain.Primitives;
 

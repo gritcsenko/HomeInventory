@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Configuration.Interfaces;
+using HomeInventory.Web.ErrorHandling.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

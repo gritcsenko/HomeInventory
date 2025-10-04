@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Domain.Primitives.Ids;
+namespace HomeInventory.Domain.Primitives.Ids;
 
 public abstract class UlidIdentifierObject<TSelf>(Ulid value) : BuildableIdentifierObject<TSelf, Ulid, UlidIdentifierObjectBuilder<TSelf>>(value), IUlidIdentifierObject<TSelf>, IValuableIdentifierObject<TSelf, Ulid>
     where TSelf : UlidIdentifierObject<TSelf>, IUlidBuildable<TSelf>

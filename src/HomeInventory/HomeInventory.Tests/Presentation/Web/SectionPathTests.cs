@@ -1,4 +1,4 @@
-﻿using HomeInventory.Web.Framework;
+using HomeInventory.Web.Framework;
 
 namespace HomeInventory.Tests.Presentation.Web;
 

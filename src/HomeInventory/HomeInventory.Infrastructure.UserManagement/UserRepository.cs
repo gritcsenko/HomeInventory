@@ -1,4 +1,4 @@
-﻿using Ardalis.Specification;
+using Ardalis.Specification;
 using AutoMapper;
 using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Domain.UserManagement.Persistence;

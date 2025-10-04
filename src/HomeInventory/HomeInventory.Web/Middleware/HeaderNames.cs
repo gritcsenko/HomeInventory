@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Web.Middleware;
+namespace HomeInventory.Web.Middleware;
 
 public static class HeaderNames
 {

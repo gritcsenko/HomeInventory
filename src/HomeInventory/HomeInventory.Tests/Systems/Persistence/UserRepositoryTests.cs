@@ -1,4 +1,4 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
+using Ardalis.Specification.EntityFrameworkCore;
 using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Infrastructure.UserManagement;

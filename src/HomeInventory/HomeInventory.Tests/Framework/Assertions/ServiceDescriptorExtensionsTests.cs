@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework.Assertions;
+namespace HomeInventory.Tests.Framework.Assertions;
 
 [UnitTest]
 public class ServiceDescriptorExtensionsTests : BaseTest

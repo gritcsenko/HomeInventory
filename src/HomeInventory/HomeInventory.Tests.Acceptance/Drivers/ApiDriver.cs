@@ -1,4 +1,4 @@
-﻿using Flurl;
+using Flurl;
 using Microsoft.AspNetCore.TestHost;
 
 namespace HomeInventory.Tests.Acceptance.Drivers;

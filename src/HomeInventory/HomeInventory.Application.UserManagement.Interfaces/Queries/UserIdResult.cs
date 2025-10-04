@@ -1,4 +1,4 @@
-﻿using HomeInventory.Domain.UserManagement.ValueObjects;
+using HomeInventory.Domain.UserManagement.ValueObjects;
 
 namespace HomeInventory.Application.UserManagement.Interfaces.Queries;
 

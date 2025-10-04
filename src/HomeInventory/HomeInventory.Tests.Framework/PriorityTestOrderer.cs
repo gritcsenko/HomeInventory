@@ -1,4 +1,4 @@
-﻿using HomeInventory.Tests.Framework.Attributes;
+using HomeInventory.Tests.Framework.Attributes;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 

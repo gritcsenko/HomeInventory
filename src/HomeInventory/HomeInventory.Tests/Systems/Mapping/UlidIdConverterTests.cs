@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Systems.Mapping;
+namespace HomeInventory.Tests.Systems.Mapping;
 
 [UnitTest]
 public class UlidIdConverterTests() : BaseTest<UlidIdConverterTestsGivenContext>(static t => new(t))

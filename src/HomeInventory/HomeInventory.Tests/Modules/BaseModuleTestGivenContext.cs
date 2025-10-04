@@ -1,4 +1,4 @@
-﻿using HomeInventory.Modules.Interfaces;
+using HomeInventory.Modules.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.FeatureManagement;
 using System.Runtime.CompilerServices;

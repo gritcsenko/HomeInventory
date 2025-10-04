@@ -1,4 +1,4 @@
-﻿using BoDi;
+using BoDi;
 using HomeInventory.Tests.Acceptance.Drivers;
 
 namespace HomeInventory.Tests.Acceptance.Support;

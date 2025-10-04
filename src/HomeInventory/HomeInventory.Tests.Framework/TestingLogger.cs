@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.Reactive.Disposables;
 using Disposable = System.Reactive.Disposables.Disposable;
 

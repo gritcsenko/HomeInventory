@@ -1,8 +1,8 @@
-﻿using Unit = LanguageExt.Unit;
+using Unit = LanguageExt.Unit;
 
 namespace HomeInventory.Application.Framework.Messaging;
 
-public interface @IQueryResult<TResponse> : IQueryResult
+public interface IQueryResult<TResponse> : IQueryResult
     where TResponse : notnull
 {
     new TResponse Success { get; }

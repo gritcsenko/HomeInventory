@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using FluentValidation;
 using HomeInventory.Modules.Interfaces;
 

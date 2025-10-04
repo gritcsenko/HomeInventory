@@ -1,4 +1,4 @@
-﻿using Range = System.Range;
+using Range = System.Range;
 
 namespace HomeInventory.Tests.Framework;
 

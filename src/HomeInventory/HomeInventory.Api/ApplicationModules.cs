@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using HomeInventory.Application;
+using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Application.Framework;
 using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts.UserManagement.Validators;
@@ -10,7 +9,6 @@ using HomeInventory.Infrastructure.UserManagement;
 using HomeInventory.Modules;
 using HomeInventory.Modules.Interfaces;
 using HomeInventory.Web;
-using HomeInventory.Web.Authentication;
 using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.ErrorHandling;
 using HomeInventory.Web.Framework;
@@ -30,18 +28,16 @@ internal static class ApplicationModules
         new ContractsValidationsModule(),
         new ContractsUserManagementValidatorsModule(),
         new WebErrorHandlingModule(),
-        new WebAuthenticationModule(),
         new DynamicWebAuthorizationModule(),
         new WebSwaggerModule(),
         new WebMappingModule(),
         new WebUserManagementModule(),
         new WebUserManagementMappingModule(),
         new WebHealthCheckModule(),
+        new WebModule(),
         new WebCarterSupportModule(),
-        new ApplicationMediatrSupportModule(),
         new ApplicationMappingModule(),
-        new ApplicationMediatrModule(),
-        new ApplicationUserManagementMediatrModule(),
+        new ApplicationUserManagementModule(),
         new InfrastructureMappingModule(),
         new InfrastructureDatabaseModule(),
         new InfrastructurePersistenceHealthCheckModule(),

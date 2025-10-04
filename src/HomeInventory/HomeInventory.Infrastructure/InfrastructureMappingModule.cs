@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.Framework;
+using HomeInventory.Application.Framework;
 using HomeInventory.Domain;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Modules.Interfaces;

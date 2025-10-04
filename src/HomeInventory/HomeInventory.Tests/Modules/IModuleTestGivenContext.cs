@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 
 namespace HomeInventory.Tests.Modules;

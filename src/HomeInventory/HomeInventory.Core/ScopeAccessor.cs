@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Core;
+namespace HomeInventory.Core;
 
 public sealed class ScopeAccessor(IScopeContainer container) : IScopeAccessor
 {

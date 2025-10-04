@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using HomeInventory.Domain.UserManagement.Persistence;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 using Microsoft.AspNetCore.Authorization;

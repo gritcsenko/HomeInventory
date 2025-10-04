@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework;
+namespace HomeInventory.Tests.Framework;
 
 public record struct PropertyValue<T>(T Value)
 {

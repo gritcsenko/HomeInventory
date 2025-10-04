@@ -1,4 +1,6 @@
-﻿using HomeInventory.Application.UserManagement.Interfaces.Commands;
+using HomeInventory.Application.Framework.Messaging;
+using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Domain.UserManagement.Errors;
@@ -40,15 +42,18 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
             .Map(registerRequestVar).To<UserIdQuery>(out var userIdQueryVar)
             .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
-            .OnCommandReturnSuccess(registerCommandVar)
-            .OnQueryReturn(userIdQueryVar, userIdResultVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerCommandVar, userIdQueryVar, userIdResultVar, (s, c, q, r) =>
+            {
+                s.RegisterAsync(c, Cancellation.Token).Returns(Option<Error>.None);
+                s.GetUserIdAsync(q, Cancellation.Token).Returns(QueryResult.From(r));
+            })
             .InitializeHostAsync();
         Given
             .HttpContext(out var contextVar)
             .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sutVar, registerRequestVar, contextVar, static (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, static (sut, body, userService, context, ct) => sut.RegisterAsync(body, userService, null!, null!, context, ct));
 
         then
             .Result(registerResponseVar, static (actual, expected) =>
@@ -62,14 +67,14 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
         await Given
             .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
             .New<DuplicateEmailError>(out var errorVar)
-            .OnCommandReturnError(registerCommandVar, errorVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerCommandVar, errorVar, (s, c, e) => s.RegisterAsync(c, Cancellation.Token).Returns(e))
             .InitializeHostAsync();
         Given
             .HttpContext(out var contextVar)
             .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sutVar, registerRequestVar, contextVar, (sut, body, context, ct) => sut.RegisterAsync(body, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, (sut, body, userService, context, ct) => sut.RegisterAsync(body, userService, null!, null!, context, ct));
 
         then
             .Result(errorVar, (actual, error) =>

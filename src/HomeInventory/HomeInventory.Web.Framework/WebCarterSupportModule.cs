@@ -1,4 +1,4 @@
-﻿using Carter;
+using Carter;
 using HomeInventory.Modules.Interfaces;
 
 namespace HomeInventory.Web.Framework;

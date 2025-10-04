@@ -1,4 +1,4 @@
-﻿using HomeInventory.Modules.Interfaces;
+using HomeInventory.Modules.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 

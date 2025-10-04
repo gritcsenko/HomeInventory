@@ -1,10 +1,8 @@
-﻿using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.UserManagement.Events;
 using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using HomeInventory.Infrastructure.Persistence.Models.Configurations;
-using HomeInventory.Infrastructure.Persistence.Models.Interceptors;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Tests.Framework;
@@ -40,9 +38,6 @@ public class DbContextFactory
             .Options;
 
     private TContext InternalCreateInMemory<TContext>(TimeProvider dateTimeService, DbContextOptions<TContext> options, params IDatabaseConfigurationApplier[] appliers)
-        where TContext : DbContext
-    {
-        var interceptor = new PublishDomainEventsInterceptor(Substitute.For<IPublisher>());
-        return _factory.Create(options, interceptor, dateTimeService, appliers);
-    }
+        where TContext : DbContext =>
+        _factory.Create(options, new(), dateTimeService, appliers);
 }

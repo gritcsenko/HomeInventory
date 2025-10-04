@@ -1,4 +1,4 @@
-﻿using HomeInventory.Modules;
+using HomeInventory.Modules;
 
 namespace HomeInventory.Api;
 

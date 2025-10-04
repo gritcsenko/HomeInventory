@@ -1,4 +1,4 @@
-﻿using HomeInventory.Application.UserManagement.Interfaces;
+using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Domain.UserManagement.Events;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.UserManagement.Models.Configurations;

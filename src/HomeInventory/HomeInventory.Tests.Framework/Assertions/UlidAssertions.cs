@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Tests.Framework.Assertions;
+namespace HomeInventory.Tests.Framework.Assertions;
 
 public class UlidAssertions(Ulid actualValue, AssertionChain assertionChain) : UlidAssertions<UlidAssertions>(actualValue, assertionChain)
 {

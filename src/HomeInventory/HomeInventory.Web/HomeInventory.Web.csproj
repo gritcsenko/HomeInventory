@@ -17,7 +17,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,5 +31,8 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="Microsoft.AspNetCore.Mvc.ApiControllerAttribute" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>HomeInventory.Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>

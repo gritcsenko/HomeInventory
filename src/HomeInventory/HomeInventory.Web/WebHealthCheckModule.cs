@@ -1,4 +1,4 @@
-﻿using HealthChecks.ApplicationStatus.DependencyInjection;
+using HealthChecks.ApplicationStatus.DependencyInjection;
 using HealthChecks.UI.Client;
 using HomeInventory.Application;
 using HomeInventory.Modules.Interfaces;

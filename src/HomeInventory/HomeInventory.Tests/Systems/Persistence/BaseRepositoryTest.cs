@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HomeInventory.Infrastructure.Framework;
 using HomeInventory.Infrastructure.Persistence.Mapping;
 using HomeInventory.Infrastructure.UserManagement.Mapping;

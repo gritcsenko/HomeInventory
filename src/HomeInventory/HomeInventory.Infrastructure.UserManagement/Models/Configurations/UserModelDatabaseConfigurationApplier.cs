@@ -1,4 +1,4 @@
-﻿using HomeInventory.Infrastructure.Framework.Models.Configuration;
+using HomeInventory.Infrastructure.Framework.Models.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeInventory.Infrastructure.UserManagement.Models.Configurations;

@@ -1,4 +1,4 @@
-﻿using HomeInventory.Tests.Acceptance.Drivers;
+using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
 
 namespace HomeInventory.Tests.Acceptance.StepDefinitions;

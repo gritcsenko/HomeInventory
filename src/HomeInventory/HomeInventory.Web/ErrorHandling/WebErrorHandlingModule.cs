@@ -1,6 +1,5 @@
-﻿using HomeInventory.Modules.Interfaces;
-using HomeInventory.Web.Configuration.Interfaces;
-using HomeInventory.Web.Configuration;
+using HomeInventory.Modules.Interfaces;
+using HomeInventory.Web.ErrorHandling.Interfaces;
 using HomeInventory.Web.Framework.Infrastructure;
 using HomeInventory.Web.Middleware;
 using Microsoft.AspNetCore.Builder;

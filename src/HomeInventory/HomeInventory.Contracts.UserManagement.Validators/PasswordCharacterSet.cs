@@ -1,4 +1,4 @@
-﻿namespace HomeInventory.Contracts.UserManagement.Validators;
+namespace HomeInventory.Contracts.UserManagement.Validators;
 
 internal sealed class PasswordCharacterSet(Func<char, bool> condition, string name) : IPasswordCharacterSet
 {

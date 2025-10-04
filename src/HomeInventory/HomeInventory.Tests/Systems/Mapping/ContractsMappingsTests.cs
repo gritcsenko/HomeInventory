@@ -1,5 +1,5 @@
-﻿using AutoFixture.Kernel;
-using HomeInventory.Application.Cqrs.Queries.Authenticate;
+using AutoFixture.Kernel;
+using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Web.Mapping;
