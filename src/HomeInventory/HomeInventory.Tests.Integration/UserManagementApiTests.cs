@@ -80,7 +80,7 @@ public sealed class UserManagementApiTests : BaseIntegrationTest
 #pragma warning disable CA1308 // Normalize strings to uppercase
         body.Extensions.Should().ContainKey("errors")
             .WhoseValue.Should().BeJsonElement()
-            .Which.Should().BeArray(static e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message))
+            .Which.Should().BeArray(static e => e.Should().HaveProperty(nameof(DuplicateEmailError.Message).ToCamelCase())
                 .Which.Should().HaveValue(DuplicateEmailError.DefaultMessage));
 #pragma warning restore CA1308 // Normalize strings to uppercase
     }
