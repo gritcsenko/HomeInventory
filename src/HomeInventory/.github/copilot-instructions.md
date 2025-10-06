@@ -17,3 +17,10 @@ Prefer using `null` over `default` for reference types.
 Always add braces for `if`, `else`, `for`, `foreach`, `while`, and `do` statements.
 Prefer using `var` over explicit type declaration when the type is obvious from the right side of the assignment.
 Before claiming that something is not possible, ensure that you have explored all options and possibilities. There is always a way to achieve the desired outcome.
+Use collection initializers when initializing collections.
+Avoid using regions.
+Prefer using expression-bodied members for simple methods and properties.
+Avoid using `async void` methods except for event handlers.
+Prefer using `nameof` operator over hard-coded strings for member names.
+Avoid using `dynamic` type.
+Do not shorten names of parameters, variables, or methods.

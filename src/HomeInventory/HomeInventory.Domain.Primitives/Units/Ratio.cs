@@ -46,7 +46,7 @@ public sealed class Ratio : ISignedNumber<Ratio>, INumber<Ratio>, IConvertible,
     public static bool operator <(Ratio left, decimal right) => left.ToDecimal(null) < right;
 
     public static bool operator ==(Ratio? left, double right) =>
-        Math.Abs(left?.ToDouble(null) ?? double.NaN - right) < double.Epsilon;
+        Math.Abs((left?.ToDouble(null) ?? double.NaN) - right) < double.Epsilon;
 
     public static bool operator !=(Ratio? left, double right) => !(left == right);
 
@@ -342,7 +342,16 @@ public sealed class Ratio : ISignedNumber<Ratio>, INumber<Ratio>, IConvertible,
             return Numerator == 0L || Denominator == other.Denominator;
         }
 
-        return Gcd != 1 && other.Gcd != 1 && DivideBothBy(Gcd).Equals(other.DivideBothBy(Gcd));
+        // Check if either ratio needs normalization, then compare normalized forms
+        if (Gcd != 1 || other.Gcd != 1)
+        {
+            var normalizedThis = Normalize();
+            var normalizedOther = other.Normalize();
+            return normalizedThis.Numerator == normalizedOther.Numerator &&
+                   normalizedThis.Denominator == normalizedOther.Denominator;
+        }
+
+        return false;
     }
 
     public override string ToString() => ToString(null);
@@ -422,7 +431,7 @@ public sealed class Ratio : ISignedNumber<Ratio>, INumber<Ratio>, IConvertible,
                 return true;
             case var t when t == typeof(nuint):
                 var nuintValue = (nuint)(object)value;
-                result = new(nuintValue > (nuint)long.MaxValue ? long.MaxValue : (long)nuintValue);
+                result = new(nuintValue > unchecked((nuint)long.MaxValue) ? long.MaxValue : (long)nuintValue);
                 return true;
             case var t when t == typeof(byte):
                 result = new((byte)(object)value);
