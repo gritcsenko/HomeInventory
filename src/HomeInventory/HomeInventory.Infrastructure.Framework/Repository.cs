@@ -1,21 +1,18 @@
 using Ardalis.Specification;
-using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
-using HomeInventory.Infrastructure.Framework.Mapping;
 using HomeInventory.Infrastructure.Framework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Framework;
 
-public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService) : IRepository<TAggregateRoot>
+public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseContext context, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService) : IRepository<TAggregateRoot>
     where TModel : class, IPersistentModel<TIdentifier>
     where TAggregateRoot : AggregateRoot<TAggregateRoot, TIdentifier>
     where TIdentifier : IIdentifierObject<TIdentifier>
 {
     private readonly IDatabaseContext _context = context;
-    private readonly IMapper _mapper = mapper;
     private readonly ISpecificationEvaluator _evaluator = evaluator;
     private readonly IEventsPersistenceService _eventsPersistenceService = eventsPersistenceService;
 

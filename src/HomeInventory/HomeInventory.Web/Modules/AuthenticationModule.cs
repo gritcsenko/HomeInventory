@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using AutoMapper;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
@@ -15,9 +14,8 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IMapper mapper, IProblemDetailsFactory problemDetailsFactory, IScopeAccessor scopeAccessor) : ApiCarterModule("/api/authentication")
+public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, IScopeAccessor scopeAccessor) : ApiCarterModule("/api/authentication")
 {
-    private readonly IMapper _mapper = mapper;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
 

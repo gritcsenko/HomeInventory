@@ -1,4 +1,3 @@
-using AutoMapper;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts.UserManagement;
@@ -16,9 +15,8 @@ using HomeInventory.Application.UserManagement.Interfaces;
 
 namespace HomeInventory.Web.UserManagement;
 
-public class UserManagementCarterModule(IMapper mapper, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/users/manage")
+public class UserManagementCarterModule(IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/users/manage")
 {
-    private readonly IMapper _mapper = mapper;
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
 
