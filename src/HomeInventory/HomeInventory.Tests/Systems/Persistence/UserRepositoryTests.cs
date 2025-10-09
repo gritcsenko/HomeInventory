@@ -21,7 +21,7 @@ public class UserRepositoryTests : BaseRepositoryTest
         _userModel = Fixture.Build<UserModel>()
             .With(static x => x.Id, _user.Id)
             .With(static x => x.Email, _user.Email.Value)
-            .With(static x => x.Password, _user.Password)
+            .With(static x => x.PasswordHash, _user.PasswordHash)
             .Create();
     }
 

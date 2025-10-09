@@ -1,5 +1,4 @@
 using Ardalis.Specification;
-using AutoMapper;
 using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Domain.UserManagement.Persistence;
 using HomeInventory.Domain.UserManagement.ValueObjects;
@@ -10,8 +9,8 @@ using HomeInventory.Infrastructure.UserManagement.Specifications;
 
 namespace HomeInventory.Infrastructure.UserManagement;
 
-internal sealed class UserRepository(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService)
-    : Repository<UserModel, User, UserId>(context, mapper, evaluator, eventsPersistenceService), IUserRepository
+internal sealed class UserRepository(IDatabaseContext context, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService, UserMapper mapper)
+    : Repository<UserModel, User, UserId>(context, evaluator, eventsPersistenceService, mapper), IUserRepository
 {
     public async Task<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default) =>
         await HasAsync(new UserHasEmailSpecification(email), cancellationToken);

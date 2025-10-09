@@ -15,7 +15,7 @@ internal sealed class UserModelConfiguration : IEntityTypeConfiguration<UserMode
         builder.Property(static x => x.Email)
             .IsRequired();
 
-        builder.Property(static x => x.Password)
+        builder.Property(static x => x.PasswordHash)
             .IsRequired();
     }
 }

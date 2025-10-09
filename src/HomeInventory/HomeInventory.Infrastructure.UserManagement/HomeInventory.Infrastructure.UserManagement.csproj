@@ -2,7 +2,9 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application.UserManagement.Interfaces\HomeInventory.Application.UserManagement.Interfaces.csproj" />
     <ProjectReference Include="..\HomeInventory.Domain.UserManagement\HomeInventory.Domain.UserManagement.csproj" />
+    <ProjectReference Include="..\HomeInventory.Domain\HomeInventory.Domain.csproj" />
     <ProjectReference Include="..\HomeInventory.Infrastructure.Framework\HomeInventory.Infrastructure.Framework.csproj" />
+    <ProjectReference Include="..\HomeInventory.Infrastructure\HomeInventory.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" />

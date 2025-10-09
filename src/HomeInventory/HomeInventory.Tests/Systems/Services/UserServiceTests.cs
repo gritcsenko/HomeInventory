@@ -44,12 +44,12 @@ public class UserServiceTests : BaseTest
     public async Task AuthenticateAsync_OnSuccess_ReturnsResult()
     {
         // Given
-        var query = new AuthenticateQuery(_user.Email, _user.Password);
+        var query = new AuthenticateQuery(_user.Email, _user.PasswordHash);
         var token = Fixture.Create<string>();
 
         _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(_user);
         _tokenGenerator.GenerateTokenAsync(_user, Cancellation.Token).Returns(token);
-        _hasher.VarifyHashAsync(query.Password, _user.Password, Cancellation.Token).Returns(true);
+        _hasher.VarifyHashAsync(query.Password, _user.PasswordHash, Cancellation.Token).Returns(true);
 
         var sut = CreateSut();
 

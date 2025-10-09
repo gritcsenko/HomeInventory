@@ -61,7 +61,7 @@ public class UserManagementModelMappingsTests : BaseMappingsTests
         target.Should().NotBeNull();
         target.Id.Value.Should().Be(instance.Id.Value);
         target.Email.Value.Should().Be(instance.Email);
-        target.Password.Should().Be(instance.Password);
+        target.Password.Should().Be(instance.PasswordHash);
     }
 
     [Fact]
