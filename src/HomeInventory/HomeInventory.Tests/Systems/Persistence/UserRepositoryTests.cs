@@ -75,5 +75,5 @@ public class UserRepositoryTests : BaseRepositoryTest
         result.Should().BeTrue();
     }
 
-    private UserRepository CreateSut() => new(Context, SpecificationEvaluator.Default, PersistenceService, new (TimeProvider));
+    private UserRepository CreateSut() => new(Context, SpecificationEvaluator.Default, PersistenceService, new(TimeProvider));
 }
