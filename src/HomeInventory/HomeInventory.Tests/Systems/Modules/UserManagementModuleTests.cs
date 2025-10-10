@@ -39,13 +39,15 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         await Given
-            .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
-            .Map(registerRequestVar).To<UserIdQuery>(out var userIdQueryVar)
-            .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
-            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerCommandVar, userIdQueryVar, userIdResultVar, (s, c, q, r) =>
+            .New<RegisterRequest>(out var registerRequestVar)
+            .New<UserIdResult>(out var userIdResultVar)
+            // .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
+            // .Map(registerRequestVar).To<UserIdQuery>(out var userIdQueryVar)
+            // .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerRequestVar, userIdResultVar, (s, r, u) =>
             {
-                s.RegisterAsync(c, Cancellation.Token).Returns(Option<Error>.None);
-                s.GetUserIdAsync(q, Cancellation.Token).Returns(QueryResult.From(r));
+                s.RegisterAsync(Arg.Is<RegisterCommand>(c => c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(Option<Error>.None);
+                s.GetUserIdAsync(Arg.Is<UserIdQuery>(q => q.Email.Value == r.Email), Cancellation.Token).Returns(QueryResult.From(u));
             })
             .InitializeHostAsync();
         Given
@@ -56,18 +58,18 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, static (sut, body, userService, context, ct) => sut.RegisterAsync(body, userService, null!, null!, context, ct));
 
         then
-            .Result(registerResponseVar, static (actual, expected) =>
+            .Result(userIdResultVar, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<RegisterResponse>>()
-                    .Which.Should().HaveValue(expected));
+                    .Which.Value!.UserId.Should().Be(expected.UserId.ToString()));
     }
 
     [Fact]
     public async Task RegisterAsync_OnFailure_ReturnsError()
     {
         await Given
-            .Map<RegisterRequest>(out var registerRequestVar).To<RegisterCommand>(out var registerCommandVar)
+            .New<RegisterRequest>(out var registerRequestVar)
             .New<DuplicateEmailError>(out var errorVar)
-            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerCommandVar, errorVar, (s, c, e) => s.RegisterAsync(c, Cancellation.Token).Returns(e))
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerRequestVar, errorVar, (s, r, e) => s.RegisterAsync(Arg.Is<RegisterCommand>(c => c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(e))
             .InitializeHostAsync();
         Given
             .HttpContext(out var contextVar)

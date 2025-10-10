@@ -1,5 +1,6 @@
 using HomeInventory.Api;
 using HomeInventory.Application;
+using HomeInventory.Application.Framework;
 using HomeInventory.Application.UserManagement;
 using HomeInventory.Contracts;
 using HomeInventory.Contracts.UserManagement;
@@ -22,10 +23,10 @@ public static class AssemblyReferences
     public static IAssemblyReference DomainPrimitives { get; } = new BaseAssemblyReference(typeof(ValueObject<>));
     public static IAssemblyReference Domain { get; } = new BaseAssemblyReference(typeof(DomainModule));
     public static IAssemblyReference Application { get; } = new BaseAssemblyReference(typeof(BaseHealthCheck));
-    public static IAssemblyReference ApplicationFramework { get; } = new BaseAssemblyReference(typeof(ApplicationFrameworkServiceCollectionExtensions));
-    public static IAssemblyReference WebUserManagement { get; } = new BaseAssemblyReference(typeof(WebUserManagementMappingModule));
+    public static IAssemblyReference ApplicationFramework { get; } = new BaseAssemblyReference(typeof(IDomainEventNotification));
+    public static IAssemblyReference WebUserManagement { get; } = new BaseAssemblyReference(typeof(WebUserManagementModule));
     public static IAssemblyReference ContractValidations { get; } = new BaseAssemblyReference(typeof(ContractsValidationsModule));
-    public static IAssemblyReference Infrastructure { get; } = new BaseAssemblyReference(typeof(InfrastructureMappingModule));
+    public static IAssemblyReference Infrastructure { get; } = new BaseAssemblyReference(typeof(InfrastructureDatabaseModule));
     public static IAssemblyReference Api { get; } = new BaseAssemblyReference(typeof(LoggingModule));
     public static IAssemblyReference Web { get; } = new BaseAssemblyReference(typeof(WebCarterSupportModule));
     public static IAssemblyReference WebFramework { get; } = new BaseAssemblyReference(typeof(ApiCarterModule));

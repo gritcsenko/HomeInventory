@@ -25,6 +25,9 @@ public sealed class WebUserManagementModule : BaseModuleWithCarter
             .AddOptionsWithValidator<JwtOptions>();
         context.Services
             .AddScoped<IAuthenticationTokenGenerator, JwtAuthenticationTokenGenerator>();
+
+        context.Services
+            .AddScoped<ContractsMapper>();
     }
 
     public override void Configure(CarterConfigurator configurator)

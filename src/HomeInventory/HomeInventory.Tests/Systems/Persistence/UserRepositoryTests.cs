@@ -63,7 +63,7 @@ public class UserRepositoryTests : BaseRepositoryTest
     }
 
     [Fact]
-    public async Task HasPermissionAsync_Should_ReturnTreu_WhenUserAdded()
+    public async Task HasPermissionAsync_Should_ReturnTrue_WhenUserAdded()
     {
         var permission = Fixture.Create<string>();
         await Context.Set<UserModel>().AddAsync(_userModel, Cancellation.Token);
@@ -75,5 +75,5 @@ public class UserRepositoryTests : BaseRepositoryTest
         result.Should().BeTrue();
     }
 
-    private UserRepository CreateSut() => new(Context, Mapper, SpecificationEvaluator.Default, PersistenceService);
+    private UserRepository CreateSut() => new(Context, SpecificationEvaluator.Default, PersistenceService, new (TimeProvider));
 }

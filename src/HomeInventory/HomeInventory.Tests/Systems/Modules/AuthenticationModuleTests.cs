@@ -39,9 +39,13 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     {
         await Given
             .HttpContext(out var contextVar)
-            .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
-            .Map<AuthenticateResult>(out var authenticateResultVar).To<LoginResponse>(out var loginResponseVar)
-            .SubstituteFor(out IVariable<IUserService> userServiceVar, authenticateQueryVar, authenticateResultVar, (s, q, r) => s.AuthenticateAsync(q, Cancellation.Token).Returns(QueryResult.From(r)))
+            .New<LoginRequest>(out var loginRequestVar)
+            .New<AuthenticateResult>(out var authenticateResultVar)
+            // .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
+            // .Map<AuthenticateResult>(out var authenticateResultVar).To<LoginResponse>(out var loginResponseVar)
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, loginRequestVar, authenticateResultVar, (s, l, r) =>
+                s.AuthenticateAsync(Arg.Is<AuthenticateQuery>(q => q.Email.Value == l.Email && q.Password == l.Password), Cancellation.Token)
+                    .Returns(QueryResult.From(r)))
             .Sut(out var sutVar)
             .InitializeHostAsync();
 
@@ -49,9 +53,9 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .InvokedAsync(sutVar, loginRequestVar, userServiceVar, contextVar, static (sut, body, userService, context, ct) => sut.LoginAsync(body, userService, null!, null!, context, ct));
 
         then
-            .Result(loginResponseVar, static (actual, expected) =>
+            .Result(authenticateResultVar, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<LoginResponse>>()
-                    .Which.Should().HaveValue(expected));
+                    .Which.Value!.Id.Should().Be(expected.Id.ToString()));
     }
 
     [Fact]
@@ -59,9 +63,11 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     {
         await Given
             .HttpContext(out var contextVar)
-            .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
+            .New<LoginRequest>(out var loginRequestVar)
             .New<InvalidCredentialsError>(out var errorVar)
-            .SubstituteFor(out IVariable<IUserService> userServiceVar, authenticateQueryVar, errorVar, (s, q, e) => s.AuthenticateAsync(q, Cancellation.Token).Returns(QueryResult.From<AuthenticateResult>(e)))
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, loginRequestVar, errorVar, (s, l, e) =>
+                s.AuthenticateAsync(Arg.Is<AuthenticateQuery>(q => q.Email.Value == l.Email && q.Password == l.Password), Cancellation.Token)
+                    .Returns(QueryResult.From<AuthenticateResult>(e)))
             .Sut(out var sutVar)
             .InitializeHostAsync();
 

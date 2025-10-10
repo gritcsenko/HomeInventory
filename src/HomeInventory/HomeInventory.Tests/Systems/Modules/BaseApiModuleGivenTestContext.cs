@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using AutoMapper;
 using Carter;
 using HomeInventory.Api;
 using HomeInventory.Domain;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Diagnostics.Metrics;
 
 namespace HomeInventory.Tests.Systems.Modules;
@@ -24,7 +22,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     private readonly IConfiguration _configuration = new ConfigurationManager();
     private readonly IServiceCollection _services = new ServiceCollection();
     private readonly Lazy<IServiceProvider> _lazyServiceProvider;
-    private readonly IMapper _mapper;
     private readonly IMetricsBuilder _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     protected BaseApiModuleGivenTestContext(BaseTest test)
@@ -38,7 +35,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             .AddSubstitute<IReportApiVersions>()
             .AddSubstitute<IApiVersionParameterSource>()
             .AddSubstitute<IValidatorLocator>()
-            .AddSubstitute(out _mapper)
             .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
             .AddOptions(new ApiBehaviorOptions())
             .AddSingleton<HomeInventoryProblemDetailsFactory>()
@@ -69,40 +65,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             b.ServiceProvider.Returns(_ => ServiceProvider);
             b.DataSources.Returns(s);
         });
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S3427:Method overloads with default parameter values should not overlap", Justification = "False positive")]
-    internal IDestinationMapper Map<TSource>(out IVariable<TSource> source, [CallerArgumentExpression(nameof(source))] string? name = null)
-        where TSource : notnull =>
-        New(out source, name: name).Map(source);
-
-    internal IDestinationMapper Map<TSource>(IVariable<TSource> source)
-        where TSource : notnull =>
-        new DestinationMapper<TSource>(This, source);
-
-    internal interface IDestinationMapper
-    {
-        TGiven To<TDestination>(out IVariable<TDestination> destination, [CallerArgumentExpression(nameof(destination))] string? name = null)
-            where TDestination : notnull;
-    }
-
-    private sealed class DestinationMapper<TSource>(TGiven given, IVariable<TSource> source) : IDestinationMapper
-        where TSource : notnull
-    {
-        private readonly TGiven _given = given;
-        private readonly IVariable<TSource> _source = source;
-
-        public TGiven To<TDestination>(out IVariable<TDestination> destination, [CallerArgumentExpression(nameof(destination))] string? name = null)
-            where TDestination : notnull
-        {
-            _given.New(out destination, name: name);
-
-            var sourceValue = _given.GetValue(_source);
-            var destinationValue = _given.GetValue(destination);
-            _given._mapper.Map<TDestination>(sourceValue).Returns(destinationValue);
-
-            return _given;
-        }
-    }
 
     protected override TModule CreateSut() => ServiceProvider.GetRequiredService<TModule>();
 

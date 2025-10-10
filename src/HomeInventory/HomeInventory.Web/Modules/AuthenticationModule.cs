@@ -14,10 +14,11 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, IScopeAccessor scopeAccessor) : ApiCarterModule("/api/authentication")
+public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, IScopeAccessor scopeAccessor, ContractsMapper mapper) : ApiCarterModule("/api/authentication")
 {
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
+    private readonly ContractsMapper _mapper = mapper;
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapPost("login", LoginAsync)
@@ -30,8 +31,8 @@ public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, 
             _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
             _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
-        var query = _mapper.MapOrFail<AuthenticateQuery>(body);
+        var query = _mapper.ToQuery(body);
         var result = await userService.AuthenticateAsync(query, cancellationToken);
-        return _problemDetailsFactory.MatchToOk(result, _mapper.MapOrFail<LoginResponse>, context.TraceIdentifier);
+        return _problemDetailsFactory.MatchToOk(result, _mapper.ToResponse, context.TraceIdentifier);
     }
 }
