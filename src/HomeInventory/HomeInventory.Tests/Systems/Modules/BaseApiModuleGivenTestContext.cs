@@ -25,25 +25,8 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
     private readonly IMetricsBuilder _metricsBuilder = Substitute.For<IMetricsBuilder>();
 
     protected BaseApiModuleGivenTestContext(BaseTest test)
-        : base(test)
-    {
-        _services
-            .AddSingleton<IScopeFactory, ScopeFactory>()
-            .AddSingleton<IScopeContainer, ScopeContainer>()
-            .AddSingleton<IScopeAccessor, ScopeAccessor>()
-            .AddOptions(new ApiVersioningOptions())
-            .AddSubstitute<IReportApiVersions>()
-            .AddSubstitute<IApiVersionParameterSource>()
-            .AddSubstitute<IValidatorLocator>()
-            .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
-            .AddOptions(new ApiBehaviorOptions())
-            .AddSingleton<HomeInventoryProblemDetailsFactory>()
-            .AddSingleton<IProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
-            .AddSingleton(_configuration)
-            .AddSingleton<TModule>();
-
-        _lazyServiceProvider = new(_services.BuildServiceProvider);
-    }
+        : base(test) =>
+        _lazyServiceProvider = new(BuildServiceProvider);
 
     private IServiceProvider ServiceProvider => _lazyServiceProvider.Value;
 
@@ -68,5 +51,27 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
 
     protected override TModule CreateSut() => ServiceProvider.GetRequiredService<TModule>();
 
+    protected virtual void AddServices(IServiceCollection services, IConfiguration configuration) =>
+        services
+            .AddSingleton<IScopeFactory, ScopeFactory>()
+            .AddSingleton<IScopeContainer, ScopeContainer>()
+            .AddSingleton<IScopeAccessor, ScopeAccessor>()
+            .AddOptions(new ApiVersioningOptions())
+            .AddSubstitute<IReportApiVersions>()
+            .AddSubstitute<IApiVersionParameterSource>()
+            .AddSubstitute<IValidatorLocator>()
+            .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
+            .AddOptions(new ApiBehaviorOptions())
+            .AddSingleton<HomeInventoryProblemDetailsFactory>()
+            .AddSingleton<IProblemDetailsFactory>(static sp => sp.GetRequiredService<HomeInventoryProblemDetailsFactory>())
+            .AddSingleton(configuration)
+            .AddSingleton<TModule>();
+
     private DefaultHttpContext CreateHttpContext() => new() { RequestServices = ServiceProvider };
+
+    private ServiceProvider BuildServiceProvider()
+    {
+        AddServices(_services, _configuration);
+        return _services.BuildServiceProvider();
+    }
 }

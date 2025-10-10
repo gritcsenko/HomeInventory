@@ -80,7 +80,6 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.Should().ContainSingleTransient<IAuthorizationHandlerContextFactory>();
         Services.Should().ContainSingleTransient<IPolicyEvaluator>();
         Services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>();
-        Services.Should().ContainSingleTransient<ContractsMapper>();
 
         var provider = CreateProvider();
         var swaggerOptions = new SwaggerGenOptions();
