@@ -22,6 +22,7 @@
     <IsModulesProject Condition="$(MSBuildProjectName.Contains('Modules')) AND '$(IsCsProject)' == 'true'">true</IsModulesProject>
     <IsTestsProject>false</IsTestsProject>
     <IsTestsProject Condition="$(MSBuildProjectName.Contains('Tests')) AND '$(IsCsProject)' == 'true'">true</IsTestsProject>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>

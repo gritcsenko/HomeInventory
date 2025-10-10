@@ -9,8 +9,8 @@ public class User(UserId id) : AggregateRoot<User, UserId>(id)
 {
     public required Email Email { get; init; }
 
-    public required string Password { get; init; }
+    public required string PasswordHash { get; init; }
 
-    public void OnUserCreated(IIdSupplier<Ulid> supplier, TimeProvider dateTimeService) =>
-        AddDomainEvent(new UserCreatedDomainEvent(supplier, dateTimeService, this));
+    public void OnUserCreated(IIdSupplier<Ulid> supplier, TimeProvider timeProvider) =>
+        AddDomainEvent(new UserCreatedDomainEvent(supplier, timeProvider, this));
 }

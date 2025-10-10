@@ -1,5 +1,3 @@
-using AutoMapper;
-using HomeInventory.Application.Framework;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Modules;
 using HomeInventory.Web;
@@ -7,7 +5,6 @@ using HomeInventory.Web.Authorization.Dynamic;
 using HomeInventory.Web.ErrorHandling;
 using HomeInventory.Web.Framework;
 using HomeInventory.Web.Framework.Infrastructure;
-using HomeInventory.Web.Mapping;
 using HomeInventory.Web.OpenApi;
 using HomeInventory.Web.UserManagement;
 using HomeInventory.Web.UserManagement.Configuration;
@@ -23,6 +20,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using ContractsMapper = HomeInventory.Web.ContractsMapper;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
@@ -53,8 +51,6 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
             new WebUserManagementModule(),
             new WebHealthCheckModule(),
             new WebErrorHandlingModule(),
-            new ApplicationMappingModule(),
-            new WebMappingModule(),
             new WebSwaggerModule(),
             new DynamicWebAuthorizationModule(),
         ]);
@@ -74,8 +70,6 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.Should().ContainSingleTransient<HomeInventoryProblemDetailsFactory>();
         Services.Should().ContainSingleTransient<ProblemDetailsFactory>();
         Services.Should().ContainSingleTransient<IProblemDetailsFactory>();
-        Services.Should().ContainSingleTransient<IMapper>();
-        Services.Should().ContainSingleton<IMappingAssemblySource>();
         Services.Should().ContainSingleTransient<ISwaggerProvider>();
         Services.Should().ContainSingleSingleton<PermissionList>();
         Services.Should().ContainTransient<IAuthorizationHandler>();

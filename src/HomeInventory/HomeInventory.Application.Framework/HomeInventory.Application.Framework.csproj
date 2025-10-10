@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="AutoMapper" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Riok.Mapperly" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Domain.Primitives\HomeInventory.Domain.Primitives.csproj" />

@@ -1,23 +1,21 @@
 using Ardalis.Specification;
-using AutoMapper;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
-using HomeInventory.Infrastructure.Framework.Mapping;
 using HomeInventory.Infrastructure.Framework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HomeInventory.Infrastructure.Framework;
 
-public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseContext context, IMapper mapper, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService) : IRepository<TAggregateRoot>
-    where TModel : class, IPersistentModel<TIdentifier>
+public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IDatabaseContext context, ISpecificationEvaluator evaluator, IEventsPersistenceService eventsPersistenceService, IPersistentMapper<TPersistent, TAggregateRoot, TIdentifier> mapper) : IRepository<TAggregateRoot>
+    where TPersistent : class, IPersistentModel<TIdentifier>
     where TAggregateRoot : AggregateRoot<TAggregateRoot, TIdentifier>
     where TIdentifier : IIdentifierObject<TIdentifier>
 {
     private readonly IDatabaseContext _context = context;
-    private readonly IMapper _mapper = mapper;
     private readonly ISpecificationEvaluator _evaluator = evaluator;
     private readonly IEventsPersistenceService _eventsPersistenceService = eventsPersistenceService;
+    private readonly IPersistentMapper<TPersistent, TAggregateRoot, TIdentifier> _mapper = mapper;
 
     public async Task AddAsync(TAggregateRoot entity, CancellationToken cancellationToken = default)
     {
@@ -77,36 +75,36 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         await Set().AnyAsync(cancellationToken);
 
     public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
-        ToEntity(Set(), cancellationToken).ToAsyncEnumerable();
+        ToEntity(Set()).ToAsyncEnumerable();
 
-    public async Task<Option<TAggregateRoot>> FindFirstOptionAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async Task<Option<TAggregateRoot>> FindFirstOptionAsync(ISpecification<TPersistent> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification);
-        var projected = ToEntity(query, cancellationToken);
+        var projected = ToEntity(query);
         return await projected.FirstOrDefaultAsync(cancellationToken) is { } entity
-            ? (Option<TAggregateRoot>)entity
+            ? Option<TAggregateRoot>.Some(entity)
             : Option<TAggregateRoot>.None;
     }
 
-    public async Task<bool> HasAsync(ISpecification<TModel> specification, CancellationToken cancellationToken = default)
+    public async Task<bool> HasAsync(ISpecification<TPersistent> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification, evaluateCriteriaOnly: true);
         return await query.AnyAsync(cancellationToken);
     }
 
     /// <summary>
-    /// Filters the entities  of <typeparamref name="TModel"/>, to those that match the encapsulated query logic of the
+    /// Filters the entities  of <typeparamref name="TPersistent"/>, to those that match the encapsulated query logic of the
     /// <paramref name="specification"/>.
     /// </summary>
     /// <param name="inputQuery"></param>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <param name="evaluateCriteriaOnly"></param>
     /// <returns>The filtered entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TModel> ApplySpecification(IQueryable<TModel> inputQuery, ISpecification<TModel> specification, bool evaluateCriteriaOnly = false) =>
+    protected virtual IQueryable<TPersistent> ApplySpecification(IQueryable<TPersistent> inputQuery, ISpecification<TPersistent> specification, bool evaluateCriteriaOnly = false) =>
         _evaluator.GetQuery(inputQuery, specification, evaluateCriteriaOnly);
 
     /// <summary>
-    /// Filters all entities of <typeparamref name="TModel" />, that matches the encapsulated query logic of the
+    /// Filters all entities of <typeparamref name="TPersistent" />, that matches the encapsulated query logic of the
     /// <paramref name="specification"/>, from the database.
     /// <para>
     /// Projects each entity into a new form, being <typeparamref name="TResult" />.
@@ -116,16 +114,16 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
     /// <param name="inputQuery"></param>
     /// <param name="specification">The encapsulated query logic.</param>
     /// <returns>The filtered projected entities as an <see cref="IQueryable{T}"/>.</returns>
-    protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TModel> inputQuery, ISpecification<TModel, TResult> specification) =>
+    protected virtual IQueryable<TResult> ApplySpecification<TResult>(IQueryable<TPersistent> inputQuery, ISpecification<TPersistent, TResult> specification) =>
         _evaluator.GetQuery(inputQuery, specification);
 
-    private async Task<EntityEntry<TModel>> InternalAddAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, static (s, m) => s.Add(m), cancellationToken);
+    private async Task<EntityEntry<TPersistent>> InternalAddAsync(DbSet<TPersistent> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, static (s, m) => s.Add(m), cancellationToken);
 
-    private async Task<EntityEntry<TModel>> InternalUpdateAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, static (s, m) => s.Update(m), cancellationToken);
+    private async Task<EntityEntry<TPersistent>> InternalUpdateAsync(DbSet<TPersistent> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, static (s, m) => s.Update(m), cancellationToken);
 
-    private async Task<EntityEntry<TModel>> InternalDeleteAsync(DbSet<TModel> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, static (s, m) => s.Remove(m), cancellationToken);
+    private async Task<EntityEntry<TPersistent>> InternalDeleteAsync(DbSet<TPersistent> set, TAggregateRoot entity, CancellationToken cancellationToken) => await InternalModifyAsync(set, entity, static (s, m) => s.Remove(m), cancellationToken);
 
-    private async Task<EntityEntry<TModel>> InternalModifyAsync(DbSet<TModel> set, TAggregateRoot entity, Func<DbSet<TModel>, TModel, EntityEntry<TModel>> modifyAction, CancellationToken cancellationToken)
+    private async Task<EntityEntry<TPersistent>> InternalModifyAsync(DbSet<TPersistent> set, TAggregateRoot entity, Func<DbSet<TPersistent>, TPersistent, EntityEntry<TPersistent>> modifyAction, CancellationToken cancellationToken)
     {
         var model = ToModel(entity);
         var entry = modifyAction(set, model);
@@ -133,12 +131,14 @@ public abstract class Repository<TModel, TAggregateRoot, TIdentifier>(IDatabaseC
         return entry;
     }
 
-    private TModel ToModel(TAggregateRoot entity) =>
-        _context.FindTracked<TModel>(m => m.Id.Equals(entity.Id))
-            .IfNone(() => _mapper.MapOrThrow<TAggregateRoot, TModel>(entity));
+    private TPersistent ToModel(TAggregateRoot entity) =>
+        _context.FindTracked<TPersistent>(m => m.Id.Equals(entity.Id))
+            .Match(
+                Some: existing => _mapper.ToPersistent(entity, existing),
+                None: () => _mapper.ToPersistent(entity));
 
-    private IQueryable<TAggregateRoot> ToEntity(IQueryable<TModel> query, CancellationToken cancellationToken) =>
-        _mapper.ProjectTo<TAggregateRoot>(query, cancellationToken);
+    private IQueryable<TAggregateRoot> ToEntity(IQueryable<TPersistent> query) =>
+        _mapper.FromPersistent(query);
 
-    private DbSet<TModel> Set() => _context.GetDbSet<TModel>();
+    private DbSet<TPersistent> Set() => _context.GetDbSet<TPersistent>();
 }

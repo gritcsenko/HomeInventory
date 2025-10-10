@@ -1,6 +1,3 @@
-using AutoMapper;
-using HomeInventory.Application.UserManagement.Interfaces.Commands;
-using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts.UserManagement;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.UserManagement.Persistence;
@@ -16,11 +13,11 @@ using HomeInventory.Application.UserManagement.Interfaces;
 
 namespace HomeInventory.Web.UserManagement;
 
-public class UserManagementCarterModule(IMapper mapper, IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory) : ApiCarterModule("/api/users/manage")
+public class UserManagementCarterModule(IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory, ContractsMapper mapper) : ApiCarterModule("/api/users/manage")
 {
-    private readonly IMapper _mapper = mapper;
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
+    private readonly ContractsMapper _mapper = mapper;
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapPost("register", RegisterAsync)
@@ -33,7 +30,7 @@ public class UserManagementCarterModule(IMapper mapper, IScopeAccessor scopeAcce
             _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
             _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
-        var command = _mapper.MapOrFail<RegisterCommand>(body);
+        var command = _mapper.ToCommand(body);
         var result = await userService.RegisterAsync(command, cancellationToken);
         return await result.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
             async error =>
@@ -43,9 +40,9 @@ public class UserManagementCarterModule(IMapper mapper, IScopeAccessor scopeAcce
             },
             async () =>
             {
-                var query = _mapper.MapOrFail<UserIdQuery>(body);
+                var query = _mapper.ToQuery(body);
                 var queryResult = await userService.GetUserIdAsync(query, cancellationToken);
-                return _problemDetailsFactory.MatchToOk(queryResult, _mapper.MapOrFail<RegisterResponse>, context.TraceIdentifier);
+                return _problemDetailsFactory.MatchToOk(queryResult, _mapper.ToResponse, context.TraceIdentifier);
             });
     }
 }

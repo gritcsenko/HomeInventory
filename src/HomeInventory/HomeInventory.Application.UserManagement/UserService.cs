@@ -101,12 +101,12 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
     }
 
     private async Task<bool> IsPasswordMatchAsync(User user, string password, CancellationToken cancellationToken) =>
-        await _hasher.VarifyHashAsync(password, user.Password, cancellationToken);
+        await _hasher.VarifyHashAsync(password, user.PasswordHash, cancellationToken);
 
     private async Task<Validation<Error, User>> CreateUserAsync(RegisterCommand command, CancellationToken cancellationToken = default) =>
         await UserId
             .CreateBuilder()
-            .WithValue(UserId.IdSupplier.Supply())
+            .WithNewId()
             .Build()
             .MapAsync(async id => await CreateUserAsync(command, id, cancellationToken));
 
@@ -114,6 +114,6 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
         new(id)
         {
             Email = command.Email,
-            Password = await _hasher.HashAsync(command.Password, cancellationToken),
+            PasswordHash = await _hasher.HashAsync(command.Password, cancellationToken),
         };
 }

@@ -1,5 +1,4 @@
 using Ardalis.Specification.EntityFrameworkCore;
-using AutoMapper;
 using HomeInventory.Domain.UserManagement.Aggregates;
 using HomeInventory.Domain.UserManagement.ValueObjects;
 using HomeInventory.Infrastructure.Framework;
@@ -160,9 +159,9 @@ public class RepositoryTests : BaseRepositoryTest
         actual.Should().Be(expectedCount);
     }
 
-    private FakeRepository CreateSut() => new(Context, Mapper, PersistenceService);
+    private FakeRepository CreateSut() => new(Context, PersistenceService, TimeProvider);
 
-    private class FakeRepository(IDatabaseContext context, IMapper mapper, IEventsPersistenceService persistenceService) : Repository<UserModel, User, UserId>(context, mapper, SpecificationEvaluator.Default, persistenceService)
+    private class FakeRepository(IDatabaseContext context, IEventsPersistenceService persistenceService, TimeProvider timeProvider) : Repository<UserModel, User, UserId>(context, SpecificationEvaluator.Default, persistenceService, new UserMapper(timeProvider))
     {
     }
 }

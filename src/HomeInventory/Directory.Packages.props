@@ -11,8 +11,6 @@
     <PackageVersion Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
-    <PackageVersion Include="AutoMapper" Version="14.0.0" />
-    <PackageVersion Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="Carter" Version="9.0.0" />
@@ -24,6 +22,7 @@
     <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-54" />
     <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-54" />
     <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-54" />
+    <PackageVersion Include="Riok.Mapperly" Version="4.2.1" />
     <PackageVersion Include="Scrutor" Version="6.1.0" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
