@@ -17,7 +17,7 @@ public sealed class WebModule : BaseModuleWithCarter
     public override async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken = default)
     {
         await base.AddServicesAsync(context, cancellationToken);
-        context.Services.AddTransient<ContractsMapper>();
+        context.Services.AddSingleton<ContractsMapper>();
     }
 
     public override async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken = default)
