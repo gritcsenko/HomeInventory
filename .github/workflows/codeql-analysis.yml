@@ -77,7 +77,7 @@ jobs:
         run: dotnet restore --verbosity minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build -m:4 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        run: dotnet build -c Release -v minimal --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
 
       - name: Perform CodeQL Analysis
