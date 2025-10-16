@@ -6,7 +6,7 @@
     Link to a feature: [UserRegistration](HomeInventory.Tests.Acceptance/Features/UserRegistration.feature)
 
 Background:
-    Given That today is 05/25/2023
+    Given That today's date is 05/25/2023
 
 @WI287
 Scenario: Register new user
