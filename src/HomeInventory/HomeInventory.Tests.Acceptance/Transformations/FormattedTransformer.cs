@@ -8,6 +8,6 @@ public sealed class FormattedTransformer
 {
     private readonly IFormatProvider _formatProvider = CultureInfo.CurrentCulture;
 
-    [StepArgumentTransformation]
+    [StepArgumentTransformation(Patterns.DateOnly, Name = nameof(Patterns.DateOnly))]
     public DateOnly TransformDate(string dateText) => dateText.ParseDate(formatProvider: _formatProvider);
 }
