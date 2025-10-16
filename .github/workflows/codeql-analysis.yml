@@ -45,14 +45,26 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-          build-mode: autobuild
+          build-mode: manual
+          dependency-caching: true
+          source-root: src/HomeInventory
           # If you wish to specify custom queries, you can do so here or in a config file.
           # By default, queries listed here will override any specified in a config file.
           # Prefix the list here with "+" to use these queries and those in the config file.
 
           # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
-
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Info
+        run: dotnet --info
+        working-directory: ./src/HomeInventory
       - name: Download cached dependencies
         uses: actions/cache@v4
         with:
@@ -61,6 +73,12 @@ jobs:
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
+      - name: Restore dependencies
+        run: dotnet restore --verbosity minimal
+        working-directory: ./src/HomeInventory
+      - name: Build Release
+        run: dotnet build -m:4 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
+        working-directory: ./src/HomeInventory
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
