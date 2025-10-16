@@ -6,7 +6,7 @@
         "message" : { "outputFilePath" : "report/cucumber_messages.ndjson" },
         "expressium": {
             "outputFilePath": "LivingDoc.ndjson",
-            "outputFileTitle": "Expressium.Coffeeshop.Web.API.Tests"
+            "outputFileTitle": "HomeInventory Acceptance Tests"
         }
     }
 }

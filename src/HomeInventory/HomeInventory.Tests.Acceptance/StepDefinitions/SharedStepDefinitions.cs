@@ -8,6 +8,6 @@ internal sealed class SharedStepDefinitions(IHomeInventoryApiDriver apiDriver)
 {
     private readonly IHomeInventoryApiDriver _apiDriver = apiDriver;
 
-    [Given($"^That today is {Patterns.DateOnly}")]
+    [Given($"That today's {{{nameof(Patterns.DateOnly)}}}")]
     public void GivenThatTodayIsDateOnly(DateOnly todayDate) => _apiDriver.SetToday(todayDate);
 }
