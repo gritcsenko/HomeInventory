@@ -1,3 +1,4 @@
+using System.Globalization;
 using HomeInventory.Tests.Acceptance.Drivers;
 using HomeInventory.Tests.Acceptance.Support;
 
@@ -8,6 +9,10 @@ internal sealed class SharedStepDefinitions(IHomeInventoryApiDriver apiDriver)
 {
     private readonly IHomeInventoryApiDriver _apiDriver = apiDriver;
 
-    [Given(@$"That today is {Patterns.DateOnly}")]
+    [StepArgumentTransformation(Patterns.DateOnly, Name = nameof(Patterns.DateOnly))]
+    public static DateOnly ParseDateOnly(string s) =>
+        DateOnly.ParseExact(s, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+    [Given("That today is {DateOnly}")]
     public void GivenThatTodayIs(DateOnly todayDate) => _apiDriver.SetToday(todayDate);
 }
