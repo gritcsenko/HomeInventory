@@ -293,13 +293,17 @@ jobs:
       - name: Copy Living Documentation
         run: |
           mkdir -p ./Acceptance
-          cp "HomeInventory.Tests.Acceptance/bin/Release/net9/LivingDoc.html" "./Acceptance/AcceptanceTestResults.html"
+          if [ -f HomeInventory.Tests.Acceptance/bin/Release/net9/LivingDoc.html ]; then
+            cp "HomeInventory.Tests.Acceptance/bin/Release/net9/LivingDoc.html" "./Acceptance/AcceptanceTestResults.html"
+          else
+            echo 'LivingDoc.html not found' >&2
+          fi
         working-directory: ./src/HomeInventory
       - name: Publish Reqnroll Test Results
         if: success() || failure()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: "Reqnroll Test Results"
-          path: ./Acceptance/AcceptanceTestResults.html
+          path: ./src/HomeInventory/Acceptance/AcceptanceTestResults.html
           if-no-files-found: warn # The desired behavior if no files are found using the provided path.
           retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
