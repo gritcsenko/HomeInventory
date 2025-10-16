@@ -291,7 +291,9 @@ jobs:
         run: dotnet test HomeInventory.Tests.Acceptance -c Release -v minimal --logger:"trx;verbosity=normal;LogFileName=./Acceptance/AcceptanceTestResults.trx"
         working-directory: ./src/HomeInventory
       - name: Copy Living Documentation
-        run: cp "HomeInventory.Tests.Acceptance/bin/Release/net9/LivingDoc.html" "./Acceptance/AcceptanceTestResults.html"
+        run: |
+          mkdir -p ./Acceptance
+          cp "HomeInventory.Tests.Acceptance/bin/Release/net9/LivingDoc.html" "./Acceptance/AcceptanceTestResults.html"
         working-directory: ./src/HomeInventory
       - name: Publish Reqnroll Test Results
         if: success() || failure()
