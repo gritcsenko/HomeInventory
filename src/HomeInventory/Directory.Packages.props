@@ -82,7 +82,7 @@
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageVersion Include="Reqnroll.xUnit" Version="3.1.2" />
     <PackageVersion Include="Throw" Version="1.4.0" />
-    <PackageVersion Include="Verify.Xunit" Version="31.2.0" />
+    <PackageVersion Include="Verify.Xunit" Version="31.3.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.core" Version="2.9.3" />
   </ItemGroup>
