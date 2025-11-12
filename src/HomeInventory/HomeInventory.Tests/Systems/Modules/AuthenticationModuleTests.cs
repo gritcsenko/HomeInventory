@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
@@ -35,6 +36,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     }
 
     [Fact]
+    [SuppressMessage("Non-substitutable member", "NS1004:Argument matcher used with a non-virtual member of a class.")]
     public async Task LoginAsync_OnSuccess_ReturnsHttp200()
     {
         await Given
@@ -59,6 +61,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
     }
 
     [Fact]
+    [SuppressMessage("Non-substitutable member", "NS1004:Argument matcher used with a non-virtual member of a class.")]
     public async Task LoginAsync_OnFailure_ReturnsError()
     {
         await Given

@@ -17,10 +17,8 @@ public sealed class WebSwaggerModule : BaseModule
         context.Services
             .AddEndpointsApiExplorer()
             .ConfigureOptions<ConfigureSwaggerOptions>()
-            .AddSingleton<IOpenApiValueConverter, JsonOpenApiValueConverter>()
             .AddSingleton<ISwaggerOperationFilter, DeprecatedSwaggerOperationFilter>()
             .AddSingleton<ISwaggerOperationFilter, ResponsesSwaggerOperationFilter>()
-            .AddSingleton<ISwaggerOperationFilter, ParametersSwaggerOperationFilter>()
             .AddSwaggerGen(static options => options.OperationFilter<SwaggerDefaultValues>())
             .AddApiVersioning(static options =>
             {

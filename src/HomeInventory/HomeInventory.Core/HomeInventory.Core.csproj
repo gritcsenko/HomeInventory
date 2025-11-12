@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" />
     <PackageReference Include="LanguageExt.Rx" />
     <PackageReference Include="LanguageExt.Sys" />
     <PackageReference Include="System.Interactive.Async" />
-    <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="System.Reactive" />
+    <PackageReference Include="System.Linq.Async">
+      <ExcludeAssets>compile</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

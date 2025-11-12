@@ -43,7 +43,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
                 var repository = provider.GetRequiredService<IUserRepository>();
 
                 var permissions = requirement.GetPermissions(endpoint).ToAsyncEnumerable();
-                var hasPermission = await permissions.AnyAwaitAsync(async p => await repository.HasPermissionAsync(userId, p.ToString(), httpContext.RequestAborted), httpContext.RequestAborted);
+                var hasPermission = await permissions.AnyAsync(async (p, ct) => await repository.HasPermissionAsync(userId, p.ToString(), ct), httpContext.RequestAborted);
                 if (hasPermission)
                 {
                     context.Succeed(requirement);
