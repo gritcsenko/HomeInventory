@@ -13,8 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
@@ -24,8 +22,6 @@
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.File" />
-    <PackageReference Include="System.Formats.Asn1" />
-    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,7 +35,7 @@
     <ContainerEntrypoint Include="ef" />
     <ContainerEntrypoint Include="dotnet;ef" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\HomeInventory.Application.UserManagement\HomeInventory.Application.UserManagement.csproj" />
     <ProjectReference Include="..\HomeInventory.Contracts.UserManagement.Validators\HomeInventory.Contracts.UserManagement.Validators.csproj" />
