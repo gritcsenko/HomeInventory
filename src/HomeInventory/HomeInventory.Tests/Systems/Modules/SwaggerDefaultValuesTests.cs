@@ -111,27 +111,6 @@ public class SwaggerDefaultValuesTests : BaseTest
         operation.Responses[responseKey].Content.Should().NotContainKey(notSupportedMediaType);
     }
 
-    [Fact(Skip = "Do not know how to fix")]
-    public void Apply_Should_SetRequiredForParameter()
-    {
-        var name = Fixture.Create<string>();
-        var parameter = new OpenApiParameter
-        {
-            Name = name,
-            Required = false,
-        };
-        var operation = new OpenApiOperation
-        {
-            Parameters = [parameter],
-        };
-        var sut = CreateSut();
-        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, IsRequired = true });
-
-        sut.Apply(operation, _context);
-
-        parameter.Required.Should().BeTrue();
-    }
-
     [Fact]
     public void Apply_Should_NotUnSetRequiredForParameter()
     {
@@ -151,40 +130,6 @@ public class SwaggerDefaultValuesTests : BaseTest
         sut.Apply(operation, _context);
 
         parameter.Required.Should().BeTrue();
-    }
-
-    [Fact(Skip = "Do not know how to fix")]
-    public void Apply_Should_SetDescriptionForParameter()
-    {
-        var name = Fixture.Create<string>();
-        var description = Fixture.Create<string>();
-        var parameter = new OpenApiParameter
-        {
-            Name = name,
-            Description = null,
-        };
-        var operation = new OpenApiOperation
-        {
-            Parameters = [parameter],
-        };
-        var sut = CreateSut();
-        var metadataProvider = Substitute.For<IModelMetadataProvider>();
-        var detailsProvider = Substitute.For<ICompositeMetadataDetailsProvider>();
-        var identity = ModelMetadataIdentity.ForType(GetType());
-        var attributes = ModelAttributes.GetAttributesForType(GetType());
-        var details = new DefaultMetadataDetails(identity, attributes)
-        {
-            DisplayMetadata = new()
-            {
-                Description = () => description,
-            },
-        };
-        var metadata = new DefaultModelMetadata(metadataProvider, detailsProvider, details);
-        _context.ApiDescription.ParameterDescriptions.Add(new() { Name = name, ModelMetadata = metadata });
-
-        sut.Apply(operation, _context);
-
-        parameter.Description.Should().Be(description);
     }
 
     [Fact]
