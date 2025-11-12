@@ -135,7 +135,18 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Run Unit Tests
         if: success() || failure()
-        run: dotnet test HomeInventory.Tests --filter "Category=Unit" -c Release -v minimal --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover;SkipAutoProps=true;IncludeTestAssembly=false;ExcludeByFile=\"**/*.g.cs\"" --logger trx --results-directory ./coverage
+        run: >
+          dotnet test HomeInventory.Tests
+          --filter "Category=Unit"
+          -c Release
+          -v minimal
+          --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover"
+          --logger trx
+          --results-directory ./coverage
+          --
+          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.SkipAutoProps=true
+          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=false
+          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile='**/*.g.cs'
         working-directory: ./src/HomeInventory
       - name: Test Report
         uses: dorny/test-reporter@v2.1.1
