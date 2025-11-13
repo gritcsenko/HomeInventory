@@ -18,7 +18,7 @@ public class EventsPersistenceServiceTests() : BaseTest<EventsPersistenceService
             .Sut(out var sutVar, dbContextVar)
             .New(out var eventsCountVar, () => 3)
             .New<IDomainEvent>(out var domainEventVar, () => new DomainEvent(IdSuppliers.Ulid, DateTime), eventsCountVar)
-            .SubstituteFor(out IVariable<IHasDomainEvents> entityVar, e => e.GetDomainEvents().Returns(Given.Variables.GetMany(domainEventVar).ToReadOnly()));
+            .SubstituteFor(out IVariable<IHasDomainEvents> entityVar, e => e.GetDomainEvents().Returns(Given.Variables.GetMany(domainEventVar).AsReadOnly()));
 
         var then = await When
             .InvokedAsync(sutVar, entityVar, dbContextVar, async (sut, entity, db, t) =>

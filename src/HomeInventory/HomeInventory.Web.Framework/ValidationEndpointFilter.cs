@@ -34,7 +34,7 @@ internal sealed class ValidationEndpointFilter<TArg>(IValidationContextFactory<T
 
     private async IAsyncEnumerable<ValidationResult> ValidateArgumentAsync(IValidator validator, IEnumerable<TArg> arguments, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        foreach (var argument in arguments.WithCancellation(cancellationToken))
+        foreach (var argument in arguments)
         {
             var context = _validationContextFactory.CreateContext(argument);
             yield return await validator.ValidateAsync(context, cancellationToken);

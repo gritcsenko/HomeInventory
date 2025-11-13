@@ -1,6 +1,7 @@
 <Project>
 
   <PropertyGroup>
+    <OutputType>Library</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -12,7 +13,7 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <WarningLevel>9999</WarningLevel>
     <IsPackable>false</IsPackable>
-    <NoWarn>$(NoWarn);CA1062;CA2007;CA1716</NoWarn>
+    <NoWarn>$(NoWarn);CA1062;CA2007;CA1716;CA1034;CA1000</NoWarn>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsCsProject>false</IsCsProject>
     <IsCsProject Condition="$(MSBuildProjectFile.EndsWith('.csproj'))">true</IsCsProject>

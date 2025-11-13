@@ -28,7 +28,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     {
         var set = Set();
 
-        foreach (var entity in entities.WithCancellation(cancellationToken))
+        foreach (var entity in entities)
         {
             _ = await InternalAddAsync(set, entity, cancellationToken);
         }
@@ -45,7 +45,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     {
         var set = Set();
 
-        foreach (var entity in entities.WithCancellation(cancellationToken))
+        foreach (var entity in entities)
         {
             _ = await InternalUpdateAsync(set, entity, cancellationToken);
         }
@@ -62,7 +62,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     {
         var set = Set();
 
-        foreach (var entity in entities.WithCancellation(cancellationToken))
+        foreach (var entity in entities)
         {
             _ = await InternalDeleteAsync(set, entity, cancellationToken);
         }

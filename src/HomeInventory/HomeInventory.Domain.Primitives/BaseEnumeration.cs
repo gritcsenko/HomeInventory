@@ -10,11 +10,6 @@ public abstract class BaseEnumeration<TSelf>(string name, object key) : ValueObj
     protected static IReadOnlyCollection<TSelf> Items => _lazyItems.Value;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
-    public static TSelf Parse(string text) =>
-        TryParse(text)
-            .ThrowIfNone(() => new InvalidOperationException($"Failed to parse '{text}' to {typeof(TSelf).Name}"));
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
     public static Option<TSelf> TryParse(string text) => _lazyItems.Value[text];
 
     public override string ToString() => $"{GetComponent(0)} ({GetComponent(1)})";
