@@ -15,10 +15,6 @@
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-    <PackageReference Include="System.Formats.Asn1" />
-    <PackageReference Include="System.Net.Http"/>
-    <PackageReference Include="System.Text.Json" />
-    <PackageReference Include="System.Text.RegularExpressions"/>
     <PackageReference Include="xunit.core" />
   </ItemGroup>
 

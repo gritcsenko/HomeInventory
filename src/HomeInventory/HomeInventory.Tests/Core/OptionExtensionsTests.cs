@@ -7,8 +7,8 @@ public class OptionExtensionsTests : BaseTest
     public async Task Tap_ShouldInvokeAction_WhenOptionalHasValue()
     {
         Ulid? expected = Ulid.NewUlid();
-        var optional = Option<Ulid>.Some(expected.Value);
-        var optionalTask = Task.FromResult(optional);
+        var optional = Prelude.Some(expected.Value);
+        var optionalTask = ValueTask.FromResult(optional);
 
         Ulid? actual = null;
         var tapped = await optionalTask.Tap(x => actual = x);
@@ -22,8 +22,8 @@ public class OptionExtensionsTests : BaseTest
     public async Task Tap2_ShouldInvokeAction_WhenOptionalHasValue()
     {
         Ulid? expected = Ulid.NewUlid();
-        var optional = Option<Ulid>.Some(expected.Value);
-        var optionalTask = Task.FromResult(optional);
+        var optional = Prelude.Some(expected.Value);
+        var optionalTask = ValueTask.FromResult(optional);
 
         Ulid? actual = null;
         var tapped = await optionalTask.Tap(x =>
@@ -41,8 +41,8 @@ public class OptionExtensionsTests : BaseTest
     public async Task Tap3_ShouldInvokeAction_WhenOptionalHasValue()
     {
         Ulid? expected = Ulid.NewUlid();
-        var optional = Option<Ulid>.Some(expected.Value);
-        var optionalTask = Task.FromResult(optional);
+        var optional = Prelude.Some(expected.Value);
+        var optionalTask = ValueTask.FromResult(optional);
 
         Ulid? actual = null;
         var tapped = await optionalTask.Tap(x =>

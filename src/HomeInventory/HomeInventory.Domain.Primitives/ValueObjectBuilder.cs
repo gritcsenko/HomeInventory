@@ -19,7 +19,7 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
         _value
             .Map(Validate)
             .Map(validation => validation.Map(ToObject))
-            .Match(static x => x, static () => Statics.ValueNotSpecified);
+            .Match(Functional.Identity<Validation<Error, TObject>>(), static () => Statics.ValueNotSpecified);
 
     public void Reset() =>
         _value = Option<TValue>.None;

@@ -58,7 +58,7 @@ internal sealed class HomeInventoryProblemDetailsFactory(ErrorMapping errorMappi
 
     private ProblemDetails InternalConvertToProblem(IEnumerable<Error> errors)
     {
-        var problems = errors.Select(InternalConvertToProblem).ToReadOnly();
+        var problems = errors.Select(InternalConvertToProblem).AsReadOnly();
         if (problems.Count <= 1)
         {
             return problems.FirstOrDefault() ?? throw new InvalidOperationException("Has to be at least one error provided");

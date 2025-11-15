@@ -1,6 +1,6 @@
 namespace HomeInventory.Domain.Primitives;
 
-public interface IEnumeration<TSelf> : IValueObject<TSelf>, IParseable<TSelf>
+public interface IEnumeration<TSelf> : IValueObject<TSelf>, Core.IParsable<TSelf>
     where TSelf : IEnumeration<TSelf>
 {
     string Name { get; }

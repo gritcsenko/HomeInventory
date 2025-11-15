@@ -1,6 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using HomeInventory.Application.UserManagement.Interfaces;
-using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
 using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.UserManagement.Persistence;
@@ -14,11 +14,13 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, IScopeAccessor scopeAccessor, ContractsMapper mapper) : ApiCarterModule("/api/authentication")
+public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, IScopeAccessor scopeAccessor, ContractsMapper mapper) : ApiCarterModule
 {
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly ContractsMapper _mapper = mapper;
+
+    protected override string PathPrefix => "/api/authentication";
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapPost("login", LoginAsync)

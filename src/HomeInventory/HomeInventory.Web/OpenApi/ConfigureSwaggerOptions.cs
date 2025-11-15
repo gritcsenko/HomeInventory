@@ -4,7 +4,7 @@ using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace HomeInventory.Web.OpenApi;
@@ -20,7 +20,7 @@ internal class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) 
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }
 
-        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new()
+        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
         {
             In = ParameterLocation.Header,
             Description = "Please enter token",
@@ -29,9 +29,9 @@ internal class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) 
             BearerFormat = "JWT",
             Scheme = JwtBearerDefaults.AuthenticationScheme,
         });
-        options.AddSecurityRequirement(new()
+        options.AddSecurityRequirement(doc => new()
         {
-            [new()
+            [new(JwtBearerDefaults.AuthenticationScheme, doc)
             {
                 Reference = new()
                 {

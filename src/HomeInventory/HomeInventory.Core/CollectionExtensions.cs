@@ -2,16 +2,19 @@ namespace HomeInventory.Core;
 
 public static class CollectionExtensions
 {
-    public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
+    extension<T>(ICollection<T> collection)
     {
-        switch (collection)
+        public void AddRange(IEnumerable<T> items)
         {
-            case List<T> list:
-                list.AddRange(items);
-                break;
-            default:
-                items.ForEach(collection.Add);
-                break;
+            switch (collection)
+            {
+                case List<T> list:
+                    list.AddRange(items);
+                    break;
+                default:
+                    items.ForEach(collection.Add);
+                    break;
+            }
         }
     }
 }

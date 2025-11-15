@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;
@@ -36,6 +37,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
     }
 
     [Fact]
+    [SuppressMessage("Non-substitutable member", "NS1004:Argument matcher used with a non-virtual member of a class.")]
     public async Task RegisterAsync_OnSuccess_ReturnsHttp200()
     {
         await Given

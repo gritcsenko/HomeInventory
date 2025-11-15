@@ -3,6 +3,7 @@ using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Primitives.Ids;
 
 namespace HomeInventory.Domain.ValueObjects;
+
 public sealed class AmountUnit : BaseEnumeration<AmountUnit, Ulid>
 {
     private AmountUnit(string name, IIdSupplier<Ulid> supplier, MeasurementType measurement)

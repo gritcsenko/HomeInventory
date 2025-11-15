@@ -365,3 +365,4 @@ src/HomeInventory/coverage
 /dataSources/
 /dataSources.local.xml
 src/HomeInventory/.idea/.idea.HomeInventory/.idea/copilot.data.migration.*.xml
+src/HomeInventory/.idea/.idea.HomeInventory/.idea/copilotDiffState.xml
