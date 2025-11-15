@@ -10,4 +10,3 @@ public static class ParsableExtensions
                 .ThrowIfNone(() => new InvalidOperationException($"Failed to parse '{text}' to {typeof(TSelf).Name}"));
     }
 }
-

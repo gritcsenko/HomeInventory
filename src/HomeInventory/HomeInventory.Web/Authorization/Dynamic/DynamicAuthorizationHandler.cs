@@ -35,7 +35,7 @@ public class DynamicAuthorizationHandler : AuthorizationHandler<DynamicPermissio
             return;
         }
 
-        await UserId.Converter.TryConvert(id)
+        _ = await UserId.Converter.TryConvert(id)
             .MatchAsync(async userId =>
             {
                 using var scope = httpContext.RequestServices.CreateScope();
