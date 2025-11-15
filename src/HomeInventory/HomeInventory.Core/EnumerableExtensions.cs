@@ -17,7 +17,7 @@ public static class EnumerableExtensions
             }
         }
 
-        public IEnumerable<T> Concat(params IReadOnlyCollection<T> items) => source.Concat(items.AsEnumerable());
+        public IEnumerable<T> Concat(T item) => [.. source, item];
 
         public IReadOnlyCollection<T> AsReadOnly() => source as IReadOnlyCollection<T> ?? [.. source];
 

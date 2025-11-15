@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class PermissionModule() : ApiCarterModule("/api/permissions")
+public class PermissionModule : ApiCarterModule
 {
+    protected override string PathPrefix => "/api/permissions";
+
     protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapGet("", GetPermissionsAsync)
             .RequireDynamicAuthorization(PermissionType.ReadPermission);
