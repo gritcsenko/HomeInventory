@@ -6,7 +6,7 @@ Inventory management for home
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gritcsenko/HomeInventory/blob/master/LICENSE)
 
-[![CI Build](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml)
+[![CI Build](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions/workflows/build.yml?query=branch%3Amain)
 [![CodeQL](https://github.com/gritcsenko/HomeInventory/workflows/CodeQL/badge.svg)](https://github.com/gritcsenko/HomeInventory/actions?query=workflow%3ACodeQL)
 
 ![.NET 10.0](https://img.shields.io/badge/Version-10.0-informational?logo=dotnet)

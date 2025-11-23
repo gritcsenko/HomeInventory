@@ -27,7 +27,7 @@ internal static class ApplicationModules
         new ContractsUserManagementValidatorsModule(),
         new WebErrorHandlingModule(),
         new DynamicWebAuthorizationModule(),
-        new WebSwaggerModule(),
+        new WebScalarModule(),
         new WebUserManagementModule(),
         new WebHealthCheckModule(),
         new WebModule(),
