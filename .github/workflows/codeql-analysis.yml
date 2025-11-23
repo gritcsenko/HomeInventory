@@ -54,10 +54,6 @@ jobs:
 
           # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          global-json-file: ./src/HomeInventory/global.json
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v5
         with:
@@ -69,15 +65,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          # Look to see if there is a cache hit for the corresponding requirements file
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
       - name: Restore dependencies
-        run: dotnet restore --verbosity minimal
+        run: dotnet restore -v minimal
         working-directory: ./src/HomeInventory
       - name: Build Release
-        run: dotnet build -c Release -v minimal --no-restore --no-self-contained -maxcpucount:1
+        run: dotnet build -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
 
       - name: Perform CodeQL Analysis
