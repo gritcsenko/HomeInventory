@@ -140,7 +140,7 @@ jobs:
           --filter "Category=Unit"
           -c Release
           -v minimal
-          --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover"
+          --collect:"XPlat Code Coverage;CollectCoverage=true;Format=json,lcov,cobertura,opencover"
           --logger trx
           --results-directory ./coverage
           --
