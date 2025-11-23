@@ -1,0 +1,73 @@
+:icons: font
+:lang: en
+
+= Architecture document
+
+Last modified: {localdate} {localtime}
+
+== MVP
+
+=== Requirements
+
+* Application should be running using single command (exe, sh, or ps)
+* Prerequisites should be installed on the first run of the command, w/o any additional flags
+** dotnet, docker, database, whatever else
+** have flags to force the check for prerequisites
+** have flags to skip the check for prerequisites
+** have flags to update prerequisites
+** need to decide whenever to exit from command after application start or after application exit
+* No authentication/authorization
+* UI should be accessible via
+** `+https://localhost:[port]+`
+* API should be accessible via
+** `+https://localhost:[port]/api+`
+* Application should be modular
+** module SDK
+*** register endpoints
+**** contracts
+**** validators `FluentValidation`
+*** register UI elements
+*** add tables to the database
+*** declare module dependencies
+*** load/save settings
+** application module hosting
+** inter-module communication
+*** pub-sub `push`
+*** abstractions/interfaces `pull`
+** application-module communication
+*** pub-sub `push`
+*** abstractions/interfaces `pull`
+** Infrastructure
+*** `EntityFramework`
+*** database relational on not 🤷
+**** in-memory before decision was made
+*** settings
+**** object model for typed settings
+
+=== Runtime
+
+I'm still deciding whenever I will use docker compose to run (portable) or it will be standalone installation
+
+=== UI
+
+After debating with Chat GPT I've decided to use https://github.com/AvaloniaUI/Avalonia[Avalonia UI] with https://www.reactiveui.net/[ReactiveUI]
+
+
+NuGet Packages:
+
+*Mandatory*
+
+* `Avalonia` (The core package for Avalonia UI, providing the framework for building cross-platform UIs.)
+* `Avalonia.ReactiveUI` (Integrates ReactiveUI with Avalonia, enabling to use ReactiveUI's features within Avalonia application.)
+* `ReactiveUI` (The core ReactiveUI package, providing the reactive MVVM framework.)
+
+
+*Optional*
+
+* `Avalonia.Diagnostics` (Provides tooling to help with debugging and diagnostics within Avalonia applications.)
+* `ReactiveUI.Fody` (Provides automatic property change notifications, reducing boilerplate code by using Fody weavers.)
+* `ReactiveUI.Avalonia` (specific to Avalonia)
+* Splat (`Splat` and `Splat.Microsoft.Extensions.DependencyInjection`) (Provides a common service locator and dependency injection abstractions. The extension package integrates Splat with Microsoft.Extensions.DependencyInjection.)
+** ReactiveUI uses Splat for service location.
+
+
