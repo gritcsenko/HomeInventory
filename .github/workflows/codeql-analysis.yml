@@ -58,8 +58,7 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: ./src/HomeInventory/global.json
-        env:
-          DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
+          cache: true
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
