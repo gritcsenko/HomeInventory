@@ -54,14 +54,12 @@ jobs:
 
           # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          global-json-file: ./src/HomeInventory/global.json
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: ./src/HomeInventory/global.json
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
