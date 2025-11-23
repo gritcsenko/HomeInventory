@@ -13,9 +13,12 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 - **HomeInventory.Api** - Entry point and API configuration
 - **HomeInventory.Web[.Module]** - Carter-based HTTP endpoints (minimal APIs)
 - **HomeInventory.Application[.Module]** - Application logic and use cases
+- **HomeInventory.Application[.Module].Interfaces** - Public contracts for commands/queries
 - **HomeInventory.Contracts[.Module]** - DTOs and request/response models
+- **HomeInventory.Contracts[.Module].Validators** - FluentValidation validators for contracts
 - **HomeInventory.Domain[.Module]** - Domain entities, aggregates, value objects, and domain events
 - **HomeInventory.Infrastructure[.Module]** - Data access and external services
+- **HomeInventory.Infrastructure.Framework** - Shared infrastructure concerns
 - **HomeInventory.Core** - Shared primitives and utilities
 - **HomeInventory.Modules** - Module registration and orchestration
 - **HomeInventory.Tests[.Type]** - Testing projects (Unit, Integration, Acceptance)
@@ -32,21 +35,24 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 ### Core Technologies
 - **.NET 10.0** (see `global.json` for specific SDK version)
-- **ASP.NET Core 10.0** for Web API
-- **Carter 9.0** for minimal API endpoints
+- **ASP.NET** for Web API
+- **Carter** for minimal API endpoints
 - **Entity Framework Core** for data access
 - **Serilog** for structured logging
 
 ### Key Libraries
-- **LanguageExt** (5.0.0-beta-54) - Functional programming primitives
-- **FluentValidation** (12.1.0) - Request validation
-- **Riok.Mapperly** (4.3.0) - Compile-time object mapping
-- **Ardalis.Specification** (9.3.1) - Repository pattern with specifications
-- **BCrypt.Net-Next** (4.0.3) - Password hashing
-- **Swashbuckle** (10.0.0) - OpenAPI/Swagger documentation
-- **Scrutor** (6.1.0) - Assembly scanning and decoration
-- **Ulid** (1.4.1) - Unique identifiers
-- **System.IdentityModel.Tokens.Jwt** (8.14.0) - JWT authentication
+- **LanguageExt** - Functional programming primitives
+- **FluentValidation** - Request validation
+- **Riok.Mapperly** - Compile-time object mapping
+- **Ardalis.Specification** - Repository pattern with specifications
+- **BCrypt.Net-Next** - Password hashing
+- **Swashbuckle** - OpenAPI/Swagger documentation
+- **Scrutor** - Assembly scanning and decoration
+- **Ulid** - Unique identifiers
+- **System.IdentityModel.Tokens.Jwt** - JWT authentication
+- **Microsoft.Extensions.Options.DataAnnotations** - Options validation
+- **Microsoft.AspNetCore.Authentication.JwtBearer** - JWT authentication
+- **Microsoft.Extensions.Diagnostics.HealthChecks** - Health check infrastructure
 
 ### Testing
 - **xUnit** - Testing framework
@@ -73,12 +79,16 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 ### Code Style
 
-1. **Use file-scoped namespaces** (C# 10+)
-2. **Use primary constructors** where appropriate (C# 12+)
+1. **Use file-scoped namespaces** 
+2. **Use primary constructors** where appropriate
 3. **Prefer `using` declarations** over `using` statements
 4. **Use implicit usings** - defined in `ImplicitUsings.cs` files
 5. **Functional programming**: Leverage LanguageExt for functional patterns (Option, Either, Try, etc.)
 6. **Immutability**: Prefer immutable data structures and records
+7. **Prefer `extension` keyword** for static helper methods
+8. **Expression-bodied members** for simple getters and methods
+9. **Pattern matching** over traditional type checks and casts
+10. **Static local functions** and **static anonymous functions** where possible
 
 ### Architecture Rules
 
@@ -97,21 +107,28 @@ When creating new endpoints, inherit from `ApiCarterModule` (not the base `Carte
 ```csharp
 namespace HomeInventory.Web.[ModuleName];
 
-public class [Feature]CarterModule(IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory, ContractsMapper mapper) 
-    : ApiCarterModule("/api/[resource]")
+public sealed class [Feature]CarterModule(
+    IScopeAccessor scopeAccessor, 
+    IProblemDetailsFactory problemDetailsFactory,
+    ContractsMapper mapper) 
+    : ApiCarterModule
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
     private readonly ContractsMapper _mapper = mapper;
 
+    protected override string PathPrefix => "/api/[resource]";
+
     protected override void AddRoutes(RouteGroupBuilder group)
     {
-        group.MapPost("/", HandlerAsync)
+        group.MapPost("/", HandleAsync)
             .WithName("[OperationName]")
-            .WithValidationOf<[RequestType]>(); // Use validation filter
+            .WithValidationOf<[RequestType]>()
+            .Produces<[ResponseType]>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
     }
 
-    private async Task<Results<Ok<[Response]>, ProblemHttpResult>> HandlerAsync(
+    private async Task<Results<Ok<[Response]>, ProblemHttpResult>> HandleAsync(
         [FromBody] [RequestType] request,
         [FromServices] I[Service] service,
         [FromServices] I[Repository] repository,
@@ -119,23 +136,35 @@ public class [Feature]CarterModule(IScopeAccessor scopeAccessor, IProblemDetails
         HttpContext context,
         CancellationToken cancellationToken = default)
     {
-        // Use scope accessor for scoped dependencies
+        // Set scoped context for use in service methods
         using var scopes = new CompositeDisposable(
             _scopeAccessor.GetScope<I[Repository]>().Set(repository),
             _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
-        // Implementation
+        // Map request to command and call service
+        var command = _mapper.ToCommand(request);
+        var result = await service.[MethodName]Async(command, cancellationToken);
+        
+        // Handle result with pattern matching
+        return result.Match(
+            error => _problemDetailsFactory.CreateProblemResult(error, context.TraceIdentifier),
+            () => TypedResults.Ok(new [Response]()));
     }
 }
 ```
 
 **Important Endpoint Conventions:**
 - Use `ApiCarterModule` base class for automatic API versioning
+- Override `PathPrefix` property to specify the base path (required)
 - Inject `IScopeAccessor` for scoped dependency management
 - Inject `IProblemDetailsFactory` for standardized error responses
+- Inject `ContractsMapper` for mapping between DTOs and commands/queries
+- Inject application services (e.g., `IUserService`) directly via `[FromServices]`
 - Use `WithValidationOf<T>()` (not `WithValidation<T>()`) for validation
 - Return typed results: `Results<Ok<TResponse>, ProblemHttpResult>`
-- Always include `CancellationToken` parameter
+- Always include `CancellationToken` parameter with `default` value
+- Set scoped context before calling service methods
+- Use mapper to convert requests to commands/queries
 
 ### Domain Development
 
@@ -182,10 +211,80 @@ public record GetUserByEmailQuery(string Email) : IQuery<User>; // Returns Optio
 
 **Key CQRS Conventions:**
 - Commands return `Option<Error>` (success = None, failure = Some(error))
-- Queries return `Option<T>` or typed results
+- Queries return `IQueryResult<T>` which wraps validation results
 - Commands and queries are immutable records
 - Define in `HomeInventory.Application.[Module].Interfaces`
-- Handlers live in `HomeInventory.Application.[Module]`
+- Service implementations live in `HomeInventory.Application.[Module]`
+
+### Application Services Pattern
+
+The solution uses a **direct service pattern** (not MediatR) where application services implement command and query methods:
+
+**Service Interface:**
+```csharp
+namespace HomeInventory.Application.[Module].Interfaces;
+
+public interface I[Module]Service
+{
+    // Commands return Option<Error>
+    Task<Option<Error>> [CommandName]Async([Command] command, CancellationToken cancellationToken = default);
+    
+    // Queries return IQueryResult<T>
+    Task<IQueryResult<[Result]>> [QueryName]Async([Query] query, CancellationToken cancellationToken = default);
+}
+```
+
+**Service Implementation:**
+```csharp
+namespace HomeInventory.Application.[Module];
+
+internal sealed class [Module]Service(
+    IScopeAccessor scopeAccessor,
+    // ... other dependencies
+    ) : I[Module]Service
+{
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
+
+    public async Task<Option<Error>> [CommandName]Async([Command] command, CancellationToken cancellationToken = default)
+    {
+        // Retrieve scoped dependencies set in endpoint
+        var repository = _scopeAccessor.GetRequiredContext<I[Repository]>();
+        var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
+        
+        // Implementation - business logic
+        // ...
+        
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        return Option<Error>.None; // Success
+    }
+
+    public async Task<IQueryResult<[Result]>> [QueryName]Async([Query] query, CancellationToken cancellationToken = default)
+    {
+        // Retrieve scoped dependencies set in endpoint
+        var repository = _scopeAccessor.GetRequiredContext<I[Repository]>();
+        
+        // Implementation
+        var result = await repository.GetByIdAsync(query.Id, cancellationToken);
+        var validationResult = result
+            .Map(entity => /* map to result */)
+            .ErrorIfNone(() => new NotFoundError("Not found"));
+            
+        return QueryResult.From(validationResult);
+    }
+}
+```
+
+**Service Pattern Conventions:**
+- Services are `internal sealed` classes implementing public interfaces
+- Service interfaces defined in `HomeInventory.Application.[Module].Interfaces`
+- Service implementations in `HomeInventory.Application.[Module]`
+- Use `IScopeAccessor` to retrieve scoped dependencies (set in endpoints)
+- Commands return `Option<Error>` - None for success, Some(error) for failure
+- Queries return `IQueryResult<T>` wrapping `Validation<Error, T>`
+- Service methods named as `[OperationName]Async` with async suffix
+- Always include `CancellationToken` parameter with `default` value
+- Use LanguageExt functional patterns (Option, Validation, Map, Bind, etc.)
 
 ### Validation
 
@@ -193,17 +292,58 @@ public record GetUserByEmailQuery(string Email) : IQuery<User>; // Returns Optio
 2. **Validation registration**: Automatically registered via Scrutor scanning
 3. **Endpoint validation**: Apply via `.WithValidationOf<T>()` extension method
 
+### Response Mapping (Mapperly)
+
+Use Mapperly for compile-time DTO mapping:
+
+```csharp
+namespace HomeInventory.Contracts.[Module];
+
+[Mapper]
+public static partial class [Module]Mapper
+{
+    // Domain to DTO
+    public static partial [Response] ToResponse(this [Entity] entity);
+    
+    // DTO to Domain (if needed)
+    public static partial [Entity] ToDomain(this [Request] request);
+    
+    // Collection mapping
+    public static partial IEnumerable<[Response]> ToResponses(
+        this IEnumerable<[Entity]> entities);
+    
+    // With custom mapping logic
+    [MapProperty(nameof([Entity].Property), nameof([Response].MappedProperty))]
+    public static partial [Response] ToResponseWithCustomMapping(this [Entity] entity);
+}
+```
+
+**Mapper Conventions:**
+- Place mappers in `HomeInventory.Contracts.[Module]` namespace
+- Use `[Mapper]` attribute on static partial classes
+- Methods must be `public static partial`
+- Use extension methods for better fluent API
+- Name mapper classes as `[Module]Mapper` (e.g., `UserManagementMapper`)
+- Mapperly generates implementation at compile-time
+
 ### API Versioning
 
 API versioning is built into the `ApiCarterModule` base class:
 
 ```csharp
-public class MyCarterModule : ApiCarterModule
+public sealed class MyCarterModule : ApiCarterModule
 {
-    public MyCarterModule() : base("/api/resource")
+    protected override string PathPrefix => "/api/resource";
+    
+    // Constructor - call MapToApiVersion to use a different version than v1 (default)
+    public MyCarterModule()
     {
-        // Default is v1
-        MapToApiVersion(new ApiVersion(2)); // Override to use v2
+        MapToApiVersion(new ApiVersion(2)); // Use v2 instead of default v1
+    }
+    
+    protected override void AddRoutes(RouteGroupBuilder group)
+    {
+        // Define your routes here
     }
 }
 ```
@@ -212,6 +352,9 @@ public class MyCarterModule : ApiCarterModule
 - Default API version is 1.0
 - Version is specified in query string: `/api/resource?api-version=1`
 - All endpoints automatically versioned through `ApiCarterModule`
+- Use `protected override string PathPrefix` to specify the base path (required)
+- Call `MapToApiVersion(new ApiVersion(x))` in constructor to use a different version
+- If no version is specified, defaults to v1
 - Version set configured in `WebSwaggerModule`
 
 ### Logging
@@ -243,18 +386,48 @@ public class MyCarterModule : ApiCarterModule
 
 The project uses a custom **Scope Accessor** pattern for managing scoped dependencies across layers:
 
+**Setting Scope (in Endpoints):**
 ```csharp
-// Inject IScopeAccessor
-private readonly IScopeAccessor _scopeAccessor;
+// In Carter module endpoint handler
+private async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
+    [FromBody] Request request,
+    [FromServices] IUserService userService,
+    [FromServices] IUserRepository repository,
+    [FromServices] IUnitOfWork unitOfWork,
+    HttpContext context,
+    CancellationToken cancellationToken = default)
+{
+    // Set scoped context before calling service
+    using var scopes = new CompositeDisposable(
+        _scopeAccessor.GetScope<IUserRepository>().Set(repository),
+        _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
-// Set scoped context (usually in endpoint handlers)
-using var scopes = new CompositeDisposable(
-    _scopeAccessor.GetScope<IUserRepository>().Set(repository),
-    _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
+    var command = _mapper.ToCommand(request);
+    var result = await userService.RegisterAsync(command, cancellationToken);
+    
+    // Handle result...
+}
+```
 
-// Retrieve scoped context (usually in application services)
-var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
-var repository = _scopeAccessor.GetRequiredContext<IUserRepository>();
+**Retrieving Scope (in Services):**
+```csharp
+// In application service implementation
+internal sealed class UserService(
+    IScopeAccessor scopeAccessor,
+    // ... other dependencies
+    ) : IUserService
+{
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
+
+    public async Task<Option<Error>> RegisterAsync(RegisterCommand command, CancellationToken cancellationToken = default)
+    {
+        // Retrieve scoped dependencies that were set in endpoint
+        var repository = _scopeAccessor.GetRequiredContext<IUserRepository>();
+        var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
+        
+        // Use dependencies for business logic...
+    }
+}
 ```
 
 **Why use Scope Accessor?**
@@ -262,6 +435,7 @@ var repository = _scopeAccessor.GetRequiredContext<IUserRepository>();
 - Avoids parameter pollution in service methods
 - Maintains Clean Architecture dependency rules
 - Repositories and UnitOfWork are injected at the endpoint level and accessed in services
+- **Important:** Always dispose scopes using `using` or `CompositeDisposable`
 
 ## Module Development Workflow
 
@@ -280,7 +454,21 @@ When creating a new feature module (e.g., "Inventory"):
 
 2. **Create module registration class** in each layer (e.g., `InventoryModule.cs`)
 
-3. **Register module** in `ApplicationModules.cs`
+3. **Register module** in `ApplicationModules.cs`:
+   ```csharp
+   public static class ApplicationModules
+   {
+       public static IReadOnlyCollection<Type> GetModuleTypes() =>
+       [
+           typeof(CoreModule),
+           typeof(LoggingModule),
+           typeof(DatabaseModule),
+           typeof(UserManagementModule),
+           typeof(InventoryModule), // Add new module here
+           // Modules are loaded in dependency order
+       ];
+   }
+   ```
 
 4. **Define domain models** (Aggregates, Entities, Value Objects, Events)
 
@@ -288,7 +476,7 @@ When creating a new feature module (e.g., "Inventory"):
 
 6. **Create validators** for contracts
 
-7. **Implement application services** (command/query handlers)
+7. **Implement application services** (service interfaces and implementations)
 
 8. **Implement infrastructure** (repositories, external services)
 
