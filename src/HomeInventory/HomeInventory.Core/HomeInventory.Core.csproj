@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
+
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" />
     <PackageReference Include="LanguageExt.Rx" />

@@ -6,21 +6,20 @@ using Microsoft.AspNetCore.Routing.Patterns;
 
 namespace HomeInventory.Web.Framework;
 
-public abstract class ApiCarterModule : CarterModule
+public abstract class ApiCarterModule : ICarterModule
 {
     private ApiVersion _version = new(1);
+    private readonly Lazy<RoutePattern> _lazyGroupPrefix;
 
-    protected ApiCarterModule(string groupPrefix)
-    {
-        IncludeInOpenApi();
-        GroupPrefix = RoutePatternFactory.Parse(groupPrefix);
-    }
+    protected ApiCarterModule() => _lazyGroupPrefix = new(() => RoutePatternFactory.Parse(PathPrefix));
 
-    public RoutePattern GroupPrefix { get; }
+    protected abstract string PathPrefix { get; }
+
+    public RoutePattern GroupPrefix => _lazyGroupPrefix.Value;
 
     protected void MapToApiVersion(ApiVersion version) => _version = version;
 
-    public sealed override void AddRoutes(IEndpointRouteBuilder app)
+    public void AddRoutes(IEndpointRouteBuilder app)
     {
         var versionSet = app.GetVersionSet();
 

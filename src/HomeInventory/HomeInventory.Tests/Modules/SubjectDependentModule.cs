@@ -6,4 +6,7 @@ namespace HomeInventory.Tests.Modules;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class SubjectDependentModule : BaseModule
 {
+    public new void DependsOn<TModule>()
+        where TModule : class, IModule =>
+        base.DependsOn<TModule>();
 }

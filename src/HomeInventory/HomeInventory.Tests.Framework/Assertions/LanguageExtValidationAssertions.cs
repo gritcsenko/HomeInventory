@@ -16,7 +16,8 @@ public class LanguageExtValidationAssertions<TFail, TSuccess>(Validation<TFail, 
                 .ForCondition(subject => subject.IsFail)
                 .FailWith("but found to be {0}.", Subject));
 
-        return new(this, Subject.FailSpan()[0]);
+        var failValue = Subject.Match(Fail: f => f, Succ: _ => default!);
+        return new(this, failValue);
     }
 
     public AndWhichConstraint<LanguageExtValidationAssertions<TFail, TSuccess>, TSuccess> BeSuccess(string because = "", params object[] becauseArgs)
@@ -28,7 +29,8 @@ public class LanguageExtValidationAssertions<TFail, TSuccess>(Validation<TFail, 
                 .ForCondition(subject => subject.IsSuccess)
                 .FailWith("but found to be {0}.", Subject));
 
-        return new(this, Subject.SuccessSpan()[0]);
+        var successValue = Subject.Match(Fail: _ => default!, Succ: s => s);
+        return new(this, successValue);
     }
 
     public AndConstraint<LanguageExtValidationAssertions<TFail, TSuccess>> BeSuccess(Action<TSuccess> action, string because = "", params object[] becauseArgs)

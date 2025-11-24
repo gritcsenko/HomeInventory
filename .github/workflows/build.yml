@@ -147,6 +147,7 @@ jobs:
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.SkipAutoProps=true
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=false
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByFile='**/*.g.cs'
+          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByAttribute='CompilerGenerated,GeneratedCode,ExcludeFromCodeCoverage'
         working-directory: ./src/HomeInventory
       - name: Test Report
         uses: dorny/test-reporter@v2.2.0
@@ -199,7 +200,7 @@ jobs:
           historydir: "" # Optional directory for storing persistent coverage information. Can be used in future reports to show coverage evolution.
           plugins: "" # Optional plugin files for custom reports or custom history storage (separated by semicolon).
           assemblyfilters: "+*" # Optional list of assemblies that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
-          classfilters: "+*" # Optional list of classes that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
+          classfilters: "+*;-Microsoft.AspNetCore.OpenApi.Generated.*;-System.Runtime.CompilerServices.*" # Optional list of classes that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
           filefilters: "+*" # Optional list of files that should be included or excluded in the report. Exclusion filters take precedence over inclusion filters. Wildcards are allowed.
           verbosity: "Info" # The verbosity level of the log messages. Values: Verbose, Info, Warning, Error, Off
           title: "" # Optional title.

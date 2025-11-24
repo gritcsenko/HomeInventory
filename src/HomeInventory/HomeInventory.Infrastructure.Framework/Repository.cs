@@ -28,7 +28,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     {
         var set = Set();
 
-        foreach (var entity in entities.WithCancellation(cancellationToken))
+        foreach (var entity in entities)
         {
             _ = await InternalAddAsync(set, entity, cancellationToken);
         }
@@ -45,7 +45,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     {
         var set = Set();
 
-        foreach (var entity in entities.WithCancellation(cancellationToken))
+        foreach (var entity in entities)
         {
             _ = await InternalUpdateAsync(set, entity, cancellationToken);
         }
@@ -62,7 +62,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     {
         var set = Set();
 
-        foreach (var entity in entities.WithCancellation(cancellationToken))
+        foreach (var entity in entities)
         {
             _ = await InternalDeleteAsync(set, entity, cancellationToken);
         }
@@ -82,7 +82,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query);
         return await projected.FirstOrDefaultAsync(cancellationToken) is { } entity
-            ? Option<TAggregateRoot>.Some(entity)
+            ? Prelude.Some(entity)
             : Option<TAggregateRoot>.None;
     }
 

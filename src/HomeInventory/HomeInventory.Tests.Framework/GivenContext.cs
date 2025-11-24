@@ -33,6 +33,9 @@ public class GivenContext<TContext>(BaseTest test) : BaseContext(new())
     public TContext New<T, TArg1, TArg2, TArg3>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, Func<TArg1, TArg2, TArg3, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
         New(out variable, _ => create(GetValue(arg1), GetValue(arg2), GetValue(arg3)), count, name);
 
+    public TContext New<T, TArg1, TArg2, TArg3, TArg4>(out IVariable<T> variable, IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, IVariable<TArg4> arg4, Func<TArg1, TArg2, TArg3, TArg4, T> create, int count = 1, [CallerArgumentExpression(nameof(variable))] string? name = null) =>
+        New(out variable, _ => create(GetValue(arg1), GetValue(arg2), GetValue(arg3), GetValue(arg4)), count, name);
+
     public TContext EmptyHashCode(out IVariable<HashCode> emptyHash) =>
         New(out emptyHash, static () => new());
 

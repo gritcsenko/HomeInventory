@@ -2,5 +2,5 @@ namespace HomeInventory.Application;
 
 public static class HealthCheckTags
 {
-    public static string Ready { get; } = nameof(Ready);
+    public static string Ready => nameof(Ready);
 }

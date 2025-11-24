@@ -13,16 +13,21 @@
     <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
-    <PackageVersion Include="Carter" Version="9.0.0" />
+    <PackageVersion Include="Carter" Version="10.0.0" />
     <PackageVersion Include="Expressium.LivingDoc.ReqnrollPlugin" Version="1.1.2" />
     <PackageVersion Include="FastExpressionCompiler" Version="5.3.0" />
     <PackageVersion Include="FluentValidation" Version="12.1.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
+    <PackageVersion Include="KubernetesClient" Version="18.0.5" />
     <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
-    <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-54" />
-    <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-54" />
-    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-54" />
+    <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-55" />
+    <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-55" />
+    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-55" />
+    <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="18.0.2" />
     <PackageVersion Include="Riok.Mapperly" Version="4.3.0" />
+    <PackageVersion Include="Scalar.Aspire" Version="0.7.4" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.11.0" />
+    <PackageVersion Include="Scalar.AspNetCore.Microsoft" Version="2.10.3" />
     <PackageVersion Include="Scrutor" Version="6.1.0" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
@@ -32,37 +37,35 @@
     <PackageVersion Include="Serilog.Settings.Configuration" Version="9.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <PackageVersion Include="Ulid" Version="1.4.1" />
   </ItemGroup>
   <ItemGroup Label="System packages">
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
-    <PackageVersion Include="System.Interactive.Async" Version="6.0.3" />
-    <PackageVersion Include="System.Linq.Async" Version="6.0.3" />
+    <PackageVersion Include="System.Interactive.Async" Version="7.0.0" />
+    <PackageVersion Include="System.Linq.Async" Version="7.0.0" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
-    <PackageVersion Include="System.Reactive" Version="6.1.0" />
+    <PackageVersion Include="System.Reactive" Version="7.0.0-preview.1" />
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageVersion Include="System.Text.Json" Version="9.0.11" />
-    <PackageVersion Include="System.Formats.Asn1" Version="9.0.11" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup Label="Microsoft packages">
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.FeatureManagement" Version="4.3.0" />
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.3.0" />
   </ItemGroup>
@@ -75,8 +78,8 @@
     <PackageVersion Include="AwesomeAssertions" Version="9.3.0" />
     <PackageVersion Include="LanguageExt.AutoFixture" Version="2.0.1" />
     <PackageVersion Include="LanguageExt.UnitTesting" Version="4.4.9.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
@@ -91,8 +94,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="9.0.11" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.11" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Analyzers" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.15.0.120848" />

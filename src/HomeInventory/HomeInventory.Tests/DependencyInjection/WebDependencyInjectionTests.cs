@@ -18,9 +18,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using ContractsMapper = HomeInventory.Web.ContractsMapper;
 
 namespace HomeInventory.Tests.DependencyInjection;
 
@@ -51,7 +48,7 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
             new WebUserManagementModule(),
             new WebHealthCheckModule(),
             new WebErrorHandlingModule(),
-            new WebSwaggerModule(),
+            new WebScalarModule(),
             new DynamicWebAuthorizationModule(),
         ]);
     }
@@ -70,7 +67,6 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.Should().ContainSingleTransient<HomeInventoryProblemDetailsFactory>();
         Services.Should().ContainSingleTransient<ProblemDetailsFactory>();
         Services.Should().ContainSingleTransient<IProblemDetailsFactory>();
-        Services.Should().ContainSingleTransient<ISwaggerProvider>();
         Services.Should().ContainSingleSingleton<PermissionList>();
         Services.Should().ContainTransient<IAuthorizationHandler>();
         Services.Should().ContainSingleTransient<IAuthorizationService>();
@@ -81,11 +77,6 @@ public class WebDependencyInjectionTests : BaseDependencyInjectionTest
         Services.Should().ContainSingleTransient<IPolicyEvaluator>();
         Services.Should().ContainSingleTransient<IAuthorizationMiddlewareResultHandler>();
 
-        var provider = CreateProvider();
-        var swaggerOptions = new SwaggerGenOptions();
-        Services.Should().ContainConfigureOptions<SwaggerGenOptions>(provider)
-            .Which.Configure(swaggerOptions);
-        swaggerOptions.SwaggerGeneratorOptions.SwaggerDocs.Should().ContainKey("v1")
-            .WhoseValue.Version.Should().Be("1");
+        ////var provider = CreateProvider();
     }
 }

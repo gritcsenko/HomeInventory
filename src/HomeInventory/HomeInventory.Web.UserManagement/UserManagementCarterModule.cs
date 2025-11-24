@@ -13,11 +13,13 @@ using HomeInventory.Application.UserManagement.Interfaces;
 
 namespace HomeInventory.Web.UserManagement;
 
-public class UserManagementCarterModule(IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory, ContractsMapper mapper) : ApiCarterModule("/api/users/manage")
+public class UserManagementCarterModule(IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory, ContractsMapper mapper) : ApiCarterModule
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
     private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
     private readonly ContractsMapper _mapper = mapper;
+
+    protected override string PathPrefix => "/api/users/manage";
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
         group.MapPost("register", RegisterAsync)

@@ -25,7 +25,8 @@ public class LanguageExtOptionAssertions<T>(Option<T> instance, AssertionChain a
                 .ForCondition(subject => subject.IsSome)
                 .FailWith("but found to be None."));
 
-        return new(this, Subject);
+        var value = Subject.Match(Some: v => v, None: () => default!);
+        return new(this, value);
     }
 
     public AndConstraint<LanguageExtOptionAssertions<T>> BeSome(Action<T> action, string because = "", params object[] becauseArgs)

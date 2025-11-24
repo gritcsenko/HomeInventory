@@ -2,43 +2,36 @@ namespace HomeInventory.Core;
 
 public static class EnumerableExtensions
 {
-    public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+    extension<T>(IEnumerable<T>? source)
     {
-        foreach (var item in collection)
-        {
-            action(item);
-        }
+        public IEnumerable<T> EmptyIfNull() => source ?? [];
     }
 
-    public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item) => ConcatCore(source, item);
-
-    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? source) => source ?? [];
-
-    public static IReadOnlyCollection<T> ToReadOnly<T>(this IEnumerable<T> source) => source as IReadOnlyCollection<T> ?? [.. source];
-
-    public static IEnumerable<T> WithCancellation<T>(this IEnumerable<T> source, CancellationToken cancellationToken) =>
-        source.TakeWhile(_ => !cancellationToken.IsCancellationRequested);
-
-    public static async ValueTask<bool> AllAsync<T>(this IEnumerable<T> collection, Func<T, ValueTask<bool>> predicate)
+    extension<T>(IEnumerable<T> source)
     {
-        foreach (var item in collection)
+        public void ForEach(Action<T> action)
         {
-            if (!await predicate(item))
+            foreach (var item in source)
             {
-                return false;
+                action(item);
             }
         }
 
-        return true;
-    }
+        public IEnumerable<T> Concat(T item) => [.. source, item];
 
-    private static IEnumerable<T> ConcatCore<T>(IEnumerable<T> source, T item)
-    {
-        foreach (var i in source)
+        public IReadOnlyCollection<T> AsReadOnly() => source as IReadOnlyCollection<T> ?? [.. source];
+
+        public async ValueTask<bool> AllAsync(Func<T, ValueTask<bool>> predicate)
         {
-            yield return i;
-        }
+            foreach (var item in source)
+            {
+                if (!await predicate(item))
+                {
+                    return false;
+                }
+            }
 
-        yield return item;
+            return true;
+        }
     }
 }
