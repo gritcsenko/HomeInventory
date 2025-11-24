@@ -9,8 +9,60 @@
 - Rules that can prevent undesired results
 - Corrections to mistakes you've made
 - **Terminal commands that fail and their working alternatives**
+- **Code edits that fail to compile or have logical errors**
 
 **YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
+
+## Failed Code Edits - Investigation & Prevention
+
+When a code edit fails (compilation error, test failure, logical error):
+
+1. **Document the failure** in these instructions with:
+   - What you attempted to do
+   - Why it failed
+   - The correct solution
+   - How to prevent it in the future
+
+2. **Investigate thoroughly**:
+   - Read the actual error message carefully
+   - Check the framework/library API documentation
+   - Look at existing working examples in the codebase
+   - Understand WHY it failed, not just HOW to fix it
+
+3. **Prevent recurrence**:
+   - Add the failure pattern to the "DON'T" list
+   - Add the correct pattern to the "DO" list
+   - Include before/after examples
+   - Explain the reasoning
+
+**Example Documentation:**
+
+```markdown
+**❌ FAILED: Using SubstituteFor() inside a lambda**
+
+Attempted:
+```csharp
+New(out var contextVar, () => {
+    var substitute = SubstituteFor<IConfiguration>();  // ❌ FAILED
+    return new Context(substitute);
+});
+```
+
+**Error**: `No overload for method 'SubstituteFor' takes 0 arguments`
+
+**Why it failed**: `SubstituteFor()` is a helper method on GivenContext, not available inside lambda scope.
+
+**✅ SOLUTION: Use Substitute.For<T>() directly inside lambdas**
+
+```csharp
+New(out var contextVar, () => {
+    var substitute = Substitute.For<IConfiguration>();  // ✅ Works
+    return new Context(substitute);
+});
+```
+
+**Prevention**: SubstituteFor helper is only for GivenContext level, use NSubstitute directly inside lambdas.
+```
 
 ## Terminal Commands Reference
 
@@ -845,15 +897,100 @@ public class MyFeatureTests() : BaseTest<MyFeatureTestsGivenContext>(static t =>
 public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyFeatureTestsGivenContext>(test);
 ```
 
+### Test Design Principles
+
+**Single Responsibility:**
+- Each test should verify **one behavior**
+- One Given-When-Then chain per test method
+- If you need multiple assertions, use a single `Result()` call with multiple variables
+- If you need multiple scenarios, create separate test methods
+
+**Clarity and Explicitness:**
+- Always define the **system under test (SUT)** explicitly
+- Use meaningful variable names that indicate their role
+- Test method names follow pattern: `MethodName_Scenario_ExpectedResult`
+- No comments needed - the test structure should be self-documenting
+
+**Framework Extension:**
+- **GivenContext is designed to be extended** - don't assume limitations
+- Add new overloads when you need more than 3 IVariable parameters
+- Create semantic helper methods for complex setup
+- Use builder pattern for multi-step initialization
+
+**Assertion Quality:**
+- Use the most specific assertion available
+- Avoid redundant checks (e.g., `.NotBeNull()` before `.BeOfType<T>()`)
+- Use compile-time type references instead of string matching
+- Prefer `ContainSingle()` over `HaveCount(1)`
+- **`.Subject` vs `.Which` pattern:**
+  - Use `.Subject` when you need to assert **multiple properties** - save subject to a local variable and assert properties
+  - Use `.Which` when you need to assert the **value itself or a single property** - chain directly with assertion
+  - Example: `.ContainSingle().Which.Should().BeSameAs(expected)` for single assertion
+  - Example: `var item = result.Should().ContainSingle().Subject; item.Property1.Should()...; item.Property2.Should()...;` for multiple properties
+- Use method chaining for related assertions (e.g., `.ContainKey(...).WhoseValue.Should()...`)
+- **For Option<T> assertions**: Use `.BeSome()` and `.BeNone()` extension methods, not `.IsSome.Should().BeTrue()`
+
+**Test Setup Order:**
+- **Create SUT last in Given section** - this eliminates excessive helper methods that modify SUT after creation
+- Create test data first, then create SUT with that data if needed
+- Example: `.New<Module>(out var moduleVar).SutWithModule(out var sutVar, moduleVar)` instead of `.Sut(out var sutVar).New<Module>(out var moduleVar).AddToSut(sutVar, moduleVar)`
+
+**GivenContext Method Naming:**
+- Methods that create values should answer the question: "Given what value?"
+- Use descriptive names like `Module()`, `EmptyContainer()`, `ContainerWith()`
+- **DON'T** use "Given" prefix - it causes repetition: `Given.GivenAModule()` reads poorly
+- The method name combined with `Given.` should read naturally: `Given.Module(...)` reads better than `Given.GivenAModule(...)`
+- Be concise but clear - the context already indicates it's part of Given section
+
+**Test Data:**
+- Use AutoFixture to generate test data - avoid hardcoded literals
+- Only create variables (with `New`) for values that need to be asserted
+- Use `Create<T>()` for intermediate values that don't need assertions
+- Use `SubstituteFor()` helper instead of direct `Substitute.For<T>()` calls
+
+**Result Parameters Semantics:**
+- **IVariable/IIndexedVariable parameters in `.Result()` represent EXPECTED values or KEYS to get actual values**
+- The lambda's first parameter is always the RESULT (actual value returned from When)
+- Subsequent parameters are expected values to compare against OR values to check for side effects
+- Example: `.Result(expectedVar, static (result, expected) => result.Should().Be(expected))`
+- `result` = actual value from When
+- `expected` = value from expectedVar to compare against
+- **For side effect testing**: Pass the modified variable and check both result AND side effect
+- Example: `.Result(servicesVar, static (result, services) => { result.Should().BeOfType<X>(); services.Should().Contain(...); })`
+- **DON'T** use result variable name in IVariable parameters
+- **DO** use descriptive names like `expectedVar`, `keyVar`, `valueVar`, or the actual variable name for side effects
+- **ALWAYS use the `result` parameter** - if you're not using it, you're likely testing the wrong thing
+
+**Testing Static Properties:**
+- **DO** verify the actual value using specific assertions (e.g., `.Be("ExpectedValue")` or `.Be(nameof(PropertyName))`)
+- **DON'T** use vague assertions like `.NotBeNullOrEmpty()` when you know the expected value
+- **DON'T** test instance equality for strings (`.BeSameAs()`) - strings are interned, this tests .NET behavior, not your code
+- **DON'T** test that static string properties return the same instance multiple times - this is excessive for immutable types
+- Example: 
+  ```csharp
+  // ✅ GOOD - Tests actual value
+  .Result(static result => result.Should().Be(nameof(HealthCheckTags.Ready)));
+  
+  // ❌ BAD - Vague assertion
+  .Result(static result => result.Should().NotBeNullOrEmpty());
+  
+  // ❌ BAD - Tests .NET string interning, not your code
+  .Result(expectedVar, static (result, expected) => result.Should().BeSameAs(expected));
+  ```
+
 ### Critical Test Guidelines
 
 **DO:**
 - ✅ **Use expression-bodied lambdas for single statements** - `static x => x.Method()` not `static x => { x.Method(); }`
 - ✅ **Use `Create<T>()` for values that don't need to be in test context** - avoids polluting context with unnecessary variables
 - ✅ **Update these instructions when user provides requests, advice, hints, or rules** that can prevent undesired results
+- ✅ **ALWAYS verify assumptions with assertions during investigation** - add assertions to verify test setup is correct, then remove them once issue is identified
+- ✅ **Container should include ALL modules** - in module dependency tests, the container needs both the dependency module AND the dependent module
+- ✅ **Use unique PARAMETER names in GivenContext helper methods** - `CallerArgumentExpression` captures the PARAMETER name (e.g., `out var moduleVar`), NOT the calling variable name. If two methods both use `out IVariable<IModule> moduleVar`, they'll collide in VariablesContainer. Use `out IVariable<IModule> baseModule` and `out IVariable<IModule> dependentModule` instead
 - ✅ Use `var then = When.Invoked(...);` followed by `then.Result(...)` on separate lines
 - ✅ Define all test data in `Given` section using `.New<T>(out var variable)`
 - ✅ Use AutoFixture to generate test data - avoid hardcoded literals/constants
+- ✅ **Avoid hardcoded literals in tests** - use AutoFixture-generated values or variables
 - ✅ Use `static` lambdas wherever possible for performance
 - ✅ Use AwesomeAssertions fluent syntax (`.Should()`)
 - ✅ Use `ContainSingleSingleton<T>()`, `ContainTransient<T>()`, `ContainScoped<T>()` for service collection assertions
@@ -861,10 +998,23 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - ✅ Create a separate `GivenContext` class for each test class
 - ✅ Keep test methods focused on a single behavior
 - ✅ Provide meaningful assertions in module tests - verify specific services are registered
+- ✅ **Use ONE Given-When-Then chain per test** - don't repeat Given or When within a test
+- ✅ **Use `SubstituteFor()` helper method in GivenContext** instead of `Substitute.For<T>()` in `New()`
+- ✅ **Define system under test explicitly** using `Sut(out var sutVar)` method in GivenContext
+- ✅ **Prefer `.New<T>(out var variable)` without factory method** - factory is for corner cases only
+- ✅ **Keep `Invoked` lambdas simple** - invoke only the testing method, move setup to Given section
+- ✅ **DON'T add comments explaining why factory methods are used** - the code should be self-evident
+- ✅ Use `ContainSingle()` instead of `HaveCount(1)`
+- ✅ **Use `Result()` overload with multiple IVariable parameters** instead of multiple `.Result()` calls
+- ✅ **Skip `.NotBeNull()` checks before type checks** - `.BeOfType<T>()` and `.BeAssignableTo<T>()` already check for null
+- ✅ **Use direct type references** in assertions (e.g., `typeof(FeatureManager)`) instead of string matching on type names
+- ✅ **Add new overloads to GivenContext when needed** - if you need more than 3 IVariable parameters, create custom helper methods or new overloads
+- ✅ **You can add overloads to `GivenContext<TContext>` in `HomeInventory.Tests.Framework`** for current and future use
 
 **DON'T:**
 - ❌ **Use block body `{ }` for lambdas with single statement** - triggers IDE0053 warning
 - ❌ **Create variables only to create other variables** - pollutes test context; use `Create<T>()` instead
+- ❌ **Use hardcoded literals in tests** - use AutoFixture or variables instead of `"test"`, `false`, `0`, etc.
 - ❌ Create local variables in test methods (except for `then`)
 - ❌ Capture local variables in `Invoked` or `Result` lambdas
 - ❌ Chain `When.Invoked(...).Result(...)` without the `then` variable
@@ -874,6 +1024,19 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - ❌ Hardcode string literals, numbers, or constants in factory functions - use `Fixture.Create<T>()` or parameters
 - ❌ Use `ContainKey(...)` then access dictionary - use `.ContainKey(...).WhoseValue.Should()...` pattern
 - ❌ Write module tests with only `.NotBeNullOrEmpty()` - verify specific services
+- ❌ **Repeat Given-When-Then chains in a single test** - restructure test or split into multiple tests
+- ❌ **Use `Substitute.For<T>()` directly in `New()`** - use `.SubstituteFor()` helper instead
+- ❌ **Use `.New<T>(out var sut, static () => new())` for SUT** - use `Sut(out var sutVar)` method instead
+- ❌ **Use factory method in New when not needed** - prefer `.New<T>(out var variable)` for simple AutoFixture generation
+- ❌ **Put test setup in `Invoked` lambdas** - keep them simple, only invoke the method under test
+- ❌ **Add comments about corner cases in factory methods** - code should be self-documenting
+- ❌ **Fall out of Given-When-Then pattern** - avoid imperative setup and assertions mixed together
+- ❌ **Leave system under test implicit** - always define it clearly
+- ❌ **Use `HaveCount(1)` for single items** - use `ContainSingle()` instead
+- ❌ **Call `.Result()` multiple times** - use the overload that accepts multiple variables
+- ❌ **Add `.NotBeNull()` before `.BeOfType<T>()` or `.BeAssignableTo<T>()`** - redundant check
+- ❌ **Use string matching on type names** - use compile-time type references
+- ❌ **Assume GivenContext limitations** - you can extend it with new overloads or helper methods
 
 ### AutoFixture Usage Guidelines
 
@@ -950,8 +1113,88 @@ Given
 - **Avoid creating variables only to create other variables** - use `Create<T>()` instead to avoid context pollution
 - **Every `New` call adds a variable to test context** - only create variables that need to be referenced in assertions
 - Use `.New<T>(out var)` when AutoFixture can generate the type directly AND you need to reference it
-- You can add new overloads to `GivenContext<T>` if you need more than 3 parameters
+- **You can add new overloads to `GivenContext<T>` if you need more than 3 parameters** - extend the framework as needed
 - Remove `static` from lambda when using `Create<T>()` method from base class
+
+### Extending GivenContext for Complex Scenarios
+
+When you encounter limitations with the built-in `New` method (e.g., needing more than 3 IVariable parameters), **add new overloads or helper methods** to the test's GivenContext:
+
+```csharp
+public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGivenContext>(test)
+{
+    // ✅ OPTION 1: Add a new overload supporting 5 parameters
+    public MyTestsGivenContext New<T, TArg1, TArg2, TArg3, TArg4, TArg5>(
+        out IVariable<T> variable,
+        IVariable<TArg1> arg1,
+        IVariable<TArg2> arg2,
+        IVariable<TArg3> arg3,
+        IVariable<TArg4> arg4,
+        IVariable<TArg5> arg5,
+        Func<TArg1, TArg2, TArg3, TArg4, TArg5, T> create,
+        int count = 1,
+        [CallerArgumentExpression(nameof(variable))] string? name = null)
+    {
+        New(out variable, _ => create(
+            GetValue(arg1), 
+            GetValue(arg2), 
+            GetValue(arg3), 
+            GetValue(arg4), 
+            GetValue(arg5)), count, name);
+        return This;
+    }
+
+    // ✅ OPTION 2: Create a semantic helper method
+    public MyTestsGivenContext CreateModuleContext(
+        out IVariable<ModuleServicesContext> contextVar,
+        IVariable<IServiceCollection> servicesVar,
+        IVariable<IConfiguration> configVar,
+        IVariable<IMetricsBuilder> metricsVar,
+        IVariable<IFeatureManager> featureManagerVar,
+        IVariable<IReadOnlyCollection<IModule>> modulesVar)
+    {
+        New(out contextVar, servicesVar, configVar, metricsVar, 
+            (services, config, metrics) =>
+            {
+                // Access remaining variables via GetValue
+                var fm = GetValue(featureManagerVar);
+                var modules = GetValue(modulesVar);
+                return new ModuleServicesContext(services, config, metrics, fm, modules);
+            });
+        return This;
+    }
+
+    // ✅ OPTION 3: Use builder pattern for very complex setup
+    public MyTestsGivenContext ComplexSetup(
+        out IVariable<ResultType> resultVar,
+        out IVariable<string> field1Var,
+        out IVariable<string> field2Var)
+    {
+        New(out field1Var);
+        New(out field2Var);
+        New(out resultVar, field1Var, field2Var, (f1, f2) =>
+            new ResultType 
+            { 
+                Field1 = f1, 
+                Field2 = f2, 
+                Temp = Create<string>()
+            });
+        return This;
+    }
+}
+
+// Usage in test
+Given
+    .CreateModuleContext(out var contextVar, servicesVar, configVar, metricsVar, fmVar, modulesVar);
+```
+
+**When to Extend:**
+- ❌ **DON'T** assume you can't extend GivenContext - it's designed to be extended!
+- ✅ **DO** add new overloads when you need more than 3 IVariable parameters
+- ✅ **DO** create semantic helper methods for complex object creation
+- ✅ **DO** use builder pattern for multi-step setup
+- ❌ **DON'T** work around limitations by using non-static lambdas that access variables directly
+- ❌ **DON'T** simplify tests by removing necessary assertions just to fit the 3-parameter limit
 
 **When to Use `Create<T>()` vs `New`:**
 
@@ -1030,6 +1273,377 @@ public void Method_WithValidData_ReturnsTrue()
     then
         .Result(static result => result.Should().BeTrue());  // ✅ Separate 'then' variable
 }
+```
+
+**❌ BAD - Multiple Result() calls:**
+```csharp
+then
+    .Result(servicesVar, static (result, expected) => result.Services.Should().BeSameAs(expected))
+    .Result(configVar, static (result, expected) => result.Configuration.Should().BeSameAs(expected))
+    .Result(metricsVar, static (result, expected) => result.Metrics.Should().BeSameAs(expected));
+```
+
+**✅ GOOD - Single Result() call with multiple variables:**
+```csharp
+then
+    .Result(servicesVar, configVar, metricsVar, static (result, services, config, metrics) =>
+    {
+        result.Services.Should().BeSameAs(services);
+        result.Configuration.Should().BeSameAs(config);
+        result.Metrics.Should().BeSameAs(metrics);
+    });
+```
+
+**❌ BAD - Same parameter names in GivenContext helper methods:**
+```csharp
+public sealed class ModuleTestsGivenContext(BaseTest test) : GivenContext<ModuleTestsGivenContext>(test)
+{
+    public ModuleTestsGivenContext Module(out IVariable<IModule> moduleVar)
+    {
+        New(out moduleVar, static () => new SubjectModule());  // ❌ Parameter named "moduleVar"
+        return This;
+    }
+
+    public ModuleTestsGivenContext DependentModule(out IVariable<IModule> moduleVar)
+    {
+        New(out moduleVar, static () => new SubjectDependentModule());  // ❌ ALSO named "moduleVar"!
+        return This;
+    }
+}
+
+// CallerArgumentExpression captures "moduleVar" for BOTH methods!
+// Both store values under the SAME key, causing collision!
+```
+
+**✅ GOOD - Unique parameter names in GivenContext helper methods:**
+```csharp
+public sealed class ModuleTestsGivenContext(BaseTest test) : GivenContext<ModuleTestsGivenContext>(test)
+{
+    public ModuleTestsGivenContext Module(out IVariable<IModule> baseModule)
+    {
+        New(out baseModule, static () => new SubjectModule());  // ✅ Parameter named "baseModule"
+        return This;
+    }
+
+    public ModuleTestsGivenContext DependentModule(out IVariable<IModule> dependentModule)
+    {
+        New(out dependentModule, static () => new SubjectDependentModule());  // ✅ Named "dependentModule"
+        return This;
+    }
+}
+
+// CallerArgumentExpression captures different names: "baseModule" vs "dependentModule"
+// Each stores values under unique keys - no collision!
+```
+
+**❌ BAD - Multiple Given-When-Then chains:**
+```csharp
+[Fact]
+public void Test()
+{
+    Given.New<MyClass>(out var sut);
+    
+    var then1 = When.Invoked(sut, static s => s.Property);
+    then1.Result(static r => r.Should().Be(1));
+    
+    // ❌ Second Given-When-Then chain in same test
+    Given.New<string>(out var dataVar);
+    var then2 = When.Invoked(sut, dataVar, static (s, d) => s.Process(d));
+    then2.Result(static r => r.Should().BeTrue());
+}
+```
+
+**✅ GOOD - Single Given-When-Then chain (or split into separate tests):**
+```csharp
+[Fact]
+public void Process_WithData_ReturnsTrue()
+{
+    Given
+        .New<MyClass>(out var sut)
+        .New<string>(out var dataVar);
+
+    var then = When
+        .Invoked(sut, dataVar, static (s, d) => s.Process(d));
+
+    then
+        .Result(static r => r.Should().BeTrue());
+}
+```
+
+**❌ BAD - Redundant null checks:**
+```csharp
+then
+    .Result(static result => result.Should().NotBeNull())
+    .Result(static result => result.Should().BeOfType<MyType>());
+```
+
+**✅ GOOD - BeOfType already checks for null:**
+```csharp
+then
+    .Result(static result => result.Should().BeOfType<MyType>());
+```
+
+**❌ BAD - Multiple assertions for single item:**
+```csharp
+then
+    .Result(expectedVar, static (result, expected) =>
+    {
+        result.Should().ContainSingle();
+        result.Should().Contain(expected);
+    });
+```
+
+**✅ GOOD - ContainSingle().Which pattern:**
+```csharp
+then
+    .Result(expectedVar, static (result, expected) =>
+        result.Should().ContainSingle().Which.Should().BeSameAs(expected));
+```
+
+**❌ BAD - Creating SUT first, then modifying it:**
+```csharp
+Given
+    .Sut(out var sutVar)
+    .New<Module>(out var moduleVar)
+    .AddModuleToSut(sutVar, moduleVar);  // ❌ Modifying SUT after creation
+```
+
+**✅ GOOD - Create test data first, then SUT:**
+```csharp
+Given
+    .New<Module>(out var moduleVar)
+    .SutWithModule(out var sutVar, moduleVar);  // ✅ SUT created with data
+```
+
+**❌ BAD - String matching on type names:**
+```csharp
+services.Should().Contain(d => d.ServiceType.Name.Contains("FeatureManager"));
+```
+
+**✅ GOOD - Direct type references:**
+```csharp
+services.Should().Contain(d => d.ServiceType == typeof(FeatureManager));
+// Or even better:
+services.Should().ContainSingleton<FeatureManager>();
+```
+
+**❌ BAD - Substitute.For in New:**
+```csharp
+Given
+    .New<IMyService>(out var serviceVar, static () => Substitute.For<IMyService>());
+```
+
+**✅ GOOD - Use SubstituteFor helper:**
+```csharp
+Given
+    .SubstituteFor<IMyService>(out var serviceVar);
+```
+
+**❌ BAD - Implicit system under test:**
+```csharp
+[Fact]
+public void Test()
+{
+    Given
+        .New<ModulesCollection>(out var collectionVar, static () => new())
+        .New<SubjectModule>(out var moduleVar, static () => new());
+
+    var then = When
+        .Invoked(collectionVar, moduleVar, static (collection, module) =>
+        {
+            collection.Add(module);
+            return collection;
+        });
+    // What is the system under test? The collection or the module?
+}
+```
+
+**✅ GOOD - Explicit system under test:**
+```csharp
+[Fact]
+public void Add_ShouldAddModule()
+{
+    Given
+        .New<ModulesCollection>(out var sut, static () => new())  // ✅ Clear: collection is SUT
+        .New<SubjectModule>(out var moduleVar, static () => new());
+
+    var then = When
+        .Invoked(sut, moduleVar, static (collection, module) =>
+        {
+            collection.Add(module);
+            return collection;
+        });
+}
+```
+
+**✅ GOOD - ContainSingle():**
+```csharp
+result.Should().ContainSingle();
+```
+
+**❌ BAD - Hardcoded literals in tests:**
+```csharp
+Given
+    .New(out IVariable<HealthCheckStatus> statusVar, static () => new HealthCheckStatus
+    {
+        IsFailed = false,  // ❌ Hardcoded literal
+        Description = "test"  // ❌ Hardcoded literal
+    });
+```
+
+**✅ GOOD - Use AutoFixture-generated values:**
+```csharp
+Given
+    .New<bool>(out var isFailedVar)
+    .New<string>(out var descriptionVar);
+
+var then = When
+    .Invoked(isFailedVar, descriptionVar, static (isFailed, description) => new HealthCheckStatus
+    {
+        IsFailed = isFailed,
+        Description = description
+    });
+```
+
+**❌ BAD - Testing string instance equality for static properties:**
+```csharp
+[Fact]
+public void Ready_WhenAccessedMultipleTimes_ReturnsSameInstance()
+{
+    Given
+        .New(out var expectedInstanceVar, static () => HealthCheckTags.Ready);
+
+    var then = When
+        .Invoked(static () => HealthCheckTags.Ready);
+
+    then
+        .Result(expectedInstanceVar, static (result, expected) => 
+            result.Should().BeSameAs(expected));  // ❌ Tests .NET string interning, not your code
+}
+```
+
+**✅ GOOD - Testing static property actual value:**
+```csharp
+[Fact]
+public void Ready_WhenAccessed_ReturnsExpectedValue()
+{
+    Given
+        .New(out var tagVar, static () => HealthCheckTags.Ready);
+
+    var then = When
+        .Invoked(tagVar, static tag => tag);
+
+    then
+        .Result(static result => result.Should().Be(nameof(HealthCheckTags.Ready)));  // ✅ Tests actual value
+}
+```
+
+**❌ BAD - Using New with factory for SUT:**
+```csharp
+Given
+    .New<ModulesCollection>(out var sut, static () => new());
+```
+
+**✅ GOOD - Use Sut() method:**
+```csharp
+Given
+    .Sut(out var sutVar);  // GivenContext provides Sut() method
+
+// In GivenContext:
+public ModulesCollectionTestsGivenContext Sut(out IVariable<ModulesCollection> sutVar)
+{
+    New(out sutVar, static () => new ModulesCollection());
+    return This;
+}
+```
+
+**❌ BAD - Using New with factory when not needed:**
+```csharp
+Given
+    .New<string>(out var nameVar, static () => "John Doe");  // ❌ Hardcoded in factory
+```
+
+**✅ GOOD - Let AutoFixture generate:**
+```csharp
+Given
+    .New<string>(out var nameVar);  // ✅ AutoFixture generates random string
+```
+
+**❌ BAD - Test setup in Invoked lambda:**
+```csharp
+var then = await When
+    .InvokedAsync(sutVar, servicesVar, configurationVar, metricsVar,
+        async static (sut, services, config, metrics, ct) =>
+        {
+            await sut.AddServicesAsync(services, config, metrics, ct);  // ❌ Setup
+            return services;  // ❌ Return different object
+        });
+```
+
+**✅ GOOD - Invoke only the method under test:**
+```csharp
+var then = await When
+    .InvokedAsync(sutVar, servicesVar, configurationVar, metricsVar,
+        static (sut, services, config, metrics, ct) =>
+            sut.AddServicesAsync(services, config, metrics, ct));  // ✅ Just invoke the method
+
+// Then assert on the result
+then
+    .Result(static result => result.Should().BeAssignableTo<IRegisteredModules>());
+```
+
+**❌ BAD - Falling out of Given-When-Then pattern:**
+```csharp
+[Fact]
+public void Test()
+{
+    // ❌ Imperative setup mixed with assertions
+    var baseModule = new SubjectModule();
+    var dependentModule = new SubjectDependentModule();
+    dependentModule.DependsOn<SubjectModule>();
+    
+    dependentModule.Dependencies.Count.Should().Be(1);  // ❌ Assertion in setup
+    
+    var metadata = new ModuleMetadata(dependentModule);
+    var container = new[] { new ModuleMetadata(baseModule) };
+    var dependencies = metadata.GetDependencies(container).ToList();
+    
+    dependencies.Should().HaveCount(1);  // ❌ No Then context
+}
+```
+
+**✅ GOOD - Proper Given-When-Then structure:**
+```csharp
+[Fact]
+public void GetDependencies_WithOneDependency_ReturnsSingleDependency()
+{
+    Given
+        .NewModule(out var baseModuleVar)
+        .NewDependentModule(out var dependentModuleVar)
+        .Sut(out var sutVar, dependentModuleVar)
+        .Container(out var containerVar, baseModuleVar);
+
+    var then = When
+        .Invoked(sutVar, containerVar, static (sut, container) => sut.GetDependencies(container));
+
+    then
+        .Result(baseModuleVar, static (result, expected) =>
+        {
+            result.Should().ContainSingle();
+            result.First().IsSome.Should().BeTrue();
+            ((ModuleMetadata)result.First()).Module.Should().BeSameAs(expected);
+        });
+}
+```
+
+**❌ BAD - HaveCount(1):**
+```csharp
+result.Should().HaveCount(1);
+```
+
+**✅ GOOD - ContainSingle():**
+```csharp
+result.Should().ContainSingle();
 ```
 
 **❌ BAD - Dictionary assertions:**
@@ -1171,18 +1785,53 @@ public void Method_WithInvalidInput_ReturnsError()
 ```csharp
 // AwesomeAssertions patterns
 result.Should().BeTrue();
-result.Should().NotBeNull();
 result.Should().Be(expected);
-result.Should().BeOfType<ExpectedType>();
+result.Should().BeOfType<ExpectedType>();  // Already checks for null
+result.Should().BeAssignableTo<ExpectedType>();  // Already checks for null
 collection.Should().HaveCount(3);
+collection.Should().ContainSingle();  // ✅ Use instead of HaveCount(1)
 collection.Should().Contain(item => item.Id == expectedId);
-collection.Should().ContainSingle();
 collection.Should().NotBeNullOrEmpty();
 
 // Service collection assertions
 services.Should().ContainSingleSingleton<IService>();
 services.Should().ContainScoped<IService>();
 services.Should().ContainTransient<IService>();
+
+// Type assertions
+services.Should().Contain(d => d.ServiceType == typeof(MyService));  // ✅ Use typeof()
+services.Should().Contain(d => d.ServiceType.Name.Contains("MyService"));  // ❌ Avoid string matching
+
+// Dictionary assertions
+dict.Should().ContainKey(key).WhoseValue.Should().Be(value);  // ✅ Chained assertion
+
+// Null checking
+result.Should().BeOfType<MyType>();  // ✅ Already checks for null, no need for NotBeNull() first
+result.Should().BeAssignableTo<IMyInterface>();  // ✅ Already checks for null
+```
+
+### Test Result Patterns
+
+```csharp
+// ✅ GOOD - Single Result() call with multiple assertions
+then
+    .Result(var1, var2, var3, static (result, v1, v2, v3) =>
+    {
+        result.Property1.Should().Be(v1);
+        result.Property2.Should().Be(v2);
+        result.Property3.Should().Be(v3);
+    });
+
+// ❌ BAD - Multiple Result() calls
+then
+    .Result(var1, static (result, v1) => result.Property1.Should().Be(v1))
+    .Result(var2, static (result, v2) => result.Property2.Should().Be(v2))
+    .Result(var3, static (result, v3) => result.Property3.Should().Be(v3));
+
+// ✅ GOOD - Simple assertions without variables
+then
+    .Result(static result => result.Should().BeTrue())
+    .Result(static result => result.Count.Should().Be(5));
 ```
 
 ### Code Quality Warnings to Avoid
@@ -1317,6 +1966,30 @@ public sealed class [Module]Module : IModule
 - Register in `ApplicationModules.cs` in proper order
 - Modules can access `IServiceCollection`, `IConfiguration`, and `IMetricsBuilder` in `AddServicesAsync`
 - Modules can access `WebApplication` in `BuildAppAsync`
+
+### Test Patterns Quick Reference
+
+| Pattern | ❌ Avoid | ✅ Prefer |
+|---------|----------|-----------|
+| **Null checks** | `.NotBeNull()` then `.BeOfType<T>()` | Just `.BeOfType<T>()` (checks null) |
+| **Single item** | `.HaveCount(1)` | `.ContainSingle()` |
+| **Type checking** | `d.ServiceType.Name.Contains("MyService")` | `d.ServiceType == typeof(MyService)` |
+| **Mocking** | `Substitute.For<T>()` in `New()` | `.SubstituteFor<T>()` helper |
+| **Multiple assertions** | Multiple `.Result()` calls | Single `.Result()` with multiple vars |
+| **GWT chains** | Multiple Given-When-Then in one test | One chain per test |
+| **Lambda body** | `{ return x; }` | Expression-bodied `x` |
+| **Test variables** | Local variables outside Given | All in `Given.New()` |
+| **Intermediate values** | `New()` for every value | `Create<T>()` for non-asserted values |
+| **SUT clarity** | Implicit sut in variable names | Explicit `sut` variable |
+
+### Common Test Warnings
+
+| Warning | Cause | Solution |
+|---------|-------|----------|
+| **IDE0053** | Block-bodied lambda for single expression | Use expression body: `x => x.Property` |
+| **FAA0001** | Using `.HaveCount(1)` | Use `.ContainSingle()` instead |
+| **Type arg redundant** | `.New<T>(out IVariable<T> var)` | Omit type: `.New(out IVariable<T> var)` |
+| **CA2008** | Task created without TaskScheduler | Use proper async pattern with `await` |
 
 ## Questions to Ask When Developing
 

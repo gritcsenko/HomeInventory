@@ -30,6 +30,18 @@ public class ThenContext<TResult>(VariablesContainer variables, IVariable<TResul
         where TArg1 : notnull
         where TArg2 : notnull =>
         Result(r => assert(r, GetValue(arg1), GetValue(arg2)));
+
+    public ThenContext<TResult> Result<TArg1, TArg2, TArg3>(IVariable<TArg1> arg1, IVariable<TArg2> arg2, IVariable<TArg3> arg3, Action<TResult, TArg1, TArg2, TArg3> assert)
+        where TArg1 : notnull
+        where TArg2 : notnull
+        where TArg3 : notnull =>
+        Result(arg1[0], arg2[0], arg3[0], assert);
+
+    public ThenContext<TResult> Result<TArg1, TArg2, TArg3>(IIndexedVariable<TArg1> arg1, IIndexedVariable<TArg2> arg2, IIndexedVariable<TArg3> arg3, Action<TResult, TArg1, TArg2, TArg3> assert)
+        where TArg1 : notnull
+        where TArg2 : notnull
+        where TArg3 : notnull =>
+        Result(r => assert(r, GetValue(arg1), GetValue(arg2), GetValue(arg3)));
 }
 
 public class ThenContext(VariablesContainer variables) : BaseContext(variables)

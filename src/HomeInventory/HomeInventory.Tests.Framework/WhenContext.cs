@@ -104,6 +104,14 @@ public class WhenContext(VariablesContainer variables, ICancellation cancellatio
         return new(Variables, variable);
     }
 
+    public ThenContext<TResult> Invoked<TResult>(Func<TResult> invoke)
+        where TResult : notnull
+    {
+        var variable = _result.OfType<TResult>();
+        Variables.Add(variable, () => invoke());
+        return new(Variables, variable);
+    }
+
     public async Task<ThenContext> InvokedAsync<TSut, TArg>(IVariable<TSut> sut, IVariable<TArg> arg, Func<TSut, TArg, CancellationToken, Task> invoke)
         where TSut : notnull
         where TArg : notnull =>
