@@ -22,7 +22,7 @@
     <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
     <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-57" />
     <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-57" />
-    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-55" />
+    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-57" />
     <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="18.0.2" />
     <PackageVersion Include="Riok.Mapperly" Version="4.3.0" />
     <PackageVersion Include="Scalar.Aspire" Version="0.7.4" />
