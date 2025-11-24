@@ -1,5 +1,16 @@
 # GitHub Copilot Instructions for HomeInventory
 
+## Meta-Instructions for AI Assistants
+
+**IMPORTANT**: When a user provides:
+- Requests about code patterns or practices
+- Advice on how to write better code
+- Hints about avoiding specific issues
+- Rules that can prevent undesired results
+- Corrections to mistakes you've made
+
+**YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, etc.) with clear examples of what to do and what to avoid.
+
 ## Project Overview
 
 HomeInventory is a home inventory management system built with .NET 10.0, following Clean Architecture principles with a modular design pattern. The application uses ASP.NET Core for the API layer and implements Domain-Driven Design (DDD) patterns.
@@ -486,11 +497,419 @@ When creating a new feature module (e.g., "Inventory"):
 
 ## Testing Guidelines
 
+### General Testing Principles
+
 1. **Unit Tests**: Test domain logic and business rules in isolation
 2. **Integration Tests**: Test with real dependencies (database, external services)
 3. **Acceptance Tests**: BDD scenarios using Reqnroll
 4. **Test project structure**: Mirror source project structure
 5. **Test naming**: `[MethodName]_[Scenario]_[ExpectedResult]`
+
+### Test Structure Pattern
+
+All tests follow the **Given-When-Then** pattern using `BaseTest<TGivenContext>`:
+
+```csharp
+[UnitTest]
+public class MyFeatureTests() : BaseTest<MyFeatureTestsGivenContext>(static t => new(t))
+{
+    [Fact]
+    public void MethodName_Scenario_ExpectedResult()
+    {
+        Given
+            .New<SomeType>(out var variable1)
+            .New<OtherType>(out var variable2, static () => new OtherType("value"));
+
+        var then = When
+            .Invoked(variable1, variable2, static (v1, v2) => v1.Method(v2));
+
+        then
+            .Result(static result => 
+            {
+                result.Should().NotBeNull();
+                result.Property.Should().Be("expected");
+            });
+    }
+}
+
+public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyFeatureTestsGivenContext>(test);
+```
+
+### Critical Test Guidelines
+
+**DO:**
+- ✅ **Use expression-bodied lambdas for single statements** - `static x => x.Method()` not `static x => { x.Method(); }`
+- ✅ **Use `Create<T>()` for values that don't need to be in test context** - avoids polluting context with unnecessary variables
+- ✅ **Update these instructions when user provides requests, advice, hints, or rules** that can prevent undesired results
+- ✅ Use `var then = When.Invoked(...);` followed by `then.Result(...)` on separate lines
+- ✅ Define all test data in `Given` section using `.New<T>(out var variable)`
+- ✅ Use AutoFixture to generate test data - avoid hardcoded literals/constants
+- ✅ Use `static` lambdas wherever possible for performance
+- ✅ Use AwesomeAssertions fluent syntax (`.Should()`)
+- ✅ Use `ContainSingleSingleton<T>()`, `ContainTransient<T>()`, `ContainScoped<T>()` for service collection assertions
+- ✅ Use `.ContainKey(...).WhoseValue.Should()...` for dictionary assertions
+- ✅ Create a separate `GivenContext` class for each test class
+- ✅ Keep test methods focused on a single behavior
+- ✅ Provide meaningful assertions in module tests - verify specific services are registered
+
+**DON'T:**
+- ❌ **Use block body `{ }` for lambdas with single statement** - triggers IDE0053 warning
+- ❌ **Create variables only to create other variables** - pollutes test context; use `Create<T>()` instead
+- ❌ Create local variables in test methods (except for `then`)
+- ❌ Capture local variables in `Invoked` or `Result` lambdas
+- ❌ Chain `When.Invoked(...).Result(...)` without the `then` variable
+- ❌ Use `Contain(d => d.ServiceType == typeof(T) && d.Lifetime == ...)` - use `ContainTransient<T>()` instead
+- ❌ Add comments explaining what test does - test name should be self-documenting
+- ❌ Duplicate literal values across tests - use AutoFixture or define in `Given` section
+- ❌ Hardcode string literals, numbers, or constants in factory functions - use `Fixture.Create<T>()` or parameters
+- ❌ Use `ContainKey(...)` then access dictionary - use `.ContainKey(...).WhoseValue.Should()...` pattern
+- ❌ Write module tests with only `.NotBeNullOrEmpty()` - verify specific services
+
+### AutoFixture Usage Guidelines
+
+**Using AutoFixture for Test Data:**
+
+The `New` method in `GivenContext` is designed to infer types automatically in most cases, eliminating the need to specify generic type parameters explicitly:
+
+```csharp
+// ✅ GOOD - Type is inferred from out parameter with explicit type
+Given
+    .New(out IVariable<string> fieldVar)      // Type inferred from IVariable<string>
+    .New(out IVariable<int> statusVar);       // Type inferred from IVariable<int>
+
+// ✅ GOOD - AutoFixture generates values with out var (requires type argument)
+Given
+    .New<string>(out var fieldVar)    // Type argument required with 'out var'
+    .New<int>(out var statusVar);      // Type argument required with 'out var'
+
+// ✅ GOOD - Type is inferred from lambda return type
+Given
+    .New(out var fieldVar, static () => "some value")  // Infers string from lambda
+    .New(out var statusVar, static () => 400);         // Infers int from lambda
+
+// ❌ BAD - Redundant type argument when out parameter has explicit type
+Given
+    .New<string>(out IVariable<string> fieldVar);  // ❌ Compiler warning: redundant type argument
+
+// ✅ GOOD - Type is inferred from lambda with IVariable parameters
+Given
+    .New(out var errorVar, errorMsgVar, static msg => new NotFoundError(msg));
+
+// ✅ GOOD - Use up to 3 IVariable parameters + lambda
+Given
+    .New(out var resultVar, arg1Var, arg2Var, arg3Var, static (a1, a2, a3) =>
+        new MyClass { Arg1 = a1, Arg2 = a2, Arg3 = a3 });
+
+// ❌ BAD - Hardcoded literals
+Given
+    .New<MyClass>(out var objectVar, static () =>
+        new MyClass { Field = "hardcoded", Status = 400 });
+
+// ✅ GOOD - For complex setups, create helper method in GivenContext
+public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGivenContext>(test)
+{
+    public MyTestsGivenContext ComplexSetup(
+        out IVariable<ResultType> resultVar,
+        out IVariable<string> field1Var,
+        out IVariable<string> field2Var)
+    {
+        // Omit type argument - type inferred from explicit IVariable<string>
+        New(out field1Var);
+        New(out field2Var);
+        // Use Create<T>() for values that don't need to be variables
+        // Remove 'static' when using Create<T>() from base class
+        New(out resultVar, field1Var, field2Var, (f1, f2) =>
+            new ResultType 
+            { 
+                Field1 = f1, 
+                Field2 = f2, 
+                Temp = Create<string>()  // ✅ Don't create tempVar just to use it here
+            });
+        return This;
+    }
+}
+
+// Usage in test
+Given
+    .ComplexSetup(out var resultVar, out var field1Var, out var field2Var);
+```
+
+**Key Principles:**
+- The `New` method supports up to 3 `IVariable<T>` parameters followed by a factory lambda
+- Type inference works when the lambda return type is explicit
+- **Avoid creating variables only to create other variables** - use `Create<T>()` instead to avoid context pollution
+- **Every `New` call adds a variable to test context** - only create variables that need to be referenced in assertions
+- Use `.New<T>(out var)` when AutoFixture can generate the type directly AND you need to reference it
+- You can add new overloads to `GivenContext<T>` if you need more than 3 parameters
+- Remove `static` from lambda when using `Create<T>()` method from base class
+
+**When to Use `Create<T>()` vs `New`:**
+
+```csharp
+// ❌ BAD - Creating variables only to use them once in factory
+New<string>(out var error1Var);
+New<string>(out var error2Var);
+New(out var modelStateVar, field1Var, field2Var, error1Var, error2Var, static (f1, f2, e1, e2) =>
+{
+    var ms = new ModelStateDictionary();
+    ms.AddModelError(f1, e1);  // e1 and e2 are only used here
+    ms.AddModelError(f2, e2);
+    return ms;
+});
+
+// ✅ GOOD - Use Create<T>() for values that don't need to be variables
+New(out var modelStateVar, field1Var, field2Var, (f1, f2) =>  // Note: not 'static' when using Create<T>()
+{
+    var ms = new ModelStateDictionary();
+    ms.AddModelError(f1, Create<string>());  // ✅ Create value directly
+    ms.AddModelError(f2, Create<string>());
+    return ms;
+});
+
+// Rule: Create a variable with New ONLY if:
+// 1. You need to reference it in test assertions
+// 2. You need to pass it to multiple method calls
+// 3. You need to verify its value in .Result()
+
+// Otherwise, use Create<T>() directly in the factory function
+```
+
+**Type Argument Guidelines:**
+- **Omit type argument** when the out parameter has an explicit type: `.New(out IVariable<string> myVar)`
+- **Include type argument** when using `out var`: `.New<string>(out var myVar)`
+- The compiler warns about "Type argument specification is redundant" when you use `.New<T>(out IVariable<T> var)`
+- Type inference relies on the declared type of the out parameter or the lambda return type
+
+**Why AutoFixture?**
+- Reduces possibility of "cheating" in production code
+- Ensures code works with any valid input, not just known test values
+- Makes tests more robust and less brittle
+- Reveals hidden dependencies on specific values
+
+### Examples
+
+**❌ BAD - Local variables, chaining, and hardcoded literals:**
+```csharp
+[Fact]
+public void MyTest()
+{
+    Given.New<MyClass>(out var sut);
+    
+    var localData = "test data";  // ❌ Local variable
+    var status = 400;              // ❌ Hardcoded literal
+    
+    When
+        .Invoked(sut, s => s.Method(localData, status))  // ❌ Capturing local variables
+        .Result(result => result.Should().BeTrue());      // ❌ Chained, no 'then' variable
+}
+```
+
+**✅ GOOD - Proper pattern with AutoFixture:**
+```csharp
+[Fact]
+public void Method_WithValidData_ReturnsTrue()
+{
+    Given
+        .New<MyClass>(out var sut)
+        .New<string>(out var dataVar)      // ✅ AutoFixture generates string
+        .New<int>(out var statusVar);      // ✅ AutoFixture generates int
+
+    var then = When
+        .Invoked(sut, dataVar, statusVar, static (s, data, status) => s.Method(data, status));  // ✅ No capturing
+
+    then
+        .Result(static result => result.Should().BeTrue());  // ✅ Separate 'then' variable
+}
+```
+
+**❌ BAD - Dictionary assertions:**
+```csharp
+result.Extensions.Should().ContainKey("errorCodes");
+var errorCodes = result.Extensions["errorCodes"] as string[];  // ❌ Separate access
+errorCodes.Should().Contain("InvalidCredentialsError");
+```
+
+**✅ GOOD - Dictionary assertions:**
+```csharp
+result.Extensions.Should().ContainKey("errorCodes")
+    .WhoseValue.Should().BeAssignableTo<string[]>()  // ✅ Chained assertion
+    .Which.Should().Contain("InvalidCredentialsError");
+```
+
+**❌ BAD - Service assertions:**
+```csharp
+services.Should()
+    .Contain(d => d.ServiceType == typeof(IMyService) && d.Lifetime == ServiceLifetime.Transient);
+```
+
+**✅ GOOD - Service assertions:**
+```csharp
+services.Should()
+    .ContainTransient<IMyService>();
+```
+
+**❌ BAD - Module test with no meaningful assertions:**
+```csharp
+protected override void EnsureRegistered(IServiceCollection services) =>
+    services.Should().NotBeNullOrEmpty();  // ❌ Too generic
+```
+
+**✅ GOOD - Module test with specific assertions:**
+```csharp
+protected override void EnsureRegistered(IServiceCollection services) =>
+    services.Should()
+        .Contain(d => d.ServiceType == typeof(HealthCheckService))
+        .And.Contain(d => d.ServiceType == typeof(IHealthCheckPublisher));
+```
+
+### Module Test Pattern
+
+```csharp
+[SuppressMessage("ReSharper", "UnusedType.Global")]
+public class MyModuleTests() : BaseModuleTest<MyModule>(static () => new())
+{
+    protected override void EnsureRegistered(IServiceCollection services) =>
+        services.Should()
+            .ContainSingleSingleton<MySingletonService>()
+            .And.ContainScoped<IMyScopedService>()
+            .And.ContainTransient<IMyTransientService>();
+}
+```
+
+### Integration Test Pattern
+
+For tests requiring full application context or multiple modules:
+
+```csharp
+[IntegrationTest]
+public class MyIntegrationTests() : BaseTest<MyIntegrationTestsGivenContext>(static t => new(t))
+{
+    [Fact]
+    public async Task Integration_Scenario_ExpectedBehavior()
+    {
+        await Given
+            .HttpContext(out var contextVar)
+            .New<MyRequest>(out var requestVar)
+            .SubstituteFor(out IVariable<IMyService> serviceVar, requestVar, (s, r) => 
+                s.ProcessAsync(r, Cancellation.Token).Returns(Task.FromResult(true)))
+            .InitializeHostAsync();
+
+        var then = await When
+            .InvokedAsync(serviceVar, requestVar, static (svc, req, ct) => svc.ProcessAsync(req, ct));
+
+        then
+            .Result(static result => result.Should().BeTrue());
+    }
+}
+
+public sealed class MyIntegrationTestsGivenContext(BaseTest test) : GivenContext<MyIntegrationTestsGivenContext>(test);
+```
+
+### Test Data Builder Pattern
+
+For complex test data, use factory methods in `Given`:
+
+```csharp
+Given
+    .New<ComplexObject>(out var objectVar, static () => new ComplexObject
+    {
+        Property1 = "value1",
+        Property2 = 42,
+        NestedObject = new NestedObject
+        {
+            NestedProperty = "nested"
+        }
+    });
+```
+
+### Async Test Pattern
+
+```csharp
+[Fact]
+public async Task AsyncMethod_Scenario_ExpectedResult()
+{
+    await Given
+        .New<MyClass>(out var sut)
+        .New<string>(out var dataVar, static () => "test")
+        .InitializeAsync();  // If async setup needed
+
+    var then = await When
+        .InvokedAsync(sut, dataVar, static (s, data, ct) => s.MethodAsync(data, ct));
+
+    then
+        .Result(static result => result.Should().Be("expected"));
+}
+```
+
+### Testing Error Scenarios
+
+```csharp
+[Fact]
+public void Method_WithInvalidInput_ReturnsError()
+{
+    Given
+        .New<MyService>(out var sut)
+        .New<InvalidInput>(out var inputVar);
+
+    var then = When
+        .Invoked(sut, inputVar, static (s, input) => s.Process(input));
+
+    then
+        .Result(static result =>
+        {
+            result.IsFaulted.Should().BeTrue();
+            result.Error.Should().BeOfType<ValidationError>();
+        });
+}
+```
+
+### Test Organization
+
+1. Group related tests in the same file
+2. Use nested classes for organizing related scenarios (when appropriate)
+3. Use `[Theory]` with `[InlineData]` or `[ClassData]` for parameterized tests
+4. Use `[UnitTest]`, `[IntegrationTest]`, or `[AcceptanceTest]` attributes for categorization
+
+### Common Assertions
+
+```csharp
+// AwesomeAssertions patterns
+result.Should().BeTrue();
+result.Should().NotBeNull();
+result.Should().Be(expected);
+result.Should().BeOfType<ExpectedType>();
+collection.Should().HaveCount(3);
+collection.Should().Contain(item => item.Id == expectedId);
+collection.Should().ContainSingle();
+collection.Should().NotBeNullOrEmpty();
+
+// Service collection assertions
+services.Should().ContainSingleSingleton<IService>();
+services.Should().ContainScoped<IService>();
+services.Should().ContainTransient<IService>();
+```
+
+### Code Quality Warnings to Avoid
+
+When writing tests, watch for and fix these common warnings:
+
+1. **IDE0053: Use expression body for lambda expression**
+   - Use expression-bodied lambdas when the body is a single expression
+   - ✅ Good: `static x => x.Property`
+   - ❌ Bad: `static x => { return x.Property; }`
+
+2. **Type argument specification is redundant**
+   - Omit type arguments when the compiler can infer from the out parameter type
+   - ✅ Good: `.New(out IVariable<string> myVar)`
+   - ❌ Bad: `.New<string>(out IVariable<string> myVar)`
+
+3. **Variable is assigned but its value is never used**
+   - Don't create variables that are only used to create other variables
+   - Use helper methods in GivenContext instead
+
+4. **Async method lacks 'await' operators**
+   - Ensure async test methods actually await async operations
+   - Use `await When.InvokedAsync(...)` not `When.Invoked(...)`
 
 ## Documentation
 
