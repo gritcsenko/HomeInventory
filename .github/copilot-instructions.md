@@ -310,6 +310,65 @@ return new Option<T>(value);  // ❌ Not the v5 API
 - **`.ToOption()`**: For collections or LanguageExt built-in conversions
 - **`Prelude.Optional(value)`**: ONLY for nullable value types (e.g., `int?`, `DateTime?`)
 
+### CollectionsMarshal and Async Patterns
+
+**Using `CollectionsMarshal.GetValueRefOrAddDefault` correctly:**
+
+```csharp
+// ✅ CORRECT - Synchronous: Use ref to avoid second dictionary lookup
+public TResult GetOrAdd<TResult>(TKey key, Func<TKey, TResult> createValueFunc)
+{
+    ref var val = ref CollectionsMarshal.GetValueRefOrAddDefault(dictionary, key, out var exists);
+    if (!exists)
+    {
+        val = createValueFunc(key);  // Set via ref - no second lookup!
+    }
+    return (TResult)val!;
+}
+
+// ✅ CORRECT - Async: Cannot use ref across await, use TryGetValue pattern
+public async ValueTask<TResult> GetOrAddAsync<TResult>(TKey key, Func<TKey, Task<TResult>> createValueFunc)
+{
+    if (dictionary.TryGetValue(key, out var existingValue))
+    {
+        return (TResult)existingValue!;
+    }
+    
+    var newValue = await createValueFunc(key);
+    dictionary[key] = newValue;
+    return newValue;
+}
+
+// ❌ WRONG - Using CollectionsMarshal with async
+public async ValueTask<TResult> GetOrAddAsync<TResult>(TKey key, Func<TKey, Task<TResult>> createValueFunc)
+{
+    ref var val = ref CollectionsMarshal.GetValueRefOrAddDefault(dictionary, key, out var exists);
+    // ❌ Cannot use 'val' after await - ref becomes invalid!
+    var newValue = await createValueFunc(key);
+    val = newValue;  // ❌ COMPILER ERROR: Cannot use ref variable across await boundary
+    return (TResult)val!;
+}
+
+// ❌ WRONG - Not using the ref properly (defeats the optimization)
+public TResult GetOrAdd<TResult>(TKey key, Func<TKey, TResult> createValueFunc)
+{
+    ref var val = ref CollectionsMarshal.GetValueRefOrAddDefault(dictionary, key, out var exists);
+    if (!exists)
+    {
+        var newValue = createValueFunc(key);
+        dictionary[key] = newValue;  // ❌ Second dictionary lookup - defeats the purpose of ref!
+    }
+    return (TResult)val!;
+}
+```
+
+**Key Rules:**
+- **Refs cannot cross await boundaries** - C# compiler enforces this
+- **Use `CollectionsMarshal.GetValueRefOrAddDefault` only in synchronous code** for performance
+- **Assign through the ref variable (`val = ...`)** to avoid second dictionary lookup
+- **For async operations**, use standard `TryGetValue` pattern - the ref optimization isn't applicable
+- **`Dictionary<TKey, TValue>` is NOT thread-safe** - use `ConcurrentDictionary` for multi-threaded scenarios
+
 ### Architecture Rules
 
 1. **Modules are independent**: Each module should be self-contained
