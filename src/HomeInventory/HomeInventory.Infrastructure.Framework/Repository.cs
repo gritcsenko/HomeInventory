@@ -82,7 +82,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query);
         return await projected.FirstOrDefaultAsync(cancellationToken) is { } entity
-            ? Prelude.Optional(entity)
+            ? Prelude.Some(entity)
             : Option<TAggregateRoot>.None;
     }
 

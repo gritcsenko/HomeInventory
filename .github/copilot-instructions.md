@@ -273,6 +273,43 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 9. **Pattern matching** over traditional type checks and casts
 10. **Static local functions** and **static anonymous functions** where possible
 
+### LanguageExt v5 Patterns
+
+**The project uses LanguageExt.Core v5.** Follow these patterns for Option usage:
+
+**Creating Option Values:**
+
+```csharp
+// ✅ CORRECT - Use Prelude.Some() for non-null values
+return value is not null 
+    ? Prelude.Some(value) 
+    : Option<T>.None;
+
+// ✅ CORRECT - Use pattern matching with Prelude.Some()
+return await query.FirstOrDefaultAsync(ct) is { } entity
+    ? Prelude.Some(entity)
+    : Option<T>.None;
+
+// ✅ CORRECT - Use .NoneIfNull() extension for nullable references
+return nullableValue.NoneIfNull();
+
+// ✅ CORRECT - Use .ToOption() extension (LanguageExt built-in)
+return collection.Where(predicate).ToOption();
+
+// ❌ WRONG - Don't use Prelude.Optional() for non-null values
+return Prelude.Optional(entity);  // ❌ This is for nullable types only
+
+// ❌ WRONG - Don't use new Option<T>()
+return new Option<T>(value);  // ❌ Not the v5 API
+```
+
+**When to use what:**
+- **`Prelude.Some(value)`**: When you have a guaranteed non-null value
+- **`Option<T>.None`**: To represent absence of value
+- **`.NoneIfNull()`**: For nullable reference types (defined in `HomeInventory.Core.OptionExtensions`)
+- **`.ToOption()`**: For collections or LanguageExt built-in conversions
+- **`Prelude.Optional(value)`**: ONLY for nullable value types (e.g., `int?`, `DateTime?`)
+
 ### Architecture Rules
 
 1. **Modules are independent**: Each module should be self-contained

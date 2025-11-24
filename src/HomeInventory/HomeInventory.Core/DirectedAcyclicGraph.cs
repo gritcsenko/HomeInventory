@@ -8,7 +8,7 @@ public sealed class DirectedAcyclicGraph<TNode, TEdge>
         GetNodeOptional(nodeValue, filter).IfNone(() => AddNode(nodeValue));
 
     public Option<Node> GetNodeOptional(TNode nodeValue, Func<Node, TNode, bool> filter) =>
-        Nodes.FirstOrDefault(n => filter(n, nodeValue)) ?? Option<Node>.None;
+        Nodes.FirstOrDefault(n => filter(n, nodeValue)).NoneIfNull();
 
     public Node AddNode(TNode nodeValue)
     {
