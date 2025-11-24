@@ -1,0 +1,31 @@
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <!-- Skip properties -->
+          <SkipAutoProps>true</SkipAutoProps>
+
+          <!-- Don't include test assemblies in coverage -->
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+
+          <!-- Exclude generated files -->
+          <ExcludeByFile>**/*.g.cs,**/*.Designer.cs</ExcludeByFile>
+
+          <!-- Exclude code marked with these attributes -->
+          <ExcludeByAttribute>CompilerGenerated,GeneratedCode,ExcludeFromCodeCoverage</ExcludeByAttribute>
+
+          <!-- Include all assemblies -->
+          <Include>[HomeInventory.*]*</Include>
+
+          <!-- Exclude specific namespaces -->
+          <Exclude>
+            [*]Microsoft.AspNetCore.OpenApi.Generated.*,
+            [*]System.Runtime.CompilerServices.*
+          </Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
+

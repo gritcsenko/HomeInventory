@@ -8,8 +8,180 @@
 - Hints about avoiding specific issues
 - Rules that can prevent undesired results
 - Corrections to mistakes you've made
+- **Terminal commands that fail and their working alternatives**
 
-**YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, etc.) with clear examples of what to do and what to avoid.
+**YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
+
+## Terminal Commands Reference
+
+This section documents working terminal commands and common failures encountered in this project.
+
+### PowerShell Commands (Windows)
+
+**Shell**: `powershell.exe` (Windows PowerShell v7.5.4, as of time of writing. Use ` $PSVersionTable.PSVersion.ToString()` to check version, if needed)
+
+#### Working Commands
+
+**Build:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj --no-restore
+```
+
+**Test:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet test HomeInventory.Tests\HomeInventory.Tests.csproj --no-build
+```
+
+**Test with Filter:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet test HomeInventory.Tests\HomeInventory.Tests.csproj --filter "FullyQualifiedName~TestClassName" --no-build
+```
+
+**Format Verification:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet format --verify-no-changes --severity error --verbosity diag
+```
+
+**Coverage (Local):**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage"
+```
+
+**Build with Warnings as Errors:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj --no-restore /p:TreatWarningsAsErrors=true
+```
+
+**Filter Output with Select-String:**
+```powershell
+dotnet build 2>&1 | Select-String -Pattern "warning|error" | Select-Object -First 20
+```
+
+#### Command Failures and Solutions
+
+**❌ FAILED: Commands hanging indefinitely**
+
+Some commands appear to hang with no output, especially when run in background mode or with complex pipelines:
+
+```powershell
+# ❌ These may hang or produce no output:
+dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj
+dotnet test HomeInventory.Tests\HomeInventory.Tests.csproj --no-build
+dotnet format --verify-no-changes --severity error --verbosity diag
+```
+
+**✅ SOLUTION: Use explicit working directory and output redirection**
+
+```powershell
+# ✅ Always use explicit cd and simpler commands:
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj --no-restore
+
+# ✅ For checking output, use Select-String:
+dotnet build 2>&1 | Select-String -Pattern "succeeded|failed"
+```
+
+**Why it works**: Explicit `cd` ensures correct context, and separating commands avoids complex pipeline issues.
+
+---
+
+**❌ FAILED: grep doesn't exist in PowerShell**
+
+```powershell
+# ❌ This fails:
+dotnet build | grep "error"
+```
+
+**Error**: `grep : The term 'grep' is not recognized`
+
+**✅ SOLUTION: Use Select-String instead**
+
+```powershell
+# ✅ PowerShell equivalent:
+dotnet build 2>&1 | Select-String -Pattern "error"
+```
+
+**Why**: PowerShell uses `Select-String`, not `grep`. Always use PowerShell cmdlets.
+
+---
+
+**❌ FAILED: Piping with complex filter expressions**
+
+```powershell
+# ❌ This may fail with parsing errors:
+dotnet test --filter "FullyQualifiedName~Test1|FullyQualifiedName~Test2"
+```
+
+**✅ SOLUTION: Use proper escaping or quotes**
+
+```powershell
+# ✅ Proper escaping:
+dotnet test --filter "FullyQualifiedName~Test1|FullyQualifiedName~Test2"
+# OR separate filters:
+dotnet test --filter "Category=Unit"
+```
+
+---
+
+### When Commands Fail
+
+**If a terminal command fails:**
+
+1. **Record the failure** in this section
+2. **Document the error message**
+3. **Document the working solution**
+4. **Explain why it works**
+
+**Template for new failures:**
+
+```markdown
+**❌ FAILED: [Brief description]**
+
+[Failed command]
+
+**Error**: [Error message]
+
+**✅ SOLUTION: [Working alternative]**
+
+[Working command]
+
+**Why**: [Explanation of why the solution works]
+```
+
+### Command Best Practices
+
+1. **Always use explicit `cd`** before running commands
+2. **Use `--no-restore`** and `--no-build`** when appropriate to speed up builds
+3. **Use `2>&1`** to capture both stdout and stderr in PowerShell
+4. **Use `Select-String`** instead of `grep`
+5. **Avoid complex pipelines** - break into multiple commands if needed
+6. **Use `--filter`** for running specific tests
+7. **Check command output** with `Select-String` patterns
+
+### Common Patterns
+
+**Check if build succeeded:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet build 2>&1 | Select-String -Pattern "Build succeeded|Build failed"
+```
+
+**Run specific test category:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet test --filter "Category=Unit" --no-build
+```
+
+**Check for specific errors:**
+```powershell
+dotnet build 2>&1 | Select-String -Pattern "IDE0053|CS\d+"
+```
 
 ## Project Overview
 
@@ -500,10 +672,52 @@ When creating a new feature module (e.g., "Inventory"):
 ### General Testing Principles
 
 1. **Unit Tests**: Test domain logic and business rules in isolation
-2. **Integration Tests**: Test with real dependencies (database, external services)
+2. **Integration Tests**: Test with real dependencies (database, external services, middleware pipelines)
 3. **Acceptance Tests**: BDD scenarios using Reqnroll
 4. **Test project structure**: Mirror source project structure
 5. **Test naming**: `[MethodName]_[Scenario]_[ExpectedResult]`
+6. **Coverage targets**: 
+   - Domain/Application layers: Aim for 80%+ (business logic)
+   - Infrastructure layer: 60-70% acceptable (database access, specifications)
+   - Web layer: 50-60% acceptable (mostly framework wiring)
+   - Don't chase 100% - focus on business-critical paths
+
+### When to Use Unit vs Integration Tests
+
+**Unit Tests (BaseModuleTest):**
+- ✅ Service registration (`AddServicesAsync`)
+- ✅ Domain logic and business rules
+- ✅ Pure functions and transformations
+- ✅ Error handling and validation
+- ✅ Data structure operations
+
+**Integration Tests (WebApplicationFactory):**
+- ✅ Middleware pipeline configuration (`BuildAppAsync`)
+- ✅ Endpoint routing and handlers
+- ✅ Authentication/Authorization flow
+- ✅ Database queries with real DB
+- ✅ End-to-end scenarios
+
+**Don't Unit Test:**
+- ❌ Framework generated code (marked with `CompilerGenerated` or `GeneratedCode` attributes)
+- ❌ Simple property getters/setters
+- ❌ Thin wrappers over framework methods
+- ❌ Code that only calls framework APIs
+
+**Code Coverage Exclusions:**
+
+The following are automatically excluded from code coverage (see `coverlet.runsettings` and CI workflow):
+- Classes in `Microsoft.AspNetCore.OpenApi.Generated.*` namespace (OpenAPI generated code)
+- Classes in `System.Runtime.CompilerServices.*` namespace (compiler-generated helpers)
+- Files matching `**/*.g.cs` pattern (generated files)
+- Classes marked with `[CompilerGenerated]`, `[GeneratedCode]`, or `[ExcludeFromCodeCoverage]` attributes
+- Auto-implemented properties
+- Test assemblies themselves
+
+To run tests with coverage locally:
+```cmd
+dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage"
+```
 
 ### Test Structure Pattern
 
@@ -762,20 +976,6 @@ protected override void EnsureRegistered(IServiceCollection services) =>
         .And.Contain(d => d.ServiceType == typeof(IHealthCheckPublisher));
 ```
 
-### Module Test Pattern
-
-```csharp
-[SuppressMessage("ReSharper", "UnusedType.Global")]
-public class MyModuleTests() : BaseModuleTest<MyModule>(static () => new())
-{
-    protected override void EnsureRegistered(IServiceCollection services) =>
-        services.Should()
-            .ContainSingleSingleton<MySingletonService>()
-            .And.ContainScoped<IMyScopedService>()
-            .And.ContainTransient<IMyTransientService>();
-}
-```
-
 ### Integration Test Pattern
 
 For tests requiring full application context or multiple modules:
@@ -1032,7 +1232,273 @@ public sealed class [Module]Module : IModule
 6. Does this need authentication/authorization?
 7. What are the testable scenarios?
 
+## Code Review Guidelines
+
+When reviewing code or providing feedback on pull requests, check for these critical aspects:
+
+### Architecture & Design Review
+
+**✅ Check For:**
+- Correct layer placement (Domain/Application/Infrastructure/Web)
+- No circular dependencies between modules
+- Domain layer has no infrastructure dependencies
+- Dependency injection used correctly (not service locator)
+- CQRS pattern followed (Commands vs Queries)
+- Functional patterns used (Option, Either, Validation)
+
+**❌ Red Flags:**
+- Business logic in controllers/endpoints
+- Infrastructure code in domain layer
+- Direct database calls in application layer
+- Tight coupling between modules
+- Static dependencies or singletons for stateful services
+
+### Code Quality Review
+
+**✅ Check For:**
+- Expression-bodied lambdas for single statements
+- `static` lambdas where possible
+- File-scoped namespaces
+- Primary constructors used appropriately
+- Immutable data structures (records, readonly)
+- Pattern matching over type checks/casts
+- No hardcoded literals (use configuration/constants)
+
+**❌ Red Flags:**
+- Block-bodied lambdas `{ }` for single statements (IDE0053)
+- Mutable state in domain entities
+- String literals scattered throughout code
+- Large methods (>20 lines)
+- Deep nesting (>3 levels)
+- Magic numbers
+
+### Test Review
+
+**✅ Check For:**
+- All new code has tests
+- Tests follow Given-When-Then pattern
+- Expression-bodied lambdas in test assertions
+- AutoFixture used (no hardcoded test data)
+- `.WhoseValue` pattern for dictionary assertions
+- `ContainTransient/Scoped/Singleton<T>()` for service assertions
+- No local variables in tests (except `then`)
+- No intermediate variables (use `Create<T>()`)
+- Meaningful test names: `Method_Scenario_ExpectedResult`
+
+**❌ Red Flags:**
+- Block-bodied lambdas in assertions
+- Hardcoded strings/numbers in tests
+- Variables created only to create other variables
+- Chained `When.Invoked().Result()` without `then` variable
+- Tests with only `.NotBeNullOrEmpty()` assertions
+- Missing tests for critical paths
+- Tests that test framework behavior, not business logic
+
+### Security Review
+
+**✅ Check For:**
+- Passwords hashed with BCrypt
+- JWT tokens validated correctly
+- Authorization checks on protected endpoints
+- Input validation with FluentValidation
+- SQL injection prevention (EF parameterization)
+- XSS prevention (proper encoding)
+- CSRF protection where needed
+- Sensitive data not logged
+
+**❌ Red Flags:**
+- Passwords in plain text or weak hashing
+- Missing authorization checks
+- User input directly in queries
+- Sensitive data in logs or exceptions
+- Hardcoded secrets or connection strings
+- Missing validation on endpoints
+
+### Performance Review
+
+**✅ Check For:**
+- Async/await used correctly
+- Database queries optimized (no N+1)
+- Proper use of `IAsyncEnumerable<T>`
+- Specifications for complex queries
+- `CancellationToken` passed through
+- Proper disposal of resources (`using`, `IDisposable`)
+- Lazy loading where appropriate
+
+**❌ Red Flags:**
+- Blocking calls in async code (`.Result`, `.Wait()`)
+- N+1 query problems
+- Missing `CancellationToken` parameters
+- Large objects kept in memory unnecessarily
+- Circular references causing memory leaks
+- Missing `using` statements for disposables
+
+### Error Handling Review
+
+**✅ Check For:**
+- LanguageExt types used (`Option<T>`, `Either<Error, T>`)
+- Domain errors defined and used
+- ProblemDetails returned from APIs
+- Proper exception handling (no swallowed exceptions)
+- Validation errors mapped to ProblemDetails
+- Error messages are user-friendly
+- Errors logged with context
+
+**❌ Red Flags:**
+- Exceptions used for control flow
+- Empty catch blocks
+- Generic `Exception` caught
+- Errors not logged
+- Technical error messages exposed to users
+- Missing error handling on critical paths
+
+### API/Endpoint Review
+
+**✅ Check For:**
+- Inherits from `ApiCarterModule`
+- `PathPrefix` property defined
+- Validation with `.WithValidationOf<T>()`
+- Proper status codes (200, 201, 400, 404, 500)
+- OpenAPI documentation attributes
+- Authentication/authorization applied correctly
+- Cancellation tokens in signatures
+- Scope accessor used for dependencies
+- DTOs mapped with Mapperly
+
+**❌ Red Flags:**
+- Direct use of `CarterModule` (should use `ApiCarterModule`)
+- Missing validation
+- Wrong HTTP methods (POST for queries, GET for commands)
+- Missing API versioning
+- Business logic in endpoint handler
+- Direct repository access (should use services)
+
+### Database/EF Core Review
+
+**✅ Check For:**
+- Entities in `Domain.[Module]` namespace
+- Configurations in `Infrastructure.[Module]`
+- Specifications for complex queries
+- Proper indexes on frequently queried columns
+- Navigation properties configured correctly
+- Migrations named descriptively
+- Audit fields (`ICreationAuditableEntity`, `IModificationAuditableEntity`)
+
+**❌ Red Flags:**
+- EF entities in application or web layer
+- Missing or incorrect relationships
+- N+1 queries (missing includes)
+- Missing indexes on foreign keys
+- Migrations modifying production data
+- Unbounded queries (no pagination)
+
+### Code Review Process
+
+When providing review feedback:
+
+1. **Start with positives** - What's done well
+2. **Prioritize issues** - Critical > Important > Nice-to-have
+3. **Be specific** - Point to exact lines and suggest fixes
+4. **Provide examples** - Show correct pattern vs incorrect
+5. **Explain why** - Don't just say "don't do X", explain the reason
+6. **Suggest alternatives** - If rejecting an approach, propose better one
+7. **Ask questions** - If unclear, ask for clarification before assuming
+
+### Review Comment Templates
+
+**Architecture Concern:**
+```
+❌ **Architecture Issue**: This business logic should be in the application layer, not in the endpoint handler.
+
+**Why**: Endpoints should be thin wrappers that delegate to services. This keeps business logic testable and reusable.
+
+**Suggestion**: Move this logic to `I[Module]Service` and call it from the endpoint.
+```
+
+**Test Issue:**
+```
+❌ **Test Issue**: This test uses hardcoded strings instead of AutoFixture.
+
+**Why**: Hardcoded test data can lead to tests that pass with specific values but fail in production.
+
+**Suggestion**: 
+- Use `.New<string>(out var emailVar)` to generate random data
+- This ensures the code works with any valid input
+```
+
+**Code Quality:**
+```
+⚠️ **Code Quality**: This lambda has a block body for a single statement (IDE0053).
+
+**Before**: 
+```csharp
+.Result(static result => { result.Should().BeTrue(); })
+```
+
+**After**:
+```csharp
+.Result(static result => result.Should().BeTrue())
+```
+```
+
+**Security Concern:**
+```
+🔒 **Security Issue**: Password is not being hashed before storage.
+
+**Why**: Storing plain text passwords is a critical security vulnerability.
+
+**Fix**: Use `BCrypt.Net.HashPassword()` before saving to database.
+```
+
+**Performance Issue:**
+```
+⚡ **Performance Concern**: This query may cause N+1 problem.
+
+**Issue**: Loading `User.Orders` in a loop will execute N queries.
+
+**Solution**: Use `.Include(u => u.Orders)` in the original query.
+```
+
+### Review Checklist
+
+Before approving a PR, verify:
+
+- [ ] Code follows project architecture (layers, modules, patterns)
+- [ ] All new code has tests with good coverage
+- [ ] No code quality warnings (IDE0053, redundant type args, etc.)
+- [ ] Security best practices followed
+- [ ] Performance considerations addressed
+- [ ] Error handling implemented correctly
+- [ ] API endpoints follow conventions
+- [ ] Database changes have migrations
+- [ ] Documentation updated if needed
+- [ ] No breaking changes without migration path
+- [ ] CI/CD pipeline passes (build, tests, format, coverage)
+
+### When to Request Changes vs Approve
+
+**Request Changes:**
+- Security vulnerabilities
+- Architecture violations
+- Missing critical tests
+- Breaking changes without discussion
+- Performance issues that will cause problems
+- Code that doesn't compile or breaks tests
+
+**Approve with Comments:**
+- Minor code quality issues
+- Non-critical performance suggestions
+- Style preferences (if not covered by editorconfig)
+- Suggestions for future improvements
+- Questions for clarification
+
+**Approve:**
+- All critical checks pass
+- Code follows project standards
+- Tests cover new functionality
+- No security or performance concerns
+- Minor comments don't block merge
+
 ---
 
 **Remember**: Always favor immutability, functional patterns, and explicit error handling. Keep modules cohesive and loosely coupled.
-
