@@ -39,6 +39,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v5.0.1
         with:
@@ -131,6 +132,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v5.0.1
         with:
@@ -164,6 +166,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v5.0.1
         with:
@@ -295,6 +298,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v5.0.1
         with:
@@ -333,6 +337,7 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
         uses: actions/setup-dotnet@v5.0.1
         with:
