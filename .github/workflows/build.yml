@@ -90,6 +90,9 @@ jobs:
           key: ${{ runner.os }}-nuget-${{github.ref}}
           restore-keys: |
             ${{ runner.os }}-nuget-refs/heads/main
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./src/HomeInventory
       - name: Check for vulnerable packages
         run: dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.txt
         working-directory: ./src/HomeInventory
