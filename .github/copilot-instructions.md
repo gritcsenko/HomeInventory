@@ -1,5 +1,34 @@
 # GitHub Copilot Instructions for HomeInventory
 
+## Table of Contents
+
+- [Meta-Instructions for AI Assistants](#meta-instructions-for-ai-assistants)
+- [Failed Code Edits - Investigation & Prevention](#failed-code-edits---investigation--prevention)
+- [Terminal Commands Reference](#terminal-commands-reference)
+- [Project Overview](#project-overview)
+- [Architecture & Structure](#architecture--structure)
+- [Technology Stack](#technology-stack)
+- [Coding Standards & Conventions](#coding-standards--conventions)
+  - [LanguageExt v5 Patterns](#languageext-v5-patterns)
+  - [CollectionsMarshal and Async Patterns](#collectionsmarshal-and-async-patterns)
+  - [Endpoint Development (Carter)](#endpoint-development-carter)
+  - [Domain Development](#domain-development)
+  - [Persistence & Data Access](#persistence--data-access)
+  - [Application Layer (CQRS)](#application-layer-cqrs)
+  - [Application Services Pattern](#application-services-pattern)
+- [Testing Guidelines](#testing-guidelines)
+  - [General Testing Principles](#general-testing-principles)
+  - [Coverage Improvement Strategy](#coverage-improvement-strategy)
+  - [Test Structure Pattern](#test-structure-pattern)
+  - [Test Design Principles](#test-design-principles)
+  - [Critical Test Guidelines](#critical-test-guidelines)
+  - [AutoFixture Usage Guidelines](#autofixture-usage-guidelines)
+  - [Common Test Anti-Patterns Reference](#common-test-anti-patterns-reference)
+  - [Common Assertions](#common-assertions)
+  - [Code Quality Warnings to Avoid](#code-quality-warnings-to-avoid)
+- [Module Development Workflow](#module-development-workflow)
+- [Code Review Guidelines](#code-review-guidelines)
+
 ## Meta-Instructions for AI Assistants
 
 **IMPORTANT**: When a user provides:
@@ -10,8 +39,17 @@
 - Corrections to mistakes you've made
 - **Terminal commands that fail and their working alternatives**
 - **Code edits that fail to compile or have logical errors**
+- **Hints about failed approaches during investigation**
+- **Corrections about test structure or assertion patterns**
 
 **YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
+
+**Process for Updating Instructions:**
+1. **Immediately document** the user's guidance in the relevant section
+2. **Add to Failed Code Edits** section if it's a mistake that should be prevented
+3. **Update DO/DON'T lists** with concrete before/after examples
+4. **Reference the investigation process** used to identify and fix issues
+5. **Ensure future AI assistants learn from the mistake** by making the guidance explicit and searchable
 
 ## Failed Code Edits - Investigation & Prevention
 
@@ -63,6 +101,27 @@ New(out var contextVar, () => {
 
 **Prevention**: SubstituteFor helper is only for GivenContext level, use NSubstitute directly inside lambdas.
 ```
+
+**❌ FAILED: Identity lambda in Invoked (doesn't test behavior)**
+
+Attempted:
+```csharp
+var then = When
+    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
+```
+
+**Error**: The Invoked lambda returns a tuple of the inputs without calling any method. This tests nothing and violates the principle that Invoked should invoke the method under test.
+
+**Why it failed**: Identity lambdas `(x) => x` or `(a, b) => (a, b)` don't exercise any behavior—they simply return their inputs unchanged.
+
+**✅ SOLUTION: Invoke actual method under test**
+
+```csharp
+var then = When
+    .Invoked(static () => HealthCheckTags.Ready);  // ✅ Calls the actual property getter
+```
+
+**Prevention**: Invoked must call actual method under test - never use identity lambdas like `(x) => x` or `(a, b) => (a, b)`.
 
 ## Terminal Commands Reference
 
@@ -305,7 +364,7 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 1. **Namespaces**: Follow folder structure - `HomeInventory.[Layer][.Module][.SubFolder]`
 2. **Files**: One type per file, file name matches type name
-3. **Projects**: 
+3. **Projects**:
    - Feature modules: `HomeInventory.[Layer].[ModuleName]`
    - Framework/shared: `HomeInventory.[Layer].Framework`
 4. **Private/Internal Fields**: Use underscore prefix with camelCase - `_fieldName`
@@ -314,7 +373,7 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 ### Code Style
 
-1. **Use file-scoped namespaces** 
+1. **Use file-scoped namespaces**
 2. **Use primary constructors** where appropriate
 3. **Prefer `using` declarations** over `using` statements
 4. **Use implicit usings** - defined in `ImplicitUsings.cs` files
@@ -333,8 +392,8 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 ```csharp
 // ✅ CORRECT - Use Prelude.Some() for non-null values
-return value is not null 
-    ? Prelude.Some(value) 
+return value is not null
+    ? Prelude.Some(value)
     : Option<T>.None;
 
 // ✅ CORRECT - Use pattern matching with Prelude.Some()
@@ -385,7 +444,7 @@ public async ValueTask<TResult> GetOrAddAsync<TResult>(TKey key, Func<TKey, Task
     {
         return (TResult)existingValue!;
     }
-    
+
     var newValue = await createValueFunc(key);
     dictionary[key] = newValue;
     return newValue;
@@ -439,9 +498,9 @@ When creating new endpoints, inherit from `ApiCarterModule` (not the base `Carte
 namespace HomeInventory.Web.[ModuleName];
 
 public sealed class [Feature]CarterModule(
-    IScopeAccessor scopeAccessor, 
+    IScopeAccessor scopeAccessor,
     IProblemDetailsFactory problemDetailsFactory,
-    ContractsMapper mapper) 
+    ContractsMapper mapper)
     : ApiCarterModule
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
@@ -475,7 +534,7 @@ public sealed class [Feature]CarterModule(
         // Map request to command and call service
         var command = _mapper.ToCommand(request);
         var result = await service.[MethodName]Async(command, cancellationToken);
-        
+
         // Handle result with pattern matching
         return result.Match(
             error => _problemDetailsFactory.CreateProblemResult(error, context.TraceIdentifier),
@@ -511,14 +570,14 @@ public sealed class [Feature]CarterModule(
 2. **Repository Pattern**: Use Ardalis.Specification for repository pattern
    - Define specifications in `HomeInventory.Infrastructure.[Module]`
    - Inherit from `IRepository<TEntity>` or `IReadOnlyRepository<TEntity>`
-3. **Unit of Work**: 
+3. **Unit of Work**:
    - `IUnitOfWork` is implemented by `DatabaseContext`
    - Injected via `IScopeAccessor` at endpoint level
-4. **Database Context**: 
+4. **Database Context**:
    - One `DatabaseContext` per application
    - Module-specific configurations via `IDatabaseConfigurationApplier`
 5. **Interceptors**: Domain events published via `PublishDomainEventsInterceptor`
-6. **Auditing**: 
+6. **Auditing**:
    - Use `ICreationAuditableEntity` for creation tracking
    - Use `IModificationAuditableEntity` for modification tracking
    - Timestamp from injected `TimeProvider`
@@ -559,7 +618,7 @@ public interface I[Module]Service
 {
     // Commands return Option<Error>
     Task<Option<Error>> [CommandName]Async([Command] command, CancellationToken cancellationToken = default);
-    
+
     // Queries return IQueryResult<T>
     Task<IQueryResult<[Result]>> [QueryName]Async([Query] query, CancellationToken cancellationToken = default);
 }
@@ -581,12 +640,12 @@ internal sealed class [Module]Service(
         // Retrieve scoped dependencies set in endpoint
         var repository = _scopeAccessor.GetRequiredContext<I[Repository]>();
         var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
-        
+
         // Implementation - business logic
         // ...
-        
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         return Option<Error>.None; // Success
     }
 
@@ -594,13 +653,13 @@ internal sealed class [Module]Service(
     {
         // Retrieve scoped dependencies set in endpoint
         var repository = _scopeAccessor.GetRequiredContext<I[Repository]>();
-        
+
         // Implementation
         var result = await repository.GetByIdAsync(query.Id, cancellationToken);
         var validationResult = result
             .Map(entity => /* map to result */)
             .ErrorIfNone(() => new NotFoundError("Not found"));
-            
+
         return QueryResult.From(validationResult);
     }
 }
@@ -635,14 +694,14 @@ public static partial class [Module]Mapper
 {
     // Domain to DTO
     public static partial [Response] ToResponse(this [Entity] entity);
-    
+
     // DTO to Domain (if needed)
     public static partial [Entity] ToDomain(this [Request] request);
-    
+
     // Collection mapping
     public static partial IEnumerable<[Response]> ToResponses(
         this IEnumerable<[Entity]> entities);
-    
+
     // With custom mapping logic
     [MapProperty(nameof([Entity].Property), nameof([Response].MappedProperty))]
     public static partial [Response] ToResponseWithCustomMapping(this [Entity] entity);
@@ -665,13 +724,13 @@ API versioning is built into the `ApiCarterModule` base class:
 public sealed class MyCarterModule : ApiCarterModule
 {
     protected override string PathPrefix => "/api/resource";
-    
+
     // Constructor - call MapToApiVersion to use a different version than v1 (default)
     public MyCarterModule()
     {
         MapToApiVersion(new ApiVersion(2)); // Use v2 instead of default v1
     }
-    
+
     protected override void AddRoutes(RouteGroupBuilder group)
     {
         // Define your routes here
@@ -699,7 +758,7 @@ public sealed class MyCarterModule : ApiCarterModule
 
 1. **Password Hashing**: Use BCrypt.Net-Next for secure password storage
 2. **JWT Tokens**: Use `System.IdentityModel.Tokens.Jwt` for authentication
-3. **Authorization**: 
+3. **Authorization**:
    - Use `.AllowAnonymous()` for public endpoints
    - Use `.RequireAuthorization()` for protected endpoints
    - Custom dynamic authorization in `DynamicWebAuthorizationModule`
@@ -735,7 +794,7 @@ private async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
 
     var command = _mapper.ToCommand(request);
     var result = await userService.RegisterAsync(command, cancellationToken);
-    
+
     // Handle result...
 }
 ```
@@ -755,7 +814,7 @@ internal sealed class UserService(
         // Retrieve scoped dependencies that were set in endpoint
         var repository = _scopeAccessor.GetRequiredContext<IUserRepository>();
         var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
-        
+
         // Use dependencies for business logic...
     }
 }
@@ -824,7 +883,7 @@ When creating a new feature module (e.g., "Inventory"):
 3. **Acceptance Tests**: BDD scenarios using Reqnroll
 4. **Test project structure**: Mirror source project structure
 5. **Test naming**: `[MethodName]_[Scenario]_[ExpectedResult]`
-6. **Coverage targets**: 
+6. **Coverage targets**:
    - Domain/Application layers: Aim for 80%+ (business logic)
    - Infrastructure layer: 60-70% acceptable (database access, specifications)
    - Web layer: 50-60% acceptable (mostly framework wiring)
@@ -867,6 +926,40 @@ To run tests with coverage locally:
 dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage"
 ```
 
+### Coverage Improvement Strategy
+
+**Priority Modules for Coverage Improvement:**
+
+1. **HomeInventory.Application** (currently 0% coverage)
+   - **Focus Areas:**
+     - `BaseHealthCheck` and derived health checks
+     - `HealthCheckStatus` and `HealthCheckTags` utilities
+   - **Recommended Tests:**
+     - Unit tests for health check logic (status determination, failure conditions)
+     - Tests for health check tag constants and status properties
+     - Mock dependencies to test in isolation
+   - **Target:** 80%+ (business logic)
+
+2. **HomeInventory.Modules** (currently 44.4% coverage)
+   - **Focus Areas:**
+     - `ModulesCollection` - add, enumerate, duplicate handling
+     - `ModuleMetadata` - dependency resolution, module wrapping
+     - `ModuleServicesContext` - property access, construction
+     - `IModule` implementations - lifecycle methods
+   - **Recommended Tests:**
+     - Unit tests for collection operations
+     - Module dependency resolution scenarios
+     - Module registration and initialization flows
+   - **Target:** 80%+ (core module infrastructure)
+
+**Testing Approach:**
+- Use `BaseTest<TGivenContext>` with Given-When-Then pattern
+- Focus on public API and business logic, not framework plumbing
+- Test edge cases: empty collections, circular dependencies, missing dependencies
+- Verify error handling and validation logic
+- Use AutoFixture for test data generation
+- Mock external dependencies with NSubstitute
+
 ### Test Structure Pattern
 
 All tests follow the **Given-When-Then** pattern using `BaseTest<TGivenContext>`:
@@ -880,16 +973,16 @@ public class MyFeatureTests() : BaseTest<MyFeatureTestsGivenContext>(static t =>
     {
         Given
             .New<SomeType>(out var variable1)
-            .New<OtherType>(out var variable2, static () => new OtherType("value"));
+            .New<string>(out var inputVar);  // ✅ AutoFixture generates value
 
         var then = When
-            .Invoked(variable1, variable2, static (v1, v2) => v1.Method(v2));
+            .Invoked(variable1, inputVar, static (v1, input) => v1.Method(input));
 
         then
-            .Result(static result => 
+            .Result(inputVar, static (result, expectedInput) =>
             {
-                result.Should().NotBeNull();
-                result.Property.Should().Be("expected");
+                result.Should().BeOfType<ResultType>();
+                result.ProcessedValue.Should().Be(expectedInput);
             });
     }
 }
@@ -920,6 +1013,9 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 **Assertion Quality:**
 - Use the most specific assertion available
 - Avoid redundant checks (e.g., `.NotBeNull()` before `.BeOfType<T>()`)
+  - `.BeOfType<T>()` and `.BeAssignableTo<T>()` already check for null
+  - Null checks ARE appropriate when followed by property access or other operations that don't verify nullability
+  - Example: `.NotBeNull()` is redundant before `.BeOfType<T>()` but may be useful before `.Property.Should().Be(...)`
 - Use compile-time type references instead of string matching
 - Prefer `ContainSingle()` over `HaveCount(1)`
 - **`.Subject` vs `.Which` pattern:**
@@ -929,6 +1025,8 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
   - Example: `var item = result.Should().ContainSingle().Subject; item.Property1.Should()...; item.Property2.Should()...;` for multiple properties
 - Use method chaining for related assertions (e.g., `.ContainKey(...).WhoseValue.Should()...`)
 - **For Option<T> assertions**: Use `.BeSome()` and `.BeNone()` extension methods, not `.IsSome.Should().BeTrue()`
+  - Example with collections: `result.Should().ContainSingle().Which.Should().BeSome().Which.Should().BeOfType<ModuleMetadata>()`
+  - Chain `.BeSome()` or `.BeNone()` directly after accessing the Option value
 
 **Test Setup Order:**
 - **Create SUT last in Given section** - this eliminates excessive helper methods that modify SUT after creation
@@ -941,6 +1039,18 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - **DON'T** use "Given" prefix - it causes repetition: `Given.GivenAModule()` reads poorly
 - The method name combined with `Given.` should read naturally: `Given.Module(...)` reads better than `Given.GivenAModule(...)`
 - Be concise but clear - the context already indicates it's part of Given section
+- **CRITICAL: Use unique parameter names in helper methods** - `CallerArgumentExpression` captures the parameter name (e.g., `out IVariable<IModule> moduleVar`), not the calling variable. If `Module(out var x)` and `DependentModule(out var y)` both have parameters named `moduleVar`, they'll collide in `VariablesContainer`. Use unique names like `baseModule` and `dependentModule`.
+
+**Module Dependency Test Setup:**
+When testing module dependencies:
+1. Create base module variable (the dependency)
+2. Create dependent module variable (depends on base)
+3. Ensure dependent module declares dependency (e.g., `DependsOn<BaseModule>()`)
+4. Create SUT (usually `ModuleMetadata` wrapping dependent module)
+5. Create container with base module metadata
+6. Invoke `GetDependencies(container)` on SUT
+7. Assert result contains exactly one dependency using `.ContainSingle().Which.Should().BeSome()`
+8. Verify the resolved dependency is the base module
 
 **Test Data:**
 - Use AutoFixture to generate test data - avoid hardcoded literals
@@ -966,14 +1076,14 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - **DON'T** use vague assertions like `.NotBeNullOrEmpty()` when you know the expected value
 - **DON'T** test instance equality for strings (`.BeSameAs()`) - strings are interned, this tests .NET behavior, not your code
 - **DON'T** test that static string properties return the same instance multiple times - this is excessive for immutable types
-- Example: 
+- Example:
   ```csharp
   // ✅ GOOD - Tests actual value
   .Result(static result => result.Should().Be(nameof(HealthCheckTags.Ready)));
-  
+
   // ❌ BAD - Vague assertion
   .Result(static result => result.Should().NotBeNullOrEmpty());
-  
+
   // ❌ BAD - Tests .NET string interning, not your code
   .Result(expectedVar, static (result, expected) => result.Should().BeSameAs(expected));
   ```
@@ -984,7 +1094,8 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - ✅ **Use expression-bodied lambdas for single statements** - `static x => x.Method()` not `static x => { x.Method(); }`
 - ✅ **Use `Create<T>()` for values that don't need to be in test context** - avoids polluting context with unnecessary variables
 - ✅ **Update these instructions when user provides requests, advice, hints, or rules** that can prevent undesired results
-- ✅ **ALWAYS verify assumptions with assertions during investigation** - add assertions to verify test setup is correct, then remove them once issue is identified
+- ✅ **ALWAYS verify assumptions with assertions during investigation** - add assertions to verify test setup is correct, **then remove them once issue is identified**
+- ✅ **Remove investigation assertions before final commit** - temporary asserts are for debugging only, not production test code
 - ✅ **Container should include ALL modules** - in module dependency tests, the container needs both the dependency module AND the dependent module
 - ✅ **Use unique PARAMETER names in GivenContext helper methods** - `CallerArgumentExpression` captures the PARAMETER name (e.g., `out var moduleVar`), NOT the calling variable name. If two methods both use `out IVariable<IModule> moduleVar`, they'll collide in VariablesContainer. Use `out IVariable<IModule> baseModule` and `out IVariable<IModule> dependentModule` instead
 - ✅ Use `var then = When.Invoked(...);` followed by `then.Result(...)` on separate lines
@@ -1000,12 +1111,15 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - ✅ Provide meaningful assertions in module tests - verify specific services are registered
 - ✅ **Use ONE Given-When-Then chain per test** - don't repeat Given or When within a test
 - ✅ **Use `SubstituteFor()` helper method in GivenContext** instead of `Substitute.For<T>()` in `New()`
-- ✅ **Define system under test explicitly** using `Sut(out var sutVar)` method in GivenContext
+- ✅ **Define system under test explicitly using `Sut(out var sutVar)` method** - never use `.New<SutType>(out var sut, ...)` for SUT
 - ✅ **Prefer `.New<T>(out var variable)` without factory method** - factory is for corner cases only
 - ✅ **Keep `Invoked` lambdas simple** - invoke only the testing method, move setup to Given section
+- ✅ **Invoked must call actual method under test** - never use identity lambdas like `(x) => x` or `(a, b) => (a, b)`
 - ✅ **DON'T add comments explaining why factory methods are used** - the code should be self-evident
 - ✅ Use `ContainSingle()` instead of `HaveCount(1)`
 - ✅ **Use `Result()` overload with multiple IVariable parameters** instead of multiple `.Result()` calls
+- ✅ **Expected values in Result come from Given variables** - never create expected values from actual method outputs
+- ✅ **Static immutable properties need only one value test** - don't test instance equality or multiple accesses for strings/immutable types
 - ✅ **Skip `.NotBeNull()` checks before type checks** - `.BeOfType<T>()` and `.BeAssignableTo<T>()` already check for null
 - ✅ **Use direct type references** in assertions (e.g., `typeof(FeatureManager)`) instead of string matching on type names
 - ✅ **Add new overloads to GivenContext when needed** - if you need more than 3 IVariable parameters, create custom helper methods or new overloads
@@ -1029,14 +1143,18 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - ❌ **Use `.New<T>(out var sut, static () => new())` for SUT** - use `Sut(out var sutVar)` method instead
 - ❌ **Use factory method in New when not needed** - prefer `.New<T>(out var variable)` for simple AutoFixture generation
 - ❌ **Put test setup in `Invoked` lambdas** - keep them simple, only invoke the method under test
+- ❌ **Use identity lambdas in Invoked** - `(x) => x` or `(a, b) => (a, b)` don't test behavior
 - ❌ **Add comments about corner cases in factory methods** - code should be self-documenting
 - ❌ **Fall out of Given-When-Then pattern** - avoid imperative setup and assertions mixed together
-- ❌ **Leave system under test implicit** - always define it clearly
+- ❌ **Leave system under test implicit** - always define it clearly with `Sut(out var sutVar)`
 - ❌ **Use `HaveCount(1)` for single items** - use `ContainSingle()` instead
 - ❌ **Call `.Result()` multiple times** - use the overload that accepts multiple variables
 - ❌ **Add `.NotBeNull()` before `.BeOfType<T>()` or `.BeAssignableTo<T>()`** - redundant check
 - ❌ **Use string matching on type names** - use compile-time type references
 - ❌ **Assume GivenContext limitations** - you can extend it with new overloads or helper methods
+- ❌ **Ignore the `result` parameter in Result lambda** - if you're not asserting against `result`, you're testing the wrong thing
+- ❌ **Create expected values from actual method calls** - expected must come from Given, not from invoking the same method being tested
+- ❌ **Test static immutable properties multiple times** - one value assertion is enough for strings/immutable types
 
 ### AutoFixture Usage Guidelines
 
@@ -1092,10 +1210,10 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         // Use Create<T>() for values that don't need to be variables
         // Remove 'static' when using Create<T>() from base class
         New(out resultVar, field1Var, field2Var, (f1, f2) =>
-            new ResultType 
-            { 
-                Field1 = f1, 
-                Field2 = f2, 
+            new ResultType
+            {
+                Field1 = f1,
+                Field2 = f2,
                 Temp = Create<string>()  // ✅ Don't create tempVar just to use it here
             });
         return This;
@@ -1136,10 +1254,10 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         [CallerArgumentExpression(nameof(variable))] string? name = null)
     {
         New(out variable, _ => create(
-            GetValue(arg1), 
-            GetValue(arg2), 
-            GetValue(arg3), 
-            GetValue(arg4), 
+            GetValue(arg1),
+            GetValue(arg2),
+            GetValue(arg3),
+            GetValue(arg4),
             GetValue(arg5)), count, name);
         return This;
     }
@@ -1153,7 +1271,7 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         IVariable<IFeatureManager> featureManagerVar,
         IVariable<IReadOnlyCollection<IModule>> modulesVar)
     {
-        New(out contextVar, servicesVar, configVar, metricsVar, 
+        New(out contextVar, servicesVar, configVar, metricsVar,
             (services, config, metrics) =>
             {
                 // Access remaining variables via GetValue
@@ -1173,10 +1291,10 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         New(out field1Var);
         New(out field2Var);
         New(out resultVar, field1Var, field2Var, (f1, f2) =>
-            new ResultType 
-            { 
-                Field1 = f1, 
-                Field2 = f2, 
+            new ResultType
+            {
+                Field1 = f1,
+                Field2 = f2,
                 Temp = Create<string>()
             });
         return This;
@@ -1195,6 +1313,38 @@ Given
 - ✅ **DO** use builder pattern for multi-step setup
 - ❌ **DON'T** work around limitations by using non-static lambdas that access variables directly
 - ❌ **DON'T** simplify tests by removing necessary assertions just to fit the 3-parameter limit
+
+**Understanding CallerArgumentExpression and Variable Names:**
+
+The `New` method uses `CallerArgumentExpression` to capture variable names for storage in `VariablesContainer`. This mechanism captures the **parameter name** from the helper method definition, NOT the variable name at the call site.
+
+```csharp
+// In GivenContext helper methods:
+public MyTestsGivenContext Module(out IVariable<IModule> baseModule)  // ← "baseModule" is captured
+{
+    New(out baseModule, static () => new SubjectModule());
+    return This;
+}
+
+public MyTestsGivenContext DependentModule(out IVariable<IModule> dependentModule)  // ← "dependentModule" is captured
+{
+    New(out dependentModule, static () => new SubjectDependentModule());
+    return This;
+}
+
+// At call site:
+Given
+    .Module(out var moduleVar)          // ← CallerArgumentExpression sees "baseModule" from helper definition
+    .DependentModule(out var depVar);   // ← CallerArgumentExpression sees "dependentModule" from helper definition
+
+// ❌ COLLISION EXAMPLE - Both use same parameter name:
+public MyTestsGivenContext Module(out IVariable<IModule> moduleVar)      // ← "moduleVar"
+{ ... }
+public MyTestsGivenContext DependentModule(out IVariable<IModule> moduleVar)  // ← Same "moduleVar" → COLLISION!
+{ ... }
+```
+
+**Key insight:** The variable name is determined by `CreateVariable<T>(name)` where `name` comes from the parameter name in the helper method signature, not from `out var x` at the call site.
 
 **When to Use `Create<T>()` vs `New`:**
 
@@ -1247,10 +1397,10 @@ New(out var modelStateVar, field1Var, field2Var, (f1, f2) =>  // Note: not 'stat
 public void MyTest()
 {
     Given.New<MyClass>(out var sut);
-    
+
     var localData = "test data";  // ❌ Local variable
     var status = 400;              // ❌ Hardcoded literal
-    
+
     When
         .Invoked(sut, s => s.Method(localData, status))  // ❌ Capturing local variables
         .Result(result => result.Should().BeTrue());      // ❌ Chained, no 'then' variable
@@ -1464,14 +1614,18 @@ public void Test()
 public void Add_ShouldAddModule()
 {
     Given
-        .New<ModulesCollection>(out var sut, static () => new())  // ✅ Clear: collection is SUT
+        .Sut(out var sutVar)  // ✅ Clear: collection is SUT, uses dedicated Sut() helper
         .New<SubjectModule>(out var moduleVar, static () => new());
 
     var then = When
-        .Invoked(sut, moduleVar, static (collection, module) =>
+        .Invoked(sutVar, moduleVar, static (sut, module) => sut.Add(module));  // ✅ Only invokes method
+
+    then
+        .Result(sutVar, moduleVar, static (result, sut, expectedModule) =>
         {
-            collection.Add(module);
-            return collection;
+            // Assert on sut side effect
+            sut.Should().ContainSingle().Which.Should().BeSome()
+                .Which.Module.Should().BeSameAs(expectedModule);
         });
 }
 ```
@@ -1517,7 +1671,7 @@ public void Ready_WhenAccessedMultipleTimes_ReturnsSameInstance()
         .Invoked(static () => HealthCheckTags.Ready);
 
     then
-        .Result(expectedInstanceVar, static (result, expected) => 
+        .Result(expectedInstanceVar, static (result, expected) =>
             result.Should().BeSameAs(expected));  // ❌ Tests .NET string interning, not your code
 }
 ```
@@ -1541,11 +1695,21 @@ public void Ready_WhenAccessed_ReturnsExpectedValue()
 **❌ BAD - Using New with factory for SUT:**
 ```csharp
 Given
-    .New<ModulesCollection>(out var sut, static () => new());
+    .New<ModulesCollection>(out var sutVar, static () => new());
 ```
 
 **✅ GOOD - Use Sut() method:**
 ```csharp
+Given
+    .Sut(out var sutVar);  // GivenContext provides Sut() method
+
+// In GivenContext:
+public ModulesCollectionTestsGivenContext Sut(out IVariable<ModulesCollection> sutVar)
+{
+    New(out sutVar, static () => new ModulesCollection());
+    return This;
+}
+```
 Given
     .Sut(out var sutVar);  // GivenContext provides Sut() method
 
@@ -1592,6 +1756,18 @@ then
     .Result(static result => result.Should().BeAssignableTo<IRegisteredModules>());
 ```
 
+**❌ BAD - Identity lambda in Invoked (doesn't test behavior):**
+```csharp
+var then = When
+    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));  // ❌ Returns tuple of inputs, no method called
+```
+
+**✅ GOOD - Invoke actual method under test:**
+```csharp
+var then = When
+    .Invoked(static () => HealthCheckTags.Ready);  // ✅ Calls the actual property getter
+```
+
 **❌ BAD - Falling out of Given-When-Then pattern:**
 ```csharp
 [Fact]
@@ -1601,13 +1777,13 @@ public void Test()
     var baseModule = new SubjectModule();
     var dependentModule = new SubjectDependentModule();
     dependentModule.DependsOn<SubjectModule>();
-    
+
     dependentModule.Dependencies.Count.Should().Be(1);  // ❌ Assertion in setup
-    
+
     var metadata = new ModuleMetadata(dependentModule);
     var container = new[] { new ModuleMetadata(baseModule) };
     var dependencies = metadata.GetDependencies(container).ToList();
-    
+
     dependencies.Should().HaveCount(1);  // ❌ No Then context
 }
 ```
@@ -1627,11 +1803,11 @@ public void GetDependencies_WithOneDependency_ReturnsSingleDependency()
         .Invoked(sutVar, containerVar, static (sut, container) => sut.GetDependencies(container));
 
     then
-        .Result(baseModuleVar, static (result, expected) =>
+        .Result(baseModuleVar, static (result, expectedModule) =>
         {
-            result.Should().ContainSingle();
-            result.First().IsSome.Should().BeTrue();
-            ((ModuleMetadata)result.First()).Module.Should().BeSameAs(expected);
+            var dependency = result.Should().ContainSingle().Subject;
+            dependency.Should().BeSome()
+                .Which.Module.Should().BeSameAs(expectedModule);
         });
 }
 ```
@@ -1686,6 +1862,37 @@ protected override void EnsureRegistered(IServiceCollection services) =>
         .And.Contain(d => d.ServiceType == typeof(IHealthCheckPublisher));
 ```
 
+### Common Test Anti-Patterns Reference
+
+This section consolidates frequently encountered mistakes across test patterns:
+
+| Anti-Pattern | Why It's Wrong | Correct Pattern |
+|--------------|----------------|-----------------|
+| `.HaveCount(1)` | Not specific enough | `.ContainSingle()` (FAA0001) |
+| `.IsSome.Should().BeTrue()` | Verbose, less readable | `.Should().BeSome()` |
+| `.NotBeNull()` before `.BeOfType<T>()` | Redundant check | Just `.BeOfType<T>()` |
+| String matching on types | Brittle, error-prone | `typeof(T)` direct reference |
+| `Substitute.For<T>()` in `New()` | Inconsistent pattern | `.SubstituteFor<T>()` helper |
+| Identity lambda `(x) => x` | Tests nothing | Call actual method |
+| Hardcoded literals in tests | Reduces test robustness | Use AutoFixture |
+| Multiple `.Result()` with shared vars | Verbose, inefficient | Single `.Result()` with multiple params |
+| Implicit SUT | Unclear test intent | Explicit `Sut(out var sutVar)` |
+| Multi-line `Invoked` lambda | Mixes setup with action | Move setup to `Given` |
+
+**Quick Reference Links:**
+- Single item assertions → Use `ContainSingle()` not `HaveCount(1)`
+- Option<T> assertions → Use `.BeSome()` / `.BeNone()` not `.IsSome.Should().BeTrue()`
+- Type assertions → Use `typeof(T)` not `.Name.Contains("T")`
+- Dictionary assertions → Chain `.WhoseValue.Should()...` not separate access
+- Service assertions → Use `.ContainTransient<T>()` not manual lifetime checks
+- SUT creation → Use `Sut(out var sutVar)` not `.New<T>(out var sut, ...)`
+
+**Note on `.Which` Pattern**:
+- Use `.Which` after `.BeSome()` to access the inner value: `.Should().BeSome().Which.Should().Be(...)`
+- `.BeNone()` has no `.Which` since there's no value to access
+- Chain `.Which` as many times as needed: `.ContainSingle().Which.Should().BeSome().Which.Should().BeOfType<T>()`
+
+
 ### Integration Test Pattern
 
 For tests requiring full application context or multiple modules:
@@ -1700,7 +1907,8 @@ public class MyIntegrationTests() : BaseTest<MyIntegrationTestsGivenContext>(sta
         await Given
             .HttpContext(out var contextVar)
             .New<MyRequest>(out var requestVar)
-            .SubstituteFor(out IVariable<IMyService> serviceVar, requestVar, (s, r) => 
+            // Note: This uses an advanced SubstituteFor overload with NSubstitute setup
+            .SubstituteFor(out IVariable<IMyService> serviceVar, requestVar, (s, r) =>
                 s.ProcessAsync(r, Cancellation.Token).Returns(Task.FromResult(true)))
             .InitializeHostAsync();
 
@@ -1715,20 +1923,29 @@ public class MyIntegrationTests() : BaseTest<MyIntegrationTestsGivenContext>(sta
 public sealed class MyIntegrationTestsGivenContext(BaseTest test) : GivenContext<MyIntegrationTestsGivenContext>(test);
 ```
 
+**Note**: For simple mocking without setup, use `.SubstituteFor<IMyService>(out var serviceVar)`. The pattern above shows advanced usage where you configure NSubstitute returns inline.
+
 ### Test Data Builder Pattern
 
 For complex test data, use factory methods in `Given`:
 
 ```csharp
+// ❌ BAD - Hardcoded values in test data builder
 Given
     .New<ComplexObject>(out var objectVar, static () => new ComplexObject
     {
-        Property1 = "value1",
-        Property2 = 42,
-        NestedObject = new NestedObject
-        {
-            NestedProperty = "nested"
-        }
+        Property1 = "hardcoded",  // ❌ Hardcoded literal
+        Property2 = 42,  // ❌ Hardcoded literal
+        NestedObject = new NestedObject { NestedProperty = "nested" }
+    });
+
+// ✅ GOOD - Use Create<T>() for nested values (remove 'static' when using Create<T>())
+Given
+    .New<ComplexObject>(out var objectVar, () => new ComplexObject
+    {
+        Property1 = Create<string>(),  // ✅ AutoFixture generates
+        Property2 = Create<int>(),  // ✅ AutoFixture generates
+        NestedObject = Create<NestedObject>()  // ✅ AutoFixture generates entire nested object
     });
 ```
 
@@ -1739,15 +1956,16 @@ Given
 public async Task AsyncMethod_Scenario_ExpectedResult()
 {
     await Given
-        .New<MyClass>(out var sut)
-        .New<string>(out var dataVar, static () => "test")
+        .New<MyClass>(out var sutVar)
+        .New<string>(out var dataVar)  // ✅ AutoFixture generates value
         .InitializeAsync();  // If async setup needed
 
     var then = await When
-        .InvokedAsync(sut, dataVar, static (s, data, ct) => s.MethodAsync(data, ct));
+        .InvokedAsync(sutVar, dataVar, static (s, data, ct) => s.MethodAsync(data, ct));
 
     then
-        .Result(static result => result.Should().Be("expected"));
+        .Result(dataVar, static (result, expectedData) => 
+            result.Should().Contain(expectedData));  // ✅ Assert against expected from Given
 }
 ```
 
@@ -1802,6 +2020,13 @@ services.Should().ContainTransient<IService>();
 services.Should().Contain(d => d.ServiceType == typeof(MyService));  // ✅ Use typeof()
 services.Should().Contain(d => d.ServiceType.Name.Contains("MyService"));  // ❌ Avoid string matching
 
+// Option<T> assertions
+optionValue.Should().BeSome().Which.Should().Be(expected);
+optionValue.Should().BeNone();
+// With collections
+result.Should().ContainSingle().Which.Should().BeSome()
+    .Which.Should().BeOfType<ModuleMetadata>();
+
 // Dictionary assertions
 dict.Should().ContainKey(key).WhoseValue.Should().Be(value);  // ✅ Chained assertion
 
@@ -1813,7 +2038,7 @@ result.Should().BeAssignableTo<IMyInterface>();  // ✅ Already checks for null
 ### Test Result Patterns
 
 ```csharp
-// ✅ GOOD - Single Result() call with multiple assertions
+// ✅ GOOD - Single Result() call with multiple related variables
 then
     .Result(var1, var2, var3, static (result, v1, v2, v3) =>
     {
@@ -1822,16 +2047,17 @@ then
         result.Property3.Should().Be(v3);
     });
 
-// ❌ BAD - Multiple Result() calls
+// ❌ BAD - Multiple Result() calls with related variables
 then
     .Result(var1, static (result, v1) => result.Property1.Should().Be(v1))
     .Result(var2, static (result, v2) => result.Property2.Should().Be(v2))
     .Result(var3, static (result, v3) => result.Property3.Should().Be(v3));
 
-// ✅ GOOD - Simple assertions without variables
+// ✅ ACCEPTABLE - Multiple Result() for independent assertions (no shared variables)
 then
     .Result(static result => result.Should().BeTrue())
     .Result(static result => result.Count.Should().Be(5));
+// Note: Even these can often be combined into a single Result() call
 ```
 
 ### Code Quality Warnings to Avoid
@@ -1855,6 +2081,11 @@ When writing tests, watch for and fix these common warnings:
 4. **Async method lacks 'await' operators**
    - Ensure async test methods actually await async operations
    - Use `await When.InvokedAsync(...)` not `When.Invoked(...)`
+
+5. **FAA0001: Use .Should().ContainSingle()**
+   - Use ContainSingle() instead of HaveCount(1) for asserting single items
+   - ✅ Good: `result.Should().ContainSingle()`
+   - ❌ Bad: `result.Should().HaveCount(1)`
 
 ## Documentation
 
@@ -1944,15 +2175,15 @@ public static partial class [Feature]Mapper
 public sealed class [Module]Module : IModule
 {
     public IReadOnlyCollection<Type> Dependencies { get; } = [];
-    
+
     public IFeatureFlag Flag => FeatureFlags.Enabled; // Or create custom flag
-    
+
     public async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken)
     {
         // Service registration
         context.Services.AddScoped<IMyService, MyService>();
     }
-    
+
     public async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken)
     {
         // Middleware and endpoint configuration
@@ -2190,7 +2421,7 @@ When providing review feedback:
 
 **Why**: Hardcoded test data can lead to tests that pass with specific values but fail in production.
 
-**Suggestion**: 
+**Suggestion**:
 - Use `.New<string>(out var emailVar)` to generate random data
 - This ensures the code works with any valid input
 ```
@@ -2199,7 +2430,7 @@ When providing review feedback:
 ```
 ⚠️ **Code Quality**: This lambda has a block body for a single statement (IDE0053).
 
-**Before**: 
+**Before**:
 ```csharp
 .Result(static result => { result.Should().BeTrue(); })
 ```
