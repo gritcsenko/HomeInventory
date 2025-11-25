@@ -66,6 +66,53 @@ jobs:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
 
+  security-scan:
+    name: "Security Scan"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Download cached dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
+      - name: Check for vulnerable packages
+        run: dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.txt
+        working-directory: ./src/HomeInventory
+      - name: Fail on vulnerabilities
+        run: |
+          if grep -q "has the following vulnerable packages" vulnerable-packages.txt; then
+            echo "::error::Vulnerable packages detected!"
+            cat vulnerable-packages.txt
+            exit 1
+          fi
+        working-directory: ./src/HomeInventory
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@v2.4.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+
   format-test:
     name: "Formatting test"
     needs: build
