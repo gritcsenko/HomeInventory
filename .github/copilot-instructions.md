@@ -146,7 +146,7 @@ This section documents working terminal commands and common failures encountered
 
 **Verifying GitHub Actions Versions:**
 
-⚠️ **CRITICAL: NEVER update a GitHub Action without verifying the SHA first!**
+> ⚠️ **CRITICAL:** NEVER update a GitHub Action without verifying the SHA first! See the comprehensive [GitHub Actions Version Management](#github-actions-version-management) section for detailed step-by-step instructions.
 
 Before updating GitHub Actions in workflow files, **ALWAYS use `git ls-remote` to verify the latest version and get the correct commit SHA**:
 
