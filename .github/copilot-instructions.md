@@ -135,6 +135,83 @@ This section documents working terminal commands and common failures encountered
 - Format: "Updating from vX.Y.Z (previous: vA.B.C, vD.E.F, vG.H.I) to vN.M.P"
 - Example: "Updating actions/checkout from v3 (previous versions: v1, v2) to v4"
 
+**Verifying GitHub Actions Versions:**
+
+Before updating GitHub Actions in workflow files, **always use `git ls-remote` to verify the latest version and get the correct commit SHA**:
+
+```powershell
+# List all tags for a GitHub Action to see available versions
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+
+# Example output shows SHA and tag:
+# 0057852bfaa89a56745cba8c7296529d2fc39830        refs/tags/v4.3.0
+# 0400d5f644dc74513175e3cd8d07132dd4860809        refs/tags/v4.2.4
+```
+
+**Process for Updating GitHub Actions:**
+
+1. **Check current version** in workflow file
+2. **Use `git ls-remote`** to list available versions:
+   ```powershell
+   git ls-remote --tags https://github.com/[owner]/[action].git | Select-String "v[major]"
+   ```
+3. **Identify latest stable release** from the output
+4. **Document version history** - list at least 3 previous versions in your explanation
+5. **Update workflow file** with the SHA and version comment:
+   ```yaml
+   uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+   ```
+6. **Verify update** - check that all instances are consistent
+
+**Example Workflow:**
+
+```powershell
+# 1. Check the actions/cache repository for latest v4 versions
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+
+# Output shows:
+# 6849a6489940f00c2f30c0fb92c6274307ccb58a        refs/tags/v4.1.2
+# 1bd1e32a3bdc45362d1e726936510720a7c30a57        refs/tags/v4.2.0
+# 0057852bfaa89a56745cba8c7296529d2fc39830        refs/tags/v4.3.0  ← Latest
+
+# 2. Update workflow with the latest SHA and version comment
+# uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+
+# 3. Document in your response:
+# "Updating actions/cache to v4.3.0 (previous versions: v4.0.0, v4.1.0, v4.2.0)"
+```
+
+**Common GitHub Actions to Update:**
+
+| Action                  | Repository URL                                 | Current Major |
+|-------------------------|------------------------------------------------|---------------|
+| actions/checkout        | https://github.com/actions/checkout.git        | v4, v6        |
+| actions/setup-dotnet    | https://github.com/actions/setup-dotnet.git    | v4, v5        |
+| actions/cache           | https://github.com/actions/cache.git           | v4            |
+| actions/upload-artifact | https://github.com/actions/upload-artifact.git | v4, v5        |
+| ossf/scorecard-action   | https://github.com/ossf/scorecard-action.git   | v2            |
+| github/codeql-action    | https://github.com/github/codeql-action.git    | v3            |
+
+**Why Use SHA Pinning:**
+
+- ✅ **OpenSSF Scorecard requirement** - Pinned dependencies for security
+- ✅ **Immutable reference** - SHA cannot be changed, unlike tags
+- ✅ **Supply chain security** - Prevents tag manipulation attacks
+- ⚠️ **Maintenance overhead** - Must update when GitHub deprecates old SHAs
+
+**Handling GitHub Action Deprecations:**
+
+If you encounter a deprecation error like:
+```
+Error: This request has been automatically failed because it uses a deprecated version of `actions/cache: [SHA]`
+```
+
+**Solution:**
+1. Use `git ls-remote` to find the **latest** version SHA
+2. Update all instances to the new SHA
+3. Document the change with previous versions
+4. Verify the new SHA is from an official release tag, not an intermediate commit
+
 ### PowerShell Commands (Windows)
 
 **Shell**: `powershell.exe` (Windows PowerShell v7.5.4, as of time of writing. Use ` $PSVersionTable.PSVersion.ToString()` to check version, if needed)
