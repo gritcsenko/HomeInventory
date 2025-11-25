@@ -110,7 +110,7 @@ jobs:
           fi
         working-directory: ./src/HomeInventory
       - name: Run OpenSSF Scorecard
-        uses: ossf/scorecard-action@v2
+        uses: ossf/scorecard-action@v2.4.0
         with:
           results_file: results.sarif
           results_format: sarif

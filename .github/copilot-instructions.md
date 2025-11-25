@@ -127,6 +127,14 @@ var then = When
 
 This section documents working terminal commands and common failures encountered in this project.
 
+### Version Management
+
+**When updating/setting external component versions (NuGet packages, GitHub Actions, etc.):**
+- **Always list at least 3 previous versions in your response/explanation**
+- This helps maintainers understand the version history and progression
+- Format: "Updating from vX.Y.Z (previous: vA.B.C, vD.E.F, vG.H.I) to vN.M.P"
+- Example: "Updating actions/checkout from v3 (previous versions: v1, v2) to v4"
+
 ### PowerShell Commands (Windows)
 
 **Shell**: `powershell.exe` (Windows PowerShell v7.5.4, as of time of writing. Use ` $PSVersionTable.PSVersion.ToString()` to check version, if needed)
