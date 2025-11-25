@@ -2181,16 +2181,14 @@ Given
         NestedObject = new NestedObject { NestedProperty = "nested" }
     });
 
-// ✅ GOOD - Use Create<T>() for nested values (remove 'static' when using Create<T>())
+// ✅ GOOD - Use Create<T>() for values that don't affect test logic
 Given
     .New<ComplexObject>(out var objectVar, () => new ComplexObject
     {
-        Property1 = Create<string>(),  // ✅ AutoFixture generates
-        Property2 = Create<int>(),  // ✅ AutoFixture generates
-        NestedObject = Create<NestedObject>()  // ✅ AutoFixture generates entire nested object
+        Property1 = Create<string>(),  // ✅ Value doesn't matter for test
+        Property2 = 35,  // ✅ Specific value needed for validation test
+        NestedObject = Create<NestedObject>()  // ✅ Value doesn't matter for test
     });
-```
-
 ### Async Test Pattern
 
 ```csharp
