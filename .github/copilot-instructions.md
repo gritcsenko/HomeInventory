@@ -47,7 +47,7 @@
 **Process for Updating Instructions:**
 1. **Immediately document** the user's guidance in the relevant section
 2. **Add to Failed Code Edits** section if it's a mistake that should be prevented
-3. **Update DO/DON'T lists** with concrete before/after examples
+3. **Update DO/DON'T list** with concrete before/after examples
 4. **Reference the investigation process** used to identify and fix issues
 5. **Ensure future AI assistants learn from the mistake** by making the guidance explicit and searchable
 
@@ -478,7 +478,7 @@ public TResult GetOrAdd<TResult>(TKey key, Func<TKey, TResult> createValueFunc)
 - **Use `CollectionsMarshal.GetValueRefOrAddDefault` only in synchronous code** for performance
 - **Assign through the ref variable (`val = ...`)** to avoid second dictionary lookup
 - **For async operations**, use standard `TryGetValue` pattern - the ref optimization isn't applicable
-- **`Dictionary<TKey, TValue>` is NOT thread-safe** - use `ConcurrentDictionary` for multi-threaded scenarios
+- **`Dictionary<TKey, TValue>` is NOT thread-safe** - use `ConcurrentDictionary` for multithreaded scenarios
 
 ### Architecture Rules
 
@@ -1310,7 +1310,7 @@ Given
 - ❌ **DON'T** assume you can't extend GivenContext - it's designed to be extended!
 - ✅ **DO** add new overloads when you need more than 3 IVariable parameters
 - ✅ **DO** create semantic helper methods for complex object creation
-- ✅ **DO** use builder pattern for multi-step setup
+- ✅ **DO** use builder pattern for multistep setup
 - ❌ **DON'T** work around limitations by using non-static lambdas that access variables directly
 - ❌ **DON'T** simplify tests by removing necessary assertions just to fit the 3-parameter limit
 
@@ -1710,16 +1710,6 @@ public ModulesCollectionTestsGivenContext Sut(out IVariable<ModulesCollection> s
     return This;
 }
 ```
-Given
-    .Sut(out var sutVar);  // GivenContext provides Sut() method
-
-// In GivenContext:
-public ModulesCollectionTestsGivenContext Sut(out IVariable<ModulesCollection> sutVar)
-{
-    New(out sutVar, static () => new ModulesCollection());
-    return This;
-}
-```
 
 **❌ BAD - Using New with factory when not needed:**
 ```csharp
@@ -1866,18 +1856,18 @@ protected override void EnsureRegistered(IServiceCollection services) =>
 
 This section consolidates frequently encountered mistakes across test patterns:
 
-| Anti-Pattern | Why It's Wrong | Correct Pattern |
-|--------------|----------------|-----------------|
-| `.HaveCount(1)` | Not specific enough | `.ContainSingle()` (FAA0001) |
-| `.IsSome.Should().BeTrue()` | Verbose, less readable | `.Should().BeSome()` |
-| `.NotBeNull()` before `.BeOfType<T>()` | Redundant check | Just `.BeOfType<T>()` |
-| String matching on types | Brittle, error-prone | `typeof(T)` direct reference |
-| `Substitute.For<T>()` in `New()` | Inconsistent pattern | `.SubstituteFor<T>()` helper |
-| Identity lambda `(x) => x` | Tests nothing | Call actual method |
-| Hardcoded literals in tests | Reduces test robustness | Use AutoFixture |
-| Multiple `.Result()` with shared vars | Verbose, inefficient | Single `.Result()` with multiple params |
-| Implicit SUT | Unclear test intent | Explicit `Sut(out var sutVar)` |
-| Multi-line `Invoked` lambda | Mixes setup with action | Move setup to `Given` |
+| Anti-Pattern                           | Why It's Wrong          | Correct Pattern                         |
+|----------------------------------------|-------------------------|-----------------------------------------|
+| `.HaveCount(1)`                        | Not specific enough     | `.ContainSingle()` (FAA0001)            |
+| `.IsSome.Should().BeTrue()`            | Verbose, less readable  | `.Should().BeSome()`                    |
+| `.NotBeNull()` before `.BeOfType<T>()` | Redundant check         | Just `.BeOfType<T>()`                   |
+| String matching on types               | Brittle, error-prone    | `typeof(T)` direct reference            |
+| `Substitute.For<T>()` in `New()`       | Inconsistent pattern    | `.SubstituteFor<T>()` helper            |
+| Identity lambda `(x) => x`             | Tests nothing           | Call actual method                      |
+| Hardcoded literals in tests            | Reduces test robustness | Use AutoFixture                         |
+| Multiple `.Result()` with shared vars  | Verbose, inefficient    | Single `.Result()` with multiple params |
+| Implicit SUT                           | Unclear test intent     | Explicit `Sut(out var sutVar)`          |
+| Multi-line `Invoked` lambda            | Mixes setup with action | Move setup to `Given`                   |
 
 **Quick Reference Links:**
 - Single item assertions → Use `ContainSingle()` not `HaveCount(1)`
@@ -2200,27 +2190,27 @@ public sealed class [Module]Module : IModule
 
 ### Test Patterns Quick Reference
 
-| Pattern | ❌ Avoid | ✅ Prefer |
-|---------|----------|-----------|
-| **Null checks** | `.NotBeNull()` then `.BeOfType<T>()` | Just `.BeOfType<T>()` (checks null) |
-| **Single item** | `.HaveCount(1)` | `.ContainSingle()` |
-| **Type checking** | `d.ServiceType.Name.Contains("MyService")` | `d.ServiceType == typeof(MyService)` |
-| **Mocking** | `Substitute.For<T>()` in `New()` | `.SubstituteFor<T>()` helper |
-| **Multiple assertions** | Multiple `.Result()` calls | Single `.Result()` with multiple vars |
-| **GWT chains** | Multiple Given-When-Then in one test | One chain per test |
-| **Lambda body** | `{ return x; }` | Expression-bodied `x` |
-| **Test variables** | Local variables outside Given | All in `Given.New()` |
-| **Intermediate values** | `New()` for every value | `Create<T>()` for non-asserted values |
-| **SUT clarity** | Implicit sut in variable names | Explicit `sut` variable |
+| Pattern                 | ❌ Avoid                                    | ✅ Prefer                              |
+|-------------------------|--------------------------------------------|---------------------------------------|
+| **Null checks**         | `.NotBeNull()` then `.BeOfType<T>()`       | Just `.BeOfType<T>()` (checks null)   |
+| **Single item**         | `.HaveCount(1)`                            | `.ContainSingle()`                    |
+| **Type checking**       | `d.ServiceType.Name.Contains("MyService")` | `d.ServiceType == typeof(MyService)`  |
+| **Mocking**             | `Substitute.For<T>()` in `New()`           | `.SubstituteFor<T>()` helper          |
+| **Multiple assertions** | Multiple `.Result()` calls                 | Single `.Result()` with multiple vars |
+| **GWT chains**          | Multiple Given-When-Then in one test       | One chain per test                    |
+| **Lambda body**         | `{ return x; }`                            | Expression-bodied `x`                 |
+| **Test variables**      | Local variables outside Given              | All in `Given.New()`                  |
+| **Intermediate values** | `New()` for every value                    | `Create<T>()` for non-asserted values |
+| **SUT clarity**         | Implicit sut in variable names             | Explicit `sut` variable               |
 
 ### Common Test Warnings
 
-| Warning | Cause | Solution |
-|---------|-------|----------|
-| **IDE0053** | Block-bodied lambda for single expression | Use expression body: `x => x.Property` |
-| **FAA0001** | Using `.HaveCount(1)` | Use `.ContainSingle()` instead |
-| **Type arg redundant** | `.New<T>(out IVariable<T> var)` | Omit type: `.New(out IVariable<T> var)` |
-| **CA2008** | Task created without TaskScheduler | Use proper async pattern with `await` |
+| Warning                | Cause                                     | Solution                                |
+|------------------------|-------------------------------------------|-----------------------------------------|
+| **IDE0053**            | Block-bodied lambda for single expression | Use expression body: `x => x.Property`  |
+| **FAA0001**            | Using `.HaveCount(1)`                     | Use `.ContainSingle()` instead          |
+| **Type arg redundant** | `.New<T>(out IVariable<T> var)`           | Omit type: `.New(out IVariable<T> var)` |
+| **CA2008**             | Task created without TaskScheduler        | Use proper async pattern with `await`   |
 
 ## Questions to Ask When Developing
 
