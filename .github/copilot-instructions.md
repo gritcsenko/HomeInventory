@@ -126,8 +126,17 @@ var then = When
 **✅ SOLUTION: Invoke actual method under test**
 
 ```csharp
+// ❌ BAD: Identity lambda (returns inputs unchanged, does not test behavior)
 var then = When
-    .Invoked(static () => HealthCheckTags.Ready);  // ✅ Calls the actual property getter
+    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
+
+// ✅ GOOD: Actually invokes the method under test with the parameters
+var then = When
+    .Invoked(objVar, paramVar, static (obj, param) => obj.Method(param));
+
+// ✅ GOOD: For parameterless property getter, just call the property
+var then = When
+    .Invoked(static () => HealthCheckTags.Ready);
 ```
 
 **Prevention**: Invoked must call actual method under test - never use identity lambdas like `(x) => x` or `(a, b) => (a, b)`.
