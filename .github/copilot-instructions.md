@@ -1363,7 +1363,7 @@ When testing module dependencies:
 - ✅ **Define system under test explicitly using `Sut(out var sutVar)` method** - never use `.New<SutType>(out var sut, ...)` for SUT
 - ✅ **Prefer `.New<T>(out var variable)` without factory method** - factory is for corner cases only
 - ✅ **Keep `Invoked` lambdas simple** - invoke only the testing method, move setup to Given section
-- ✅ **Invoked must call actual method under test** - never use identity lambdas like `(x) => x` or `(a, b) => (a, b)`
+- ✅ **Invoked must call actual method under test** - always invoke the actual method/property being tested, not identity transformations
 - ✅ **DON'T add comments explaining why factory methods are used** - the code should be self-evident
 - ✅ Use `ContainSingle()` instead of `HaveCount(1)`
 - ✅ **Use `Result()` overload with multiple IVariable parameters** instead of multiple `.Result()` calls
