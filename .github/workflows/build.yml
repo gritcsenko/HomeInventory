@@ -35,12 +35,12 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v6
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@3e891f8b4e4f0bce4aeb65cd18f445bf100c247f # v5
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -78,11 +78,11 @@ jobs:
     runs-on: ubuntu-latest  # Required: grep and bash commands are Linux-specific
     steps:
       - name: "Checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v6
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@3e891f8b4e4f0bce4aeb65cd18f445bf100c247f # v5
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Download cached dependencies
@@ -110,13 +110,13 @@ jobs:
           fi
         working-directory: ./src/HomeInventory
       - name: Run OpenSSF Scorecard
-        uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46 # v2.4.0
+        uses: ossf/scorecard-action@v2
         with:
           results_file: results.sarif
           results_format: sarif
           publish_results: true
       - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
 
@@ -127,12 +127,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v6
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@3e891f8b4e4f0bce4aeb65cd18f445bf100c247f # v5
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -160,12 +160,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v6
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@3e891f8b4e4f0bce4aeb65cd18f445bf100c247f # v5
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -204,14 +204,14 @@ jobs:
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByAttribute='CompilerGenerated,GeneratedCode,ExcludeFromCodeCoverage'
         working-directory: ./src/HomeInventory
       - name: Test Report
-        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v2.2.0
+        uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: Unit tests # Name of the check run which will be created
-          path: "./src/HomeInventory/coverage/*.trx" # Path to test results
-          reporter: dotnet-trx # Format of test results
+          name: Unit tests
+          path: "./src/HomeInventory/coverage/*.trx"
+          reporter: dotnet-trx
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98 # v2
+        uses: EnricoMi/publish-unit-test-result-action@v2
         continue-on-error: true
         if: always()
         with:
@@ -222,7 +222,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Code Coverage Summary Report
         id: report
-        uses: irongut/CodeCoverageSummary@51cc3a756ddcd398d447c044c02cb6aa83fdae95 # v1.3.0
+        uses: irongut/CodeCoverageSummary@v1.3.0
         with:
           filename: ./src/HomeInventory/coverage.cobertura.xml
           badge: true
@@ -234,7 +234,7 @@ jobs:
           output: both
           thresholds: "60 80"
       - name: Add Coverage PR Comment
-        uses: marocchino/sticky-pull-request-comment@331f8f5b4215f0445d3c07b4967662a32a2d3e31 # v2
+        uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Unit test coverage summary"
@@ -244,7 +244,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@d6b8d25b94929e0201b81ddb2032201e1edb2126 # v5.5.0
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
@@ -263,7 +263,7 @@ jobs:
           customSettings: "" # Optional custom settings (separated by semicolon). See: https://github.com/danielpalme/ReportGenerator/wiki/Settings.
           toolpath: "reportgeneratortool" # Default directory for installing the dotnet tool.
       - name: Add Coverage PR Comment 2
-        uses: marocchino/sticky-pull-request-comment@331f8f5b4215f0445d3c07b4967662a32a2d3e31 # v2
+        uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Detailed"
@@ -273,7 +273,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       - name: Upload coverage report artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43e8cde3e # v5.0.0
+        uses: actions/upload-artifact@v4
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           name: CoverageReport # Artifact name
@@ -291,12 +291,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v6
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@3e891f8b4e4f0bce4aeb65cd18f445bf100c247f # v5
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -329,12 +329,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v6
+        uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 0
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@3e891f8b4e4f0bce4aeb65cd18f445bf100c247f # v5
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
@@ -367,9 +367,9 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Publish Reqnroll Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43e8cde3e # v5.0.0
+        uses: actions/upload-artifact@v4
         with:
           name: "Reqnroll Test Results"
           path: ./src/HomeInventory/Acceptance/AcceptanceTestResults.html
-          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
-          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+          if-no-files-found: warn
+          retention-days: 90
