@@ -137,16 +137,27 @@ This section documents working terminal commands and common failures encountered
 
 **Verifying GitHub Actions Versions:**
 
-Before updating GitHub Actions in workflow files, **always use `git ls-remote` to verify the latest version and get the correct commit SHA**:
+⚠️ **CRITICAL: NEVER update a GitHub Action without verifying the SHA first!**
+
+Before updating GitHub Actions in workflow files, **ALWAYS use `git ls-remote` to verify the latest version and get the correct commit SHA**:
 
 ```powershell
-# List all tags for a GitHub Action to see available versions
+# ALWAYS run this BEFORE updating any GitHub Action:
+git ls-remote --tags https://github.com/[owner]/[action].git | Select-String "v[major]" | Select-Object -Last 10
+
+# Example for actions/cache:
 git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
 
 # Example output shows SHA and tag:
 # 0057852bfaa89a56745cba8c7296529d2fc39830        refs/tags/v4.3.0
 # 0400d5f644dc74513175e3cd8d07132dd4860809        refs/tags/v4.2.4
 ```
+
+**Why this is critical:**
+- ❌ **Using incorrect/assumed SHAs causes "action could not be found" errors**
+- ❌ **Invalid SHAs waste time debugging workflow failures**
+- ✅ **Verification takes 5 seconds and prevents all these issues**
+- ✅ **The SHA from `git ls-remote` is guaranteed to be correct**
 
 **Process for Updating GitHub Actions:**
 
@@ -211,6 +222,76 @@ Error: This request has been automatically failed because it uses a deprecated v
 2. Update all instances to the new SHA
 3. Document the change with previous versions
 4. Verify the new SHA is from an official release tag, not an intermediate commit
+
+**Common GitHub Actions Mistakes & How to Avoid Them:**
+
+Based on actual failures encountered (November 2024):
+
+**❌ MISTAKE 1: Using assumed/guessed SHAs without verification**
+```yaml
+# ❌ WRONG - This SHA was assumed, not verified
+uses: actions/checkout@db14d8b7fea37acffdd656bd35b81b8f8b3bb8ad # v6.0.0
+# Error: "An action could not be found at the URI"
+```
+
+**✅ CORRECT - Always verify first:**
+```powershell
+# 1. Verify the correct SHA
+git ls-remote --tags https://github.com/actions/checkout.git | Select-String "v6" | Select-Object -Last 5
+# Output: 1af3b93b6815bc44a9784bd300feb67ff0d1eeb3        refs/tags/v6.0.0
+
+# 2. Use the verified SHA
+uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+```
+
+**❌ MISTAKE 2: Updating one action at a time reactively**
+
+Instead of verifying and updating ALL actions systematically, we updated one at a time as errors appeared, resulting in:
+- 11 different actions with invalid SHAs
+- 27 total instances that needed correction
+- Multiple workflow failures
+
+**✅ CORRECT - Proactive systematic verification:**
+```powershell
+# Verify ALL actions in your workflow BEFORE updating:
+git ls-remote --tags https://github.com/actions/checkout.git | Select-String "v6" | Select-Object -Last 5
+git ls-remote --tags https://github.com/actions/setup-dotnet.git | Select-String "v5" | Select-Object -Last 5
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+git ls-remote --tags https://github.com/actions/upload-artifact.git | Select-String "v5" | Select-Object -Last 5
+# ... verify ALL actions used in workflow
+```
+
+**❌ MISTAKE 3: Using outdated/deprecated SHAs**
+
+GitHub deprecates old commit SHAs, even for stable releases:
+```
+Error: This request has been automatically failed because it uses a deprecated version of `actions/cache: 6849a6489940f00c2f30c0fb92c6274307ccb58a`
+```
+
+**✅ CORRECT - Use the LATEST stable release SHA:**
+```powershell
+# Always get the LATEST version in the major version series
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+# Use the most recent: v4.3.0, not v4.1.2 or v4.2.0
+```
+
+**Actions verified and corrected in this project (as of November 2024):**
+
+| Action | Correct SHA | Version | Previous Issues |
+|--------|-------------|---------|-----------------|
+| actions/checkout | `1af3b93b6815bc44a9784bd300feb67ff0d1eeb3` | v6.0.0 | Used invalid SHA |
+| actions/setup-dotnet | `2016bd2012dba4e32de620c46fe006a3ac9f0602` | v5.0.1 | Used invalid SHA |
+| actions/cache | `0057852bfaa89a56745cba8c7296529d2fc39830` | v4.3.0 | Multiple deprecated SHAs |
+| actions/upload-artifact | `330a01c490aca151604b8cf639adc76d48f6c5d4` | v5.0.0 | Used invalid SHA |
+| ossf/scorecard-action | `99c09fe975337306107572b4fdf4db224cf8e2f2` | v2.4.3 | Was using v2.4.0 |
+| github/codeql-action/upload-sarif | `5ad83d3202da6e473f763d732b591299ae4e380c` | v3 | Used invalid SHA |
+| dorny/test-reporter | `894765a932a426ee30919ffd3b5fd3b53c0e26b8` | v2.2.0 | Used invalid SHA |
+| EnricoMi/publish-unit-test-result-action | `6e8f8c55b476f977d1c58cfbd7e337cbf86d917f` | v2 | Used invalid SHA |
+| irongut/CodeCoverageSummary | `51cc3a756ddcd398d447c044c02cb6aa83fdae95` | v1.3.0 | Was correct |
+| marocchino/sticky-pull-request-comment | `773744901bac0e8cbb5a0dc842800d45e9b2b405` | v2 | Used invalid SHA |
+| danielpalme/ReportGenerator-GitHub-Action | `dcdfb6e704e87df6b2ed0cf123a6c9f69e364869` | v5.5.0 | Used invalid SHA |
+
+**Key Lesson:** If you're updating GitHub Actions, verify EVERY action's SHA with `git ls-remote` before making changes. This takes a few minutes but prevents hours of debugging workflow failures.
 
 ### PowerShell Commands (Windows)
 
