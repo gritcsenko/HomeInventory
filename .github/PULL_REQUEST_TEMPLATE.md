@@ -3,9 +3,6 @@ Thank you for contributing to HomeInventory!
 
 Please read the contributing guide before raising a pull request:
 https://github.com/gritcsenko/HomeInventory/blob/main/.github/CONTRIBUTING.md
-
-And review our coding standards:
-https://github.com/gritcsenko/HomeInventory/blob/main/.github/copilot-instructions.md
 -->
 
 # Description
@@ -59,7 +56,7 @@ Please describe the manual tests you ran to verify your changes:
 
 #### Code Quality
 - [ ] I have performed a thorough self-review of my code
-- [ ] My code follows the style guidelines of this project ([copilot-instructions.md](https://github.com/gritcsenko/HomeInventory/blob/main/.github/copilot-instructions.md))
+- [ ] My code follows the style guidelines of this project
 - [ ] I have chosen meaningful names for classes, methods, and variables
 - [ ] I have avoided code duplication and extracted reusable logic
 - [ ] I have handled errors appropriately using functional patterns (Option, Either, Validation)
@@ -115,22 +112,3 @@ _If this PR introduces breaking changes, document the migration path:_
 ## Additional Context
 
 Add any other context, screenshots, or information about the pull request here.
-
-### Screenshots (if applicable)
-_Before:_
-
-
-_After:_
-
-
-## Reviewer Guidance
-
-_For reviewers - focus areas for this PR:_
-
-- [ ] Architecture and design patterns
-- [ ] Error handling and edge cases
-- [ ] Test coverage and quality
-- [ ] Performance implications
-- [ ] Security considerations
-- [ ] Documentation clarity and completeness
-
