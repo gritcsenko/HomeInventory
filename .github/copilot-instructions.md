@@ -1352,8 +1352,9 @@ When testing module dependencies:
 - ✅ **Use expression-bodied lambdas for single statements** - `static x => x.Method()` not `static x => { x.Method(); }`
 - ✅ **Use `Create<T>()` for values that don't need to be in test context** - avoids polluting context with unnecessary variables
 - ✅ **Update these instructions when user provides requests, advice, hints, or rules** that can prevent undesired results
-- ✅ **ALWAYS verify assumptions with assertions during investigation** - add assertions to verify test setup is correct, **then remove them once issue is identified**
-- ✅ **Remove investigation assertions before final commit** - temporary asserts are for debugging only, not production test code
+- ✅ **Add temporary assertions during investigation** - use assertions to verify test setup, data values, and assumptions
+- ✅ **Remove them before committing** - once you've identified the issue, remove investigation assertions and keep only the assertions that verify the actual test behavior
+- ❌ **Don't commit debugging assertions** - investigation assertions are for local debugging only
 - ✅ **Container should include ALL modules** - in module dependency tests, the container needs both the dependency module AND the dependent module
 - ✅ **Use unique PARAMETER names in GivenContext helper methods** - `CallerArgumentExpression` captures the PARAMETER name (e.g., `out var moduleVar`), NOT the calling variable name. If two methods both use `out IVariable<IModule> moduleVar`, they'll collide in VariablesContainer. Use `out IVariable<IModule> baseModule` and `out IVariable<IModule> dependentModule` instead
 - ✅ Use `var then = When.Invoked(...);` followed by `then.Result(...)` on separate lines
