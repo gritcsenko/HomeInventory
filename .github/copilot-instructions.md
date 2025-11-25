@@ -5,6 +5,7 @@
 - [Meta-Instructions for AI Assistants](#meta-instructions-for-ai-assistants)
 - [Failed Code Edits - Investigation & Prevention](#failed-code-edits---investigation--prevention)
 - [Terminal Commands Reference](#terminal-commands-reference)
+  - [GitHub Actions Version Management](#github-actions-version-management)
 - [Project Overview](#project-overview)
 - [Architecture & Structure](#architecture--structure)
 - [Technology Stack](#technology-stack)
@@ -27,6 +28,12 @@
   - [Common Assertions](#common-assertions)
   - [Code Quality Warnings to Avoid](#code-quality-warnings-to-avoid)
 - [Module Development Workflow](#module-development-workflow)
+- [Documentation](#documentation)
+- [Development Commands](#development-commands)
+- [Additional Guidelines](#additional-guidelines)
+- [Code Quality & Analyzers](#code-quality--analyzers)
+- [Common Patterns to Follow](#common-patterns-to-follow)
+- [Questions to Ask When Developing](#questions-to-ask-when-developing)
 - [Code Review Guidelines](#code-review-guidelines)
 
 ## Meta-Instructions for AI Assistants
@@ -68,10 +75,12 @@ When a code edit fails (compilation error, test failure, logical error):
    - Understand WHY it failed, not just HOW to fix it
 
 3. **Prevent recurrence**:
-   - Add the failure pattern to the "DON'T" list
+   - Add the failure pattern to the "DON'T" list in [Critical Test Guidelines](#critical-test-guidelines)
    - Add the correct pattern to the "DO" list
    - Include before/after examples
    - Explain the reasoning
+
+> **See also:** [Critical Test Guidelines](#critical-test-guidelines) for the complete DO/DON'T list of testing patterns.
 
 **Example Documentation:**
 
@@ -292,6 +301,56 @@ git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" |
 | danielpalme/ReportGenerator-GitHub-Action | `dcdfb6e704e87df6b2ed0cf123a6c9f69e364869` | v5.5.0 | Used invalid SHA |
 
 **Key Lesson:** If you're updating GitHub Actions, verify EVERY action's SHA with `git ls-remote` before making changes. This takes a few minutes but prevents hours of debugging workflow failures.
+
+---
+
+## GitHub Actions Version Management
+
+> **CRITICAL:** Always verify the SHA for every GitHub Action you use. Using an incorrect SHA can cause workflow failures, security issues, or silent breakage. Never trust the SHA in documentation or release notes—always check it yourself.
+
+### Step-by-step: How to verify a GitHub Action SHA
+
+1. **Find the action and version you want to use.**
+   - Example: `actions/checkout@v4`
+
+2. **Get the repository URL.**
+   - Example: `https://github.com/actions/checkout`
+
+3. **Run `git ls-remote` to list all refs and SHAs:**
+   ```sh
+   git ls-remote https://github.com/actions/checkout.git
+   ```
+
+4. **Find the SHA for the tag or release you want.**
+   - For example, to use v4, look for the line ending with `refs/tags/v4`.
+
+5. **Update your workflow to use the full SHA:**
+   ```yaml
+   uses: actions/checkout@<SHA>
+   ```
+   Example:
+   ```yaml
+   uses: actions/checkout@a9b1234567890abcdef1234567890abcdef123456
+   ```
+
+6. **Double-check the SHA matches the intended tag.**
+   - If the tag is moved or deleted, your workflow may break.
+
+### Example: Real workflow failure due to incorrect SHA
+
+In November 2024, several workflows failed with errors like:
+
+```
+Error: The workflow is not valid. .github/workflows/ci.yml (Line 23): The workflow uses an action 'actions/checkout@v4' with an invalid SHA. Please verify the SHA and try again.
+```
+
+**Root Cause:** The SHA for `actions/checkout@v4` was copied from a blog post and did not match the actual tag in the repository.
+
+**Resolution:** The workflow failed to run until the correct SHA was verified with `git ls-remote` and updated.
+
+**Lesson:** Always verify SHAs directly from the source repository, never copy from documentation or blog posts.
+
+---
 
 **Security Scanning Best Practices:**
 
@@ -1278,6 +1337,8 @@ When testing module dependencies:
 
 ### Critical Test Guidelines
 
+> **Note:** When you encounter test failures or make mistakes, document them in the [Failed Code Edits - Investigation & Prevention](#failed-code-edits---investigation--prevention) section so future AI assistants can learn from them.
+
 **DO:**
 - ✅ **Use expression-bodied lambdas for single statements** - `static x => x.Method()` not `static x => { x.Method(); }`
 - ✅ **Use `Create<T>()` for values that don't need to be in test context** - avoids polluting context with unnecessary variables
@@ -2044,26 +2105,29 @@ protected override void EnsureRegistered(IServiceCollection services) =>
 
 This section consolidates frequently encountered mistakes across test patterns:
 
-| Anti-Pattern                           | Why It's Wrong          | Correct Pattern                         |
-|----------------------------------------|-------------------------|-----------------------------------------|
-| `.HaveCount(1)`                        | Not specific enough     | `.ContainSingle()` (FAA0001)            |
-| `.IsSome.Should().BeTrue()`            | Verbose, less readable  | `.Should().BeSome()`                    |
-| `.NotBeNull()` before `.BeOfType<T>()` | Redundant check         | Just `.BeOfType<T>()`                   |
-| String matching on types               | Brittle, error-prone    | `typeof(T)` direct reference            |
-| `Substitute.For<T>()` in `New()`       | Inconsistent pattern    | `.SubstituteFor<T>()` helper            |
-| Identity lambda `(x) => x`             | Tests nothing           | Call actual method                      |
-| Hardcoded literals in tests            | Reduces test robustness | Use AutoFixture                         |
-| Multiple `.Result()` with shared vars  | Verbose, inefficient    | Single `.Result()` with multiple params |
-| Implicit SUT                           | Unclear test intent     | Explicit `Sut(out var sutVar)`          |
-| Multi-line `Invoked` lambda            | Mixes setup with action | Move setup to `Given`                   |
+| Anti-Pattern                           | Why It's Wrong          | Correct Pattern                         | Warning/Error Code |
+|----------------------------------------|-------------------------|-----------------------------------------|--------------------|
+| `.HaveCount(1)`                        | Not specific enough     | `.ContainSingle()`                      | FAA0001            |
+| `.IsSome.Should().BeTrue()`            | Verbose, less readable  | `.Should().BeSome()`                    | -                  |
+| `.NotBeNull()` before `.BeOfType<T>()` | Redundant check         | Just `.BeOfType<T>()`                   | -                  |
+| String matching on types               | Brittle, error-prone    | `typeof(T)` direct reference            | -                  |
+| `Substitute.For<T>()` in `New()`       | Inconsistent pattern    | `.SubstituteFor<T>()` helper            | -                  |
+| Identity lambda `(x) => x`             | Tests nothing           | Call actual method                      | -                  |
+| Hardcoded literals in tests            | Reduces test robustness | Use AutoFixture                         | -                  |
+| Multiple `.Result()` with shared vars  | Verbose, inefficient    | Single `.Result()` with multiple params | -                  |
+| Implicit SUT                           | Unclear test intent     | Explicit `Sut(out var sutVar)`          | -                  |
+| Multi-line `Invoked` lambda            | Mixes setup with action | Move setup to `Given`                   | IDE0053            |
+| Block body `{ }` for single expression | Unnecessary verbosity   | Use expression body `x => x.Method()`   | IDE0053            |
+| Type arg when out param has type       | Redundant specification | Omit type: `.New(out IVariable<T> var)` | CS8597             |
 
 **Quick Reference Links:**
-- Single item assertions → Use `ContainSingle()` not `HaveCount(1)`
+- Single item assertions → Use `ContainSingle()` not `HaveCount(1)` (FAA0001)
 - Option<T> assertions → Use `.BeSome()` / `.BeNone()` not `.IsSome.Should().BeTrue()`
 - Type assertions → Use `typeof(T)` not `.Name.Contains("T")`
 - Dictionary assertions → Chain `.WhoseValue.Should()...` not separate access
 - Service assertions → Use `.ContainTransient<T>()` not manual lifetime checks
 - SUT creation → Use `Sut(out var sutVar)` not `.New<T>(out var sut, ...)`
+- Lambda expressions → Use expression body for single statements (IDE0053)
 
 **Note on `.Which` Pattern**:
 - Use `.Which` after `.BeSome()` to access the inner value: `.Should().BeSome().Which.Should().Be(...)`
