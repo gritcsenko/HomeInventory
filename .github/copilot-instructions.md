@@ -293,6 +293,28 @@ git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" |
 
 **Key Lesson:** If you're updating GitHub Actions, verify EVERY action's SHA with `git ls-remote` before making changes. This takes a few minutes but prevents hours of debugging workflow failures.
 
+**Security Scanning Best Practices:**
+
+The security-scan job implements two levels of security validation:
+
+1. **Vulnerable Packages Check** (Blocking):
+   - Fails workflow if any NuGet packages have known CVEs
+   - Uses `dotnet list package --vulnerable`
+   - Blocks merge until vulnerabilities are resolved
+
+2. **OpenSSF Scorecard Check** (Blocking on Critical Issues):
+   - Runs Scorecard to analyze supply chain security
+   - Publishes results to GitHub Security tab for visibility
+   - **Fails workflow if critical security issues detected** (error/warning level with security tags)
+   - Does NOT fail on low scores alone (scores are informational)
+   - Parses SARIF results to detect actionable security problems
+
+**Why This Approach:**
+- ✅ Blocks on **actionable security issues** (vulnerable packages, critical Scorecard findings)
+- ✅ Provides **visibility** on security posture (Scorecard scores, SARIF uploads)
+- ✅ Allows **incremental improvements** (low scores don't block, but critical issues do)
+- ✅ Follows **OpenSSF best practices** (Scorecard for visibility + blocking on critical findings)
+
 ### PowerShell Commands (Windows)
 
 **Shell**: `powershell.exe` (Windows PowerShell v7.5.4, as of time of writing. Use ` $PSVersionTable.PSVersion.ToString()` to check version, if needed)

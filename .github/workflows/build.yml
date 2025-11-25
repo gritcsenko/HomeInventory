@@ -113,6 +113,28 @@ jobs:
           results_file: results.sarif
           results_format: sarif
           publish_results: true
+      - name: Check Scorecard Results
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Check if SARIF file contains any critical or high severity issues
+          if [ -f results.sarif ]; then
+            # Count critical/high severity findings
+            CRITICAL_COUNT=$(jq '[.runs[].results[] | select(.level == "error" or .level == "warning") | select(.properties.tags[]? | contains("security"))] | length' results.sarif 2>/dev/null || echo "0")
+            
+            if [ "$CRITICAL_COUNT" -gt 0 ]; then
+              echo "::error::OpenSSF Scorecard detected $CRITICAL_COUNT critical security issue(s)!"
+              echo "::group::Critical Issues Details"
+              jq -r '.runs[].results[] | select(.level == "error" or .level == "warning") | select(.properties.tags[]? | contains("security")) | "❌ \(.ruleId): \(.message.text)"' results.sarif 2>/dev/null || echo "Unable to parse details"
+              echo "::endgroup::"
+              echo "📊 View full Scorecard report in the Security tab"
+              exit 1
+            else
+              echo "✅ No critical security issues detected by Scorecard"
+            fi
+          else
+            echo "⚠️ Scorecard results file not found, skipping validation"
+          fi
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@5ad83d3202da6e473f763d732b591299ae4e380c # v3
         with:
