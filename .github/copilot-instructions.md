@@ -1392,7 +1392,7 @@ When testing module dependencies:
 - ❌ **Use `.New<T>(out var sut, static () => new())` for SUT** - use `Sut(out var sutVar)` method instead
 - ❌ **Use factory method in New when not needed** - prefer `.New<T>(out var variable)` for simple AutoFixture generation
 - ❌ **Put test setup in `Invoked` lambdas** - keep them simple, only invoke the method under test
-- ❌ **Use identity lambdas in Invoked** - `(x) => x` or `(a, b) => (a, b)` don't test behavior
+- ❌ **Use identity lambdas like `(x) => x` in Invoked** - these don't test behavior, only return inputs unchanged
 - ❌ **Add comments about corner cases in factory methods** - code should be self-documenting
 - ❌ **Fall out of Given-When-Then pattern** - avoid imperative setup and assertions mixed together
 - ❌ **Leave system under test implicit** - always define it clearly with `Sut(out var sutVar)`
