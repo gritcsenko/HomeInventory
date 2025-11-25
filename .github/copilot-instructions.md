@@ -1882,12 +1882,20 @@ public void Add_ShouldAddModule()
     then
         .Result(sutVar, moduleVar, static (result, sut, expectedModule) =>
         {
-            // Assert on sut side effect
+            // ✅ Testing side effects: Assert on SUT (not result) for mutation operations
+            // This pattern is correct when the method modifies state (Add, Remove, etc.)
+            // The 'result' parameter contains the return value, but we verify the side effect
             sut.Should().ContainSingle().Which.Should().BeSome()
                 .Which.Module.Should().BeSameAs(expectedModule);
         });
 }
 ```
+
+**Note on Testing Side Effects:**
+- When testing **mutation methods** (Add, Remove, Update, etc.), the `Invoked` block should only call the method
+- The `Result` block can assert on the **SUT's state changes** by passing `sutVar` as a parameter
+- This is different from testing **pure functions**, where you assert on the returned `result`
+- Both patterns are correct - choose based on what you're testing (side effects vs. return value)
 
 **✅ GOOD - ContainSingle():**
 ```csharp
