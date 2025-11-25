@@ -2112,7 +2112,7 @@ This section consolidates frequently encountered mistakes across test patterns:
 | `.NotBeNull()` before `.BeOfType<T>()` | Redundant check         | Just `.BeOfType<T>()`                   | -                  |
 | String matching on types               | Brittle, error-prone    | `typeof(T)` direct reference            | -                  |
 | `Substitute.For<T>()` in `New()`       | Inconsistent pattern    | `.SubstituteFor<T>()` helper            | -                  |
-| Identity lambda `(x) => x`             | Tests nothing           | Call actual method                      | -                  |
+| Identity lambda `(x) => x`             | Tests nothing           | Call actual method: `(obj, param) => obj.Method(param)` | -                  |
 | Hardcoded literals in tests            | Reduces test robustness | Use AutoFixture                         | -                  |
 | Multiple `.Result()` with shared vars  | Verbose, inefficient    | Single `.Result()` with multiple params | -                  |
 | Implicit SUT                           | Unclear test intent     | Explicit `Sut(out var sutVar)`          | -                  |
