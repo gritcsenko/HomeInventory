@@ -339,7 +339,7 @@ git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" |
    ```
    Example:
    ```yaml
-   uses: actions/checkout@a9b1234567890abcdef1234567890abcdef123456
+   uses: actions/checkout@<VERIFIED_SHA_FROM_GIT_LS_REMOTE> # Replace with verified SHA from git ls-remote
    ```
 
 6. **Double-check the SHA matches the intended tag.**
