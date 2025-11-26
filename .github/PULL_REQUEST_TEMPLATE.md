@@ -109,12 +109,3 @@ _If this PR introduces breaking changes, document the migration path:_
 **Deprecation timeline:**
 - 
 
-## Manual Testing Evidence
-
-_Please provide evidence of manual testing for this change. This may include:_
-- _Screenshots or screen recordings demonstrating functionality_
-- _Test output or logs showing successful execution_
-- _Step-by-step reproduction instructions for reviewers_
-- _Links to deployed environments or preview builds_
-- _Performance metrics or benchmarks (if applicable)_
-- _Browser/device compatibility testing results (if UI change)_
