@@ -25,29 +25,27 @@ env:
 jobs:
   build:
     permissions:
-      pull-requests: write
-      packages: write
-      checks: write
-      actions: write
-      statuses: write
+      contents: read
+      packages: read
     name: Build .NET
     runs-on: ubuntu-latest
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -61,31 +59,130 @@ jobs:
         run: dotnet build -m:1 -c Release -v minimal --nologo --no-incremental --no-restore --no-self-contained
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+
+  security-scan:
+    name: "Security Scan"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          lfs: true
+          fetch-depth: 0
+          persist-credentials: false
+      - name: "Install .NET SDK"
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
+        with:
+          global-json-file: ./src/HomeInventory/global.json
+      - name: Restore build cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ./src/HomeInventory
+          key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
+      - name: Download cached dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{github.ref}}
+          restore-keys: |
+            ${{ runner.os }}-nuget-refs/heads/main
+      - name: Check for vulnerable packages
+        run: dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.txt
+        working-directory: ./src/HomeInventory
+      - name: Fail on vulnerabilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! [ -f vulnerable-packages.txt ]; then
+            echo "::error::Vulnerability check file not found!"
+            exit 1
+          fi
+          
+          if grep -q "has the following vulnerable packages" vulnerable-packages.txt; then
+            echo "::error::Vulnerable packages detected!"
+            echo "::group::Vulnerability Details"
+            cat vulnerable-packages.txt
+            echo "::endgroup::"
+            exit 1
+          else
+            echo "✅ No vulnerable packages detected"
+          fi
+        working-directory: ./src/HomeInventory
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@99c09fe975337306107572b4fdf4db224cf8e2f2 # v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - name: Check Scorecard Results
+        shell: bash
+        run: |
+          set -euo pipefail
+          
+          # Check for jq availability
+          if ! command -v jq &> /dev/null; then
+            echo "::error::jq is not installed, cannot parse Scorecard results"
+            exit 1
+          fi
+          
+          # Check if SARIF file contains any critical or high severity issues
+          if [ -f results.sarif ]; then
+            # Count critical/high severity findings with security tags (exact match)
+            CRITICAL_COUNT=$(jq '[.runs[].results[] | select(.level == "error" or .level == "warning") | select(.properties.tags[]? == "security")] | length' results.sarif 2>/dev/null || echo "0")
+            
+            if [ "$CRITICAL_COUNT" -gt 0 ]; then
+              echo "::error::OpenSSF Scorecard detected $CRITICAL_COUNT critical security issue(s)!"
+              echo "::group::Critical Issues Details"
+              jq -r '.runs[].results[] | select(.level == "error" or .level == "warning") | select(.properties.tags[]? == "security") | "❌ \(.ruleId): \(.message.text)"' results.sarif 2>/dev/null || echo "Unable to parse details"
+              echo "::endgroup::"
+              echo "📊 View full Scorecard report in the Security tab"
+              exit 1
+            else
+              echo "✅ No critical security issues detected by Scorecard"
+            fi
+          else
+            echo "⚠️ Scorecard results file not found, skipping validation"
+          fi
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@5ad83d3202da6e473f763d732b591299ae4e380c # v3
+        continue-on-error: true
+        with:
+          sarif_file: results.sarif
 
   format-test:
     name: "Formatting test"
     needs: build
     if: ${{ success() }}
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Download cached dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -101,29 +198,31 @@ jobs:
     needs: build
     if: ${{ success() }}
     permissions:
+      contents: read
       checks: write
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -150,14 +249,14 @@ jobs:
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByAttribute='CompilerGenerated,GeneratedCode,ExcludeFromCodeCoverage'
         working-directory: ./src/HomeInventory
       - name: Test Report
-        uses: dorny/test-reporter@v2.2.0
+        uses: dorny/test-reporter@894765a932a426ee30919ffd3b5fd3b53c0e26b8 # v2.2.0
         if: success() || failure()
         with:
-          name: Unit tests # Name of the check run which will be created
-          path: "./src/HomeInventory/coverage/*.trx" # Path to test results
-          reporter: dotnet-trx # Format of test results
+          name: Unit tests
+          path: "./src/HomeInventory/coverage/*.trx"
+          reporter: dotnet-trx
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@6e8f8c55b476f977d1c58cfbd7e337cbf86d917f # v2
         continue-on-error: true
         if: always()
         with:
@@ -168,7 +267,7 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Code Coverage Summary Report
         id: report
-        uses: irongut/CodeCoverageSummary@v1.3.0
+        uses: irongut/CodeCoverageSummary@51cc3a756ddcd398d447c044c02cb6aa83fdae95 # v1.3.0
         with:
           filename: ./src/HomeInventory/coverage.cobertura.xml
           badge: true
@@ -180,7 +279,7 @@ jobs:
           output: both
           thresholds: "60 80"
       - name: Add Coverage PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Unit test coverage summary"
@@ -190,7 +289,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@v5.5.0
+        uses: danielpalme/ReportGenerator-GitHub-Action@dcdfb6e704e87df6b2ed0cf123a6c9f69e364869 # v5.5.0
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
@@ -209,7 +308,7 @@ jobs:
           customSettings: "" # Optional custom settings (separated by semicolon). See: https://github.com/danielpalme/ReportGenerator/wiki/Settings.
           toolpath: "reportgeneratortool" # Default directory for installing the dotnet tool.
       - name: Add Coverage PR Comment 2
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2
         if: ${{ github.event_name == 'pull_request' && (success() || steps.report.conclusion == 'failure') }}
         with:
           header: "Detailed"
@@ -219,7 +318,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
       - name: Upload coverage report artifact
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           name: CoverageReport # Artifact name
@@ -232,29 +331,31 @@ jobs:
     needs: build
     if: ${{ success() }}
     permissions:
+      contents: read
       checks: write
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -270,29 +371,31 @@ jobs:
     needs: build
     if: ${{ success() }}
     permissions:
+      contents: read
       checks: write
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           lfs: true
           fetch-depth: 0
+          persist-credentials: false
       - name: "Install .NET SDK"
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
         with:
           global-json-file: ./src/HomeInventory/global.json
       - name: Info
         run: dotnet --info
         working-directory: ./src/HomeInventory
       - name: Cache build results
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
       - name: Download cached dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -313,9 +416,9 @@ jobs:
         working-directory: ./src/HomeInventory
       - name: Publish Reqnroll Test Results
         if: success() || failure()
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: "Reqnroll Test Results"
           path: ./src/HomeInventory/Acceptance/AcceptanceTestResults.html
-          if-no-files-found: warn # The desired behavior if no files are found using the provided path.
-          retention-days: 90 # Duration after which artifact will expire in days. 0 means using default retention.
+          if-no-files-found: warn
+          retention-days: 90

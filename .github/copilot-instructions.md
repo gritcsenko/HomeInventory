@@ -1,5 +1,41 @@
 # GitHub Copilot Instructions for HomeInventory
 
+## Table of Contents
+
+- [Meta-Instructions for AI Assistants](#meta-instructions-for-ai-assistants)
+- [Failed Code Edits - Investigation & Prevention](#failed-code-edits---investigation--prevention)
+- [Terminal Commands Reference](#terminal-commands-reference)
+  - [GitHub Actions Version Management](#github-actions-version-management)
+- [Project Overview](#project-overview)
+- [Architecture & Structure](#architecture--structure)
+- [Technology Stack](#technology-stack)
+- [Coding Standards & Conventions](#coding-standards--conventions)
+  - [LanguageExt v5 Patterns](#languageext-v5-patterns)
+  - [CollectionsMarshal and Async Patterns](#collectionsmarshal-and-async-patterns)
+  - [Endpoint Development (Carter)](#endpoint-development-carter)
+  - [Domain Development](#domain-development)
+  - [Persistence & Data Access](#persistence--data-access)
+  - [Application Layer (CQRS)](#application-layer-cqrs)
+  - [Application Services Pattern](#application-services-pattern)
+- [Testing Guidelines](#testing-guidelines)
+  - [General Testing Principles](#general-testing-principles)
+  - [Coverage Improvement Strategy](#coverage-improvement-strategy)
+  - [Test Structure Pattern](#test-structure-pattern)
+  - [Test Design Principles](#test-design-principles)
+  - [Critical Test Guidelines](#critical-test-guidelines)
+  - [AutoFixture Usage Guidelines](#autofixture-usage-guidelines)
+  - [Common Test Anti-Patterns Reference](#common-test-anti-patterns-reference)
+  - [Common Assertions](#common-assertions)
+  - [Code Quality Warnings to Avoid](#code-quality-warnings-to-avoid)
+- [Module Development Workflow](#module-development-workflow)
+- [Documentation](#documentation)
+- [Development Commands](#development-commands)
+- [Additional Guidelines](#additional-guidelines)
+- [Code Quality & Analyzers](#code-quality--analyzers)
+- [Common Patterns to Follow](#common-patterns-to-follow)
+- [Questions to Ask When Developing](#questions-to-ask-when-developing)
+- [Code Review Guidelines](#code-review-guidelines)
+
 ## Meta-Instructions for AI Assistants
 
 **IMPORTANT**: When a user provides:
@@ -10,8 +46,17 @@
 - Corrections to mistakes you've made
 - **Terminal commands that fail and their working alternatives**
 - **Code edits that fail to compile or have logical errors**
+- **Hints about failed approaches during investigation**
+- **Corrections about test structure or assertion patterns**
 
 **YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
+
+**Process for Updating Instructions:**
+1. **Immediately document** the user's guidance in the relevant section
+2. **Add to Failed Code Edits** section if it's a mistake that should be prevented
+3. **Update DO/DON'T list** with concrete before/after examples
+4. **Reference the investigation process** used to identify and fix issues
+5. **Ensure future AI assistants learn from the mistake** by making the guidance explicit and searchable
 
 ## Failed Code Edits - Investigation & Prevention
 
@@ -30,10 +75,12 @@ When a code edit fails (compilation error, test failure, logical error):
    - Understand WHY it failed, not just HOW to fix it
 
 3. **Prevent recurrence**:
-   - Add the failure pattern to the "DON'T" list
+   - Add the failure pattern to the "DON'T" list in [Critical Test Guidelines](#critical-test-guidelines)
    - Add the correct pattern to the "DO" list
    - Include before/after examples
    - Explain the reasoning
+
+> **See also:** [Critical Test Guidelines](#critical-test-guidelines) for the complete DO/DON'T list of testing patterns.
 
 **Example Documentation:**
 
@@ -64,9 +111,277 @@ New(out var contextVar, () => {
 **Prevention**: SubstituteFor helper is only for GivenContext level, use NSubstitute directly inside lambdas.
 ```
 
+**❌ FAILED: Identity lambda in Invoked (doesn't test behavior)**
+
+Attempted:
+```csharp
+var then = When
+    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
+```
+
+**Error**: The Invoked lambda returns a tuple of the inputs without calling any method. This tests nothing and violates the principle that Invoked should invoke the method under test.
+
+**Why it failed**: Identity lambdas `(x) => x` or `(a, b) => (a, b)` don't exercise any behavior—they simply return their inputs unchanged.
+
+**✅ SOLUTION: Invoke actual method under test**
+
+```csharp
+// ❌ BAD: Identity lambda (returns inputs unchanged, does not test behavior)
+var then = When
+    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
+
+// ✅ GOOD: Actually invokes the method under test with the parameters
+var then = When
+    .Invoked(objVar, paramVar, static (obj, param) => obj.Method(param));
+
+// ✅ GOOD: For parameterless property getter, just call the property
+var then = When
+    .Invoked(static () => HealthCheckTags.Ready);
+```
+
+**Prevention**: Invoked must call actual method under test - never use identity lambdas like `(x) => x` or `(a, b) => (a, b)`.
+
 ## Terminal Commands Reference
 
 This section documents working terminal commands and common failures encountered in this project.
+
+### Version Management
+
+**When updating/setting external component versions (NuGet packages, GitHub Actions, etc.):**
+- **Always list at least 3 previous versions in your response/explanation**
+- This helps maintainers understand the version history and progression
+- Format: "Updating from vX.Y.Z (previous: vA.B.C, vD.E.F, vG.H.I) to vN.M.P"
+- Example: "Updating actions/checkout from v3 (previous versions: v1, v2) to v4"
+
+**Verifying GitHub Actions Versions:**
+
+> ⚠️ **CRITICAL:** NEVER update a GitHub Action without verifying the SHA first! See the comprehensive [GitHub Actions Version Management](#github-actions-version-management) section for detailed step-by-step instructions.
+
+Before updating GitHub Actions in workflow files, **ALWAYS use `git ls-remote` to verify the latest version and get the correct commit SHA**:
+
+```powershell
+# ALWAYS run this BEFORE updating any GitHub Action:
+git ls-remote --tags https://github.com/[owner]/[action].git | Select-String "v[major]" | Select-Object -Last 10
+
+# Example for actions/cache:
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+
+# Example output shows SHA and tag:
+# 0057852bfaa89a56745cba8c7296529d2fc39830        refs/tags/v4.3.0
+# 0400d5f644dc74513175e3cd8d07132dd4860809        refs/tags/v4.2.4
+```
+
+**Why this is critical:**
+- ❌ **Using incorrect/assumed SHAs causes "action could not be found" errors**
+- ❌ **Invalid SHAs waste time debugging workflow failures**
+- ✅ **Verification takes 5 seconds and prevents all these issues**
+- ✅ **The SHA from `git ls-remote` is guaranteed to be correct**
+
+**Process for Updating GitHub Actions:**
+
+1. **Check current version** in workflow file
+2. **Use `git ls-remote`** to list available versions:
+   ```powershell
+   git ls-remote --tags https://github.com/[owner]/[action].git | Select-String "v[major]"
+   ```
+3. **Identify latest stable release** from the output
+4. **Document version history** - list at least 3 previous versions in your explanation
+5. **Update workflow file** with the SHA and version comment:
+   ```yaml
+   uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+   ```
+6. **Verify update** - check that all instances are consistent
+
+**Example Workflow:**
+
+```powershell
+# 1. Check the actions/cache repository for latest v4 versions
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+
+# Output shows:
+# 6849a6489940f00c2f30c0fb92c6274307ccb58a        refs/tags/v4.1.2
+# 1bd1e32a3bdc45362d1e726936510720a7c30a57        refs/tags/v4.2.0
+# 0057852bfaa89a56745cba8c7296529d2fc39830        refs/tags/v4.3.0  ← Latest
+
+# 2. Update workflow with the latest SHA and version comment
+# uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+
+# 3. Document in your response:
+# "Updating actions/cache to v4.3.0 (previous versions: v4.0.0, v4.1.0, v4.2.0)"
+```
+
+**Common GitHub Actions to Update:**
+
+| Action                  | Repository URL                                 | Current Major |
+|-------------------------|------------------------------------------------|---------------|
+| actions/checkout        | https://github.com/actions/checkout.git        | v4, v6        |
+| actions/setup-dotnet    | https://github.com/actions/setup-dotnet.git    | v4, v5        |
+| actions/cache           | https://github.com/actions/cache.git           | v4            |
+| actions/upload-artifact | https://github.com/actions/upload-artifact.git | v4, v5        |
+| ossf/scorecard-action   | https://github.com/ossf/scorecard-action.git   | v2            |
+| github/codeql-action    | https://github.com/github/codeql-action.git    | v3            |
+
+**Why Use SHA Pinning:**
+
+- ✅ **OpenSSF Scorecard requirement** - Pinned dependencies for security
+- ✅ **Immutable reference** - SHA cannot be changed, unlike tags
+- ✅ **Supply chain security** - Prevents tag manipulation attacks
+- ⚠️ **Maintenance overhead** - Must update when GitHub deprecates old SHAs
+
+**Handling GitHub Action Deprecations:**
+
+If you encounter a deprecation error like:
+```
+Error: This request has been automatically failed because it uses a deprecated version of `actions/cache: [SHA]`
+```
+
+**Solution:**
+1. Use `git ls-remote` to find the **latest** version SHA
+2. Update all instances to the new SHA
+3. Document the change with previous versions
+4. Verify the new SHA is from an official release tag, not an intermediate commit
+
+**Common GitHub Actions Mistakes & How to Avoid Them:**
+
+Based on actual failures encountered (November 2024):
+
+**❌ MISTAKE 1: Using assumed/guessed SHAs without verification**
+```yaml
+# ❌ WRONG - This SHA was assumed, not verified
+uses: actions/checkout@db14d8b7fea37acffdd656bd35b81b8f8b3bb8ad # v6.0.0
+# Error: "An action could not be found at the URI"
+```
+
+**✅ CORRECT - Always verify first:**
+```powershell
+# 1. Verify the correct SHA
+git ls-remote --tags https://github.com/actions/checkout.git | Select-String "v6" | Select-Object -Last 5
+# Output: 1af3b93b6815bc44a9784bd300feb67ff0d1eeb3        refs/tags/v6.0.0
+
+# 2. Use the verified SHA
+uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+```
+
+**❌ MISTAKE 2: Updating one action at a time reactively**
+
+Instead of verifying and updating ALL actions systematically, we updated one at a time as errors appeared, resulting in:
+- 11 different actions with invalid SHAs
+- 27 total instances that needed correction
+- Multiple workflow failures
+
+**✅ CORRECT - Proactive systematic verification:**
+```powershell
+# Verify ALL actions in your workflow BEFORE updating:
+git ls-remote --tags https://github.com/actions/checkout.git | Select-String "v6" | Select-Object -Last 5
+git ls-remote --tags https://github.com/actions/setup-dotnet.git | Select-String "v5" | Select-Object -Last 5
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+git ls-remote --tags https://github.com/actions/upload-artifact.git | Select-String "v5" | Select-Object -Last 5
+# ... verify ALL actions used in workflow
+```
+
+**❌ MISTAKE 3: Using outdated/deprecated SHAs**
+
+GitHub deprecates old commit SHAs, even for stable releases:
+```
+Error: This request has been automatically failed because it uses a deprecated version of `actions/cache: 6849a6489940f00c2f30c0fb92c6274307ccb58a`
+```
+
+**✅ CORRECT - Use the LATEST stable release SHA:**
+```powershell
+# Always get the LATEST version in the major version series
+git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
+# Use the most recent: v4.3.0, not v4.1.2 or v4.2.0
+```
+
+**Actions verified and corrected in this project (as of November 2024):**
+
+| Action | Correct SHA | Version | Previous Issues |
+|--------|-------------|---------|-----------------|
+| actions/checkout | `1af3b93b6815bc44a9784bd300feb67ff0d1eeb3` | v6.0.0 | Used invalid SHA |
+| actions/setup-dotnet | `2016bd2012dba4e32de620c46fe006a3ac9f0602` | v5.0.1 | Used invalid SHA |
+| actions/cache | `0057852bfaa89a56745cba8c7296529d2fc39830` | v4.3.0 | Multiple deprecated SHAs |
+| actions/upload-artifact | `330a01c490aca151604b8cf639adc76d48f6c5d4` | v5.0.0 | Used invalid SHA |
+| ossf/scorecard-action | `99c09fe975337306107572b4fdf4db224cf8e2f2` | v2.4.3 | Was using v2.4.0 |
+| github/codeql-action/upload-sarif | `5ad83d3202da6e473f763d732b591299ae4e380c` | v3 | Used invalid SHA |
+| dorny/test-reporter | `894765a932a426ee30919ffd3b5fd3b53c0e26b8` | v2.2.0 | Used invalid SHA |
+| EnricoMi/publish-unit-test-result-action | `6e8f8c55b476f977d1c58cfbd7e337cbf86d917f` | v2 | Used invalid SHA |
+| irongut/CodeCoverageSummary | `51cc3a756ddcd398d447c044c02cb6aa83fdae95` | v1.3.0 | Was correct |
+| marocchino/sticky-pull-request-comment | `773744901bac0e8cbb5a0dc842800d45e9b2b405` | v2 | Used invalid SHA |
+| danielpalme/ReportGenerator-GitHub-Action | `dcdfb6e704e87df6b2ed0cf123a6c9f69e364869` | v5.5.0 | Used invalid SHA |
+
+**Key Lesson:** If you're updating GitHub Actions, verify EVERY action's SHA with `git ls-remote` before making changes. This takes a few minutes but prevents hours of debugging workflow failures.
+
+---
+
+## GitHub Actions Version Management
+
+> **CRITICAL:** Always verify the SHA for every GitHub Action you use. Using an incorrect SHA can cause workflow failures, security issues, or silent breakage. Never trust the SHA in documentation or release notes—always check it yourself.
+
+### Step-by-step: How to verify a GitHub Action SHA
+
+1. **Find the action and version you want to use.**
+   - Example: `actions/checkout@v4`
+
+2. **Get the repository URL.**
+   - Example: `https://github.com/actions/checkout`
+
+3. **Run `git ls-remote` to list all refs and SHAs:**
+   ```sh
+   git ls-remote https://github.com/actions/checkout.git
+   ```
+
+4. **Find the SHA for the tag or release you want.**
+   - For example, to use v4, look for the line ending with `refs/tags/v4`.
+
+5. **Update your workflow to use the full SHA:**
+   ```yaml
+   uses: actions/checkout@<SHA>
+   ```
+   Example:
+   ```yaml
+   uses: actions/checkout@<VERIFIED_SHA_FROM_GIT_LS_REMOTE> # Replace with verified SHA from git ls-remote
+   ```
+
+6. **Double-check the SHA matches the intended tag.**
+   - If the tag is moved or deleted, your workflow may break.
+
+### Example: Real workflow failure due to incorrect SHA
+
+In November 2024, several workflows failed with errors like:
+
+```
+Error: The workflow is not valid. .github/workflows/build.yml (Line 23): The workflow uses an action 'actions/checkout@v4' with an invalid SHA. Please verify the SHA and try again.
+```
+
+**Root Cause:** The SHA for `actions/checkout@v4` was copied from a blog post and did not match the actual tag in the repository.
+
+**Resolution:** The workflow failed to run until the correct SHA was verified with `git ls-remote` and updated.
+
+**Lesson:** Always verify SHAs directly from the source repository, never copy from documentation or blog posts.
+
+---
+
+**Security Scanning Best Practices:**
+
+The security-scan job implements two levels of security validation:
+
+1. **Vulnerable Packages Check** (Blocking):
+   - Fails workflow if any NuGet packages have known CVEs
+   - Uses `dotnet list package --vulnerable`
+   - Blocks merge until vulnerabilities are resolved
+
+2. **OpenSSF Scorecard Check** (Blocking on Critical Issues):
+   - Runs Scorecard to analyze supply chain security
+   - Publishes results to GitHub Security tab for visibility
+   - **Fails workflow if critical security issues detected** (error/warning level with security tags)
+   - Does NOT fail on low scores alone (scores are informational)
+   - Parses SARIF results to detect actionable security problems
+
+**Why This Approach:**
+- ✅ Blocks on **actionable security issues** (vulnerable packages, critical Scorecard findings)
+- ✅ Provides **visibility** on security posture (Scorecard scores, SARIF uploads)
+- ✅ Allows **incremental improvements** (low scores don't block, but critical issues do)
+- ✅ Follows **OpenSSF best practices** (Scorecard for visibility + blocking on critical findings)
 
 ### PowerShell Commands (Windows)
 
@@ -305,7 +620,7 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 1. **Namespaces**: Follow folder structure - `HomeInventory.[Layer][.Module][.SubFolder]`
 2. **Files**: One type per file, file name matches type name
-3. **Projects**: 
+3. **Projects**:
    - Feature modules: `HomeInventory.[Layer].[ModuleName]`
    - Framework/shared: `HomeInventory.[Layer].Framework`
 4. **Private/Internal Fields**: Use underscore prefix with camelCase - `_fieldName`
@@ -314,7 +629,7 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 ### Code Style
 
-1. **Use file-scoped namespaces** 
+1. **Use file-scoped namespaces**
 2. **Use primary constructors** where appropriate
 3. **Prefer `using` declarations** over `using` statements
 4. **Use implicit usings** - defined in `ImplicitUsings.cs` files
@@ -333,8 +648,8 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 
 ```csharp
 // ✅ CORRECT - Use Prelude.Some() for non-null values
-return value is not null 
-    ? Prelude.Some(value) 
+return value is not null
+    ? Prelude.Some(value)
     : Option<T>.None;
 
 // ✅ CORRECT - Use pattern matching with Prelude.Some()
@@ -385,7 +700,7 @@ public async ValueTask<TResult> GetOrAddAsync<TResult>(TKey key, Func<TKey, Task
     {
         return (TResult)existingValue!;
     }
-    
+
     var newValue = await createValueFunc(key);
     dictionary[key] = newValue;
     return newValue;
@@ -419,7 +734,7 @@ public TResult GetOrAdd<TResult>(TKey key, Func<TKey, TResult> createValueFunc)
 - **Use `CollectionsMarshal.GetValueRefOrAddDefault` only in synchronous code** for performance
 - **Assign through the ref variable (`val = ...`)** to avoid second dictionary lookup
 - **For async operations**, use standard `TryGetValue` pattern - the ref optimization isn't applicable
-- **`Dictionary<TKey, TValue>` is NOT thread-safe** - use `ConcurrentDictionary` for multi-threaded scenarios
+- **`Dictionary<TKey, TValue>` is NOT thread-safe** - use `ConcurrentDictionary` for multithreaded scenarios
 
 ### Architecture Rules
 
@@ -439,9 +754,9 @@ When creating new endpoints, inherit from `ApiCarterModule` (not the base `Carte
 namespace HomeInventory.Web.[ModuleName];
 
 public sealed class [Feature]CarterModule(
-    IScopeAccessor scopeAccessor, 
+    IScopeAccessor scopeAccessor,
     IProblemDetailsFactory problemDetailsFactory,
-    ContractsMapper mapper) 
+    ContractsMapper mapper)
     : ApiCarterModule
 {
     private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
@@ -475,7 +790,7 @@ public sealed class [Feature]CarterModule(
         // Map request to command and call service
         var command = _mapper.ToCommand(request);
         var result = await service.[MethodName]Async(command, cancellationToken);
-        
+
         // Handle result with pattern matching
         return result.Match(
             error => _problemDetailsFactory.CreateProblemResult(error, context.TraceIdentifier),
@@ -511,14 +826,14 @@ public sealed class [Feature]CarterModule(
 2. **Repository Pattern**: Use Ardalis.Specification for repository pattern
    - Define specifications in `HomeInventory.Infrastructure.[Module]`
    - Inherit from `IRepository<TEntity>` or `IReadOnlyRepository<TEntity>`
-3. **Unit of Work**: 
+3. **Unit of Work**:
    - `IUnitOfWork` is implemented by `DatabaseContext`
    - Injected via `IScopeAccessor` at endpoint level
-4. **Database Context**: 
+4. **Database Context**:
    - One `DatabaseContext` per application
    - Module-specific configurations via `IDatabaseConfigurationApplier`
 5. **Interceptors**: Domain events published via `PublishDomainEventsInterceptor`
-6. **Auditing**: 
+6. **Auditing**:
    - Use `ICreationAuditableEntity` for creation tracking
    - Use `IModificationAuditableEntity` for modification tracking
    - Timestamp from injected `TimeProvider`
@@ -559,7 +874,7 @@ public interface I[Module]Service
 {
     // Commands return Option<Error>
     Task<Option<Error>> [CommandName]Async([Command] command, CancellationToken cancellationToken = default);
-    
+
     // Queries return IQueryResult<T>
     Task<IQueryResult<[Result]>> [QueryName]Async([Query] query, CancellationToken cancellationToken = default);
 }
@@ -581,12 +896,12 @@ internal sealed class [Module]Service(
         // Retrieve scoped dependencies set in endpoint
         var repository = _scopeAccessor.GetRequiredContext<I[Repository]>();
         var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
-        
+
         // Implementation - business logic
         // ...
-        
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         return Option<Error>.None; // Success
     }
 
@@ -594,13 +909,13 @@ internal sealed class [Module]Service(
     {
         // Retrieve scoped dependencies set in endpoint
         var repository = _scopeAccessor.GetRequiredContext<I[Repository]>();
-        
+
         // Implementation
         var result = await repository.GetByIdAsync(query.Id, cancellationToken);
         var validationResult = result
             .Map(entity => /* map to result */)
             .ErrorIfNone(() => new NotFoundError("Not found"));
-            
+
         return QueryResult.From(validationResult);
     }
 }
@@ -635,14 +950,14 @@ public static partial class [Module]Mapper
 {
     // Domain to DTO
     public static partial [Response] ToResponse(this [Entity] entity);
-    
+
     // DTO to Domain (if needed)
     public static partial [Entity] ToDomain(this [Request] request);
-    
+
     // Collection mapping
     public static partial IEnumerable<[Response]> ToResponses(
         this IEnumerable<[Entity]> entities);
-    
+
     // With custom mapping logic
     [MapProperty(nameof([Entity].Property), nameof([Response].MappedProperty))]
     public static partial [Response] ToResponseWithCustomMapping(this [Entity] entity);
@@ -665,13 +980,13 @@ API versioning is built into the `ApiCarterModule` base class:
 public sealed class MyCarterModule : ApiCarterModule
 {
     protected override string PathPrefix => "/api/resource";
-    
+
     // Constructor - call MapToApiVersion to use a different version than v1 (default)
     public MyCarterModule()
     {
         MapToApiVersion(new ApiVersion(2)); // Use v2 instead of default v1
     }
-    
+
     protected override void AddRoutes(RouteGroupBuilder group)
     {
         // Define your routes here
@@ -699,7 +1014,7 @@ public sealed class MyCarterModule : ApiCarterModule
 
 1. **Password Hashing**: Use BCrypt.Net-Next for secure password storage
 2. **JWT Tokens**: Use `System.IdentityModel.Tokens.Jwt` for authentication
-3. **Authorization**: 
+3. **Authorization**:
    - Use `.AllowAnonymous()` for public endpoints
    - Use `.RequireAuthorization()` for protected endpoints
    - Custom dynamic authorization in `DynamicWebAuthorizationModule`
@@ -735,7 +1050,7 @@ private async Task<Results<Ok<Response>, ProblemHttpResult>> HandleAsync(
 
     var command = _mapper.ToCommand(request);
     var result = await userService.RegisterAsync(command, cancellationToken);
-    
+
     // Handle result...
 }
 ```
@@ -755,7 +1070,7 @@ internal sealed class UserService(
         // Retrieve scoped dependencies that were set in endpoint
         var repository = _scopeAccessor.GetRequiredContext<IUserRepository>();
         var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
-        
+
         // Use dependencies for business logic...
     }
 }
@@ -824,7 +1139,7 @@ When creating a new feature module (e.g., "Inventory"):
 3. **Acceptance Tests**: BDD scenarios using Reqnroll
 4. **Test project structure**: Mirror source project structure
 5. **Test naming**: `[MethodName]_[Scenario]_[ExpectedResult]`
-6. **Coverage targets**: 
+6. **Coverage targets**:
    - Domain/Application layers: Aim for 80%+ (business logic)
    - Infrastructure layer: 60-70% acceptable (database access, specifications)
    - Web layer: 50-60% acceptable (mostly framework wiring)
@@ -867,6 +1182,40 @@ To run tests with coverage locally:
 dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage"
 ```
 
+### Coverage Improvement Strategy
+
+**Priority Modules for Coverage Improvement:**
+
+1. **HomeInventory.Application** (currently 0% coverage)
+   - **Focus Areas:**
+     - `BaseHealthCheck` and derived health checks
+     - `HealthCheckStatus` and `HealthCheckTags` utilities
+   - **Recommended Tests:**
+     - Unit tests for health check logic (status determination, failure conditions)
+     - Tests for health check tag constants and status properties
+     - Mock dependencies to test in isolation
+   - **Target:** 80%+ (business logic)
+
+2. **HomeInventory.Modules** (currently 44.4% coverage)
+   - **Focus Areas:**
+     - `ModulesCollection` - add, enumerate, duplicate handling
+     - `ModuleMetadata` - dependency resolution, module wrapping
+     - `ModuleServicesContext` - property access, construction
+     - `IModule` implementations - lifecycle methods
+   - **Recommended Tests:**
+     - Unit tests for collection operations
+     - Module dependency resolution scenarios
+     - Module registration and initialization flows
+   - **Target:** 80%+ (core module infrastructure)
+
+**Testing Approach:**
+- Use `BaseTest<TGivenContext>` with Given-When-Then pattern
+- Focus on public API and business logic, not framework plumbing
+- Test edge cases: empty collections, circular dependencies, missing dependencies
+- Verify error handling and validation logic
+- Use AutoFixture for test data generation
+- Mock external dependencies with NSubstitute
+
 ### Test Structure Pattern
 
 All tests follow the **Given-When-Then** pattern using `BaseTest<TGivenContext>`:
@@ -880,16 +1229,16 @@ public class MyFeatureTests() : BaseTest<MyFeatureTestsGivenContext>(static t =>
     {
         Given
             .New<SomeType>(out var variable1)
-            .New<OtherType>(out var variable2, static () => new OtherType("value"));
+            .New<string>(out var inputVar);  // ✅ AutoFixture generates value
 
         var then = When
-            .Invoked(variable1, variable2, static (v1, v2) => v1.Method(v2));
+            .Invoked(variable1, inputVar, static (v1, input) => v1.Method(input));
 
         then
-            .Result(static result => 
+            .Result(inputVar, static (result, expectedInput) =>
             {
-                result.Should().NotBeNull();
-                result.Property.Should().Be("expected");
+                result.Should().BeOfType<ResultType>();
+                result.ProcessedValue.Should().Be(expectedInput);
             });
     }
 }
@@ -920,6 +1269,9 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 **Assertion Quality:**
 - Use the most specific assertion available
 - Avoid redundant checks (e.g., `.NotBeNull()` before `.BeOfType<T>()`)
+  - `.BeOfType<T>()` and `.BeAssignableTo<T>()` already check for null
+  - Null checks ARE appropriate when followed by property access or other operations that don't verify nullability
+  - Example: `.NotBeNull()` is redundant before `.BeOfType<T>()` but may be useful before `.Property.Should().Be(...)`
 - Use compile-time type references instead of string matching
 - Prefer `ContainSingle()` over `HaveCount(1)`
 - **`.Subject` vs `.Which` pattern:**
@@ -929,6 +1281,8 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
   - Example: `var item = result.Should().ContainSingle().Subject; item.Property1.Should()...; item.Property2.Should()...;` for multiple properties
 - Use method chaining for related assertions (e.g., `.ContainKey(...).WhoseValue.Should()...`)
 - **For Option<T> assertions**: Use `.BeSome()` and `.BeNone()` extension methods, not `.IsSome.Should().BeTrue()`
+  - Example with collections: `result.Should().ContainSingle().Which.Should().BeSome().Which.Should().BeOfType<ModuleMetadata>()`
+  - Chain `.BeSome()` or `.BeNone()` directly after accessing the Option value
 
 **Test Setup Order:**
 - **Create SUT last in Given section** - this eliminates excessive helper methods that modify SUT after creation
@@ -941,6 +1295,18 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - **DON'T** use "Given" prefix - it causes repetition: `Given.GivenAModule()` reads poorly
 - The method name combined with `Given.` should read naturally: `Given.Module(...)` reads better than `Given.GivenAModule(...)`
 - Be concise but clear - the context already indicates it's part of Given section
+- **CRITICAL: Use unique parameter names in helper methods** - `CallerArgumentExpression` captures the parameter name (e.g., `out IVariable<IModule> moduleVar`), not the calling variable. If `Module(out var x)` and `DependentModule(out var y)` both have parameters named `moduleVar`, they'll collide in `VariablesContainer`. Use unique names like `baseModule` and `dependentModule`.
+
+**Module Dependency Test Setup:**
+When testing module dependencies:
+1. Create base module variable (the dependency)
+2. Create dependent module variable (depends on base)
+3. Ensure dependent module declares dependency (e.g., `DependsOn<BaseModule>()`)
+4. Create SUT (usually `ModuleMetadata` wrapping dependent module)
+5. Create container with base module metadata
+6. Invoke `GetDependencies(container)` on SUT
+7. Assert result contains exactly one dependency using `.ContainSingle().Which.Should().BeSome()`
+8. Verify the resolved dependency is the base module
 
 **Test Data:**
 - Use AutoFixture to generate test data - avoid hardcoded literals
@@ -966,25 +1332,29 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - **DON'T** use vague assertions like `.NotBeNullOrEmpty()` when you know the expected value
 - **DON'T** test instance equality for strings (`.BeSameAs()`) - strings are interned, this tests .NET behavior, not your code
 - **DON'T** test that static string properties return the same instance multiple times - this is excessive for immutable types
-- Example: 
+- Example:
   ```csharp
   // ✅ GOOD - Tests actual value
   .Result(static result => result.Should().Be(nameof(HealthCheckTags.Ready)));
-  
+
   // ❌ BAD - Vague assertion
   .Result(static result => result.Should().NotBeNullOrEmpty());
-  
+
   // ❌ BAD - Tests .NET string interning, not your code
   .Result(expectedVar, static (result, expected) => result.Should().BeSameAs(expected));
   ```
 
 ### Critical Test Guidelines
 
+> **Note:** When you encounter test failures or make mistakes, document them in the [Failed Code Edits - Investigation & Prevention](#failed-code-edits---investigation--prevention) section so future AI assistants can learn from them.
+
 **DO:**
 - ✅ **Use expression-bodied lambdas for single statements** - `static x => x.Method()` not `static x => { x.Method(); }`
 - ✅ **Use `Create<T>()` for values that don't need to be in test context** - avoids polluting context with unnecessary variables
 - ✅ **Update these instructions when user provides requests, advice, hints, or rules** that can prevent undesired results
-- ✅ **ALWAYS verify assumptions with assertions during investigation** - add assertions to verify test setup is correct, then remove them once issue is identified
+- ✅ **Add temporary assertions during investigation** - use assertions to verify test setup, data values, and assumptions
+- ✅ **Remove them before committing** - once you've identified the issue, remove investigation assertions and keep only the assertions that verify the actual test behavior
+- ❌ **Don't commit debugging assertions** - investigation assertions are for local debugging only
 - ✅ **Container should include ALL modules** - in module dependency tests, the container needs both the dependency module AND the dependent module
 - ✅ **Use unique PARAMETER names in GivenContext helper methods** - `CallerArgumentExpression` captures the PARAMETER name (e.g., `out var moduleVar`), NOT the calling variable name. If two methods both use `out IVariable<IModule> moduleVar`, they'll collide in VariablesContainer. Use `out IVariable<IModule> baseModule` and `out IVariable<IModule> dependentModule` instead
 - ✅ Use `var then = When.Invoked(...);` followed by `then.Result(...)` on separate lines
@@ -1000,12 +1370,15 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - ✅ Provide meaningful assertions in module tests - verify specific services are registered
 - ✅ **Use ONE Given-When-Then chain per test** - don't repeat Given or When within a test
 - ✅ **Use `SubstituteFor()` helper method in GivenContext** instead of `Substitute.For<T>()` in `New()`
-- ✅ **Define system under test explicitly** using `Sut(out var sutVar)` method in GivenContext
+- ✅ **Define system under test explicitly using `Sut(out var sutVar)` method** - never use `.New<SutType>(out var sut, ...)` for SUT
 - ✅ **Prefer `.New<T>(out var variable)` without factory method** - factory is for corner cases only
 - ✅ **Keep `Invoked` lambdas simple** - invoke only the testing method, move setup to Given section
+- ✅ **Invoked must call actual method under test** - always invoke the actual method/property being tested, not identity transformations
 - ✅ **DON'T add comments explaining why factory methods are used** - the code should be self-evident
 - ✅ Use `ContainSingle()` instead of `HaveCount(1)`
 - ✅ **Use `Result()` overload with multiple IVariable parameters** instead of multiple `.Result()` calls
+- ✅ **Expected values in Result come from Given variables** - never create expected values from actual method outputs
+- ✅ **Static immutable properties need only one value test** - don't test instance equality or multiple accesses for strings/immutable types
 - ✅ **Skip `.NotBeNull()` checks before type checks** - `.BeOfType<T>()` and `.BeAssignableTo<T>()` already check for null
 - ✅ **Use direct type references** in assertions (e.g., `typeof(FeatureManager)`) instead of string matching on type names
 - ✅ **Add new overloads to GivenContext when needed** - if you need more than 3 IVariable parameters, create custom helper methods or new overloads
@@ -1029,14 +1402,18 @@ public sealed class MyFeatureTestsGivenContext(BaseTest test) : GivenContext<MyF
 - ❌ **Use `.New<T>(out var sut, static () => new())` for SUT** - use `Sut(out var sutVar)` method instead
 - ❌ **Use factory method in New when not needed** - prefer `.New<T>(out var variable)` for simple AutoFixture generation
 - ❌ **Put test setup in `Invoked` lambdas** - keep them simple, only invoke the method under test
+- ❌ **Use identity lambdas like `(x) => x` in Invoked** - these don't test behavior, only return inputs unchanged
 - ❌ **Add comments about corner cases in factory methods** - code should be self-documenting
 - ❌ **Fall out of Given-When-Then pattern** - avoid imperative setup and assertions mixed together
-- ❌ **Leave system under test implicit** - always define it clearly
+- ❌ **Leave system under test implicit** - always define it clearly with `Sut(out var sutVar)`
 - ❌ **Use `HaveCount(1)` for single items** - use `ContainSingle()` instead
 - ❌ **Call `.Result()` multiple times** - use the overload that accepts multiple variables
 - ❌ **Add `.NotBeNull()` before `.BeOfType<T>()` or `.BeAssignableTo<T>()`** - redundant check
 - ❌ **Use string matching on type names** - use compile-time type references
 - ❌ **Assume GivenContext limitations** - you can extend it with new overloads or helper methods
+- ❌ **Ignore the `result` parameter in Result lambda** - if you're not asserting against `result`, you're testing the wrong thing
+- ❌ **Create expected values from actual method calls** - expected must come from Given, not from invoking the same method being tested
+- ❌ **Test static immutable properties multiple times** - one value assertion is enough for strings/immutable types
 
 ### AutoFixture Usage Guidelines
 
@@ -1092,10 +1469,10 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         // Use Create<T>() for values that don't need to be variables
         // Remove 'static' when using Create<T>() from base class
         New(out resultVar, field1Var, field2Var, (f1, f2) =>
-            new ResultType 
-            { 
-                Field1 = f1, 
-                Field2 = f2, 
+            new ResultType
+            {
+                Field1 = f1,
+                Field2 = f2,
                 Temp = Create<string>()  // ✅ Don't create tempVar just to use it here
             });
         return This;
@@ -1136,10 +1513,10 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         [CallerArgumentExpression(nameof(variable))] string? name = null)
     {
         New(out variable, _ => create(
-            GetValue(arg1), 
-            GetValue(arg2), 
-            GetValue(arg3), 
-            GetValue(arg4), 
+            GetValue(arg1),
+            GetValue(arg2),
+            GetValue(arg3),
+            GetValue(arg4),
             GetValue(arg5)), count, name);
         return This;
     }
@@ -1153,7 +1530,7 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         IVariable<IFeatureManager> featureManagerVar,
         IVariable<IReadOnlyCollection<IModule>> modulesVar)
     {
-        New(out contextVar, servicesVar, configVar, metricsVar, 
+        New(out contextVar, servicesVar, configVar, metricsVar,
             (services, config, metrics) =>
             {
                 // Access remaining variables via GetValue
@@ -1173,10 +1550,10 @@ public sealed class MyTestsGivenContext(BaseTest test) : GivenContext<MyTestsGiv
         New(out field1Var);
         New(out field2Var);
         New(out resultVar, field1Var, field2Var, (f1, f2) =>
-            new ResultType 
-            { 
-                Field1 = f1, 
-                Field2 = f2, 
+            new ResultType
+            {
+                Field1 = f1,
+                Field2 = f2,
                 Temp = Create<string>()
             });
         return This;
@@ -1192,9 +1569,41 @@ Given
 - ❌ **DON'T** assume you can't extend GivenContext - it's designed to be extended!
 - ✅ **DO** add new overloads when you need more than 3 IVariable parameters
 - ✅ **DO** create semantic helper methods for complex object creation
-- ✅ **DO** use builder pattern for multi-step setup
+- ✅ **DO** use builder pattern for multistep setup
 - ❌ **DON'T** work around limitations by using non-static lambdas that access variables directly
 - ❌ **DON'T** simplify tests by removing necessary assertions just to fit the 3-parameter limit
+
+**Understanding CallerArgumentExpression and Variable Names:**
+
+The `New` method uses `CallerArgumentExpression` to capture variable names for storage in `VariablesContainer`. This mechanism captures the **parameter name** from the helper method definition, NOT the variable name at the call site.
+
+```csharp
+// In GivenContext helper methods:
+public MyTestsGivenContext Module(out IVariable<IModule> baseModule)  // ← "baseModule" is captured
+{
+    New(out baseModule, static () => new SubjectModule());
+    return This;
+}
+
+public MyTestsGivenContext DependentModule(out IVariable<IModule> dependentModule)  // ← "dependentModule" is captured
+{
+    New(out dependentModule, static () => new SubjectDependentModule());
+    return This;
+}
+
+// At call site:
+Given
+    .Module(out var moduleVar)          // ← CallerArgumentExpression sees "baseModule" from helper definition
+    .DependentModule(out var depVar);   // ← CallerArgumentExpression sees "dependentModule" from helper definition
+
+// ❌ COLLISION EXAMPLE - Both use same parameter name:
+public MyTestsGivenContext Module(out IVariable<IModule> moduleVar)      // ← "moduleVar"
+{ ... }
+public MyTestsGivenContext DependentModule(out IVariable<IModule> moduleVar)  // ← Same "moduleVar" → COLLISION!
+{ ... }
+```
+
+**Key insight:** The variable name is determined by `CreateVariable<T>(name)` where `name` comes from the parameter name in the helper method signature, not from `out var x` at the call site.
 
 **When to Use `Create<T>()` vs `New`:**
 
@@ -1247,10 +1656,10 @@ New(out var modelStateVar, field1Var, field2Var, (f1, f2) =>  // Note: not 'stat
 public void MyTest()
 {
     Given.New<MyClass>(out var sut);
-    
+
     var localData = "test data";  // ❌ Local variable
     var status = 400;              // ❌ Hardcoded literal
-    
+
     When
         .Invoked(sut, s => s.Method(localData, status))  // ❌ Capturing local variables
         .Result(result => result.Should().BeTrue());      // ❌ Chained, no 'then' variable
@@ -1464,17 +1873,29 @@ public void Test()
 public void Add_ShouldAddModule()
 {
     Given
-        .New<ModulesCollection>(out var sut, static () => new())  // ✅ Clear: collection is SUT
+        .Sut(out var sutVar)  // ✅ Clear: collection is SUT, uses dedicated Sut() helper
         .New<SubjectModule>(out var moduleVar, static () => new());
 
     var then = When
-        .Invoked(sut, moduleVar, static (collection, module) =>
+        .Invoked(sutVar, moduleVar, static (sut, module) => sut.Add(module));  // ✅ Only invokes method
+
+    then
+        .Result(sutVar, moduleVar, static (result, sut, expectedModule) =>
         {
-            collection.Add(module);
-            return collection;
+            // ✅ Testing side effects: Assert on SUT (not result) for mutation operations
+            // This pattern is correct when the method modifies state (Add, Remove, etc.)
+            // The 'result' parameter contains the return value, but we verify the side effect
+            sut.Should().ContainSingle().Which.Should().BeSome()
+                .Which.Module.Should().BeSameAs(expectedModule);
         });
 }
 ```
+
+**Note on Testing Side Effects:**
+- When testing **mutation methods** (Add, Remove, Update, etc.), the `Invoked` block should only call the method
+- The `Result` block can assert on the **SUT's state changes** by passing `sutVar` as a parameter
+- This is different from testing **pure functions**, where you assert on the returned `result`
+- Both patterns are correct - choose based on what you're testing (side effects vs. return value)
 
 **✅ GOOD - ContainSingle():**
 ```csharp
@@ -1517,7 +1938,7 @@ public void Ready_WhenAccessedMultipleTimes_ReturnsSameInstance()
         .Invoked(static () => HealthCheckTags.Ready);
 
     then
-        .Result(expectedInstanceVar, static (result, expected) => 
+        .Result(expectedInstanceVar, static (result, expected) =>
             result.Should().BeSameAs(expected));  // ❌ Tests .NET string interning, not your code
 }
 ```
@@ -1541,7 +1962,7 @@ public void Ready_WhenAccessed_ReturnsExpectedValue()
 **❌ BAD - Using New with factory for SUT:**
 ```csharp
 Given
-    .New<ModulesCollection>(out var sut, static () => new());
+    .New<ModulesCollection>(out var sutVar, static () => new());
 ```
 
 **✅ GOOD - Use Sut() method:**
@@ -1592,6 +2013,18 @@ then
     .Result(static result => result.Should().BeAssignableTo<IRegisteredModules>());
 ```
 
+**❌ BAD - Identity lambda in Invoked (doesn't test behavior):**
+```csharp
+var then = When
+    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));  // ❌ Returns tuple of inputs, no method called
+```
+
+**✅ GOOD - Invoke actual method under test:**
+```csharp
+var then = When
+    .Invoked(static () => HealthCheckTags.Ready);  // ✅ Calls the actual property getter
+```
+
 **❌ BAD - Falling out of Given-When-Then pattern:**
 ```csharp
 [Fact]
@@ -1601,13 +2034,13 @@ public void Test()
     var baseModule = new SubjectModule();
     var dependentModule = new SubjectDependentModule();
     dependentModule.DependsOn<SubjectModule>();
-    
+
     dependentModule.Dependencies.Count.Should().Be(1);  // ❌ Assertion in setup
-    
+
     var metadata = new ModuleMetadata(dependentModule);
     var container = new[] { new ModuleMetadata(baseModule) };
     var dependencies = metadata.GetDependencies(container).ToList();
-    
+
     dependencies.Should().HaveCount(1);  // ❌ No Then context
 }
 ```
@@ -1627,11 +2060,11 @@ public void GetDependencies_WithOneDependency_ReturnsSingleDependency()
         .Invoked(sutVar, containerVar, static (sut, container) => sut.GetDependencies(container));
 
     then
-        .Result(baseModuleVar, static (result, expected) =>
+        .Result(baseModuleVar, static (result, expectedModule) =>
         {
-            result.Should().ContainSingle();
-            result.First().IsSome.Should().BeTrue();
-            ((ModuleMetadata)result.First()).Module.Should().BeSameAs(expected);
+            var dependency = result.Should().ContainSingle().Subject;
+            dependency.Should().BeSome()
+                .Which.Module.Should().BeSameAs(expectedModule);
         });
 }
 ```
@@ -1686,6 +2119,40 @@ protected override void EnsureRegistered(IServiceCollection services) =>
         .And.Contain(d => d.ServiceType == typeof(IHealthCheckPublisher));
 ```
 
+### Common Test Anti-Patterns Reference
+
+This section consolidates frequently encountered mistakes across test patterns:
+
+| Anti-Pattern                           | Why It's Wrong          | Correct Pattern                         | Warning/Error Code |
+|----------------------------------------|-------------------------|-----------------------------------------|--------------------|
+| `.HaveCount(1)`                        | Not specific enough     | `.ContainSingle()`                      | FAA0001            |
+| `.IsSome.Should().BeTrue()`            | Verbose, less readable  | `.Should().BeSome()`                    | -                  |
+| `.NotBeNull()` before `.BeOfType<T>()` | Redundant check         | Just `.BeOfType<T>()`                   | -                  |
+| String matching on types               | Brittle, error-prone    | `typeof(T)` direct reference            | -                  |
+| `Substitute.For<T>()` in `New()`       | Inconsistent pattern    | `.SubstituteFor<T>()` helper            | -                  |
+| Identity lambda `(x) => x`             | Tests nothing           | Call actual method: `(obj, param) => obj.Method(param)` | -                  |
+| Hardcoded literals in tests            | Reduces test robustness | Use AutoFixture                         | -                  |
+| Multiple `.Result()` with shared vars  | Verbose, inefficient    | Single `.Result()` with multiple params | -                  |
+| Implicit SUT                           | Unclear test intent     | Explicit `Sut(out var sutVar)`          | -                  |
+| Multi-line `Invoked` lambda            | Mixes setup with action | Move setup to `Given`                   | IDE0053            |
+| Block body `{ }` for single expression | Unnecessary verbosity   | Use expression body `x => x.Method()`   | IDE0053            |
+| Type arg when out param has type       | Redundant specification | Omit type: `.New(out IVariable<T> var)` | CS8597             |
+
+**Quick Reference Links:**
+- Single item assertions → Use `ContainSingle()` not `HaveCount(1)` (FAA0001)
+- Option<T> assertions → Use `.BeSome()` / `.BeNone()` not `.IsSome.Should().BeTrue()`
+- Type assertions → Use `typeof(T)` not `.Name.Contains("T")`
+- Dictionary assertions → Chain `.WhoseValue.Should()...` not separate access
+- Service assertions → Use `.ContainTransient<T>()` not manual lifetime checks
+- SUT creation → Use `Sut(out var sutVar)` not `.New<T>(out var sut, ...)`
+- Lambda expressions → Use expression body for single statements (IDE0053)
+
+**Note on `.Which` Pattern**:
+- Use `.Which` after `.BeSome()` to access the inner value: `.Should().BeSome().Which.Should().Be(...)`
+- `.BeNone()` has no `.Which` since there's no value to access
+- Chain `.Which` as many times as needed: `.ContainSingle().Which.Should().BeSome().Which.Should().BeOfType<T>()`
+
+
 ### Integration Test Pattern
 
 For tests requiring full application context or multiple modules:
@@ -1700,7 +2167,8 @@ public class MyIntegrationTests() : BaseTest<MyIntegrationTestsGivenContext>(sta
         await Given
             .HttpContext(out var contextVar)
             .New<MyRequest>(out var requestVar)
-            .SubstituteFor(out IVariable<IMyService> serviceVar, requestVar, (s, r) => 
+            // Note: This uses an advanced SubstituteFor overload with NSubstitute setup
+            .SubstituteFor(out IVariable<IMyService> serviceVar, requestVar, (s, r) =>
                 s.ProcessAsync(r, Cancellation.Token).Returns(Task.FromResult(true)))
             .InitializeHostAsync();
 
@@ -1715,23 +2183,30 @@ public class MyIntegrationTests() : BaseTest<MyIntegrationTestsGivenContext>(sta
 public sealed class MyIntegrationTestsGivenContext(BaseTest test) : GivenContext<MyIntegrationTestsGivenContext>(test);
 ```
 
+**Note**: For simple mocking without setup, use `.SubstituteFor<IMyService>(out var serviceVar)`. The pattern above shows advanced usage where you configure NSubstitute returns inline.
+
 ### Test Data Builder Pattern
 
 For complex test data, use factory methods in `Given`:
 
 ```csharp
+// ❌ BAD - Hardcoded values in test data builder
 Given
     .New<ComplexObject>(out var objectVar, static () => new ComplexObject
     {
-        Property1 = "value1",
-        Property2 = 42,
-        NestedObject = new NestedObject
-        {
-            NestedProperty = "nested"
-        }
+        Property1 = "hardcoded",  // ❌ Hardcoded literal
+        Property2 = 42,  // ❌ Hardcoded literal
+        NestedObject = new NestedObject { NestedProperty = "nested" }
     });
-```
 
+// ✅ GOOD - Use Create<T>() for values that don't affect test logic
+Given
+    .New<ComplexObject>(out var objectVar, () => new ComplexObject
+    {
+        Property1 = Create<string>(),  // ✅ Value doesn't matter for test
+        Property2 = 35,  // ✅ Specific value needed for validation test
+        NestedObject = Create<NestedObject>()  // ✅ Value doesn't matter for test
+    });
 ### Async Test Pattern
 
 ```csharp
@@ -1739,15 +2214,16 @@ Given
 public async Task AsyncMethod_Scenario_ExpectedResult()
 {
     await Given
-        .New<MyClass>(out var sut)
-        .New<string>(out var dataVar, static () => "test")
+        .New<MyClass>(out var sutVar)
+        .New<string>(out var dataVar)  // ✅ AutoFixture generates value
         .InitializeAsync();  // If async setup needed
 
     var then = await When
-        .InvokedAsync(sut, dataVar, static (s, data, ct) => s.MethodAsync(data, ct));
+        .InvokedAsync(sutVar, dataVar, static (s, data, ct) => s.MethodAsync(data, ct));
 
     then
-        .Result(static result => result.Should().Be("expected"));
+        .Result(dataVar, static (result, expectedData) => 
+            result.Should().Contain(expectedData));  // ✅ Assert against expected from Given
 }
 ```
 
@@ -1802,6 +2278,13 @@ services.Should().ContainTransient<IService>();
 services.Should().Contain(d => d.ServiceType == typeof(MyService));  // ✅ Use typeof()
 services.Should().Contain(d => d.ServiceType.Name.Contains("MyService"));  // ❌ Avoid string matching
 
+// Option<T> assertions
+optionValue.Should().BeSome().Which.Should().Be(expected);
+optionValue.Should().BeNone();
+// With collections
+result.Should().ContainSingle().Which.Should().BeSome()
+    .Which.Should().BeOfType<ModuleMetadata>();
+
 // Dictionary assertions
 dict.Should().ContainKey(key).WhoseValue.Should().Be(value);  // ✅ Chained assertion
 
@@ -1813,7 +2296,7 @@ result.Should().BeAssignableTo<IMyInterface>();  // ✅ Already checks for null
 ### Test Result Patterns
 
 ```csharp
-// ✅ GOOD - Single Result() call with multiple assertions
+// ✅ GOOD - Single Result() call with multiple related variables
 then
     .Result(var1, var2, var3, static (result, v1, v2, v3) =>
     {
@@ -1822,16 +2305,17 @@ then
         result.Property3.Should().Be(v3);
     });
 
-// ❌ BAD - Multiple Result() calls
+// ❌ BAD - Multiple Result() calls with related variables
 then
     .Result(var1, static (result, v1) => result.Property1.Should().Be(v1))
     .Result(var2, static (result, v2) => result.Property2.Should().Be(v2))
     .Result(var3, static (result, v3) => result.Property3.Should().Be(v3));
 
-// ✅ GOOD - Simple assertions without variables
+// ✅ ACCEPTABLE - Multiple Result() for independent assertions (no shared variables)
 then
     .Result(static result => result.Should().BeTrue())
     .Result(static result => result.Count.Should().Be(5));
+// Note: Even these can often be combined into a single Result() call
 ```
 
 ### Code Quality Warnings to Avoid
@@ -1855,6 +2339,11 @@ When writing tests, watch for and fix these common warnings:
 4. **Async method lacks 'await' operators**
    - Ensure async test methods actually await async operations
    - Use `await When.InvokedAsync(...)` not `When.Invoked(...)`
+
+5. **FAA0001: Use .Should().ContainSingle()**
+   - Use ContainSingle() instead of HaveCount(1) for asserting single items
+   - ✅ Good: `result.Should().ContainSingle()`
+   - ❌ Bad: `result.Should().HaveCount(1)`
 
 ## Documentation
 
@@ -1944,15 +2433,15 @@ public static partial class [Feature]Mapper
 public sealed class [Module]Module : IModule
 {
     public IReadOnlyCollection<Type> Dependencies { get; } = [];
-    
+
     public IFeatureFlag Flag => FeatureFlags.Enabled; // Or create custom flag
-    
+
     public async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken)
     {
         // Service registration
         context.Services.AddScoped<IMyService, MyService>();
     }
-    
+
     public async Task BuildAppAsync(IModuleBuildContext context, CancellationToken cancellationToken)
     {
         // Middleware and endpoint configuration
@@ -1969,27 +2458,27 @@ public sealed class [Module]Module : IModule
 
 ### Test Patterns Quick Reference
 
-| Pattern | ❌ Avoid | ✅ Prefer |
-|---------|----------|-----------|
-| **Null checks** | `.NotBeNull()` then `.BeOfType<T>()` | Just `.BeOfType<T>()` (checks null) |
-| **Single item** | `.HaveCount(1)` | `.ContainSingle()` |
-| **Type checking** | `d.ServiceType.Name.Contains("MyService")` | `d.ServiceType == typeof(MyService)` |
-| **Mocking** | `Substitute.For<T>()` in `New()` | `.SubstituteFor<T>()` helper |
-| **Multiple assertions** | Multiple `.Result()` calls | Single `.Result()` with multiple vars |
-| **GWT chains** | Multiple Given-When-Then in one test | One chain per test |
-| **Lambda body** | `{ return x; }` | Expression-bodied `x` |
-| **Test variables** | Local variables outside Given | All in `Given.New()` |
-| **Intermediate values** | `New()` for every value | `Create<T>()` for non-asserted values |
-| **SUT clarity** | Implicit sut in variable names | Explicit `sut` variable |
+| Pattern                 | ❌ Avoid                                    | ✅ Prefer                              |
+|-------------------------|--------------------------------------------|---------------------------------------|
+| **Null checks**         | `.NotBeNull()` then `.BeOfType<T>()`       | Just `.BeOfType<T>()` (checks null)   |
+| **Single item**         | `.HaveCount(1)`                            | `.ContainSingle()`                    |
+| **Type checking**       | `d.ServiceType.Name.Contains("MyService")` | `d.ServiceType == typeof(MyService)`  |
+| **Mocking**             | `Substitute.For<T>()` in `New()`           | `.SubstituteFor<T>()` helper          |
+| **Multiple assertions** | Multiple `.Result()` calls                 | Single `.Result()` with multiple vars |
+| **GWT chains**          | Multiple Given-When-Then in one test       | One chain per test                    |
+| **Lambda body**         | `{ return x; }`                            | Expression-bodied `x`                 |
+| **Test variables**      | Local variables outside Given              | All in `Given.New()`                  |
+| **Intermediate values** | `New()` for every value                    | `Create<T>()` for non-asserted values |
+| **SUT clarity**         | Implicit sut in variable names             | Explicit `sut` variable               |
 
 ### Common Test Warnings
 
-| Warning | Cause | Solution |
-|---------|-------|----------|
-| **IDE0053** | Block-bodied lambda for single expression | Use expression body: `x => x.Property` |
-| **FAA0001** | Using `.HaveCount(1)` | Use `.ContainSingle()` instead |
-| **Type arg redundant** | `.New<T>(out IVariable<T> var)` | Omit type: `.New(out IVariable<T> var)` |
-| **CA2008** | Task created without TaskScheduler | Use proper async pattern with `await` |
+| Warning                | Cause                                     | Solution                                |
+|------------------------|-------------------------------------------|-----------------------------------------|
+| **IDE0053**            | Block-bodied lambda for single expression | Use expression body: `x => x.Property`  |
+| **FAA0001**            | Using `.HaveCount(1)`                     | Use `.ContainSingle()` instead          |
+| **Type arg redundant** | `.New<T>(out IVariable<T> var)`           | Omit type: `.New(out IVariable<T> var)` |
+| **CA2008**             | Task created without TaskScheduler        | Use proper async pattern with `await`   |
 
 ## Questions to Ask When Developing
 
@@ -2190,7 +2679,7 @@ When providing review feedback:
 
 **Why**: Hardcoded test data can lead to tests that pass with specific values but fail in production.
 
-**Suggestion**: 
+**Suggestion**:
 - Use `.New<string>(out var emailVar)` to generate random data
 - This ensures the code works with any valid input
 ```
@@ -2199,7 +2688,7 @@ When providing review feedback:
 ```
 ⚠️ **Code Quality**: This lambda has a block body for a single statement (IDE0053).
 
-**Before**: 
+**Before**:
 ```csharp
 .Result(static result => { result.Should().BeTrue(); })
 ```
