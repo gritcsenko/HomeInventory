@@ -60,12 +60,35 @@
 
 **YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
 
+**CRITICAL: ALWAYS UPDATE INSTRUCTIONS - NO EXCEPTIONS**
+
+When updating `copilot-instructions.md`:
+- ✅ **NEVER ask for permission or present a plan** - just update immediately
+- ✅ **ALWAYS update when you face ANY problem or error**
+- ✅ **ALWAYS update when you find a working solution** (confirmed working)
+- ✅ **ALWAYS update when you discover patterns to avoid**
+- ✅ **ALWAYS update when you learn from mistakes**
+- ✅ **ALWAYS update when user provides guidance or corrections**
+- ✅ **Put MAXIMUM effort** into updating instructions to avoid future errors
+- ✅ **NEVER forget** to update instructions
+- ✅ **NEVER hesitate** to update instructions
+- ❌ **NEVER skip** updating instructions because it seems minor
+- ❌ **NEVER delay** updating instructions to "do it later"
+
+**Why this is critical:**
+- These instructions are the project's institutional memory
+- Every mistake you document prevents future AI assistants from repeating it
+- Every solution you record helps future development
+- Failing to update wastes time when the same issue occurs again
+
 **Process for Updating Instructions:**
 1. **Immediately document** the user's guidance in the relevant section
 2. **Add to Failed Code Edits** section if it's a mistake that should be prevented
 3. **Update DO/DON'T list** with concrete before/after examples
 4. **Reference the investigation process** used to identify and fix issues
 5. **Ensure future AI assistants learn from the mistake** by making the guidance explicit and searchable
+
+**Note:** The Plan-First Development Approach applies to ALL code/config changes EXCEPT updating copilot-instructions.md itself.
 
 **Maintaining Instruction Coherence:**
 
@@ -207,6 +230,40 @@ var then = When
 ```
 
 **Prevention**: Invoked must call actual method under test - never use identity lambdas like `(x) => x` or `(a, b) => (a, b)`.
+
+---
+
+**❌ CRITICAL ANTI-PATTERN: Not updating instructions after discovering a problem**
+
+**Scenario:**
+An AI assistant fixed the OpenSSF Scorecard workflow issue (global env variables causing failure) but didn't update the instructions to document the problem and solution.
+
+**Why this is catastrophic:**
+1. Next AI assistant encounters the same issue → wastes time rediscovering the solution
+2. Pattern of mistakes → no institutional learning
+3. User has to repeat the same guidance → frustration
+4. Knowledge is lost → same mistakes repeated indefinitely
+
+**What should have happened:**
+After fixing the workflow issue, the AI should have IMMEDIATELY added documentation to the "Terminal Commands Reference" section under "Common GitHub Actions Mistakes" explaining:
+- The error message
+- Why it fails
+- The incorrect pattern
+- The correct pattern
+- When it was discovered
+
+**✅ CORRECT BEHAVIOR: Always update instructions immediately**
+
+When you discover ANY problem or solution:
+1. Fix the immediate issue
+2. **IMMEDIATELY** document it in copilot-instructions.md
+3. Add to the appropriate section (Failed Code Edits, Terminal Commands, Critical Guidelines, etc.)
+4. Include error messages, why it failed, correct solution, and prevention tips
+5. **NEVER skip this step** - updating instructions is NOT optional
+
+**Remember:** Every minute spent updating instructions saves hours of future debugging time.
+
+---
 
 ## Terminal Commands Reference
 
@@ -377,6 +434,72 @@ git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" |
 | danielpalme/ReportGenerator-GitHub-Action | `dcdfb6e704e87df6b2ed0cf123a6c9f69e364869` | v5.5.0 | Used invalid SHA |
 
 **Key Lesson:** If you're updating GitHub Actions, verify EVERY action's SHA with `git ls-remote` before making changes. This takes a few minutes but prevents hours of debugging workflow failures.
+
+---
+
+**❌ MISTAKE 4: Using global env variables with OpenSSF Scorecard action**
+
+When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow **MUST NOT** contain global `env` or `defaults` sections. This is a security restriction documented at https://github.com/ossf/scorecard-action#workflow-restrictions.
+
+**Error encountered (November 2024):**
+```
+workflow verification failed: workflow contains global env vars or defaults, 
+see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
+```
+
+**Why it fails:** Global environment variables could potentially be used to manipulate Scorecard results, so the action enforces this restriction as a security measure.
+
+**❌ WRONG - Global env section:**
+```yaml
+name: Build
+
+env:
+  CI: true
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  MINVERBUILDMETADATA: build.${{github.run_number}}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+```
+
+**✅ CORRECT - Job-level env sections:**
+```yaml
+name: Build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      DOTNET_NOLOGO: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      MINVERBUILDMETADATA: build.${{github.run_number}}
+    steps:
+      - uses: actions/checkout@v6
+  
+  security-scan:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      DOTNET_NOLOGO: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      MINVERBUILDMETADATA: build.${{github.run_number}}
+    steps:
+      - uses: ossf/scorecard-action@v2
+        with:
+          publish_results: true
+```
+
+**Solution:** Move all environment variables from the workflow level to each individual job that needs them. This satisfies Scorecard's security requirements while maintaining all functionality.
+
+**Alternative (not recommended):** Set `publish_results: false`, but this prevents your project's security score from being publicly visible on the OpenSSF Scorecard dashboard.
 
 ---
 
@@ -689,6 +812,18 @@ This section provides explicit guidance on how to implement features following t
 
 **CRITICAL WORKFLOW REQUIREMENT**: Before implementing any significant feature or change, you MUST present a plan to the user for review and approval.
 
+**CRITICAL EXCEPTION - NO PLAN REQUIRED:**
+- **Updating `copilot-instructions.md`** - NEVER requires a plan or approval
+- **MUST ALWAYS update instructions** without hesitation when:
+  - You face any problem or error
+  - You find a solution that worked (confirmed working)
+  - You discover a pattern to avoid
+  - You learn from a mistake
+  - User provides guidance or corrections
+- **Put maximum effort** into updating instructions to avoid future errors
+- **Never forget** to update instructions when necessary
+- **Update immediately** - don't wait, don't ask for permission
+
 **When to present a plan:**
 - Adding new features or modules
 - Modifying existing architecture
@@ -696,6 +831,7 @@ This section provides explicit guidance on how to implement features following t
 - Implementing complex business logic
 - Adding new endpoints or services
 - Changing data models or database schema
+- **Any code or configuration changes** (except copilot-instructions.md)
 
 **Plan structure:**
 ```markdown
