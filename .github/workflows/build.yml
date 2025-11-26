@@ -249,7 +249,7 @@ jobs:
           DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.ExcludeByAttribute='CompilerGenerated,GeneratedCode,ExcludeFromCodeCoverage'
         working-directory: ./src/HomeInventory
       - name: Test Report
-        uses: dorny/test-reporter@894765a932a426ee30919ffd3b5fd3b53c0e26b8 # v2.2.0
+        uses: dorny/test-reporter@7b7927aa7da8b82e81e755810cb51f39941a2cc7 # v2.2.0
         if: success() || failure()
         with:
           name: Unit tests
