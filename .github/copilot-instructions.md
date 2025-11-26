@@ -9,6 +9,15 @@
 - [Project Overview](#project-overview)
 - [Architecture & Structure](#architecture--structure)
 - [Technology Stack](#technology-stack)
+- [Development Workflow & Best Practices](#development-workflow--best-practices)
+  - [Plan-First Development Approach](#plan-first-development-approach)
+  - [Building API Endpoints](#building-api-endpoints)
+  - [Using Dependency Injection](#using-dependency-injection)
+  - [Repository Pattern Implementation](#repository-pattern-implementation)
+  - [DTOs, Contracts, and Models](#dtos-contracts-and-models)
+  - [File Organization Guidelines](#file-organization-guidelines)
+  - [Documentation and Comments](#documentation-and-comments)
+  - [Industry Best Practices](#industry-best-practices)
 - [Coding Standards & Conventions](#coding-standards--conventions)
   - [LanguageExt v5 Patterns](#languageext-v5-patterns)
   - [CollectionsMarshal and Async Patterns](#collectionsmarshal-and-async-patterns)
@@ -57,6 +66,64 @@
 3. **Update DO/DON'T list** with concrete before/after examples
 4. **Reference the investigation process** used to identify and fix issues
 5. **Ensure future AI assistants learn from the mistake** by making the guidance explicit and searchable
+
+**Maintaining Instruction Coherence:**
+
+When updating these instructions, follow these principles to keep them useful for both Copilot and humans:
+
+1. **Consistency**:
+   - Use the same terminology throughout (e.g., always "Carter module", not "endpoint module")
+   - Follow the established structure (✅ DO / ❌ DON'T with examples)
+   - Match coding style in examples (file-scoped namespaces, primary constructors, etc.)
+
+2. **Cross-referencing**:
+   - Link related sections instead of duplicating content
+   - Use `[Section Name](#section-name)` format for internal links
+   - Reference existing examples when adding new guidance
+
+3. **Organization**:
+   - Add new content to the most specific relevant section
+   - Update Table of Contents when adding new major sections
+   - Keep related topics grouped together
+
+4. **Clarity for AI**:
+   - Be explicit and prescriptive ("MUST", "NEVER", "ALWAYS")
+   - Provide complete code examples, not fragments
+   - Include both correct and incorrect patterns
+   - Explain **why** a pattern is preferred
+
+5. **Clarity for Humans**:
+   - Use clear headings and subheadings
+   - Keep paragraphs short and focused
+   - Use bullet lists for scanning
+   - Include real-world examples from this codebase
+
+6. **Searchability**:
+   - Use descriptive section titles
+   - Include multiple terms for the same concept
+   - Add keywords in examples (e.g., "Carter", "ApiCarterModule", "endpoints")
+
+7. **Completeness**:
+   - Cover the "what", "why", and "how"
+   - Include both positive and negative examples
+   - Address common mistakes and edge cases
+   - Provide step-by-step procedures where appropriate
+
+**Example of coherent instruction update:**
+
+```markdown
+❌ BAD - Vague and inconsistent:
+"Use repositories. Define them somewhere and use specs."
+
+✅ GOOD - Explicit and coherent:
+**Repository Pattern Implementation:**
+1. Define interface in `HomeInventory.Application.[Module]` with `I[Entity]Repository : IRepository<[Entity]>`
+2. Implement in `HomeInventory.Infrastructure.[Module]` inheriting from `RepositoryBase<[Entity]>`
+3. Create specifications in `Infrastructure.[Module].Specifications` for complex queries
+4. Inject via `IScopeAccessor` in services
+
+See [Repository Pattern Implementation](#repository-pattern-implementation) for complete examples.
+```
 
 ## Failed Code Edits - Investigation & Prevention
 
@@ -613,6 +680,665 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 - **AwesomeAssertions** - Fluent assertions
 - **LanguageExt.UnitTesting** - Testing helpers for LanguageExt types
 - **TngTech.ArchUnitNET** & **NetArchTest.Rules** - Architecture testing
+
+## Development Workflow & Best Practices
+
+This section provides explicit guidance on how to implement features following the project's established patterns and conventions.
+
+### Plan-First Development Approach
+
+**CRITICAL WORKFLOW REQUIREMENT**: Before implementing any significant feature or change, you MUST present a plan to the user for review and approval.
+
+**When to present a plan:**
+- Adding new features or modules
+- Modifying existing architecture
+- Making breaking changes
+- Implementing complex business logic
+- Adding new endpoints or services
+- Changing data models or database schema
+
+**Plan structure:**
+```markdown
+## Proposed Changes: [Feature Name]
+
+### Overview
+Brief description of what will be implemented and why.
+
+### Scope
+- List of files to be created
+- List of files to be modified
+- List of tests to be added
+
+### Implementation Steps
+1. Step 1: Create domain models
+2. Step 2: Implement repository interfaces
+3. Step 3: Create application services
+4. Step 4: Add API endpoints
+5. Step 5: Write tests
+
+### Affected Areas
+- Modules: [List affected modules]
+- Layers: [List affected layers: Domain, Application, Infrastructure, Web]
+- Dependencies: [Any new dependencies or module relationships]
+
+### Testing Strategy
+- Unit tests for [specific areas]
+- Integration tests for [specific scenarios]
+- Expected coverage: [percentage]
+
+### Risks & Considerations
+- Breaking changes: [Yes/No - describe]
+- Database migrations: [Yes/No]
+- Performance impact: [Low/Medium/High]
+```
+
+**Wait for user approval** before proceeding with implementation.
+
+### Building API Endpoints
+
+**HomeInventory uses Carter for minimal API endpoints.** All endpoints MUST inherit from `ApiCarterModule`.
+
+**Step-by-step endpoint creation:**
+
+1. **Create Carter module class** in `HomeInventory.Web.[Module]` project:
+
+```csharp
+namespace HomeInventory.Web.[ModuleName];
+
+public sealed class [Feature]CarterModule(
+    IScopeAccessor scopeAccessor,
+    IProblemDetailsFactory problemDetailsFactory,
+    ContractsMapper mapper)
+    : ApiCarterModule
+{
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
+    private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
+    private readonly ContractsMapper _mapper = mapper;
+
+    protected override string PathPrefix => "/api/[resource]";
+
+    protected override void AddRoutes(RouteGroupBuilder group)
+    {
+        group.MapPost("/", HandleCreateAsync)
+            .WithName("Create[Resource]")
+            .WithValidationOf<Create[Resource]Request>()
+            .Produces<[Resource]Response>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapGet("/{id}", HandleGetByIdAsync)
+            .WithName("Get[Resource]ById")
+            .Produces<[Resource]Response>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
+    }
+
+    private async Task<Results<Created<[Resource]Response>, ProblemHttpResult>> HandleCreateAsync(
+        [FromBody] Create[Resource]Request request,
+        [FromServices] I[Module]Service service,
+        [FromServices] I[Repository] repository,
+        [FromServices] IUnitOfWork unitOfWork,
+        HttpContext context,
+        CancellationToken cancellationToken = default)
+    {
+        // Set scoped context for repositories/unit of work
+        using var scopes = new CompositeDisposable(
+            _scopeAccessor.GetScope<I[Repository]>().Set(repository),
+            _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
+
+        // Map request to command
+        var command = _mapper.ToCommand(request);
+        
+        // Call service
+        var result = await service.CreateAsync(command, cancellationToken);
+
+        // Handle result with pattern matching
+        return result.Match(
+            error => _problemDetailsFactory.CreateProblemResult(error, context.TraceIdentifier),
+            success => TypedResults.Created($"/api/[resource]/{success.Id}", _mapper.ToResponse(success)));
+    }
+}
+```
+
+**Endpoint conventions:**
+- ✅ Inherit from `ApiCarterModule` (NOT `CarterModule`)
+- ✅ Override `PathPrefix` property (required)
+- ✅ Inject `IScopeAccessor`, `IProblemDetailsFactory`, `ContractsMapper` via constructor
+- ✅ Inject services via `[FromServices]` in handler methods
+- ✅ Use `WithValidationOf<T>()` for request validation
+- ✅ Return typed results: `Results<Ok<T>, ProblemHttpResult>`
+- ✅ Always include `CancellationToken` parameter with `default` value
+- ✅ Use `using var scopes` to set scoped dependencies
+- ✅ Map requests to commands/queries using Mapperly mapper
+
+### Using Dependency Injection
+
+**The project uses Microsoft.Extensions.DependencyInjection with module-based registration.**
+
+**Service registration patterns:**
+
+1. **Register services in module's `AddServicesAsync` method**:
+
+```csharp
+public sealed class [Module]Module : IModule
+{
+    public async Task AddServicesAsync(IModuleServicesContext context, CancellationToken cancellationToken)
+    {
+        var services = context.Services;
+
+        // Application services (internal implementations, public interfaces)
+        services.AddScoped<I[Module]Service, [Module]Service>();
+
+        // Repositories (infrastructure)
+        services.AddScoped<I[Entity]Repository, [Entity]Repository>();
+
+        // Validators (automatically registered via Scrutor)
+        services.Scan(scan => scan
+            .FromAssemblyOf<[Module]Validator>()
+            .AddClasses(classes => classes.AssignableTo<IValidator>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
+        // Mappers (static partial classes, no registration needed)
+        // Mapperly generates implementations at compile-time
+
+        // Options with validation
+        services.AddOptionsWithValidation<[Module]Options, [Module]OptionsValidator>(
+            context.Configuration, [Module]Options.SectionPath);
+    }
+}
+```
+
+2. **Service lifetimes**:
+   - **Scoped**: Most services, repositories, DbContext
+   - **Singleton**: Mappers (static), caching services, configuration
+   - **Transient**: Stateless utilities, validators
+
+3. **Constructor injection** (preferred):
+
+```csharp
+internal sealed class [Module]Service(
+    IScopeAccessor scopeAccessor,
+    ILogger<[Module]Service> logger,
+    IPasswordHasher passwordHasher) : I[Module]Service
+{
+    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
+    private readonly ILogger<[Module]Service> _logger = logger;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
+}
+```
+
+4. **Scope accessor pattern** for cross-layer dependencies:
+
+```csharp
+// In endpoint: SET scoped instances
+using var scopes = new CompositeDisposable(
+    _scopeAccessor.GetScope<IUserRepository>().Set(repository),
+    _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
+
+// In service: GET scoped instances
+var repository = _scopeAccessor.GetRequiredContext<IUserRepository>();
+var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
+```
+
+**DI Best Practices:**
+- ✅ Register interfaces in application layer, implementations in infrastructure
+- ✅ Use `internal sealed` for service implementations
+- ✅ Expose public interfaces from `[Module].Interfaces` projects
+- ✅ Prefer constructor injection over property injection
+- ✅ Use `IScopeAccessor` for request-scoped cross-layer dependencies
+- ❌ Never use service locator pattern
+- ❌ Don't inject `IServiceProvider` directly
+
+### Repository Pattern Implementation
+
+**The project uses Ardalis.Specification for the repository pattern.**
+
+**Step-by-step repository creation:**
+
+1. **Define repository interface** in `HomeInventory.Application.[Module]`:
+
+```csharp
+namespace HomeInventory.Application.[Module];
+
+public interface I[Entity]Repository : IRepository<[Entity]>
+{
+    // Specification-based queries (preferred)
+    // No need to define additional methods - specifications handle complex queries
+}
+
+// For read-only scenarios
+public interface I[Entity]ReadOnlyRepository : IReadOnlyRepository<[Entity]>
+{
+}
+```
+
+2. **Implement repository** in `HomeInventory.Infrastructure.[Module]`:
+
+```csharp
+namespace HomeInventory.Infrastructure.[Module];
+
+internal sealed class [Entity]Repository(DatabaseContext context) 
+    : RepositoryBase<[Entity]>(context), I[Entity]Repository
+{
+    // Most functionality inherited from RepositoryBase
+    // Add custom methods only if specifications can't handle the scenario
+}
+```
+
+3. **Create specifications** for complex queries:
+
+```csharp
+namespace HomeInventory.Infrastructure.[Module].Specifications;
+
+public sealed class [Entity]ByEmailSpec : Specification<[Entity]>
+{
+    public [Entity]ByEmailSpec(string email)
+    {
+        Query
+            .Where(e => e.Email == email)
+            .Include(e => e.RelatedEntity)
+            .AsNoTracking(); // For read-only queries
+    }
+}
+
+// Usage in service:
+var spec = new [Entity]ByEmailSpec(email);
+var entity = await repository.FirstOrDefaultAsync(spec, cancellationToken);
+```
+
+4. **Use repository in services** via scope accessor:
+
+```csharp
+public async Task<Option<Error>> CreateAsync(CreateCommand command, CancellationToken cancellationToken)
+{
+    // Get repository from scope (set in endpoint)
+    var repository = _scopeAccessor.GetRequiredContext<I[Entity]Repository>();
+    var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
+
+    // Create entity
+    var entity = [Entity].Create(command.Name, command.Email);
+
+    // Add to repository
+    await repository.AddAsync(entity, cancellationToken);
+
+    // Save changes
+    await unitOfWork.SaveChangesAsync(cancellationToken);
+
+    return Option<Error>.None; // Success
+}
+```
+
+**Repository Best Practices:**
+- ✅ Use specifications for complex queries
+- ✅ Keep repository interfaces in application layer
+- ✅ Keep implementations in infrastructure layer
+- ✅ Use `AsNoTracking()` for read-only queries
+- ✅ Include related entities explicitly with `.Include()`
+- ✅ Use `FirstOrDefaultAsync` and check for null
+- ❌ Don't put business logic in repositories
+- ❌ Don't expose `IQueryable<T>` from repositories
+- ❌ Don't create a repository method for every query
+
+### DTOs, Contracts, and Models
+
+**Clear separation between domain models and DTOs prevents domain leakage.**
+
+**Project structure:**
+- **Domain models**: `HomeInventory.Domain.[Module]` - Entities, Value Objects, Aggregates
+- **Contracts (DTOs)**: `HomeInventory.Contracts.[Module]` - Request/Response models
+- **Validators**: `HomeInventory.Contracts.[Module].Validators` - FluentValidation rules
+
+**1. Request DTOs:**
+
+```csharp
+namespace HomeInventory.Contracts.[Module];
+
+// Request for creating an entity
+public sealed record Create[Entity]Request(
+    string Name,
+    string Email,
+    string Password);
+
+// Request for updating an entity
+public sealed record Update[Entity]Request(
+    string Name,
+    string Email);
+
+// Query parameters
+public sealed record Get[Entities]Query(
+    int PageNumber = 1,
+    int PageSize = 10,
+    string? SearchTerm = null);
+```
+
+**2. Response DTOs:**
+
+```csharp
+namespace HomeInventory.Contracts.[Module];
+
+public sealed record [Entity]Response(
+    Ulid Id,
+    string Name,
+    string Email,
+    DateTime CreatedAt,
+    DateTime? UpdatedAt);
+
+public sealed record [Entities]ListResponse(
+    IReadOnlyCollection<[Entity]Response> Items,
+    int TotalCount,
+    int PageNumber,
+    int PageSize);
+```
+
+**3. Validators:**
+
+```csharp
+namespace HomeInventory.Contracts.[Module].Validators;
+
+public sealed class Create[Entity]RequestValidator : AbstractValidator<Create[Entity]Request>
+{
+    public Create[Entity]RequestValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required")
+            .MaximumLength(100).WithMessage("Name cannot exceed 100 characters");
+
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email is required")
+            .EmailAddress().WithMessage("Invalid email format")
+            .MaximumLength(255);
+
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .MinimumLength(8)
+            .Matches(@"[A-Z]").WithMessage("Password must contain uppercase")
+            .Matches(@"[a-z]").WithMessage("Password must contain lowercase")
+            .Matches(@"\d").WithMessage("Password must contain digit");
+    }
+}
+```
+
+**4. Mappers (Mapperly):**
+
+```csharp
+namespace HomeInventory.Contracts.[Module];
+
+[Mapper]
+public static partial class [Module]Mapper
+{
+    // Request to Command
+    public static partial Create[Entity]Command ToCommand(this Create[Entity]Request request);
+
+    // Entity to Response
+    public static partial [Entity]Response ToResponse(this [Entity] entity);
+
+    // Collection mapping
+    public static partial IReadOnlyCollection<[Entity]Response> ToResponses(
+        this IReadOnlyCollection<[Entity]> entities);
+
+    // Custom mapping with attribute
+    [MapProperty(nameof([Entity].PropertyName), nameof([Entity]Response.MappedName))]
+    public static partial [Entity]Response ToResponseWithMapping(this [Entity] entity);
+}
+```
+
+**DTOs/Contracts Best Practices:**
+- ✅ Use `record` types for immutability
+- ✅ Validate all inputs with FluentValidation
+- ✅ Never expose domain entities in API responses
+- ✅ Use Mapperly for compile-time mapping
+- ✅ Name requests clearly: `Create*Request`, `Update*Request`, `*Query`
+- ✅ Name responses consistently: `*Response`, `*ListResponse`
+- ❌ Don't put validation logic in DTOs (use validators)
+- ❌ Don't reference domain layer from Contracts
+- ❌ Don't use runtime reflection-based mappers (e.g., AutoMapper)
+
+### File Organization Guidelines
+
+**One type per file, file name matches type name, namespace matches folder structure.**
+
+**Folder structure by layer:**
+
+```
+HomeInventory.Domain.[Module]/
+├── Aggregates/
+│   └── [Aggregate].cs              // Aggregate root entity
+├── Entities/
+│   └── [Entity].cs                 // Domain entity
+├── ValueObjects/
+│   └── [ValueObject].cs            // Value object (record)
+├── Events/
+│   └── [Event]DomainEvent.cs       // Domain event
+├── Errors/
+│   └── [Module]Errors.cs           // Domain errors
+└── Interfaces/
+    └── I[Service].cs               // Domain service interface
+
+HomeInventory.Application.[Module]/
+├── Commands/
+│   └── Create[Entity]Command.cs    // Command record
+├── Queries/
+│   └── Get[Entity]Query.cs         // Query record
+├── Services/
+│   └── [Module]Service.cs          // Service implementation (internal)
+└── Interfaces/
+    └── I[Module]Service.cs         // Service interface (public)
+
+HomeInventory.Application.[Module].Interfaces/
+└── I[Module]Service.cs             // Public service contracts
+
+HomeInventory.Contracts.[Module]/
+├── Requests/
+│   ├── Create[Entity]Request.cs
+│   └── Update[Entity]Request.cs
+├── Responses/
+│   ├── [Entity]Response.cs
+│   └── [Entities]ListResponse.cs
+└── [Module]Mapper.cs               // Mapperly mapper
+
+HomeInventory.Contracts.[Module].Validators/
+└── Create[Entity]RequestValidator.cs
+
+HomeInventory.Infrastructure.[Module]/
+├── Configurations/
+│   └── [Entity]Configuration.cs    // EF Core configuration
+├── Repositories/
+│   └── [Entity]Repository.cs       // Repository implementation
+├── Specifications/
+│   └── [Entity]ByIdSpec.cs        // Ardalis specifications
+└── [Module]Module.cs              // Module registration
+
+HomeInventory.Web.[Module]/
+└── [Feature]CarterModule.cs        // Carter endpoints
+```
+
+**File organization rules:**
+- ✅ One class/interface/enum per file
+- ✅ File name = type name (e.g., `UserService.cs` contains `UserService`)
+- ✅ Namespace matches folder structure
+- ✅ Group related types in folders (Commands/, Queries/, etc.)
+- ✅ Use plural folder names (Aggregates/, Entities/, Commands/)
+- ✅ Keep interfaces separate when they're public contracts
+- ❌ Never put multiple public types in one file
+- ❌ Don't nest folders more than 3 levels deep
+- ❌ Don't use generic names like `Helpers.cs` or `Utilities.cs`
+
+### Documentation and Comments
+
+**Documentation is required for public APIs and complex logic. Code should be self-documenting through clear naming.**
+
+**1. XML documentation for public APIs:**
+
+```csharp
+/// <summary>
+/// Creates a new user account with the specified credentials.
+/// </summary>
+/// <param name="command">The command containing user registration details.</param>
+/// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+/// <returns>
+/// Returns <see cref="Option{Error}.None"/> on success,
+/// or <see cref="Option{Error}.Some"/> containing the error on failure.
+/// </returns>
+/// <exception cref="ArgumentNullException">Thrown when <paramref name="command"/> is null.</exception>
+public async Task<Option<Error>> RegisterAsync(
+    RegisterUserCommand command,
+    CancellationToken cancellationToken = default)
+{
+    // Implementation
+}
+```
+
+**2. Inline comments for complex logic:**
+
+```csharp
+// Only add comments for non-obvious business rules
+public bool IsEligibleForDiscount(decimal orderTotal, int customerTier)
+{
+    // Business rule: Premium customers (tier 3+) get discount on orders over $100
+    // Standard customers (tier 1-2) need $200 minimum
+    return customerTier >= 3 ? orderTotal >= 100 : orderTotal >= 200;
+}
+```
+
+**3. Feature documentation:**
+
+Create a markdown file in `docs/features/[feature-name].md`:
+
+```markdown
+# [Feature Name]
+
+## Overview
+Brief description of the feature and its purpose.
+
+## User Stories
+- As a [user type], I want to [action] so that [benefit]
+
+## Technical Details
+
+### Endpoints
+- `POST /api/[resource]` - Creates a new [resource]
+- `GET /api/[resource]/{id}` - Retrieves [resource] by ID
+
+### Domain Models
+- **[Entity]**: Core entity representing [concept]
+- **[ValueObject]**: Value object for [property]
+
+### Business Rules
+1. Rule 1: [Description]
+2. Rule 2: [Description]
+
+### Dependencies
+- Depends on [Module A]
+- Used by [Module B]
+
+## Testing
+- Unit tests: [Coverage percentage]
+- Integration tests: [Key scenarios covered]
+```
+
+**Documentation Best Practices:**
+- ✅ Document all public APIs with XML comments
+- ✅ Explain **why**, not **what** (code shows what)
+- ✅ Document business rules and assumptions
+- ✅ Keep comments up-to-date with code changes
+- ✅ Use `<summary>`, `<param>`, `<returns>`, `<exception>` tags
+- ✅ Document complex algorithms and non-obvious logic
+- ❌ Don't comment obvious code (`i++; // increment i`)
+- ❌ Don't use comments to explain bad code - refactor instead
+- ❌ Don't leave commented-out code
+- ❌ Don't write novels - be concise
+
+### Industry Best Practices
+
+**This project follows established industry best practices and patterns.**
+
+**1. SOLID Principles:**
+- **Single Responsibility**: Each class has one reason to change
+- **Open/Closed**: Open for extension, closed for modification
+- **Liskov Substitution**: Subtypes must be substitutable for base types
+- **Interface Segregation**: Many specific interfaces over one general interface
+- **Dependency Inversion**: Depend on abstractions, not concretions
+
+**2. Clean Architecture:**
+- Dependencies point inward toward domain
+- Domain has no external dependencies (except LanguageExt)
+- Application layer orchestrates domain and infrastructure
+- Infrastructure implements interfaces defined in application
+- Web layer depends on application, not domain directly
+
+**3. Domain-Driven Design (DDD):**
+- **Entities**: Objects with identity (User, Order)
+- **Value Objects**: Immutable objects without identity (Address, Money)
+- **Aggregates**: Clusters of entities with a root (Order + OrderItems)
+- **Domain Events**: Capture state changes (UserRegisteredEvent)
+- **Repositories**: Collection-like interfaces for aggregates
+- **Domain Services**: Operations that don't fit in entities
+
+**4. CQRS (Command Query Responsibility Segregation):**
+- **Commands**: Write operations, return `Option<Error>`
+- **Queries**: Read operations, return `IQueryResult<T>`
+- Separate read and write models when complexity warrants
+- Commands can trigger domain events
+
+**5. Functional Programming (LanguageExt):**
+- Use `Option<T>` instead of null
+- Use `Either<Error, T>` for error handling
+- Use `Try<T>` for exception-prone operations
+- Prefer immutable data structures (records)
+- Use pattern matching over if/else chains
+
+**6. Security:**
+- Hash passwords with BCrypt
+- Use JWT for authentication
+- Validate all inputs
+- Sanitize outputs (prevent XSS)
+- Use parameterized queries (prevent SQL injection)
+- Implement authorization checks
+- Keep secrets out of code (use configuration)
+
+**7. Performance:**
+- Use async/await for I/O operations
+- Include related entities to avoid N+1 queries
+- Use `AsNoTracking()` for read-only queries
+- Implement pagination for large result sets
+- Use caching strategically
+- Profile before optimizing
+
+**8. Testing:**
+- Unit tests for business logic (80%+ coverage)
+- Integration tests for infrastructure
+- Use Given-When-Then pattern
+- Test behavior, not implementation
+- Keep tests independent and repeatable
+
+**9. Error Handling:**
+- Use typed errors (domain errors)
+- Return errors, don't throw exceptions (except for exceptional cases)
+- Use `Option<Error>` for operation results
+- Log errors with context
+- Return RFC 7807 ProblemDetails from APIs
+
+**10. Logging:**
+- Use structured logging (Serilog)
+- Log at appropriate levels (Trace, Debug, Info, Warning, Error, Critical)
+- Include correlation IDs for request tracking
+- Don't log sensitive data
+- Log context, not just messages
+
+**Best Practices Checklist:**
+- ✅ Follow SOLID principles
+- ✅ Implement Clean Architecture dependency rules
+- ✅ Use DDD patterns appropriately
+- ✅ Separate commands and queries (CQRS)
+- ✅ Use functional patterns (Option, Either, Try)
+- ✅ Secure sensitive operations
+- ✅ Optimize for performance
+- ✅ Write comprehensive tests
+- ✅ Handle errors gracefully
+- ✅ Log meaningful information
+
+---
+
+**Remember**: These are the established patterns for this project. When you encounter new patterns or corrections from the user, update these instructions following the [Meta-Instructions for AI Assistants](#meta-instructions-for-ai-assistants).
 
 ## Coding Standards & Conventions
 
@@ -1751,10 +2477,10 @@ public sealed class ModuleTestsGivenContext(BaseTest test) : GivenContext<Module
 public void Test()
 {
     Given.New<MyClass>(out var sut);
-    
+
     var then1 = When.Invoked(sut, static s => s.Property);
     then1.Result(static r => r.Should().Be(1));
-    
+
     // ❌ Second Given-When-Then chain in same test
     Given.New<string>(out var dataVar);
     var then2 = When.Invoked(sut, dataVar, static (s, d) => s.Process(d));
@@ -2222,7 +2948,7 @@ public async Task AsyncMethod_Scenario_ExpectedResult()
         .InvokedAsync(sutVar, dataVar, static (s, data, ct) => s.MethodAsync(data, ct));
 
     then
-        .Result(dataVar, static (result, expectedData) => 
+        .Result(dataVar, static (result, expectedData) =>
             result.Should().Contain(expectedData));  // ✅ Assert against expected from Given
 }
 ```
