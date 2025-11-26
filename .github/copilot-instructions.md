@@ -350,7 +350,7 @@ git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" |
 In November 2024, several workflows failed with errors like:
 
 ```
-Error: The workflow is not valid. .github/workflows/ci.yml (Line 23): The workflow uses an action 'actions/checkout@v4' with an invalid SHA. Please verify the SHA and try again.
+Error: The workflow is not valid. .github/workflows/build.yml (Line 23): The workflow uses an action 'actions/checkout@v4' with an invalid SHA. Please verify the SHA and try again.
 ```
 
 **Root Cause:** The SHA for `actions/checkout@v4` was copied from a blog post and did not match the actual tag in the repository.
