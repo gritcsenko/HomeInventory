@@ -872,78 +872,7 @@ Brief description of what will be implemented and why.
 
 ### Building API Endpoints
 
-**HomeInventory uses Carter for minimal API endpoints.** All endpoints MUST inherit from `ApiCarterModule`.
-
-**Step-by-step endpoint creation:**
-
-1. **Create Carter module class** in `HomeInventory.Web.[Module]` project:
-
-```csharp
-namespace HomeInventory.Web.[ModuleName];
-
-public sealed class [Feature]CarterModule(
-    IScopeAccessor scopeAccessor,
-    IProblemDetailsFactory problemDetailsFactory,
-    ContractsMapper mapper)
-    : ApiCarterModule
-{
-    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
-    private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
-    private readonly ContractsMapper _mapper = mapper;
-
-    protected override string PathPrefix => "/api/[resource]";
-
-    protected override void AddRoutes(RouteGroupBuilder group)
-    {
-        group.MapPost("/", HandleCreateAsync)
-            .WithName("Create[Resource]")
-            .WithValidationOf<Create[Resource]Request>()
-            .Produces<[Resource]Response>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
-
-        group.MapGet("/{id}", HandleGetByIdAsync)
-            .WithName("Get[Resource]ById")
-            .Produces<[Resource]Response>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
-    }
-
-    private async Task<Results<Created<[Resource]Response>, ProblemHttpResult>> HandleCreateAsync(
-        [FromBody] Create[Resource]Request request,
-        [FromServices] I[Module]Service service,
-        [FromServices] I[Repository] repository,
-        [FromServices] IUnitOfWork unitOfWork,
-        HttpContext context,
-        CancellationToken cancellationToken = default)
-    {
-        // Set scoped context for repositories/unit of work
-        using var scopes = new CompositeDisposable(
-            _scopeAccessor.GetScope<I[Repository]>().Set(repository),
-            _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
-
-        // Map request to command
-        var command = _mapper.ToCommand(request);
-        
-        // Call service
-        var result = await service.CreateAsync(command, cancellationToken);
-
-        // Handle result with pattern matching
-        return result.Match(
-            error => _problemDetailsFactory.CreateProblemResult(error, context.TraceIdentifier),
-            success => TypedResults.Created($"/api/[resource]/{success.Id}", _mapper.ToResponse(success)));
-    }
-}
-```
-
-**Endpoint conventions:**
-- ✅ Inherit from `ApiCarterModule` (NOT `CarterModule`)
-- ✅ Override `PathPrefix` property (required)
-- ✅ Inject `IScopeAccessor`, `IProblemDetailsFactory`, `ContractsMapper` via constructor
-- ✅ Inject services via `[FromServices]` in handler methods
-- ✅ Use `WithValidationOf<T>()` for request validation
-- ✅ Return typed results: `Results<Ok<T>, ProblemHttpResult>`
-- ✅ Always include `CancellationToken` parameter with `default` value
-- ✅ Use `using var scopes` to set scoped dependencies
-- ✅ Map requests to commands/queries using Mapperly mapper
+For detailed guidance on building API endpoints using Carter, see [Endpoint Development (Carter)](#endpoint-development-carter).
 
 ### Using Dependency Injection
 

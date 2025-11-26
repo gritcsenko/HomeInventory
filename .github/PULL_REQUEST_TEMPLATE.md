@@ -50,39 +50,47 @@ Please describe the manual tests you ran to verify your changes:
 
 ## Definition of Done
 
-> **Note**: Build, tests, format, security scan, architecture validation, and coverage are automatically checked by CI. PR cannot be merged if automated checks fail. Review bot comments for detailed reports.
-
 ### Self-Review Checklist
 
 #### Code Quality
-- [ ] I have performed a thorough self-review of my code
-- [ ] My code follows the style guidelines of this project
-- [ ] I have chosen meaningful names for classes, methods, and variables
-- [ ] I have avoided code duplication and extracted reusable logic
-- [ ] I have handled errors appropriately using functional patterns (Option, Either, Validation)
+- [ ] I have reviewed my own code before requesting review
+- [ ] My code follows the established coding standards and patterns
+- [ ] I have chosen clear, descriptive names for new code elements
+- [ ] I have removed commented-out code and debug statements
+- [ ] I have eliminated code duplication
+- [ ] My code builds without warnings
 
-#### Architecture & Design
-- [ ] Changes follow Clean Architecture principles (Domain → Application → Infrastructure → Web)
-- [ ] Domain layer has no external dependencies (except LanguageExt)
-- [ ] Dependency injection used correctly (proper lifetimes, no service locator)
-- [ ] Functional patterns used appropriately (Option for nullability, Either for errors)
-- [ ] CQRS pattern followed (Commands return `Option<Error>`, Queries return `IQueryResult<T>`)
-- [ ] No breaking changes OR migration path documented below
+#### Design & Architecture  
+- [ ] My changes respect the project's architectural boundaries
+- [ ] I have followed established design patterns and conventions
+- [ ] Dependencies flow in the correct direction
+- [ ] I have not introduced circular dependencies
+- [ ] I have used dependency injection appropriately
+- [ ] My changes do not break existing functionality OR I have documented the breaking changes below
 
 #### Testing
-- [ ] I have added/updated tests that prove my changes work
-- [ ] Tests follow Given-When-Then pattern using `BaseTest<TGivenContext>`
-- [ ] AutoFixture used for test data (no hardcoded literals)
-- [ ] Tests use `.BeSome()` / `.BeNone()` for Option<T> assertions
-- [ ] Tests use `ContainSingle()` not `HaveCount(1)` (FAA0001)
-- [ ] System under test explicitly defined with `Sut(out var sutVar)`
-- [ ] Test coverage meets minimum thresholds for changed code
+- [ ] I have added tests that prove my changes work
+- [ ] My tests follow the project's testing patterns
+- [ ] Existing tests still pass
+- [ ] My tests are independent and can run in any order
+- [ ] I have tested error/edge cases
+- [ ] I have added integration tests for infrastructure changes (database, external APIs, etc.)
+
+#### Security & Performance
+- [ ] I have validated all user inputs
+- [ ] I have applied appropriate authorization checks
+- [ ] I have not exposed sensitive data (passwords, tokens, keys) in logs or responses  
+- [ ] I have used parameterized queries or ORMs to prevent injection attacks
+- [ ] I have used asynchronous operations for I/O-bound work
+- [ ] I have avoided performance anti-patterns (N+1 queries, unbounded results, etc.)
+- [ ] I have implemented pagination for operations that could return large datasets
 
 #### Documentation
-- [ ] XML comments added/updated for public APIs (for Swagger/OpenAPI)
-- [ ] Feature documentation updated in `docs/features/[feature-name].md` (if applicable)
-- [ ] README.md updated (if public API or setup changes)
-- [ ] Architecture decisions documented (for significant design changes)
+- [ ] I have commented complex business logic (focusing on WHY, not WHAT)
+- [ ] I have updated public API documentation
+- [ ] I have updated relevant feature documentation (if this changes user-facing behavior)
+- [ ] I have updated setup/deployment documentation (if this changes requirements or deployment)
+- [ ] My commit messages clearly describe what and why
 
 ### 🗄️ Database & Migrations (if applicable)
 - [ ] Database migrations added and tested locally
@@ -91,13 +99,8 @@ Please describe the manual tests you ran to verify your changes:
 - [ ] Indexes added for frequently queried columns
 - [ ] Migration rollback tested
 
-### 🔗 Dependencies & Breaking Changes
-- [ ] Any dependent changes have been merged and published in downstream modules
+### 🔗 Dependencies
 - [ ] NuGet packages updated in `Directory.Packages.props` (if applicable)
-- [ ] **No breaking changes** OR **Migration path provided below**
-
-### Breaking Changes (if applicable)
-_If this PR introduces breaking changes, document the migration path:_
 
 **What breaks:**
 - 
