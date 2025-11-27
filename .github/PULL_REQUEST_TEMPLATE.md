@@ -32,22 +32,6 @@ Depends on # (PR number)
 
 Blocks # (issue number)
 
-## Testing Evidence
-
-### Coverage Report
-_Will be generated automatically by CI - review the bot comment below_
-
-### Manual Testing
-Please describe the manual tests you ran to verify your changes:
-
-1. 
-2. 
-
-**Test Configuration**:
-- OS: [e.g., Windows 11, Ubuntu 22.04]
-- .NET SDK: [e.g., 10.0]
-- Browser (if UI): [e.g., Chrome 120]
-
 ## PR Checklist
 
 - [ ] I have performed a self-review of my code changes
@@ -56,4 +40,3 @@ Please describe the manual tests you ran to verify your changes:
 - [ ] I have updated relevant documentation
 - [ ] My code follows the project's style guidelines
 - [ ] I have added tests that prove my fix/feature works
-- 
