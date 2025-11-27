@@ -65,16 +65,20 @@ jobs:
           path: ./src/HomeInventory
           key: ${{ runner.os }}-build-${{github.ref}}-${{github.run_number}}
 
-  security-scan:
-    name: "Security Scan"
+  vulnerability-scan:
+    name: "Vulnerability Scan"
     needs: build
     if: ${{ success() }}
     permissions:
-      security-events: write
       contents: read
       actions: read
-      id-token: write
     runs-on: ubuntu-latest
+    env:
+      CI: true
+      DOTNET_NOLOGO: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      MINVERBUILDMETADATA: build.${{github.run_number}}
     steps:
       - name: "Checkout"
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
@@ -120,6 +124,22 @@ jobs:
             echo "✅ No vulnerable packages detected"
           fi
         working-directory: ./src/HomeInventory
+
+  scorecard:
+    name: "OpenSSF Scorecard"
+    needs: build
+    if: ${{ success() }}
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          persist-credentials: false
       - name: Run OpenSSF Scorecard
         uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a # v2.4.3
         with:
