@@ -152,24 +152,6 @@ When updating `copilot-instructions.md`:
 - ❌ **NEVER mix checkboxes with text** like "- [x] Item - N/A (explanation)"
 - ❌ **NEVER put explanations on same line as checkboxes**
 
-**Example - Wrong:**
-```markdown
-- [ ] Tests added/updated - N/A (no test changes)
-- [ ] Database migrations tested - N/A (no database)
-```
-
-**Example - Correct:**
-```markdown
-- [ ] Tests added/updated
-- [ ] Database migrations tested
-
-**If no test changes, explain:**
-
-
-**If no database changes, explain:**
-
-```
-
 **Why this is critical:**
 - These instructions are the project's institutional memory
 - Every mistake you document prevents future AI assistants from repeating it
