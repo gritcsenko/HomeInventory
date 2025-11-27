@@ -526,12 +526,13 @@ see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
 
 **Why it fails:** Global environment variables could potentially be used to manipulate Scorecard results, so the action enforces this restriction as a security measure.
 
-**❌ MISTAKE 4: Using env variables in OpenSSF Scorecard job**
+**❌ MISTAKE 4: Using env variables or disallowed actions in OpenSSF Scorecard job**
 
-When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow has **TWO restrictions**:
+When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow has **THREE restrictions**:
 
 1. **NO global `env` or `defaults` sections** in the workflow
 2. **NO `env` section in the job that runs Scorecard**
+3. **NO disallowed actions in the Scorecard job** (e.g., `actions/setup-dotnet`, `actions/cache`, etc.)
 
 This is a security restriction documented at https://github.com/ossf/scorecard-action#workflow-restrictions.
 
@@ -544,15 +545,19 @@ see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
 # Second error (job-level env):
 workflow verification failed: scorecard job contains env vars, 
 see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
+
+# Third error (disallowed actions):
+workflow verification failed: job has unallowed step: actions/setup-dotnet,
+see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
 ```
 
-**Why it fails:** Global environment variables OR environment variables in the Scorecard job could potentially be used to manipulate Scorecard results, so the action enforces these restrictions as a security measure.
+**Why it fails:** Global environment variables, job-level environment variables, or using setup/cache actions in the Scorecard job could potentially be used to manipulate Scorecard results, so the action enforces these restrictions as a security measure.
 
-**Critical Discovery (November 26, 2025):** The validation behaves **differently** for PRs vs main branch:
+**Critical Discovery (November 26-27, 2025):** The validation behaves **differently** for PRs vs main branch:
 - **PR builds (`pull_request` event):** Validation is **skipped or lighter** because publishing is disabled (PRs can't publish official scores)
 - **Main builds (`push` event):** **STRICT validation enforced** when attempting to publish results to public dashboard
 
-**Result:** PR CI can be green ✅, but merge to main fails ❌ if the workflow still has env vars in the Scorecard job!
+**Result:** PR CI can be green ✅, but merge to main fails ❌ if the workflow violates any of the three restrictions!
 
 **❌ WRONG - Global env section:**
 ```yaml
@@ -587,33 +592,56 @@ jobs:
           publish_results: true
 ```
 
-**✅ CORRECT - No env in Scorecard job, env in other jobs:**
+**❌ ALSO WRONG - Disallowed actions in Scorecard job:**
 ```yaml
 name: Build
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:  # ✅ OK - env in other jobs is fine
-      CI: true
-      DOTNET_NOLOGO: true
-    steps:
-      - uses: actions/checkout@v6
-  
   security-scan:
     runs-on: ubuntu-latest
-    # ✅ NO env section in this job
     steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5  # ❌ Not allowed in Scorecard job!
+      - run: dotnet list package --vulnerable
       - uses: ossf/scorecard-action@v2
         with:
           publish_results: true
 ```
 
+**✅ CORRECT - Separate jobs: one for vulnerability scan, one for Scorecard:**
+```yaml
+name: Build
+
+jobs:
+  vulnerability-scan:
+    runs-on: ubuntu-latest
+    env:  # ✅ OK - env in vulnerability scan job
+      CI: true
+      DOTNET_NOLOGO: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5  # ✅ OK here
+      - uses: actions/cache@v4  # ✅ OK here
+      - run: dotnet list package --vulnerable
+  
+  scorecard:
+    runs-on: ubuntu-latest
+    # ✅ NO env section
+    steps:
+      - uses: actions/checkout@v6  # ✅ Only checkout is allowed
+      - uses: ossf/scorecard-action@v2
+        with:
+          publish_results: true
+      - uses: github/codeql-action/upload-sarif@v3  # ✅ Upload is allowed
+```
+
 **Solution:** 
 1. Remove global `env` section from workflow level
-2. Add `env` sections to individual jobs that need them
-3. **Do NOT add `env` section to the job running `ossf/scorecard-action`**
-4. Environment variables are not needed for Scorecard scanning anyway
+2. **Split security scanning into TWO separate jobs:**
+   - `vulnerability-scan` job: Can use .NET setup, cache, env vars, etc.
+   - `scorecard` job: ONLY checkout + Scorecard action + SARIF upload
+3. The Scorecard job must be minimal - no setup actions, no cache, no env vars
+4. Only `actions/checkout` and `github/codeql-action/upload-sarif` are allowed in the Scorecard job
 
 **Alternative (not recommended):** Set `publish_results: false`, but this prevents your project's security score from being publicly visible on the OpenSSF Scorecard dashboard.
 
@@ -840,8 +868,9 @@ git --no-pager log --oneline --stat origin/main..HEAD
 # ✅ Option 4: Show only file names that changed
 git --no-pager diff --name-status origin/main...HEAD
 
-# ✅ Option 5: Limit output with head/tail
-git --no-pager diff origin/main...HEAD | head -n 100
+# ✅ Option 5: In PowerShell, use Select-Object instead of head (head is Unix-only)
+git --no-pager diff origin/main...HEAD | Select-Object -First 100
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -First 20
 ```
 
 **Why**: Git commands like `diff`, `log`, and `show` use a pager (usually `less` on Unix-like systems) by default. In PowerShell, this creates an interactive session that users may not know how to exit (typically requires pressing `q`). Always use `--no-pager` or pipe to `cat` for non-interactive output.
@@ -852,6 +881,41 @@ git --no-pager diff origin/main...HEAD | head -n 100
 - `git show`
 - `git blame`
 - Any git command with potentially large output
+
+---
+
+**❌ FAILED: Using Unix commands (head, tail) in PowerShell**
+
+```powershell
+# ❌ This fails in PowerShell:
+git --no-pager log --oneline --graph origin/main..HEAD | head -n 20
+```
+
+**Error**: 
+```
+head: The term 'head' is not recognized as a name of a cmdlet, function, script file, or executable program.
+```
+
+**✅ SOLUTION: Use PowerShell cmdlets instead of Unix commands**
+
+```powershell
+# ✅ PowerShell equivalent of head:
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -First 20
+
+# ✅ PowerShell equivalent of tail:
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -Last 20
+
+# ✅ PowerShell equivalent of head + tail (skip first N, take next M):
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -Skip 5 -First 10
+```
+
+**Why**: PowerShell is not a Unix shell. Commands like `head`, `tail`, `cat`, `grep` don't exist by default. Always use PowerShell cmdlets:
+- `head -n X` → `Select-Object -First X`
+- `tail -n X` → `Select-Object -Last X`
+- `grep pattern` → `Select-String -Pattern "pattern"`
+- `cat file` → `Get-Content file`
+
+**Remember**: The user's shell is **PowerShell** (`pwsh.exe`), not bash. Always verify commands work in PowerShell before running them.
 
 ---
 
