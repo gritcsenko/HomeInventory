@@ -868,8 +868,9 @@ git --no-pager log --oneline --stat origin/main..HEAD
 # ✅ Option 4: Show only file names that changed
 git --no-pager diff --name-status origin/main...HEAD
 
-# ✅ Option 5: Limit output with head/tail
-git --no-pager diff origin/main...HEAD | head -n 100
+# ✅ Option 5: In PowerShell, use Select-Object instead of head (head is Unix-only)
+git --no-pager diff origin/main...HEAD | Select-Object -First 100
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -First 20
 ```
 
 **Why**: Git commands like `diff`, `log`, and `show` use a pager (usually `less` on Unix-like systems) by default. In PowerShell, this creates an interactive session that users may not know how to exit (typically requires pressing `q`). Always use `--no-pager` or pipe to `cat` for non-interactive output.
@@ -880,6 +881,41 @@ git --no-pager diff origin/main...HEAD | head -n 100
 - `git show`
 - `git blame`
 - Any git command with potentially large output
+
+---
+
+**❌ FAILED: Using Unix commands (head, tail) in PowerShell**
+
+```powershell
+# ❌ This fails in PowerShell:
+git --no-pager log --oneline --graph origin/main..HEAD | head -n 20
+```
+
+**Error**: 
+```
+head: The term 'head' is not recognized as a name of a cmdlet, function, script file, or executable program.
+```
+
+**✅ SOLUTION: Use PowerShell cmdlets instead of Unix commands**
+
+```powershell
+# ✅ PowerShell equivalent of head:
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -First 20
+
+# ✅ PowerShell equivalent of tail:
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -Last 20
+
+# ✅ PowerShell equivalent of head + tail (skip first N, take next M):
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -Skip 5 -First 10
+```
+
+**Why**: PowerShell is not a Unix shell. Commands like `head`, `tail`, `cat`, `grep` don't exist by default. Always use PowerShell cmdlets:
+- `head -n X` → `Select-Object -First X`
+- `tail -n X` → `Select-Object -Last X`
+- `grep pattern` → `Select-String -Pattern "pattern"`
+- `cat file` → `Get-Content file`
+
+**Remember**: The user's shell is **PowerShell** (`pwsh.exe`), not bash. Always verify commands work in PowerShell before running them.
 
 ---
 
