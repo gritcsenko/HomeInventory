@@ -57,8 +57,21 @@
 - **Code edits that fail to compile or have logical errors**
 - **Hints about failed approaches during investigation**
 - **Corrections about test structure or assertion patterns**
+- **Corrections about output formatting or response style**
 
 **YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
+
+**CRITICAL OUTPUT FORMATTING RULES:**
+- ✅ **ALWAYS use Markdown syntax** for formatting (headers, lists, code blocks, tables, emphasis)
+- ❌ **NEVER use HTML tags** in responses (no `<table>`, `<tr>`, `<td>`, `<details>`, `<summary>`, etc.)
+- ✅ Use Markdown tables: `| Column | Column |` with `|---|---|` separator
+- ✅ Use Markdown code blocks: triple backticks with language identifier
+- ✅ Use Markdown headers: `#`, `##`, `###` for hierarchy
+- ✅ Use Markdown emphasis: `**bold**`, `*italic*`, `~~strikethrough~~`
+- ✅ Use Markdown lists: `-` or `*` for unordered, `1.` for ordered
+- ❌ **NEVER mix HTML and Markdown** - choose one (prefer Markdown)
+
+**Why:** HTML tags in chat responses create readability issues and may not render properly in all contexts. Markdown is the standard for documentation and chat interfaces.
 
 **CRITICAL: ALWAYS UPDATE INSTRUCTIONS - NO EXCEPTIONS**
 
@@ -74,6 +87,70 @@ When updating `copilot-instructions.md`:
 - ✅ **NEVER hesitate** to update instructions
 - ❌ **NEVER skip** updating instructions because it seems minor
 - ❌ **NEVER delay** updating instructions to "do it later"
+
+**CRITICAL: Order of Operations for Templates and Descriptions**
+- ✅ **ALWAYS update template FIRST** before creating description files
+- ✅ **ALWAYS verify template matches description** before delivering to user
+- ✅ **NEVER create description from old template** then modify template
+- ❌ **NEVER create description and template in wrong order** - causes mismatch
+
+**CRITICAL: Template Design - Separate Checkboxes from Text**
+- ✅ **Checkboxes are ONLY for yes/no** - never add explanations after checkbox items
+- ✅ **Text explanations go in dedicated sections** with clear labels
+- ✅ **Use "If no X, explain:" sections** for N/A cases that need explanation
+- ❌ **NEVER mix checkboxes with text** like "- [x] Item - N/A (explanation)"
+- ❌ **NEVER put explanations on same line as checkboxes**
+
+**Example - Wrong:**
+```markdown
+- [ ] Tests added/updated - N/A (no test changes)
+- [ ] Database migrations tested - N/A (no database)
+```
+
+**Example - Correct:**
+```markdown
+- [ ] Tests added/updated
+- [ ] Database migrations tested
+
+**If no test changes, explain:**
+
+
+**If no database changes, explain:**
+
+```
+
+**CRITICAL: DOD (Definition of Done) Design Principles**
+- ✅ **DOD items must be NON-NEGOTIABLE** - every PR must meet them
+- ✅ **NO optional DOD items** - if it's "(if applicable)", it shouldn't be in DOD
+- ✅ **DOD contains ONLY manual verification items** - CI cannot automate these
+- ✅ **CI-verified items do NOT belong in DOD** - build, tests, formatting, architecture, security scans, coverage are all CI-verified
+- ✅ **Explore CI workflows** to understand what's automated before writing DOD
+- ❌ **NEVER add "if applicable" to DOD items** - makes them optional, defeats purpose of DOD
+- ❌ **NEVER ask user to explain why they DIDN'T do something** - "If no X, explain" is nonsense
+
+**What belongs in DOD:**
+- Self-review of code changes
+- Confirmation changes solve the problem
+- Clear commit messages
+- Documentation updates
+- Database migration testing (only if migrations exist)
+- Dependency compatibility review (only if dependencies changed)
+- Breaking changes documentation (only if breaking changes exist)
+
+**What does NOT belong in DOD:**
+- Anything CI verifies automatically
+- Functionality testing (acceptance/integration tests verify this)
+- Security checks (CI analyzers verify this)
+- Code formatting (CI verifies this)
+- Architecture compliance (architecture tests verify this)
+- Test coverage (CI calculates this)
+
+**CRITICAL: Template Design - Separate Checkboxes from Text**
+- ✅ **Checkboxes are ONLY for yes/no** - never add explanations after checkbox items
+- ✅ **Text explanations go in dedicated sections** with clear labels
+- ✅ **Use "If no X, explain:" sections** for N/A cases that need explanation
+- ❌ **NEVER mix checkboxes with text** like "- [x] Item - N/A (explanation)"
+- ❌ **NEVER put explanations on same line as checkboxes**
 
 **Why this is critical:**
 - These instructions are the project's institutional memory
@@ -449,6 +526,34 @@ see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
 
 **Why it fails:** Global environment variables could potentially be used to manipulate Scorecard results, so the action enforces this restriction as a security measure.
 
+**❌ MISTAKE 4: Using env variables in OpenSSF Scorecard job**
+
+When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow has **TWO restrictions**:
+
+1. **NO global `env` or `defaults` sections** in the workflow
+2. **NO `env` section in the job that runs Scorecard**
+
+This is a security restriction documented at https://github.com/ossf/scorecard-action#workflow-restrictions.
+
+**Error encountered (November 2024-2025):**
+```
+# First error (global env):
+workflow verification failed: workflow contains global env vars or defaults, 
+see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
+
+# Second error (job-level env):
+workflow verification failed: scorecard job contains env vars, 
+see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
+```
+
+**Why it fails:** Global environment variables OR environment variables in the Scorecard job could potentially be used to manipulate Scorecard results, so the action enforces these restrictions as a security measure.
+
+**Critical Discovery (November 26, 2025):** The validation behaves **differently** for PRs vs main branch:
+- **PR builds (`pull_request` event):** Validation is **skipped or lighter** because publishing is disabled (PRs can't publish official scores)
+- **Main builds (`push` event):** **STRICT validation enforced** when attempting to publish results to public dashboard
+
+**Result:** PR CI can be green ✅, but merge to main fails ❌ if the workflow still has env vars in the Scorecard job!
+
 **❌ WRONG - Global env section:**
 ```yaml
 name: Build
@@ -456,50 +561,93 @@ name: Build
 env:
   CI: true
   DOTNET_NOLOGO: true
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
-  MINVERBUILDMETADATA: build.${{github.run_number}}
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-```
-
-**✅ CORRECT - Job-level env sections:**
-```yaml
-name: Build
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      CI: true
-      DOTNET_NOLOGO: true
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-      MINVERBUILDMETADATA: build.${{github.run_number}}
-    steps:
-      - uses: actions/checkout@v6
-  
   security-scan:
     runs-on: ubuntu-latest
-    env:
-      CI: true
-      DOTNET_NOLOGO: true
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-      MINVERBUILDMETADATA: build.${{github.run_number}}
     steps:
       - uses: ossf/scorecard-action@v2
         with:
           publish_results: true
 ```
 
-**Solution:** Move all environment variables from the workflow level to each individual job that needs them. This satisfies Scorecard's security requirements while maintaining all functionality.
+**❌ ALSO WRONG - Env in Scorecard job:**
+```yaml
+name: Build
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    env:  # ❌ This causes "scorecard job contains env vars" error
+      CI: true
+      DOTNET_NOLOGO: true
+    steps:
+      - uses: ossf/scorecard-action@v2
+        with:
+          publish_results: true
+```
+
+**✅ CORRECT - No env in Scorecard job, env in other jobs:**
+```yaml
+name: Build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:  # ✅ OK - env in other jobs is fine
+      CI: true
+      DOTNET_NOLOGO: true
+    steps:
+      - uses: actions/checkout@v6
+  
+  security-scan:
+    runs-on: ubuntu-latest
+    # ✅ NO env section in this job
+    steps:
+      - uses: ossf/scorecard-action@v2
+        with:
+          publish_results: true
+```
+
+**Solution:** 
+1. Remove global `env` section from workflow level
+2. Add `env` sections to individual jobs that need them
+3. **Do NOT add `env` section to the job running `ossf/scorecard-action`**
+4. Environment variables are not needed for Scorecard scanning anyway
 
 **Alternative (not recommended):** Set `publish_results: false`, but this prevents your project's security score from being publicly visible on the OpenSSF Scorecard dashboard.
+
+---
+
+**❌ CRITICAL GOTCHA: PR CI Green ✅ but Main CI Red ❌**
+
+**Scenario Discovered (November 26, 2025):**
+
+A PR at commit `1d51c5a` had **green CI** ✅  
+After merge to `main` at commit `f7a7a24`, the CI **failed** ❌ with the Scorecard error.
+
+**Why This Happens:**
+
+The OpenSSF Scorecard action has **conditional validation** based on the GitHub event type:
+
+| Context | Event Type | Publishing | Validation | Result |
+|---------|-----------|------------|------------|--------|
+| **Pull Request** | `pull_request` | ❌ Skipped (PRs can't publish official scores) | ⚠️ **Lighter or skipped** | ✅ **Passes** even with env vars |
+| **Push to Main** | `push` | ✅ **Attempts to publish** to public dashboard | 🔒 **STRICT enforcement** | ❌ **Fails** if env vars present |
+
+**Root Cause:**
+- PRs run Scorecard but **don't publish** → validation is lenient
+- Main branch runs Scorecard and **attempts to publish** → strict validation kicks in
+- If the workflow has `env` in the scorecard job, it only fails **after merge**
+
+**How to Avoid:**
+1. ✅ **Always test workflow changes** by pushing directly to a test branch (triggers `push` event)
+2. ✅ **Verify the security-scan job has NO `env` section** before merging
+3. ✅ **Check merge commits** - conflicts might reintroduce the env section
+4. ✅ **Run a manual workflow_dispatch** on PRs to trigger push-like validation
+
+**Prevention:**
+This is a **known gotcha** with conditional validation. The only way to catch it is to ensure strict validation runs on PRs too, or test the exact workflow that will run on main.
 
 ---
 
@@ -665,6 +813,45 @@ dotnet build 2>&1 | Select-String -Pattern "error"
 ```
 
 **Why**: PowerShell uses `Select-String`, not `grep`. Always use PowerShell cmdlets.
+
+---
+
+**❌ FAILED: git diff opens interactive pager that cannot be exited**
+
+```powershell
+# ❌ This command hangs and requires terminal session termination:
+git diff origin/main...HEAD
+```
+
+**Error**: The command opens an interactive pager (less/more) that displays output one page at a time. User cannot exit without knowing keyboard shortcuts, often requiring terminal session termination.
+
+**✅ SOLUTION: Disable pager or use alternative output methods**
+
+```powershell
+# ✅ Option 1: Disable pager with --no-pager
+git --no-pager diff origin/main...HEAD
+
+# ✅ Option 2: Pipe to cat to disable paging
+git diff origin/main...HEAD | cat
+
+# ✅ Option 3: Use log with patches for smaller output
+git --no-pager log --oneline --stat origin/main..HEAD
+
+# ✅ Option 4: Show only file names that changed
+git --no-pager diff --name-status origin/main...HEAD
+
+# ✅ Option 5: Limit output with head/tail
+git --no-pager diff origin/main...HEAD | head -n 100
+```
+
+**Why**: Git commands like `diff`, `log`, and `show` use a pager (usually `less` on Unix-like systems) by default. In PowerShell, this creates an interactive session that users may not know how to exit (typically requires pressing `q`). Always use `--no-pager` or pipe to `cat` for non-interactive output.
+
+**Commands that need --no-pager:**
+- `git diff`
+- `git log`
+- `git show`
+- `git blame`
+- Any git command with potentially large output
 
 ---
 
