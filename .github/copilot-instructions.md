@@ -57,8 +57,21 @@
 - **Code edits that fail to compile or have logical errors**
 - **Hints about failed approaches during investigation**
 - **Corrections about test structure or assertion patterns**
+- **Corrections about output formatting or response style**
 
 **YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
+
+**CRITICAL OUTPUT FORMATTING RULES:**
+- ✅ **ALWAYS use Markdown syntax** for formatting (headers, lists, code blocks, tables, emphasis)
+- ❌ **NEVER use HTML tags** in responses (no `<table>`, `<tr>`, `<td>`, `<details>`, `<summary>`, etc.)
+- ✅ Use Markdown tables: `| Column | Column |` with `|---|---|` separator
+- ✅ Use Markdown code blocks: triple backticks with language identifier
+- ✅ Use Markdown headers: `#`, `##`, `###` for hierarchy
+- ✅ Use Markdown emphasis: `**bold**`, `*italic*`, `~~strikethrough~~`
+- ✅ Use Markdown lists: `-` or `*` for unordered, `1.` for ordered
+- ❌ **NEVER mix HTML and Markdown** - choose one (prefer Markdown)
+
+**Why:** HTML tags in chat responses create readability issues and may not render properly in all contexts. Markdown is the standard for documentation and chat interfaces.
 
 **CRITICAL: ALWAYS UPDATE INSTRUCTIONS - NO EXCEPTIONS**
 
@@ -74,6 +87,88 @@ When updating `copilot-instructions.md`:
 - ✅ **NEVER hesitate** to update instructions
 - ❌ **NEVER skip** updating instructions because it seems minor
 - ❌ **NEVER delay** updating instructions to "do it later"
+
+**CRITICAL: Order of Operations for Templates and Descriptions**
+- ✅ **ALWAYS update template FIRST** before creating description files
+- ✅ **ALWAYS verify template matches description** before delivering to user
+- ✅ **NEVER create description from old template** then modify template
+- ❌ **NEVER create description and template in wrong order** - causes mismatch
+
+**CRITICAL: Template Design - Separate Checkboxes from Text**
+- ✅ **Checkboxes are ONLY for yes/no** - never add explanations after checkbox items
+- ✅ **Text explanations go in dedicated sections** with clear labels
+- ✅ **Use "If no X, explain:" sections** for N/A cases that need explanation
+- ❌ **NEVER mix checkboxes with text** like "- [x] Item - N/A (explanation)"
+- ❌ **NEVER put explanations on same line as checkboxes**
+
+**Example - Wrong:**
+```markdown
+- [ ] Tests added/updated - N/A (no test changes)
+- [ ] Database migrations tested - N/A (no database)
+```
+
+**Example - Correct:**
+```markdown
+- [ ] Tests added/updated
+- [ ] Database migrations tested
+
+**If no test changes, explain:**
+
+
+**If no database changes, explain:**
+
+```
+
+**CRITICAL: DOD (Definition of Done) Design Principles**
+- ✅ **DOD items must be NON-NEGOTIABLE** - every PR must meet them
+- ✅ **NO optional DOD items** - if it's "(if applicable)", it shouldn't be in DOD
+- ✅ **DOD contains ONLY manual verification items** - CI cannot automate these
+- ✅ **CI-verified items do NOT belong in DOD** - build, tests, formatting, architecture, security scans, coverage are all CI-verified
+- ✅ **Explore CI workflows** to understand what's automated before writing DOD
+- ❌ **NEVER add "if applicable" to DOD items** - makes them optional, defeats purpose of DOD
+- ❌ **NEVER ask user to explain why they DIDN'T do something** - "If no X, explain" is nonsense
+
+**What belongs in DOD:**
+- Self-review of code changes
+- Confirmation changes solve the problem
+- Clear commit messages
+- Documentation updates
+- Database migration testing (only if migrations exist)
+- Dependency compatibility review (only if dependencies changed)
+- Breaking changes documentation (only if breaking changes exist)
+
+**What does NOT belong in DOD:**
+- Anything CI verifies automatically
+- Functionality testing (acceptance/integration tests verify this)
+- Security checks (CI analyzers verify this)
+- Code formatting (CI verifies this)
+- Architecture compliance (architecture tests verify this)
+- Test coverage (CI calculates this)
+
+**CRITICAL: Template Design - Separate Checkboxes from Text**
+- ✅ **Checkboxes are ONLY for yes/no** - never add explanations after checkbox items
+- ✅ **Text explanations go in dedicated sections** with clear labels
+- ✅ **Use "If no X, explain:" sections** for N/A cases that need explanation
+- ❌ **NEVER mix checkboxes with text** like "- [x] Item - N/A (explanation)"
+- ❌ **NEVER put explanations on same line as checkboxes**
+
+**Example - Wrong:**
+```markdown
+- [ ] Tests added/updated - N/A (no test changes)
+- [ ] Database migrations tested - N/A (no database)
+```
+
+**Example - Correct:**
+```markdown
+- [ ] Tests added/updated
+- [ ] Database migrations tested
+
+**If no test changes, explain:**
+
+
+**If no database changes, explain:**
+
+```
 
 **Why this is critical:**
 - These instructions are the project's institutional memory
@@ -736,6 +831,45 @@ dotnet build 2>&1 | Select-String -Pattern "error"
 ```
 
 **Why**: PowerShell uses `Select-String`, not `grep`. Always use PowerShell cmdlets.
+
+---
+
+**❌ FAILED: git diff opens interactive pager that cannot be exited**
+
+```powershell
+# ❌ This command hangs and requires terminal session termination:
+git diff origin/main...HEAD
+```
+
+**Error**: The command opens an interactive pager (less/more) that displays output one page at a time. User cannot exit without knowing keyboard shortcuts, often requiring terminal session termination.
+
+**✅ SOLUTION: Disable pager or use alternative output methods**
+
+```powershell
+# ✅ Option 1: Disable pager with --no-pager
+git --no-pager diff origin/main...HEAD
+
+# ✅ Option 2: Pipe to cat to disable paging
+git diff origin/main...HEAD | cat
+
+# ✅ Option 3: Use log with patches for smaller output
+git --no-pager log --oneline --stat origin/main..HEAD
+
+# ✅ Option 4: Show only file names that changed
+git --no-pager diff --name-status origin/main...HEAD
+
+# ✅ Option 5: Limit output with head/tail
+git --no-pager diff origin/main...HEAD | head -n 100
+```
+
+**Why**: Git commands like `diff`, `log`, and `show` use a pager (usually `less` on Unix-like systems) by default. In PowerShell, this creates an interactive session that users may not know how to exit (typically requires pressing `q`). Always use `--no-pager` or pipe to `cat` for non-interactive output.
+
+**Commands that need --no-pager:**
+- `git diff`
+- `git log`
+- `git show`
+- `git blame`
+- Any git command with potentially large output
 
 ---
 
