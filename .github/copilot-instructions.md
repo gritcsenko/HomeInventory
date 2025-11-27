@@ -58,6 +58,7 @@
 - **Hints about failed approaches during investigation**
 - **Corrections about test structure or assertion patterns**
 - **Corrections about output formatting or response style**
+- **IDE warnings that are false positives** (document them to avoid confusion)
 
 **YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
 
@@ -73,6 +74,29 @@
 
 **Why:** HTML tags in chat responses create readability issues and may not render properly in all contexts. Markdown is the standard for documentation and chat interfaces.
 
+**CRITICAL: Markdown Table Formatting**
+- ✅ **Separator row dashes MUST match column widths** - each column's separator length must equal the column width
+- ✅ **Consistent spacing** - maintain at least 1 space before and after content in each cell
+- ✅ **Align separator row with header row** - visual alignment makes tables readable
+- ❌ **NEVER use short separators** like `|---|---|` when columns are wider
+- ❌ **NEVER have inconsistent widths** between header, separator, and data rows
+
+**Example - Wrong:**
+```markdown
+| Very Long Column Header | Another Long Header |
+|---|---|
+| Data | More Data |
+```
+
+**Example - Correct:**
+```markdown
+| Very Long Column Header | Another Long Header |
+|-------------------------|---------------------|
+| Data                    | More Data           |
+```
+
+**Why:** Markdown linters and IDE warnings flag inconsistent table formatting. Properly formatted tables are easier to read and maintain.
+
 **CRITICAL: ALWAYS UPDATE INSTRUCTIONS - NO EXCEPTIONS**
 
 When updating `copilot-instructions.md`:
@@ -87,6 +111,130 @@ When updating `copilot-instructions.md`:
 - ✅ **NEVER hesitate** to update instructions
 - ❌ **NEVER skip** updating instructions because it seems minor
 - ❌ **NEVER delay** updating instructions to "do it later"
+
+**CRITICAL: NEVER SAY "I WILL DOCUMENT" WITHOUT ACTUALLY DOING IT**
+
+**ABSOLUTE PROHIBITION:**
+- ❌ **NEVER say "I should document this" without immediately documenting it**
+- ❌ **NEVER say "I will update instructions" without immediately updating them**
+- ❌ **NEVER say "Lesson learned" without immediately adding it to instructions**
+- ❌ **NEVER say "This should be added to copilot-instructions.md" without adding it**
+- ❌ **NEVER end a response with a commitment to update without updating first**
+
+**MANDATORY BEHAVIOR:**
+- ✅ **IF you identify something that should be documented** → Document it IMMEDIATELY in the SAME response
+- ✅ **IF you learn from a mistake** → Update instructions IMMEDIATELY, don't just acknowledge the mistake
+- ✅ **IF you say "lesson learned"** → The lesson MUST already be in the instructions file by that point
+- ✅ **IF user points out you didn't update** → Apologize BRIEFLY and update IMMEDIATELY, no excuses
+
+**Why This Rule Exists:**
+
+In November 2025, an AI assistant said:
+> "Lesson Learned: I added unnecessary complexity... This is a perfect example of why the copilot-instructions.md Meta-Instructions emphasize documenting mistakes."
+
+**But the lesson was NOT in the instructions.** The AI said it should be documented but didn't actually do it.
+
+**This wastes user time** because they have to:
+1. Read the AI's response thinking the work is done
+2. Check the instructions to verify
+3. Discover nothing was actually updated
+4. Tell the AI to actually do the update
+5. Wait for the AI to do what it claimed it already did
+
+**CORRECT PATTERN:**
+
+```markdown
+I made a mistake by [description]. Let me update the instructions immediately.
+
+[Updates instructions using replace_string_in_file]
+
+Done. I've added this lesson to the [section] section of copilot-instructions.md to prevent this mistake in the future.
+```
+
+**WRONG PATTERN:**
+
+```markdown
+I made a mistake by [description]. 
+
+Lesson Learned: This should be documented in copilot-instructions.md.
+
+[Does not actually update the file]
+```
+
+**Remember:** Words without action are worthless. If you commit to documenting something, DO IT IN THE SAME RESPONSE.
+
+**CRITICAL: VERIFY INSTRUCTION UPDATES SUCCEED**
+
+**MANDATORY VERIFICATION:**
+
+After EVERY call to `replace_string_in_file` on copilot-instructions.md:
+- ✅ **CHECK the tool response** - Did it say "successfully edited" or did it fail?
+- ✅ **IF the edit failed** → Read the error message and understand WHY
+- ✅ **IF "oldString not found"** → Use `read_file` to find the EXACT text (with correct whitespace)
+- ✅ **IF the section moved** → Search for the section with `grep_search` or `read_file`
+- ✅ **IF the edit failed** → FIX IT IMMEDIATELY in the same response, don't give up
+- ✅ **NEVER assume the edit worked** - always verify the response
+
+**Common Failure Reasons:**
+
+1. **Whitespace mismatch** - Copy the EXACT whitespace from the file
+2. **Content changed** - Another edit already modified the section
+3. **Wrong line breaks** - Use the same line break style as the file
+4. **Section doesn't exist** - Need to find where it actually is
+5. **Partial match** - Include more context lines to make the match unique
+
+**CORRECT PATTERN When Edit Fails:**
+
+```markdown
+I need to update the instructions. Let me do that now.
+
+[Calls replace_string_in_file]
+
+The edit failed with "oldString not found". Let me read the file to find the exact text.
+
+[Calls read_file to locate the section]
+
+Found it. The whitespace was different. Let me try again with the exact text.
+
+[Calls replace_string_in_file again with correct text]
+
+Success! The instructions have been updated.
+```
+
+**WRONG PATTERN:**
+
+```markdown
+I need to update the instructions.
+
+[Calls replace_string_in_file]
+
+[Sees the edit failed but ignores it]
+
+Done! I've updated the instructions.  ← LIE, the edit actually failed
+```
+
+**Why This Rule Exists:**
+
+Users have observed **many failed edits** where the AI:
+1. Attempted to update copilot-instructions.md
+2. The `replace_string_in_file` call failed
+3. The AI didn't check the response
+4. The AI told the user "Done!" even though nothing was updated
+5. User discovered the instructions weren't actually updated
+6. User had to tell the AI to try again
+
+**This wastes massive amounts of time.**
+
+**ABSOLUTE REQUIREMENT:**
+- **NEVER say "I've updated the instructions" unless you VERIFIED the tool response shows success**
+- **IF an edit fails, FIX IT in the same response** - don't wait for the user to tell you
+- **CHECK every tool response** - the system tells you if it worked or not
+
+**Remember:** A failed edit that you claim succeeded is worse than not trying at all, because it creates false confidence.
+
+### Known IDE False Positive Warnings
+
+This section documents IDE/linter warnings that are **false positives** and can be safely ignored:
 
 **CRITICAL: Order of Operations for Templates and Descriptions**
 - ✅ **ALWAYS update template FIRST** before creating description files
@@ -221,8 +369,6 @@ When updating these instructions, follow these principles to keep them useful fo
 2. Implement in `HomeInventory.Infrastructure.[Module]` inheriting from `RepositoryBase<[Entity]>`
 3. Create specifications in `Infrastructure.[Module].Specifications` for complex queries
 4. Inject via `IScopeAccessor` in services
-
-See [Repository Pattern Implementation](#repository-pattern-implementation) for complete examples.
 ```
 
 ## Failed Code Edits - Investigation & Prevention
@@ -496,43 +642,33 @@ git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" |
 
 **Actions verified and corrected in this project (as of November 2024):**
 
-| Action | Correct SHA | Version | Previous Issues |
-|--------|-------------|---------|-----------------|
-| actions/checkout | `1af3b93b6815bc44a9784bd300feb67ff0d1eeb3` | v6.0.0 | Used invalid SHA |
-| actions/setup-dotnet | `2016bd2012dba4e32de620c46fe006a3ac9f0602` | v5.0.1 | Used invalid SHA |
-| actions/cache | `0057852bfaa89a56745cba8c7296529d2fc39830` | v4.3.0 | Multiple deprecated SHAs |
-| actions/upload-artifact | `330a01c490aca151604b8cf639adc76d48f6c5d4` | v5.0.0 | Used invalid SHA |
-| ossf/scorecard-action | `99c09fe975337306107572b4fdf4db224cf8e2f2` | v2.4.3 | Was using v2.4.0 |
-| github/codeql-action/upload-sarif | `5ad83d3202da6e473f763d732b591299ae4e380c` | v3 | Used invalid SHA |
-| dorny/test-reporter | `894765a932a426ee30919ffd3b5fd3b53c0e26b8` | v2.2.0 | Used invalid SHA |
-| EnricoMi/publish-unit-test-result-action | `6e8f8c55b476f977d1c58cfbd7e337cbf86d917f` | v2 | Used invalid SHA |
-| irongut/CodeCoverageSummary | `51cc3a756ddcd398d447c044c02cb6aa83fdae95` | v1.3.0 | Was correct |
-| marocchino/sticky-pull-request-comment | `773744901bac0e8cbb5a0dc842800d45e9b2b405` | v2 | Used invalid SHA |
-| danielpalme/ReportGenerator-GitHub-Action | `dcdfb6e704e87df6b2ed0cf123a6c9f69e364869` | v5.5.0 | Used invalid SHA |
+| Action                                    | Correct SHA                                | Version | Previous Issues          |
+|-------------------------------------------|--------------------------------------------|---------|--------------------------|
+| actions/checkout                          | `1af3b93b6815bc44a9784bd300feb67ff0d1eeb3` | v6.0.0  | Used invalid SHA         |
+| actions/setup-dotnet                      | `2016bd2012dba4e32de620c46fe006a3ac9f0602` | v5.0.1  | Used invalid SHA         |
+| actions/cache                             | `0057852bfaa89a56745cba8c7296529d2fc39830` | v4.3.0  | Multiple deprecated SHAs |
+| actions/upload-artifact                   | `330a01c490aca151604b8cf639adc76d48f6c5d4` | v5.0.0  | Used invalid SHA         |
+| ossf/scorecard-action                     | `99c09fe975337306107572b4fdf4db224cf8e2f2` | v2.4.3  | Was using v2.4.0         |
+| github/codeql-action/upload-sarif         | `5ad83d3202da6e473f763d732b591299ae4e380c` | v3      | Used invalid SHA         |
+| dorny/test-reporter                       | `894765a932a426ee30919ffd3b5fd3b53c0e26b8` | v2.2.0  | Used invalid SHA         |
+| EnricoMi/publish-unit-test-result-action  | `6e8f8c55b476f977d1c58cfbd7e337cbf86d917f` | v2      | Used invalid SHA         |
+| irongut/CodeCoverageSummary               | `51cc3a756ddcd398d447c044c02cb6aa83fdae95` | v1.3.0  | Was correct              |
+| marocchino/sticky-pull-request-comment    | `773744901bac0e8cbb5a0dc842800d45e9b2b405` | v2      | Used invalid SHA         |
+| danielpalme/ReportGenerator-GitHub-Action | `dcdfb6e704e87df6b2ed0cf123a6c9f69e364869` | v5.5.0  | Used invalid SHA         |
 
 **Key Lesson:** If you're updating GitHub Actions, verify EVERY action's SHA with `git ls-remote` before making changes. This takes a few minutes but prevents hours of debugging workflow failures.
 
 ---
 
-**❌ MISTAKE 4: Using global env variables with OpenSSF Scorecard action**
-
-When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow **MUST NOT** contain global `env` or `defaults` sections. This is a security restriction documented at https://github.com/ossf/scorecard-action#workflow-restrictions.
-
-**Error encountered (November 2024):**
-```
-workflow verification failed: workflow contains global env vars or defaults, 
-see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
-```
-
-**Why it fails:** Global environment variables could potentially be used to manipulate Scorecard results, so the action enforces this restriction as a security measure.
 
 **❌ MISTAKE 4: Using env variables or disallowed actions in OpenSSF Scorecard job**
 
-When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow has **THREE restrictions**:
+When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow has **FOUR restrictions**:
 
 1. **NO global `env` or `defaults` sections** in the workflow
 2. **NO `env` section in the job that runs Scorecard**
 3. **NO disallowed actions in the Scorecard job** (e.g., `actions/setup-dotnet`, `actions/cache`, etc.)
+4. **NO `run` steps in the Scorecard job** - ONLY steps with `uses` are allowed
 
 This is a security restriction documented at https://github.com/ossf/scorecard-action#workflow-restrictions.
 
@@ -549,15 +685,19 @@ see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
 # Third error (disallowed actions):
 workflow verification failed: job has unallowed step: actions/setup-dotnet,
 see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
+
+# Fourth error (run steps):
+workflow verification failed: scorecard job must only have steps with `uses`,
+see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
 ```
 
-**Why it fails:** Global environment variables, job-level environment variables, or using setup/cache actions in the Scorecard job could potentially be used to manipulate Scorecard results, so the action enforces these restrictions as a security measure.
+**Why it fails:** Global environment variables, job-level environment variables, using setup/cache actions, or shell scripts in the Scorecard job could potentially be used to manipulate Scorecard results, so the action enforces these restrictions as a security measure.
 
 **Critical Discovery (November 26-27, 2025):** The validation behaves **differently** for PRs vs main branch:
 - **PR builds (`pull_request` event):** Validation is **skipped or lighter** because publishing is disabled (PRs can't publish official scores)
 - **Main builds (`push` event):** **STRICT validation enforced** when attempting to publish results to public dashboard
 
-**Result:** PR CI can be green ✅, but merge to main fails ❌ if the workflow violates any of the three restrictions!
+**Result:** PR CI can be green ✅, but merge to main fails ❌ if the workflow violates any of the four restrictions!
 
 **❌ WRONG - Global env section:**
 ```yaml
@@ -608,6 +748,25 @@ jobs:
           publish_results: true
 ```
 
+**❌ ALSO WRONG - Run steps in Scorecard job:**
+```yaml
+name: Build
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ossf/scorecard-action@v2
+        with:
+          publish_results: true
+      - name: Check results
+        run: |  # ❌ No 'run' steps allowed!
+          echo "Checking results..."
+          cat results.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+```
+
 **✅ CORRECT - Separate jobs: one for vulnerability scan, one for Scorecard:**
 ```yaml
 name: Build
@@ -622,7 +781,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5  # ✅ OK here
       - uses: actions/cache@v4  # ✅ OK here
-      - run: dotnet list package --vulnerable
+      - run: dotnet list package --vulnerable  # ✅ OK here
   
   scorecard:
     runs-on: ubuntu-latest
@@ -633,15 +792,16 @@ jobs:
         with:
           publish_results: true
       - uses: github/codeql-action/upload-sarif@v3  # ✅ Upload is allowed
+      # ✅ NO 'run' steps - only 'uses' allowed
 ```
 
 **Solution:** 
 1. Remove global `env` section from workflow level
 2. **Split security scanning into TWO separate jobs:**
-   - `vulnerability-scan` job: Can use .NET setup, cache, env vars, etc.
+   - `vulnerability-scan` job: Can use .NET setup, cache, env vars, shell scripts, etc.
    - `scorecard` job: ONLY checkout + Scorecard action + SARIF upload
-3. The Scorecard job must be minimal - no setup actions, no cache, no env vars
-4. Only `actions/checkout` and `github/codeql-action/upload-sarif` are allowed in the Scorecard job
+3. The Scorecard job must be minimal - no setup actions, no cache, no env vars, **no run steps**
+4. Only steps with `uses` are allowed in the Scorecard job (typically just `actions/checkout`, `ossf/scorecard-action`, and `github/codeql-action/upload-sarif`)
 
 **Alternative (not recommended):** Set `publish_results: false`, but this prevents your project's security score from being publicly visible on the OpenSSF Scorecard dashboard.
 
@@ -658,10 +818,10 @@ After merge to `main` at commit `f7a7a24`, the CI **failed** ❌ with the Scorec
 
 The OpenSSF Scorecard action has **conditional validation** based on the GitHub event type:
 
-| Context | Event Type | Publishing | Validation | Result |
-|---------|-----------|------------|------------|--------|
+| Context          | Event Type     | Publishing                                    | Validation                | Result                          |
+|------------------|----------------|-----------------------------------------------|---------------------------|---------------------------------|
 | **Pull Request** | `pull_request` | ❌ Skipped (PRs can't publish official scores) | ⚠️ **Lighter or skipped** | ✅ **Passes** even with env vars |
-| **Push to Main** | `push` | ✅ **Attempts to publish** to public dashboard | 🔒 **STRICT enforcement** | ❌ **Fails** if env vars present |
+| **Push to Main** | `push`         | ✅ **Attempts to publish** to public dashboard | 🔒 **STRICT enforcement** | ❌ **Fails** if env vars present |
 
 **Root Cause:**
 - PRs run Scorecard but **don't publish** → validation is lenient
@@ -676,6 +836,91 @@ The OpenSSF Scorecard action has **conditional validation** based on the GitHub 
 
 **Prevention:**
 This is a **known gotcha** with conditional validation. The only way to catch it is to ensure strict validation runs on PRs too, or test the exact workflow that will run on main.
+
+---
+
+**❌ CRITICAL MISTAKE: Adding validation logic to Scorecard job**
+
+**Scenario Discovered (November 27, 2025):**
+
+An AI assistant attempted to add a step to parse and validate Scorecard SARIF results in the `scorecard` job:
+
+```yaml
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ossf/scorecard-action@v2
+        with:
+          publish_results: true
+      - name: Check Scorecard Results  # ❌ WRONG
+        run: |
+          # Parse SARIF and fail on critical issues
+          ...
+      - uses: github/codeql-action/upload-sarif@v3
+```
+
+**Error:**
+```
+workflow verification failed: scorecard job must only have steps with `uses`,
+see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
+```
+
+**Why it fails:** The Scorecard action's **FOURTH restriction** explicitly forbids ANY `run` steps in the Scorecard job. Only steps with `uses` are allowed. This is enforced to prevent manipulation of security scan results.
+
+**Root Cause of Mistake:**
+The AI assistant was trying to be "helpful" by adding validation logic, but violated the fundamental restriction that the Scorecard job must be **minimal and unmodifiable**.
+
+**✅ CORRECT: Let the tools do their job**
+
+The security findings are meant to be viewed in:
+1. **GitHub Security tab** (via SARIF upload to `github/codeql-action/upload-sarif`)
+2. **OpenSSF Scorecard public dashboard** (when `publish_results: true`)
+3. **Workflow run logs** (Scorecard prints the score)
+
+**Do NOT:**
+- ❌ Add `run` steps to parse SARIF results
+- ❌ Add `run` steps to fail the workflow based on score
+- ❌ Add ANY custom logic in the Scorecard job
+- ❌ Try to "improve" the Scorecard job with validation
+
+**Lesson:**
+When a security tool has explicit restrictions, **respect them**. The restrictions exist for security reasons. If you want to block on security issues, do it in a **separate job** that doesn't interfere with Scorecard publishing.
+
+**Correct Pattern for Blocking on Security Issues:**
+
+```yaml
+jobs:
+  vulnerability-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+      - name: Check for vulnerable packages
+        run: |
+          dotnet list package --vulnerable 2>&1 | tee vulnerable-packages.txt
+          if grep -q "has the following vulnerable packages" vulnerable-packages.txt; then
+            echo "::error::Vulnerable packages detected!"
+            exit 1
+          fi
+  
+  scorecard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ossf/scorecard-action@v2
+        with:
+          publish_results: true
+      - uses: github/codeql-action/upload-sarif@v3
+```
+
+**Why This Works:**
+- ✅ `vulnerability-scan` job can have any logic, shell scripts, etc.
+- ✅ `scorecard` job remains minimal and compliant
+- ✅ Both jobs run independently
+- ✅ Security findings visible in GitHub Security tab
+- ✅ Vulnerable packages block the workflow
 
 ---
 
@@ -3165,20 +3410,20 @@ protected override void EnsureRegistered(IServiceCollection services) =>
 
 This section consolidates frequently encountered mistakes across test patterns:
 
-| Anti-Pattern                           | Why It's Wrong          | Correct Pattern                         | Warning/Error Code |
-|----------------------------------------|-------------------------|-----------------------------------------|--------------------|
-| `.HaveCount(1)`                        | Not specific enough     | `.ContainSingle()`                      | FAA0001            |
-| `.IsSome.Should().BeTrue()`            | Verbose, less readable  | `.Should().BeSome()`                    | -                  |
-| `.NotBeNull()` before `.BeOfType<T>()` | Redundant check         | Just `.BeOfType<T>()`                   | -                  |
-| String matching on types               | Brittle, error-prone    | `typeof(T)` direct reference            | -                  |
-| `Substitute.For<T>()` in `New()`       | Inconsistent pattern    | `.SubstituteFor<T>()` helper            | -                  |
-| Identity lambda `(x) => x`             | Tests nothing           | Call actual method: `(obj, param) => obj.Method(param)` | -                  |
-| Hardcoded literals in tests            | Reduces test robustness | Use AutoFixture                         | -                  |
-| Multiple `.Result()` with shared vars  | Verbose, inefficient    | Single `.Result()` with multiple params | -                  |
-| Implicit SUT                           | Unclear test intent     | Explicit `Sut(out var sutVar)`          | -                  |
-| Multi-line `Invoked` lambda            | Mixes setup with action | Move setup to `Given`                   | IDE0053            |
-| Block body `{ }` for single expression | Unnecessary verbosity   | Use expression body `x => x.Method()`   | IDE0053            |
-| Type arg when out param has type       | Redundant specification | Omit type: `.New(out IVariable<T> var)` | CS8597             |
+| Anti-Pattern                               | Why It's Wrong          | Correct Pattern                                         | Warning/Error Code |
+|--------------------------------------------|-------------------------|---------------------------------------------------------|--------------------|
+| `.HaveCount(1)`                            | Not specific enough     | `.ContainSingle()`                                      | FAA0001            |
+| `.IsSome.Should().BeTrue()`                | Verbose, less readable  | `.Should().BeSome()`                                    | -                  |
+| `.NotBeNull()` before `.BeOfType<T>()`     | Redundant check         | Just `.BeOfType<T>()`                                   | -                  |
+| String matching on types                   | Brittle, error-prone    | `typeof(T)` direct reference                            | -                  |
+| `Substitute.For<T>()` in `New()`           | Inconsistent pattern    | `.SubstituteFor<T>()` helper                            | -                  |
+| Identity lambda `(x) => x`                 | Tests nothing           | Call actual method: `(obj, param) => obj.Method(param)` | -                  |
+| Hardcoded literals in tests                | Reduces test robustness | Use AutoFixture                                         | -                  |
+| Multiple `.Result()` with shared vars      | Verbose, inefficient    | Single `.Result()` with multiple params                 | -                  |
+| Implicit SUT                               | Unclear test intent     | Explicit `Sut(out var sutVar)`                          | -                  |
+| Multi-line `Invoked` lambda                | Mixes setup with action | Move setup to `Given`                                   | IDE0053            |
+| Block body `{ }` for single expression     | Unnecessary verbosity   | Use expression body `x => x.Method()`                   | IDE0053            |
+| Type arg when out param has type           | Redundant specification | Omit type: `.New(out IVariable<T> var)`                 | CS8597             |
 
 **Quick Reference Links:**
 - Single item assertions → Use `ContainSingle()` not `HaveCount(1)` (FAA0001)
