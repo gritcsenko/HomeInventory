@@ -75,12 +75,6 @@ jobs:
       actions: read
       id-token: write
     runs-on: ubuntu-latest
-    env:
-      CI: true
-      DOTNET_NOLOGO: true
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-      MINVERBUILDMETADATA: build.${{github.run_number}}
     steps:
       - name: "Checkout"
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
