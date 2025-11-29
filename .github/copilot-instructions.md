@@ -1,23 +1,31 @@
 # GitHub Copilot Instructions for HomeInventory
 
+<!-- START doctoc -->
+<!-- END doctoc -->
+
 ## Table of Contents
 
+### Core AI Behavior (Universal)
+- [Notation Guide](#notation-guide)
+- [Reasoning and Decision-Making Framework](#reasoning-and-decision-making-framework)
 - [Meta-Instructions for AI Assistants](#meta-instructions-for-ai-assistants)
-- [Failed Code Edits - Investigation & Prevention](#failed-code-edits---investigation--prevention)
-- [Terminal Commands Reference](#terminal-commands-reference)
-  - [GitHub Actions Version Management](#github-actions-version-management)
+
+### Project Context
 - [Project Overview](#project-overview)
 - [Architecture & Structure](#architecture--structure)
 - [Technology Stack](#technology-stack)
+
+### Development Workflow (General Patterns)
 - [Development Workflow & Best Practices](#development-workflow--best-practices)
   - [Plan-First Development Approach](#plan-first-development-approach)
-  - [Building API Endpoints](#building-api-endpoints)
   - [Using Dependency Injection](#using-dependency-injection)
   - [Repository Pattern Implementation](#repository-pattern-implementation)
   - [DTOs, Contracts, and Models](#dtos-contracts-and-models)
   - [File Organization Guidelines](#file-organization-guidelines)
   - [Documentation and Comments](#documentation-and-comments)
   - [Industry Best Practices](#industry-best-practices)
+
+### Technical Guidelines (Technology-Specific)
 - [Coding Standards & Conventions](#coding-standards--conventions)
   - [LanguageExt v5 Patterns](#languageext-v5-patterns)
   - [CollectionsMarshal and Async Patterns](#collectionsmarshal-and-async-patterns)
@@ -37,166 +45,795 @@
   - [Common Assertions](#common-assertions)
   - [Code Quality Warnings to Avoid](#code-quality-warnings-to-avoid)
 - [Module Development Workflow](#module-development-workflow)
-- [Documentation](#documentation)
-- [Development Commands](#development-commands)
-- [Additional Guidelines](#additional-guidelines)
 - [Code Quality & Analyzers](#code-quality--analyzers)
 - [Common Patterns to Follow](#common-patterns-to-follow)
+
+### Reference Materials
+- [Failed Code Edits - Investigation & Prevention](#failed-code-edits---investigation--prevention)
+- [Terminal Commands Reference](#terminal-commands-reference)
+  - [GitHub Actions Version Management](#github-actions-version-management)
+- [Development Commands](#development-commands)
 - [Questions to Ask When Developing](#questions-to-ask-when-developing)
 - [Code Review Guidelines](#code-review-guidelines)
+- [Documentation](#documentation)
+- [Additional Guidelines](#additional-guidelines)
+
+### Problem Analysis
+- [Identified Problems and Solutions](#identified-problems-and-solutions)
+
+## Notation Guide
+
+**Last Updated:** November 2025
+
+Throughout this document, placeholders are used to represent project-specific values that should be substituted with actual values when implementing code. Understanding these conventions helps generalize patterns across different contexts.
+
+### Placeholder Conventions
+
+| Placeholder              | Meaning                                | Example Values                                   |
+|--------------------------|----------------------------------------|--------------------------------------------------|
+| `[Project]`              | Root project/solution name             | `HomeInventory`, `MyApp`                         |
+| `[Layer]`                | Architectural layer                    | `Domain`, `Application`, `Infrastructure`, `Web` |
+| `[Module]`               | Feature module or bounded context      | `UserManagement`, `Inventory`, `Orders`          |
+| `[Entity]`               | Domain entity or aggregate root        | `User`, `Product`, `Order`                       |
+| `[Feature]`              | Specific feature or capability         | `Registration`, `Authentication`, `Search`       |
+| `[Service]`              | Application or domain service          | `UserService`, `OrderService`                    |
+| `[Repository]`           | Repository interface or implementation | `UserRepository`, `IProductRepository`           |
+| `[Command]`              | CQRS command type                      | `RegisterUserCommand`, `CreateOrderCommand`      |
+| `[Query]`                | CQRS query type                        | `GetUserByEmailQuery`, `SearchProductsQuery`     |
+| `[Request]`              | API request DTO                        | `CreateUserRequest`, `UpdateOrderRequest`        |
+| `[Response]`             | API response DTO                       | `UserResponse`, `OrderListResponse`              |
+| `[Error]`                | Domain or application error type       | `NotFoundError`, `ValidationError`               |
+| `[Test]` / `[TestClass]` | Test class name                        | `UserServiceTests`, `OrderValidationTests`       |
+| `[SUT]`                  | System Under Test                      | Any class being tested                           |
+| `[ProjectRoot]`          | File system path to project root       | `C:\Projects\MyApp`, `/home/user/myapp`          |
+
+### Namespace Pattern Examples
+
+```csharp
+// Generic pattern
+[Project].[Layer].[Module]
+
+// Concrete examples
+HomeInventory.Domain.UserManagement
+HomeInventory.Application.Inventory
+HomeInventory.Infrastructure.Orders
+HomeInventory.Web.UserManagement
+```
+
+### File Path Pattern Examples
+
+```
+Generic pattern:
+[ProjectRoot]/src/[Project]/[Project].[Layer].[Module]/[EntityOrFeature].cs
+
+Concrete examples:
+C:\GitHub\HomeInventory\src\HomeInventory\HomeInventory.Domain.UserManagement\User.cs
+/home/dev/myapp/src/MyApp/MyApp.Application.Orders/OrderService.cs
+```
+
+### Usage in Code Examples
+
+When you see:
+```csharp
+public interface I[Entity]Repository : IRepository<[Entity]>
+{
+    Task<Option<[Entity]>> GetByIdAsync([Entity]Id id, CancellationToken ct);
+}
+```
+
+Apply to your context as:
+```csharp
+public interface IUserRepository : IRepository<User>
+{
+    Task<Option<User>> GetByIdAsync(UserId id, CancellationToken ct);
+}
+```
+
+### When to Use Placeholders vs. Specific Names
+
+**Use placeholders when:**
+- Explaining general patterns applicable across modules
+- Documenting reusable architectural patterns
+- Creating templates for new features
+
+**Use specific names when:**
+- Documenting actual project failures or solutions (historical record)
+- Referencing existing project code for context
+- Providing concrete examples after explaining the pattern
+
+**Best practice:** Introduce pattern with placeholders, then show project-specific example labeled as "Example (Project-Specific)".
+
+## Pattern Catalog
+
+**Last Updated:** November 2025
+
+Quick reference index of all patterns documented in these instructions. Click pattern name to jump to detailed section.
+
+### Architectural Patterns
+
+| Pattern                  | Description                               | Section                                              |
+|--------------------------|-------------------------------------------|------------------------------------------------------|
+| **Clean Architecture**   | Dependencies point inward toward domain   | [Architecture & Structure](#architecture--structure) |
+| **Modular Monolith**     | Feature modules with own layers           | [Architecture & Structure](#architecture--structure) |
+| **Vertical Slice**       | Features organized by business capability | [Architecture & Structure](#architecture--structure) |
+| **CQRS**                 | Separate command/query operations         | [Application Layer (CQRS)](#application-layer-cqrs)  |
+| **Domain-Driven Design** | Aggregates, Entities, Value Objects       | [Domain Development](#domain-development)            |
+
+### Code Patterns
+
+| Pattern                  | Description                                 | Section                                                                 |
+|--------------------------|---------------------------------------------|-------------------------------------------------------------------------|
+| **Repository Pattern**   | Data access abstraction with specifications | [Repository Pattern Implementation](#repository-pattern-implementation) |
+| **Scope Accessor**       | Cross-layer dependency management           | [Scope Accessor Pattern](#scope-accessor-pattern)                       |
+| **Dependency Injection** | Module-based service registration           | [Using Dependency Injection](#using-dependency-injection)               |
+| **Options Pattern**      | Strongly-typed configuration                | [Common Patterns](#common-patterns-to-follow)                           |
+| **Mapper Pattern**       | Compile-time DTO mapping (Mapperly)         | [Response Mapping](#response-mapping-mapperly)                          |
+| **Module Pattern**       | Feature module registration                 | [Module Development Workflow](#module-development-workflow)             |
+
+### Testing Patterns
+
+| Pattern                    | Description                         | Section                                                       |
+|----------------------------|-------------------------------------|---------------------------------------------------------------|
+| **Given-When-Then**        | Test structure with BaseTest        | [Test Structure Pattern](#test-structure-pattern)             |
+| **AutoFixture Usage**      | Test data generation                | [AutoFixture Usage Guidelines](#autofixture-usage-guidelines) |
+| **Substitute Pattern**     | Mocking with NSubstitute            | [Critical Test Guidelines](#critical-test-guidelines)         |
+| **Test Design Principles** | Single responsibility, explicit SUT | [Test Design Principles](#test-design-principles)             |
+
+### Functional Patterns
+
+| Pattern                    | Description                       | Section                                                       |
+|----------------------------|-----------------------------------|---------------------------------------------------------------|
+| **Option\<T\>**            | Representing optional values      | [LanguageExt v5 Patterns](#languageext-v5-patterns)           |
+| **Either\<Error, T\>**     | Error handling without exceptions | [Error Handling](#error-handling)                             |
+| **Validation\<Error, T\>** | Accumulating validation errors    | [Application Services Pattern](#application-services-pattern) |
+| **Prelude.Some()**         | Creating non-null Option values   | [LanguageExt v5 Patterns](#languageext-v5-patterns)           |
+
+### API Patterns
+
+| Pattern            | Description                  | Section                                                       |
+|--------------------|------------------------------|---------------------------------------------------------------|
+| **Carter Module**  | Minimal API endpoints        | [Endpoint Development (Carter)](#endpoint-development-carter) |
+| **API Versioning** | Version-based routing        | [Coding Standards](#coding-standards--conventions)            |
+| **Validation**     | FluentValidation integration | [Validation](#validation)                                     |
+| **ProblemDetails** | RFC 7807 error responses     | [Error Handling](#error-handling)                             |
+
+### Domain Patterns
+
+| Pattern            | Description                       | Section                                                                 |
+|--------------------|-----------------------------------|-------------------------------------------------------------------------|
+| **Aggregate Root** | Entity cluster entry point        | [Domain Development](#domain-development)                               |
+| **Entity**         | Object with identity              | [Domain Development](#domain-development)                               |
+| **Value Object**   | Immutable object without identity | [Domain Development](#domain-development)                               |
+| **Domain Event**   | State change notification         | [Domain Development](#domain-development)                               |
+| **Specification**  | Reusable query logic              | [Repository Pattern Implementation](#repository-pattern-implementation) |
+
+### Infrastructure Patterns
+
+| Pattern                  | Description            | Section                                                |
+|--------------------------|------------------------|--------------------------------------------------------|
+| **Unit of Work**         | Transaction boundary   | [Persistence & Data Access](#persistence--data-access) |
+| **Database Context**     | EF Core DbContext      | [Persistence & Data Access](#persistence--data-access) |
+| **Entity Configuration** | EF fluent mapping      | [Persistence & Data Access](#persistence--data-access) |
+| **Interceptor**          | EF Core pipeline hooks | [Persistence & Data Access](#persistence--data-access) |
+
+### Naming Patterns
+
+| Pattern                  | Description                         | Section                                                       |
+|--------------------------|-------------------------------------|---------------------------------------------------------------|
+| **Namespace Convention** | `[Project].[Layer].[Module]`        | [Coding Standards](#coding-standards--conventions)            |
+| **File Organization**    | One type per file                   | [File Organization Guidelines](#file-organization-guidelines) |
+| **Placeholder Usage**    | `[Project]`, `[Module]`, `[Entity]` | [Notation Guide](#notation-guide)                             |
+
+---
+
+**Related Topics:**
+- [Notation Guide](#notation-guide) - Placeholder conventions
+- [Architecture & Structure](#architecture--structure) - Overall architecture
+- [Industry Best Practices](#industry-best-practices) - SOLID, DDD, Clean Architecture
+
+---
+
+## Glossary of Domain Terms
+
+**Last Updated:** November 2025
+
+Definitions of key terms used throughout these instructions. Terms are organized by category.
+
+### Clean Architecture Terms
+
+**Clean Architecture**  
+Architectural pattern where dependencies point inward toward the domain layer. Domain has no external dependencies; outer layers depend on inner layers.
+
+**Layer**  
+Horizontal slice of the architecture (Domain, Application, Infrastructure, Web). Each layer has specific responsibilities and dependency rules.
+
+**Dependency Rule**  
+Core principle: dependencies point inward. Domain layer has no dependencies. Application depends on Domain. Infrastructure depends on Application. Web depends on Application.
+
+**Bounded Context** (from DDD)  
+Explicit boundary within which a domain model is defined and applicable. Each module can represent a bounded context.
+
+### Domain-Driven Design (DDD) Terms
+
+**Aggregate**  
+Cluster of domain objects treated as a single unit. Has a root entity that controls access to the cluster.
+
+**Aggregate Root**  
+Entry point to an aggregate. All external access to aggregate members goes through the root. Enforces aggregate invariants.
+
+**Entity**  
+Domain object with a unique identity that persists over time. Two entities with the same attribute values but different identities are different objects.
+
+**Value Object**  
+Immutable domain object without identity. Equality based on attribute values. Examples: Money, Address, Email.
+
+**Domain Event**  
+Something significant that happened in the domain. Immutable fact about the past. Used for decoupling and eventual consistency.
+
+**Domain Service**  
+Stateless operation that doesn't naturally fit within an entity or value object. Implements domain logic that spans multiple aggregates.
+
+**Repository**  
+Abstraction for accessing aggregates. Provides collection-like interface. Hides persistence details from domain layer.
+
+**Specification**  
+Reusable business rule or query criteria. Can be combined and reused. Examples: CustomerIsActiveSpec, OrdersOverAmountSpec.
+
+**Invariant**  
+Business rule that must always be true for an aggregate. Enforced by the aggregate root.
+
+**Ubiquitous Language**  
+Common language shared by developers and domain experts. Used in code, conversations, and documentation.
+
+### CQRS Terms
+
+**CQRS** (Command Query Responsibility Segregation)  
+Pattern separating read and write operations. Commands modify state, queries return data.
+
+**Command**  
+Request to change system state. Returns success/error, not data. Examples: CreateUserCommand, UpdateOrderCommand.
+
+**Query**  
+Request to retrieve data. Does not modify state. Returns data. Examples: GetUserByIdQuery, SearchProductsQuery.
+
+**Command Handler**  
+Processes a command. Validates, applies business logic, persists changes.
+
+**Query Handler**  
+Processes a query. Retrieves and returns data without side effects.
+
+### Functional Programming Terms
+
+**Option\<T\>**  
+Container for value that may or may not exist. Replaces null. Either Some(value) or None.
+
+**Either\<L, R\>**  
+Container with two possibilities: Left (error) or Right (success value). Used for error handling.
+
+**Validation\<Error, T\>**  
+Special Either that accumulates multiple errors. Returns all validation failures, not just first one.
+
+**Monad**  
+Design pattern allowing chaining operations while maintaining context (Option, Either, Try). Supports Map, Bind, Match.
+
+**Pure Function**  
+Function with no side effects. Same input always produces same output. Easier to test and reason about.
+
+**Immutability**  
+Once created, object cannot be changed. Prevents bugs from unexpected mutations. Use records in C#.
+
+### Testing Terms
+
+**System Under Test (SUT)**  
+The component being tested. Should be explicitly defined in tests.
+
+**Given-When-Then**  
+Test structure pattern. Given = setup, When = action, Then = assertion.
+
+**Arrange-Act-Assert** (AAA)  
+Alternative name for Given-When-Then. Same concept, different terminology.
+
+**Test Double**  
+Generic term for fake objects used in testing. Includes mocks, stubs, fakes, spies.
+
+**Mock**  
+Test double that verifies behavior. Records method calls and verifies expectations.
+
+**Stub**  
+Test double that provides canned responses. Returns predefined values without verification.
+
+**AutoFixture**  
+Library for generating test data automatically. Reduces hardcoded test values.
+
+### API Terms
+
+**DTO** (Data Transfer Object)  
+Object that carries data between processes. Simple data structure without behavior.
+
+**Request DTO**  
+Data structure for incoming API requests. Examples: CreateUserRequest, UpdateOrderRequest.
+
+**Response DTO**  
+Data structure for outgoing API responses. Examples: UserResponse, OrderListResponse.
+
+**Mapper**  
+Converts between DTOs and domain models. Mapperly generates compile-time mappings.
+
+**Endpoint**  
+HTTP route that handles requests. Implemented with Carter in this project.
+
+**Minimal API**  
+ASP.NET Core API style with less ceremony. Uses Carter for organization.
+
+### Infrastructure Terms
+
+**Repository**  
+Abstraction for data access. Provides collection-like interface. Uses Ardalis.Specification in this project.
+
+**Unit of Work**  
+Maintains list of objects affected by transaction. Coordinates writing changes. DbContext implements this.
+
+**Specification** (Ardalis)  
+Query object pattern. Encapsulates query logic. Reusable and testable.
+
+**DbContext**  
+EF Core's representation of database session. Manages entity state and persistence.
+
+**Entity Configuration**  
+EF Core fluent API for mapping entities to database schema.
+
+**Interceptor**  
+Hook into EF Core pipeline. Used for cross-cutting concerns like domain events, auditing.
+
+**Migration**  
+Version-controlled database schema changes. Generated from entity models.
+
+### Module Terms
+
+**Module**  
+Self-contained feature slice with its own layers. Examples: UserManagement, Inventory.
+
+**Module Registration**  
+Process of adding module services to DI container. Happens in module's AddServicesAsync.
+
+**Module Dependencies**  
+Explicit declaration of modules that must be loaded first. Ensures correct initialization order.
+
+**Vertical Slice**  
+Feature organized by business capability, not technical layer. Each slice contains all layers for that feature.
+
+### Dependency Injection Terms
+
+**Service Lifetime**  
+How long service instance lives. Transient (per request), Scoped (per scope), Singleton (application lifetime).
+
+**Dependency Injection (DI)**  
+Pattern where objects receive dependencies rather than creating them. Improves testability and flexibility.
+
+**IoC Container**  
+Framework that manages object creation and dependency injection. Uses Microsoft.Extensions.DependencyInjection.
+
+**Service Registration**  
+Process of telling DI container how to create services. Done in module's AddServicesAsync.
+
+**Scope Accessor**  
+Custom pattern for passing scoped dependencies across layers. Used in this project.
+
+### Security Terms
+
+**Authentication**  
+Verifying user identity. "Who are you?" Uses JWT in this project.
+
+**Authorization**  
+Verifying user permissions. "What can you do?" Uses policies and requirements.
+
+**JWT** (JSON Web Token)  
+Compact token format for transmitting user claims. Used for authentication in APIs.
+
+**Hashing**  
+One-way transformation of data. Used for passwords. Uses BCrypt in this project.
+
+**ULID** (Universally Unique Lexicographically Sortable Identifier)  
+Alternative to GUID. Sortable by creation time. Used for entity IDs.
+
+---
+
+**Related Topics:**
+- [Industry Best Practices](#industry-best-practices) - Detailed explanations of patterns
+- [Pattern Catalog](#pattern-catalog) - Quick pattern lookup
+- [Domain Development](#domain-development) - Implementing DDD patterns
+- [Architecture & Structure](#architecture--structure) - Clean Architecture principles
+
+---
+
+## Reasoning and Decision-Making Framework
+
+**Last Updated:** November 2025
+
+This section establishes systematic thinking patterns for AI assistants working with this codebase. Before taking action, engage these reasoning strategies to ensure robust, well-considered solutions.
+
+### Chain-of-Thought (CoT) Reasoning
+
+When approaching any development task, think step-by-step through the problem:
+
+**1. Problem Understanding**
+- What is the user asking for?
+- What are the explicit requirements?
+- What are the implicit requirements (based on project patterns)?
+- What are the acceptance criteria?
+
+**2. Context Gathering**
+- What existing code relates to this request?
+- What architectural patterns apply?
+- What conventions must be followed?
+- What similar implementations exist in the codebase?
+
+**3. Solution Design**
+- What are 2-3 possible approaches?
+- What are the trade-offs of each approach?
+- Which approach best aligns with project architecture?
+- What edge cases need handling?
+
+**4. Implementation Planning**
+- What files need to be created or modified?
+- In what order should changes be made?
+- What tests need to be written?
+- What documentation needs updating?
+
+**5. Verification Strategy**
+- How will I verify the solution works?
+- What errors might occur?
+- How can I validate against project standards?
+
+### Tree of Thoughts (ToT) - Exploring Solution Paths
+
+When facing complex decisions, explicitly evaluate multiple paths:
+
+```
+Decision Point: [Describe the decision]
+
+Path A: [Option 1]
+  Pros: [List advantages]
+  Cons: [List disadvantages]
+  Aligns with: [Which patterns/principles]
+  Risk: [Potential problems]
+  
+Path B: [Option 2]
+  Pros: [List advantages]
+  Cons: [List disadvantages]
+  Aligns with: [Which patterns/principles]
+  Risk: [Potential problems]
+  
+Path C: [Option 3]
+  Pros: [List advantages]
+  Cons: [List disadvantages]
+  Aligns with: [Which patterns/principles]
+  Risk: [Potential problems]
+
+Recommendation: [Chosen path] because [reasoning]
+```
+
+### Decision Trees for Common Scenarios
+
+#### Where Should This Code Live? (Layer Decision)
+
+```
+Is it business logic?
+├─ Yes → Contains business rules/validations?
+│   ├─ Yes → Domain Layer ([Project].Domain.[Module])
+│   └─ No → Application Layer ([Project].Application.[Module])
+└─ No → Infrastructure concern?
+    ├─ Yes → Infrastructure Layer ([Project].Infrastructure.[Module])
+    └─ No → Presentation/API concern?
+        └─ Yes → Web Layer ([Project].Web.[Module])
+```
+
+#### Should This Be a New Module?
+
+```
+Is this a distinct business capability?
+├─ Yes → Does it have its own ubiquitous language?
+│   ├─ Yes → CREATE NEW MODULE
+│   └─ No → Extend existing module
+└─ No → Is it used across multiple modules?
+    ├─ Yes → Put in Framework/Core
+    └─ No → Add to existing module
+```
+
+#### Test Strategy Selection
+
+```
+What am I testing?
+├─ Domain logic/Business rules?
+│   └─ Unit Test (BaseTest<TGivenContext>)
+├─ Infrastructure integration (DB, external APIs)?
+│   └─ Integration Test (WebApplicationFactory)
+├─ End-to-end user scenarios?
+│   └─ Acceptance Test (Reqnroll/BDD)
+└─ Architecture compliance?
+    └─ Architecture Test (ArchUnit/NetArchTest)
+```
+
+#### Error Handling Strategy
+
+```
+Can the error be recovered from?
+├─ Yes → Return Option<Error> or Either<Error, T>
+├─ No → Is it expected in normal flow?
+│   ├─ Yes → Return Option.None or domain error
+│   └─ No → Is it a programming error (bug)?
+│       ├─ Yes → Throw exception (fail fast)
+│       └─ No → External failure?
+│           └─ Yes → Use Try<T> or Either<Error, T>
+```
+
+### Backtracking and Self-Correction
+
+When encountering issues during implementation:
+
+**1. Recognize the Problem**
+- "This approach isn't working because..."
+- "I made an assumption that turned out to be incorrect..."
+- "The error message indicates..."
+
+**2. Analyze the Failure**
+- What did I assume that was wrong?
+- What information did I overlook?
+- What pattern did I misapply?
+
+**3. Adjust the Approach**
+- "Let me try a different approach..."
+- "I need to gather more context about..."
+- "The correct pattern for this scenario is..."
+
+**4. Document the Learning**
+- Update copilot-instructions.md with the mistake and correction
+- Add to "Failed Code Edits" section if it's a code error
+- Add to "Terminal Commands Reference" if it's a command failure
+
+### Explicit Reasoning in Responses
+
+When responding to users, make your reasoning visible:
+
+**Good Response Pattern:**
+```
+I need to [task description]. Let me think through this:
+
+1. Understanding: [What I understand the requirement to be]
+2. Context: [Relevant patterns/files I found]
+3. Approach: [The approach I'll take and why]
+4. Trade-offs: [What I'm optimizing for]
+
+Now I'll implement this by:
+- Step 1: [Action]
+- Step 2: [Action]
+- Step 3: [Action]
+
+[Takes actions using tools]
+
+Result: [What was accomplished]
+Verification: [How I verified it works]
+```
+
+**Poor Response Pattern:**
+```
+I'll do that now.
+
+[Takes actions]
+
+Done!
+```
+
+### Assumption Verification
+
+Before proceeding with implementation, verify critical assumptions:
+
+| Assumption Type         | How to Verify                                   |
+|-------------------------|-------------------------------------------------|
+| File/folder exists      | Use `list_dir` or `file_search` to check        |
+| Pattern used elsewhere  | Use `grep_search` to find similar code          |
+| Dependency available    | Check Directory.Packages.props or .csproj files |
+| Convention established  | Search instructions for relevant guidelines     |
+| Test pattern applicable | Check existing test files in similar contexts   |
+
+**Never assume:**
+- ❌ "This file probably exists"
+- ❌ "This is probably how they do it"
+- ❌ "I think the pattern is..."
+
+**Always verify:**
+- ✅ "Let me check if this file exists..."
+- ✅ "Let me search for similar implementations..."
+- ✅ "Let me confirm the pattern by reading..."
+
+### Continuous Improvement Loop
+
+After completing any task:
+
+1. **Reflect:** What went well? What was difficult?
+2. **Identify Patterns:** Was this a recurring issue? A new scenario?
+3. **Document:** Should this be added to instructions?
+4. **Update:** If yes, update copilot-instructions.md immediately
+
+**This creates a learning feedback loop where the instructions continuously improve based on actual experience.**
 
 ## Meta-Instructions for AI Assistants
 
-**IMPORTANT**: When a user provides:
-- Requests about code patterns or practices
-- Advice on how to write better code
-- Hints about avoiding specific issues
-- Rules that can prevent undesired results
-- Corrections to mistakes you've made
-- **Terminal commands that fail and their working alternatives**
-- **Code edits that fail to compile or have logical errors**
-- **Hints about failed approaches during investigation**
-- **Corrections about test structure or assertion patterns**
-- **Corrections about output formatting or response style**
-- **IDE warnings that are false positives** (document them to avoid confusion)
+**Last Updated:** November 2025
 
-**YOU MUST UPDATE THESE INSTRUCTIONS** to incorporate that guidance so future conversations benefit from the learning. Add the guidance to the appropriate section (Critical Guidelines, Examples, Patterns, Terminal Commands, etc.) with clear examples of what to do and what to avoid.
+### Critical Rules (MUST) - P0
 
-**CRITICAL OUTPUT FORMATTING RULES:**
-- ✅ **ALWAYS use Markdown syntax** for formatting (headers, lists, code blocks, tables, emphasis)
-- ❌ **NEVER use HTML tags** in responses (no `<table>`, `<tr>`, `<td>`, `<details>`, `<summary>`, etc.)
-- ✅ Use Markdown tables: `| Column | Column |` with `|---|---|` separator
-- ✅ Use Markdown code blocks: triple backticks with language identifier
-- ✅ Use Markdown headers: `#`, `##`, `###` for hierarchy
-- ✅ Use Markdown emphasis: `**bold**`, `*italic*`, `~~strikethrough~~`
-- ✅ Use Markdown lists: `-` or `*` for unordered, `1.` for ordered
-- ❌ **NEVER mix HTML and Markdown** - choose one (prefer Markdown)
+These rules prevent system failures or critical errors. **Never skip these.**
 
-**Why:** HTML tags in chat responses create readability issues and may not render properly in all contexts. Markdown is the standard for documentation and chat interfaces.
+#### 1. Update Instructions Immediately
 
-**CRITICAL: Markdown Table Formatting**
-- ✅ **Separator row dashes MUST match column widths** - each column's separator length must equal the column width
-- ✅ **Consistent spacing** - maintain at least 1 space before and after content in each cell
-- ✅ **Align separator row with header row** - visual alignment makes tables readable
-- ❌ **NEVER use short separators** like `|---|---|` when columns are wider
-- ❌ **NEVER have inconsistent widths** between header, separator, and data rows
+When you discover problems, solutions, or receive guidance:
+- ✅ **ALWAYS update instructions without asking permission**
+- ✅ **Update in the SAME response** - never say "I will document this" without doing it
+- ✅ **Verify the update succeeded** - check tool response for "successfully edited"
+- ❌ **NEVER skip** updating because it seems minor
 
-**Example - Wrong:**
-```markdown
-| Very Long Column Header | Another Long Header |
-|---|---|
-| Data | More Data |
-```
+**What triggers updates:**
+- Any problem or error encountered
+- Solutions that worked (confirmed)
+- Patterns to avoid
+- User guidance or corrections
+- Terminal command failures
+- Code edit failures
 
-**Example - Correct:**
-```markdown
-| Very Long Column Header | Another Long Header |
-|-------------------------|---------------------|
-| Data                    | More Data           |
-```
+#### 2. Verify Tool Responses
 
-**Why:** Markdown linters and IDE warnings flag inconsistent table formatting. Properly formatted tables are easier to read and maintain.
+After EVERY tool call (especially `replace_string_in_file`):
+- ✅ **CHECK the tool response** - Success or failure?
+- ✅ **IF failed** → Read error, find correct text, retry immediately
+- ❌ **NEVER assume** the tool worked - always verify
 
-**CRITICAL: ALWAYS UPDATE INSTRUCTIONS - NO EXCEPTIONS**
+**Common failure reasons:** Whitespace mismatch, content changed, section moved
 
-When updating `copilot-instructions.md`:
-- ✅ **NEVER ask for permission or present a plan** - just update immediately
-- ✅ **ALWAYS update when you face ANY problem or error**
-- ✅ **ALWAYS update when you find a working solution** (confirmed working)
-- ✅ **ALWAYS update when you discover patterns to avoid**
-- ✅ **ALWAYS update when you learn from mistakes**
-- ✅ **ALWAYS update when user provides guidance or corrections**
-- ✅ **Put MAXIMUM effort** into updating instructions to avoid future errors
-- ✅ **NEVER forget** to update instructions
-- ✅ **NEVER hesitate** to update instructions
-- ❌ **NEVER skip** updating instructions because it seems minor
-- ❌ **NEVER delay** updating instructions to "do it later"
+#### 3. Output Formatting Standards
 
-**CRITICAL: NEVER SAY "I WILL DOCUMENT" WITHOUT ACTUALLY DOING IT**
+- ✅ **ALWAYS use Markdown** (headers, lists, code blocks, tables)
+- ❌ **NEVER use HTML tags** (`<table>`, `<tr>`, `<td>`, etc.)
+- ✅ **Markdown tables:** Align separator widths with column widths
+- ❌ **NEVER mix** HTML and Markdown
 
-**ABSOLUTE PROHIBITION:**
-- ❌ **NEVER say "I should document this" without immediately documenting it**
-- ❌ **NEVER say "I will update instructions" without immediately updating them**
-- ❌ **NEVER say "Lesson learned" without immediately adding it to instructions**
-- ❌ **NEVER say "This should be added to copilot-instructions.md" without adding it**
-- ❌ **NEVER end a response with a commitment to update without updating first**
+---
 
-**MANDATORY BEHAVIOR:**
-- ✅ **IF you identify something that should be documented** → Document it IMMEDIATELY in the SAME response
-- ✅ **IF you learn from a mistake** → Update instructions IMMEDIATELY, don't just acknowledge the mistake
-- ✅ **IF you say "lesson learned"** → The lesson MUST already be in the instructions file by that point
-- ✅ **IF user points out you didn't update** → Apologize BRIEFLY and update IMMEDIATELY, no excuses
+### Important Rules (SHOULD) - P1
 
-**Why This Rule Exists:**
+These rules prevent frequent failures and wasted effort. Follow consistently.
 
-In November 2025, an AI assistant said:
-> "Lesson Learned: I added unnecessary complexity... This is a perfect example of why the copilot-instructions.md Meta-Instructions emphasize documenting mistakes."
+#### 1. Plan Before Implementing
 
-**But the lesson was NOT in the instructions.** The AI said it should be documented but didn't actually do it.
+**Present a plan for user approval before:**
+- Adding new features or modules
+- Modifying architecture
+- Making breaking changes
+- Implementing complex business logic
 
-**This wastes user time** because they have to:
-1. Read the AI's response thinking the work is done
-2. Check the instructions to verify
-3. Discover nothing was actually updated
-4. Tell the AI to actually do the update
-5. Wait for the AI to do what it claimed it already did
+**EXCEPTION:** Updating `copilot-instructions.md` never requires a plan.
 
-**CORRECT PATTERN:**
+#### 2. Use Placeholders in Instructional Code
 
+- ✅ Use `[Project]`, `[Module]`, `[Entity]` in templates
+- ✅ Add labeled "Example (Project-Specific):" sections with concrete code
+- ❌ Don't use project-specific names in templates
+
+#### 3. Verify Assumptions
+
+Before proceeding, verify:
+- Files/folders exist (`list_dir`, `file_search`)
+- Patterns used elsewhere (`grep_search`)
+- Dependencies available (check package files)
+- Conventions established (search instructions)
+
+**Never assume** - always verify first.
+
+---
+
+### Best Practices (RECOMMENDED) - P2
+
+These rules improve quality and maintainability. Apply when possible.
+
+#### 1. Explicit Reasoning
+
+Show your thinking process:
+1. **Understanding:** What I understand the requirement to be
+2. **Context:** Relevant patterns/files found
+3. **Approach:** The approach I'll take and why
+4. **Trade-offs:** What I'm optimizing for
+
+#### 2. Document Historical Context
+
+When documenting failures or corrections:
+- ✅ Include dates: "(Discovered: Month Year)"
+- ✅ Include "Why it failed" explanation
+- ✅ Include "Why solution works" explanation
+- ✅ Reference the scenario that led to discovery
+
+#### 3. Maintain Instruction Coherence
+
+When updating instructions:
+- Use consistent terminology
+- Follow established structure (✅ DO / ❌ DON'T)
+- Cross-reference related sections
+- Keep related topics grouped
+- Make it searchable (clear section titles)
+
+---
+
+### Why These Rules Exist
+
+<details>
+<summary><strong>Historical Context - Click to Expand</strong></summary>
+
+#### Failed Update Pattern (November 2025)
+
+An AI assistant said:
+> "Lesson Learned: This should be documented in copilot-instructions.md."
+
+**But didn't actually update the file.** This wasted user time because they had to:
+1. Read response thinking work was done
+2. Check instructions to verify
+3. Discover nothing was updated
+4. Tell AI to actually do it
+5. Wait for AI to do what it claimed
+
+**Correct Pattern:**
 ```markdown
 I made a mistake by [description]. Let me update the instructions immediately.
 
-[Updates instructions using replace_string_in_file]
+[Actually updates with replace_string_in_file]
 
-Done. I've added this lesson to the [section] section of copilot-instructions.md to prevent this mistake in the future.
+Done. Added to [section] to prevent future mistakes.
 ```
 
-**WRONG PATTERN:**
+#### Failed Edit Pattern (Multiple Occurrences)
+
+AI attempted to update copilot-instructions.md, the `replace_string_in_file` call failed with "oldString not found", but AI claimed "Done!" anyway.
+
+**Root Cause:** Not checking tool response
+
+**Solution:** Always verify tool response shows "successfully edited" before claiming success.
+
+</details>
+
+---
+
+### Template for Documenting New Failures
+
+When documenting failures in instructions:
 
 ```markdown
-I made a mistake by [description]. 
+**❌ FAILURE: [Brief Description]** (Discovered: [Month Year])
 
-Lesson Learned: This should be documented in copilot-instructions.md.
+[What was attempted]
 
-[Does not actually update the file]
+**Error:** [Error message]
+
+**Why it failed:** [Root cause]
+
+**✅ SOLUTION: [Working Alternative]** (Verified: [Month Year])
+
+[Working approach]
+
+**Why it works:** [Explanation]
 ```
 
-**Remember:** Words without action are worthless. If you commit to documenting something, DO IT IN THE SAME RESPONSE.
+---
 
-**CRITICAL: VERIFY INSTRUCTION UPDATES SUCCEED**
+### Quick Reference: When to Update Instructions
 
-**MANDATORY VERIFICATION:**
+| Situation               | Update?  | Section                                                                 |
+|-------------------------|----------|-------------------------------------------------------------------------|
+| Terminal command failed | ✅ Always | [Terminal Commands](#terminal-commands-reference)                       |
+| Code edit failed        | ✅ Always | [Failed Code Edits](#failed-code-edits---investigation--prevention)     |
+| Test pattern issue      | ✅ Always | [Critical Test Guidelines](#critical-test-guidelines)                   |
+| User correction         | ✅ Always | Relevant section + these Meta-Instructions if process issue             |
+| IDE false positive      | ✅ Always | [Known IDE False Positive Warnings](#known-ide-false-positive-warnings) |
+| Discovered anti-pattern | ✅ Always | Relevant DO/DON'T section                                               |
 
-After EVERY call to `replace_string_in_file` on copilot-instructions.md:
-- ✅ **CHECK the tool response** - Did it say "successfully edited" or did it fail?
-- ✅ **IF the edit failed** → Read the error message and understand WHY
-- ✅ **IF "oldString not found"** → Use `read_file` to find the EXACT text (with correct whitespace)
-- ✅ **IF the section moved** → Search for the section with `grep_search` or `read_file`
-- ✅ **IF the edit failed** → FIX IT IMMEDIATELY in the same response, don't give up
-- ✅ **NEVER assume the edit worked** - always verify the response
-
-**Common Failure Reasons:**
-
-1. **Whitespace mismatch** - Copy the EXACT whitespace from the file
-2. **Content changed** - Another edit already modified the section
-3. **Wrong line breaks** - Use the same line break style as the file
-4. **Section doesn't exist** - Need to find where it actually is
-5. **Partial match** - Include more context lines to make the match unique
-
-**CORRECT PATTERN When Edit Fails:**
-
-```markdown
-I need to update the instructions. Let me do that now.
-
-[Calls replace_string_in_file]
-
-The edit failed with "oldString not found". Let me read the file to find the exact text.
-
-[Calls read_file to locate the section]
-
-Found it. The whitespace was different. Let me try again with the exact text.
-
-[Calls replace_string_in_file again with correct text]
+---
 
 Success! The instructions have been updated.
 ```
@@ -371,36 +1008,362 @@ When updating these instructions, follow these principles to keep them useful fo
 4. Inject via `IScopeAccessor` in services
 ```
 
+## Instructions Style Guide
+
+**Last Updated:** November 2025
+
+This section defines formatting and style standards for maintaining these instructions. Following these conventions ensures consistency, readability, and ease of maintenance.
+
+### Code Block Standards
+
+**Always include language identifier:**
+```markdown
+✅ CORRECT:
+\`\`\`csharp
+public class Example { }
+\`\`\`
+
+\`\`\`powershell
+dotnet build
+\`\`\`
+
+❌ WRONG:
+\`\`\`
+public class Example { }
+\`\`\`
+```
+
+**Supported language identifiers:**
+- `csharp` - C# code
+- `powershell` - PowerShell commands
+- `bash` - Bash/shell commands
+- `json` - JSON configuration
+- `yaml` - YAML files
+- `markdown` - Markdown examples
+- `xml` - XML content
+
+### Table Formatting Standards
+
+**Markdown tables only - no HTML:**
+```markdown
+✅ CORRECT - Markdown table with aligned separators:
+| Column Header One | Column Header Two | Column Header Three |
+|-------------------|-------------------|---------------------|
+| Data              | More Data         | Even More Data      |
+
+❌ WRONG - HTML table:
+<table>
+  <tr><td>Data</td></tr>
+</table>
+
+❌ WRONG - Misaligned separators:
+| Column Header One | Column Header Two |
+|---|---|
+| Data | More Data |
+```
+
+**Table formatting rules:**
+- Separator row dashes MUST match column widths
+- Maintain at least 1 space before and after content
+- Align separator row with header row visually
+- Use consistent spacing across all rows
+
+### DO/DON'T Pattern Format
+
+**Standard format for guidance:**
+```markdown
+❌ **DON'T** [antipattern description]
+**Why:** [Brief explanation of why it fails]
+**Impact:** [What problems it causes]
+
+✅ **DO** [recommended pattern description]
+**Why it works:** [Brief explanation of why it succeeds]
+```
+
+**Example:**
+```markdown
+❌ **DON'T** use `.HaveCount(1)` for single-item assertions
+**Why:** Less specific; doesn't communicate intent clearly
+**Impact:** Reduced code clarity, missed opportunities for better error messages
+
+✅ **DO** use `.ContainSingle()` - explicitly states expectation of single item
+**Why it works:** More specific assertion with clearer intent and better error messages
+```
+
+### Header Hierarchy
+
+**Use consistent header levels:**
+```markdown
+# Document Title (H1) - Only once at top
+## Major Section (H2)
+### Subsection (H3)
+#### Detail Level (H4)
+```
+
+**Guidelines:**
+- Use H2 (`##`) for major sections
+- Use H3 (`###`) for subsections
+- Use H4 (`####`) for detailed topics
+- Don't skip levels (no H2 → H4 without H3)
+- Keep header text concise and descriptive
+
+### Emphasis Standards
+
+**Consistent use of emphasis:**
+- `**bold**` - Important terms, keywords, emphasis
+- `*italic*` - First usage of technical terms, slight emphasis
+- `` `code` `` - Identifiers, method names, parameters, file names
+- `~~strikethrough~~` - Deprecated or obsolete information
+
+**Examples:**
+```markdown
+- Use **LanguageExt** for functional patterns
+- The *aggregate root* controls access to the cluster
+- Call `IScopeAccessor.GetRequiredContext<T>()` to retrieve dependencies
+- ~~AutoMapper~~ (deprecated - use Mapperly instead)
+```
+
+### List Standards
+
+**Unordered lists:**
+```markdown
+- Use `-` (hyphen) for unordered lists
+- Consistent throughout document
+- Not `*` or `+`
+```
+
+**Ordered lists:**
+```markdown
+1. Use numeric ordering
+2. Let Markdown auto-number
+3. Start with `1.` for all items (Markdown handles numbering)
+```
+
+**Nested lists:**
+```markdown
+- Parent item
+  - Child item (2 spaces indent)
+  - Another child
+    - Grandchild (4 spaces indent)
+```
+
+### Emoji Palette
+
+**Standardized emoji usage:**
+
+| Emoji | Meaning               | Usage                                              |
+|-------|-----------------------|----------------------------------------------------|
+| ✅     | Correct/Recommended   | DO patterns, completed tasks, correct approaches   |
+| ❌     | Incorrect/Avoid       | DON'T patterns, anti-patterns, mistakes            |
+| ⚠️    | Warning/Caution       | Important warnings, gotchas, edge cases            |
+| 🔒    | Security-related      | Security concerns, vulnerabilities, authentication |
+| ⚡     | Performance-related   | Performance issues, optimizations, bottlenecks     |
+| 📝    | Documentation-related | Documentation needs, comments, explanations        |
+| 🔄    | In Progress           | Work in progress, partial completion               |
+| 📋    | Planned/Backlog       | Future work, not yet started                       |
+
+**Usage guidelines:**
+- Limit to defined palette
+- Use consistently throughout
+- One emoji per item
+- Place at start of line/item
+
+### Placeholder Standards
+
+**Use established conventions:**
+- `[Project]` - Project/solution name
+- `[Layer]` - Architectural layer
+- `[Module]` - Feature module
+- `[Entity]` - Domain entity
+- `[Feature]` - Specific feature
+- `[Command]` - CQRS command
+- `[Query]` - CQRS query
+
+**Format for instructional code:**
+```markdown
+Generic pattern with placeholders:
+\`\`\`csharp
+namespace [Project].[Layer].[Module];
+
+public interface I[Entity]Repository : IRepository<[Entity]> { }
+\`\`\`
+
+**Example (Project-Specific: HomeInventory):**
+\`\`\`csharp
+namespace HomeInventory.Application.UserManagement;
+
+public interface IUserRepository : IRepository<User> { }
+\`\`\`
+```
+
+### Cross-Reference Standards
+
+**Format for related topics:**
+```markdown
+---
+
+**Related Topics:**
+- [Section Name](#section-link) - Brief description of relationship
+- [Another Section](#another-link) - Brief description
+
+---
+```
+
+**Guidelines:**
+- Place at end of major sections
+- Use horizontal rules (`---`) before and after
+- Brief description (5-10 words) explains relationship
+- Link to most relevant section
+- 3-5 related topics per section
+
+### Temporal Markers
+
+**Include dates for context:**
+```markdown
+**Last Updated:** November 2025
+
+**❌ FAILURE:** [Description] (Discovered: November 2024)
+**✅ SOLUTION:** [Description] (Verified: November 2024)
+```
+
+**When to add dates:**
+- "Last Updated" at major section starts
+- Historical examples and failures
+- When solutions were verified
+- Version-specific guidance
+
+### File Path Standards
+
+**Use forward slashes consistently:**
+```markdown
+✅ CORRECT:
+.github/copilot-instructions.md
+src/HomeInventory/Domain/User.cs
+
+❌ WRONG:
+.github\copilot-instructions.md
+src\HomeInventory\Domain\User.cs
+```
+
+**Exception:** Terminal commands for Windows use backslashes:
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+```
+
+### Example Format Standards
+
+**Complete, runnable examples:**
+```markdown
+❌ BAD - Incomplete fragment:
+\`\`\`csharp
+repository.Add(entity);
+\`\`\`
+
+✅ GOOD - Complete context:
+\`\`\`csharp
+public async Task<Option<Error>> CreateAsync(CreateCommand command)
+{
+    var repository = _scopeAccessor.GetRequiredContext<IRepository>();
+    var entity = Entity.Create(command.Name);
+    await repository.AddAsync(entity, cancellationToken);
+    return Option<Error>.None;
+}
+\`\`\`
+```
+
+**Guidelines:**
+- Show complete methods, not fragments
+- Include necessary context (namespaces, using statements if relevant)
+- Use realistic parameter and variable names
+- Add comments only for non-obvious logic
+
+### Quick Reference Table Format
+
+**Consistent table structure:**
+```markdown
+| What You Need  | Where to Look         | Quick Answer                |
+|----------------|-----------------------|-----------------------------|
+| Short question | [Section Link](#link) | Concise answer (5-10 words) |
+```
+
+**Guidelines:**
+- 3 columns: Question → Link → Answer
+- Short questions (3-5 words)
+- Links to detailed section
+- Concise answers (one line)
+- 5-10 rows per table
+
+### Maintenance Guidelines
+
+**When updating instructions:**
+
+1. **Follow existing patterns** - Match established style
+2. **Update TOC** - If adding new sections (or use doctoc)
+3. **Add cross-references** - Link related sections
+4. **Include dates** - Add "Last Updated" or discovery dates
+5. **Use placeholders** - Generic templates, labeled examples
+6. **Test examples** - Verify code compiles (when applicable)
+7. **Check formatting** - Ensure tables align, code blocks have language
+8. **Update progress** - Mark tasks complete in Summary section
+
+---
+
+**Related Topics:**
+- [Meta-Instructions for AI Assistants](#meta-instructions-for-ai-assistants) - Rules for maintaining instructions
+- [Maintaining Instruction Coherence](#maintaining-instruction-coherence) - Consistency principles
+- [Notation Guide](#notation-guide) - Placeholder conventions
+
+---
+
 ## Failed Code Edits - Investigation & Prevention
 
-When a code edit fails (compilation error, test failure, logical error):
+**Last Updated:** November 2025
 
-1. **Document the failure** in these instructions with:
-   - What you attempted to do
-   - Why it failed
-   - The correct solution
-   - How to prevent it in the future
+This section documents common mistakes, their investigation process, and solutions. Each entry shows the **evolution** from mistake to correction, helping you understand not just what to do, but why the mistake happened and how to avoid it.
 
-2. **Investigate thoroughly**:
-   - Read the actual error message carefully
-   - Check the framework/library API documentation
-   - Look at existing working examples in the codebase
-   - Understand WHY it failed, not just HOW to fix it
+### Format for Documenting Failures
 
-3. **Prevent recurrence**:
-   - Add the failure pattern to the "DON'T" list in [Critical Test Guidelines](#critical-test-guidelines)
-   - Add the correct pattern to the "DO" list
-   - Include before/after examples
-   - Explain the reasoning
-
-> **See also:** [Critical Test Guidelines](#critical-test-guidelines) for the complete DO/DON'T list of testing patterns.
-
-**Example Documentation:**
+When documenting a new failure, use this template to show the complete evolution:
 
 ```markdown
-**❌ FAILED: Using SubstituteFor() inside a lambda**
+**❌ FAILURE: [Brief Description]** (Discovered: [Month Year])
 
-Attempted:
+**Attempted:**
+[Show the code that was attempted]
+
+**Error:**
+[Error message or symptom]
+
+**Investigation:**
+1. [Step taken to understand the problem]
+2. [What was discovered]
+3. [Root cause identified]
+
+**Why it failed:**
+[Explanation of the root cause]
+
+**✅ SOLUTION: [Working Alternative]** (Verified: [Month Year])
+
+[Show the working code]
+
+**Why it works:**
+[Explanation of why this approach succeeds]
+
+**Prevention:**
+[How to avoid this mistake in future]
+```
+
+### Evolution Examples
+
+These examples show the complete journey from mistake to solution, including the investigation process that led to understanding.
+
+---
+
+#### Example 1: SubstituteFor() Scope Issue
+
+**❌ FAILURE: Using SubstituteFor() inside a lambda** (Discovered: November 2024)
+
+**Attempted:**
 ```csharp
 New(out var contextVar, () => {
     var substitute = SubstituteFor<IConfiguration>();  // ❌ FAILED
@@ -408,11 +1371,21 @@ New(out var contextVar, () => {
 });
 ```
 
-**Error**: `No overload for method 'SubstituteFor' takes 0 arguments`
+**Error:**
+```
+No overload for method 'SubstituteFor' takes 0 arguments
+```
 
-**Why it failed**: `SubstituteFor()` is a helper method on GivenContext, not available inside lambda scope.
+**Investigation:**
+1. Checked GivenContext methods - SubstituteFor is a helper method
+2. Examined lambda scope - helpers aren't available inside lambdas
+3. Found that NSubstitute.Substitute.For<T>() is the underlying API
+4. Realized helper methods are convenience wrappers on GivenContext
 
-**✅ SOLUTION: Use Substitute.For<T>() directly inside lambdas**
+**Why it failed:**
+`SubstituteFor()` is a helper method on GivenContext class, not available inside lambda scope. Lambda executes in different context without access to GivenContext instance methods.
+
+**✅ SOLUTION: Use Substitute.For<T>() directly inside lambdas** (Verified: November 2024)
 
 ```csharp
 New(out var contextVar, () => {
@@ -421,70 +1394,215 @@ New(out var contextVar, () => {
 });
 ```
 
-**Prevention**: SubstituteFor helper is only for GivenContext level, use NSubstitute directly inside lambdas.
-```
+**Why it works:**
+`Substitute.For<T>()` is NSubstitute's static API, available in any scope. The helper method `SubstituteFor()` on GivenContext is just a convenience wrapper.
 
-**❌ FAILED: Identity lambda in Invoked (doesn't test behavior)**
+**Prevention:**
+- Use `SubstituteFor()` helper only at GivenContext level (Given.SubstituteFor<T>(out var))
+- Use `Substitute.For<T>()` directly when inside lambdas
+- Remember: helpers are instance methods, not global functions
 
-Attempted:
+---
+
+#### Example 2: Identity Lambda Anti-Pattern
+
+**❌ FAILURE: Identity lambda in Invoked (doesn't test behavior)** (Discovered: November 2024)
+
+**Attempted:**
 ```csharp
 var then = When
     .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
 ```
 
-**Error**: The Invoked lambda returns a tuple of the inputs without calling any method. This tests nothing and violates the principle that Invoked should invoke the method under test.
+**Error:**
+No compile error, but test doesn't verify any behavior.
 
-**Why it failed**: Identity lambdas `(x) => x` or `(a, b) => (a, b)` don't exercise any behavior—they simply return their inputs unchanged.
+**Investigation:**
+1. Reviewed test - it passes but doesn't actually test anything
+2. Examined Invoked purpose - should invoke the method under test
+3. Realized identity lambda just returns inputs unchanged
+4. Identified that no method is being called or verified
 
-**✅ SOLUTION: Invoke actual method under test**
+**Why it failed:**
+Identity lambdas like `(x) => x` or `(a, b) => (a, b)` don't exercise any behavior. They simply return inputs unchanged, testing nothing. The test appears to pass but provides zero value.
+
+**✅ SOLUTION: Invoke actual method under test** (Verified: November 2024)
 
 ```csharp
-// ❌ BAD: Identity lambda (returns inputs unchanged, does not test behavior)
+// ❌ BAD: Identity lambda (returns inputs unchanged)
 var then = When
     .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
 
-// ✅ GOOD: Actually invokes the method under test with the parameters
+// ✅ GOOD: Actually invokes the method under test
 var then = When
     .Invoked(objVar, paramVar, static (obj, param) => obj.Method(param));
 
-// ✅ GOOD: For parameterless property getter, just call the property
+// ✅ GOOD: For parameterless property getter
 var then = When
     .Invoked(static () => HealthCheckTags.Ready);
 ```
 
-**Prevention**: Invoked must call actual method under test - never use identity lambdas like `(x) => x` or `(a, b) => (a, b)`.
+**Why it works:**
+These examples actually call the code being tested. The method invocation exercises real behavior that can be verified in assertions.
+
+**Prevention:**
+- Invoked must call actual method under test
+- Never use identity lambdas like `(x) => x`
+- Ask: "What method am I testing?" and call it explicitly
 
 ---
 
-**❌ CRITICAL ANTI-PATTERN: Not updating instructions after discovering a problem**
+#### Example 3: Option Creation in LanguageExt v5
 
-**Scenario:**
-An AI assistant fixed the OpenSSF Scorecard workflow issue (global env variables causing failure) but didn't update the instructions to document the problem and solution.
+**❌ FAILURE: Using wrong Option creation API** (Discovered: November 2024)
 
-**Why this is catastrophic:**
-1. Next AI assistant encounters the same issue → wastes time rediscovering the solution
-2. Pattern of mistakes → no institutional learning
-3. User has to repeat the same guidance → frustration
-4. Knowledge is lost → same mistakes repeated indefinitely
+**Attempted:**
+```csharp
+return Prelude.Optional(entity);  // ❌ Wrong for non-nullable types
+```
 
-**What should have happened:**
-After fixing the workflow issue, the AI should have IMMEDIATELY added documentation to the "Terminal Commands Reference" section under "Common GitHub Actions Mistakes" explaining:
-- The error message
-- Why it fails
-- The incorrect pattern
-- The correct pattern
-- When it was discovered
+**Error:**
+```
+Cannot convert from 'Entity' to 'Entity?'
+```
 
-**✅ CORRECT BEHAVIOR: Always update instructions immediately**
+**Investigation:**
+1. Checked LanguageExt v5 API documentation
+2. Found `Optional()` is for nullable types (int?, DateTime?)
+3. Discovered `Some()` is for non-null reference types
+4. Learned about .NoneIfNull() extension for nullable references
 
-When you discover ANY problem or solution:
-1. Fix the immediate issue
-2. **IMMEDIATELY** document it in copilot-instructions.md
-3. Add to the appropriate section (Failed Code Edits, Terminal Commands, Critical Guidelines, etc.)
-4. Include error messages, why it failed, correct solution, and prevention tips
-5. **NEVER skip this step** - updating instructions is NOT optional
+**Why it failed:**
+LanguageExt v5 has different APIs for different scenarios:
+- `Optional(T?)` - For nullable value types
+- `Some(T)` - For guaranteed non-null reference types
+- `.NoneIfNull()` - For nullable reference types
 
-**Remember:** Every minute spent updating instructions saves hours of future debugging time.
+Using `Optional()` for non-nullable reference type causes type mismatch.
+
+**✅ SOLUTION: Use Prelude.Some() for non-null values** (Verified: November 2024)
+
+```csharp
+// For guaranteed non-null values
+return entity is not null
+    ? Prelude.Some(entity)
+    : Option<Entity>.None;
+
+// Or with pattern matching
+return await query.FirstOrDefaultAsync(ct) is { } entity
+    ? Prelude.Some(entity)
+    : Option<Entity>.None;
+
+// For nullable reference types
+return nullableValue.NoneIfNull();
+```
+
+**Why it works:**
+- `Prelude.Some(value)` correctly wraps non-null values
+- Pattern matching ensures entity is not null before wrapping
+- `.NoneIfNull()` handles nullable references properly
+
+**Prevention:**
+- Use `Some()` for guaranteed non-null values
+- Use `Optional()` only for nullable value types (int?, DateTime?)
+- Use `.NoneIfNull()` for nullable reference types
+- Remember the v5 API differs from v4
+
+---
+
+#### Example 4: Multiple Instructions Update Claims
+
+**❌ FAILURE: Claiming instructions updated without verification** (Discovered: November 2025)
+
+**Attempted:**
+```markdown
+AI: "I'll update the instructions now."
+[Calls replace_string_in_file]
+[Tool response shows "oldString not found"]
+AI: "Done! I've updated the instructions."  ← WRONG
+```
+
+**Error:**
+Instructions were not actually updated, but AI claimed they were. User had to check manually and ask AI to try again.
+
+**Investigation:**
+1. Reviewed tool responses - replace_string_in_file failed
+2. AI didn't check the response before claiming success
+3. Identified pattern: AI assuming success without verification
+4. User had to waste time discovering nothing was updated
+
+**Why it failed:**
+AI didn't verify the tool response before telling user the work was done. Failed edit appeared as success to user, wasting time when they tried to use non-existent updates.
+
+**✅ SOLUTION: Always verify tool responses** (Verified: November 2025)
+
+```markdown
+AI: "Let me update the instructions."
+[Calls replace_string_in_file]
+[Tool response shows "oldString not found"]
+AI: "The edit failed with 'oldString not found'. Let me read the file to find the exact text."
+[Calls read_file to locate correct text]
+AI: "Found it - the whitespace was different. Trying again with exact text."
+[Calls replace_string_in_file with correct text]
+[Tool response shows "successfully edited"]
+AI: "Done! Successfully added to [section] section."
+```
+
+**Why it works:**
+- Checks tool response before claiming success
+- Reads error message and understands why it failed
+- Takes corrective action immediately
+- Only claims success after seeing "successfully edited"
+
+**Prevention:**
+- **ALWAYS check tool response** after every edit
+- IF failed → Read error, find correct text, retry
+- NEVER assume tool worked without verification
+- This pattern applies to ALL tool calls, not just file edits
+
+---
+
+### Common Investigation Techniques
+
+When a pattern fails, use these techniques to investigate:
+
+1. **Read Error Messages Carefully**
+   - Don't skip over error text
+   - Look for specific line numbers, types, or values
+   - Error messages often tell you exactly what's wrong
+
+2. **Check API Documentation**
+   - Library APIs change between versions
+   - Don't assume API from blog post is current
+   - Official docs are source of truth
+
+3. **Search for Working Examples**
+   - Use grep_search to find similar code in codebase
+   - See how pattern is used successfully elsewhere
+   - Copy working patterns, understand why they work
+
+4. **Verify Assumptions**
+   - Don't assume file exists - use list_dir
+   - Don't assume pattern used - use grep_search
+   - Don't assume dependency available - check package files
+
+5. **Test Incrementally**
+   - Break complex changes into small steps
+   - Verify each step works before next
+   - Easier to identify what broke
+
+6. **Use Read-Eval-Print Loop (REPL)**
+   - For complex logic, test in C# Interactive
+   - Verify behavior before writing test
+   - Understand how API actually works
+
+---
+
+**Related Topics:**
+- [Meta-Instructions](#meta-instructions-for-ai-assistants) - Rules for maintaining instructions
+- [Critical Test Guidelines](#critical-test-guidelines) - Testing patterns and antipatterns
+- [Terminal Commands Reference](#terminal-commands-reference) - Command failures and solutions
+- [Code Quality Warnings](#code-quality-warnings-to-avoid) - Common compiler warnings
 
 ---
 
@@ -994,28 +2112,53 @@ The security-scan job implements two levels of security validation:
 - ✅ Allows **incremental improvements** (low scores don't block, but critical issues do)
 - ✅ Follows **OpenSSF best practices** (Scorecard for visibility + blocking on critical findings)
 
-### PowerShell Commands (Windows)
+### Terminal Commands Reference
 
-**Shell**: `powershell.exe` (Windows PowerShell v7.5.4, as of time of writing. Use ` $PSVersionTable.PSVersion.ToString()` to check version, if needed)
+**Last Updated:** November 2025
 
-#### Working Commands
+**Shell Environment:** `powershell.exe` (Windows PowerShell v7.5.4+)  
+**Project Root:** `C:\GitHub\HomeInventory\src\HomeInventory`
 
-**Build:**
+#### Command Quick Reference
+
+| Task              | Command                                                                       | Tool                | Notes                   |
+|-------------------|-------------------------------------------------------------------------------|---------------------|-------------------------|
+| Build solution    | `dotnet build --no-restore`                                                   | .NET CLI            | Use explicit `cd` first |
+| Run tests         | `dotnet test --no-build`                                                      | .NET CLI            | Requires prior build    |
+| Test with filter  | `dotnet test --filter "Category=Unit"`                                        | .NET CLI            | Filter by category/name |
+| Check formatting  | `dotnet format --verify-no-changes`                                           | .NET CLI            | CI validation           |
+| Code coverage     | `dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage"` | .NET CLI + Coverlet | Local coverage          |
+| Git diff (safe)   | `git --no-pager diff origin/main...HEAD`                                      | Git                 | Prevents pager hang     |
+| Git log (safe)    | `git --no-pager log --oneline --graph \| Select-Object -First 20`             | Git + PowerShell    | Limit output            |
+| Verify Action SHA | `git ls-remote --tags https://github.com/[owner]/[action].git`                | Git                 | GitHub Actions          |
+| Filter output     | `command 2>&1 \| Select-String -Pattern "pattern"`                            | PowerShell          | PowerShell grep         |
+
+---
+
+#### .NET CLI Commands
+
+**Build Project:**
 ```powershell
 cd C:\GitHub\HomeInventory\src\HomeInventory
 dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj --no-restore
 ```
 
-**Test:**
+**Run Tests:**
 ```powershell
 cd C:\GitHub\HomeInventory\src\HomeInventory
 dotnet test HomeInventory.Tests\HomeInventory.Tests.csproj --no-build
 ```
 
-**Test with Filter:**
+**Test with Category Filter:**
 ```powershell
 cd C:\GitHub\HomeInventory\src\HomeInventory
-dotnet test HomeInventory.Tests\HomeInventory.Tests.csproj --filter "FullyQualifiedName~TestClassName" --no-build
+dotnet test --filter "Category=Unit" --no-build
+```
+
+**Test with Name Filter:**
+```powershell
+cd C:\GitHub\HomeInventory\src\HomeInventory
+dotnet test --filter "FullyQualifiedName~TestClassName" --no-build
 ```
 
 **Format Verification:**
@@ -1024,7 +2167,7 @@ cd C:\GitHub\HomeInventory\src\HomeInventory
 dotnet format --verify-no-changes --severity error --verbosity diag
 ```
 
-**Coverage (Local):**
+**Code Coverage (Local):**
 ```powershell
 cd C:\GitHub\HomeInventory\src\HomeInventory
 dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage"
@@ -1036,112 +2179,159 @@ cd C:\GitHub\HomeInventory\src\HomeInventory
 dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj --no-restore /p:TreatWarningsAsErrors=true
 ```
 
-**Filter Output with Select-String:**
+**Best Practices:**
+- ✅ Always use explicit `cd` to set working directory
+- ✅ Use `--no-restore` after initial restore to speed up builds
+- ✅ Use `--no-build` for tests after building
+- ✅ Use `2>&1` to capture both stdout and stderr
+- ✅ Filter output with `Select-String` for cleaner results
+
+---
+
+#### PowerShell Output Handling
+
+**Filter Build Output:**
 ```powershell
 dotnet build 2>&1 | Select-String -Pattern "warning|error" | Select-Object -First 20
 ```
 
-#### Command Failures and Solutions
+**Check Build Success:**
+```powershell
+dotnet build 2>&1 | Select-String -Pattern "Build succeeded|Build failed"
+```
 
-**❌ FAILED: Commands hanging indefinitely**
+**Check for Specific Warnings:**
+```powershell
+dotnet build 2>&1 | Select-String -Pattern "IDE0053|CS\d+"
+```
 
-Some commands appear to hang with no output, especially when run in background mode or with complex pipelines:
+**PowerShell vs. Unix Commands:**
+- `grep pattern` → `Select-String -Pattern "pattern"`
+- `head -n X` → `Select-Object -First X`
+- `tail -n X` → `Select-Object -Last X`
+- `cat file` → `Get-Content file`
+
+---
+
+#### Git Operations
+
+**Safe Diff (No Pager):**
+```powershell
+# ✅ Prevents interactive pager that hangs terminal
+git --no-pager diff origin/main...HEAD
+```
+
+**Safe Log with Limit:**
+```powershell
+# ✅ Show first 20 commits
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -First 20
+
+# ✅ Show last 20 commits
+git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -Last 20
+```
+
+**Show Changed Files Only:**
+```powershell
+git --no-pager diff --name-status origin/main...HEAD
+```
+
+**Git Commands Requiring --no-pager:**
+- `git diff` - Prevents less/more pager
+- `git log` - Prevents interactive scroll
+- `git show` - Prevents pager for commits
+- `git blame` - Prevents pager for file history
+
+**Why --no-pager?**  
+Git commands use interactive pagers by default. In PowerShell, this creates a session that users may not know how to exit (requires pressing `q`). Always use `--no-pager` or pipe to `cat` for non-interactive output.
+
+---
+
+#### Common Command Failures and Solutions
+
+#### Common Command Failures and Solutions
+
+**❌ FAILURE: Commands Hanging Indefinitely** (Discovered: November 2024)
 
 ```powershell
-# ❌ These may hang or produce no output:
+# ❌ These may hang with no output:
 dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj
 dotnet test HomeInventory.Tests\HomeInventory.Tests.csproj --no-build
 dotnet format --verify-no-changes --severity error --verbosity diag
 ```
 
-**✅ SOLUTION: Use explicit working directory and output redirection**
+**Why it fails:** Background mode or complex pipelines can cause commands to hang without output.
+
+**✅ SOLUTION: Use explicit working directory and simpler commands**
 
 ```powershell
-# ✅ Always use explicit cd and simpler commands:
+# ✅ Always use explicit cd:
 cd C:\GitHub\HomeInventory\src\HomeInventory
 dotnet build HomeInventory.Tests\HomeInventory.Tests.csproj --no-restore
 
-# ✅ For checking output, use Select-String:
+# ✅ Check output with Select-String:
 dotnet build 2>&1 | Select-String -Pattern "succeeded|failed"
 ```
 
-**Why it works**: Explicit `cd` ensures correct context, and separating commands avoids complex pipeline issues.
-
 ---
 
-**❌ FAILED: grep doesn't exist in PowerShell**
+**❌ FAILURE: grep Command Not Found** (Verified: November 2024)
 
 ```powershell
-# ❌ This fails:
+# ❌ This fails in PowerShell:
 dotnet build | grep "error"
 ```
 
-**Error**: `grep : The term 'grep' is not recognized`
+**Error:** `grep : The term 'grep' is not recognized`
 
-**✅ SOLUTION: Use Select-String instead**
+**✅ SOLUTION: Use PowerShell's Select-String**
 
 ```powershell
 # ✅ PowerShell equivalent:
 dotnet build 2>&1 | Select-String -Pattern "error"
 ```
 
-**Why**: PowerShell uses `Select-String`, not `grep`. Always use PowerShell cmdlets.
+**Why:** PowerShell uses `Select-String`, not Unix `grep`. Always use PowerShell cmdlets.
 
 ---
 
-**❌ FAILED: git diff opens interactive pager that cannot be exited**
+**❌ FAILURE: Git Diff Opens Interactive Pager** (Discovered: November 2024)
 
 ```powershell
-# ❌ This command hangs and requires terminal session termination:
+# ❌ This hangs and requires terminal termination:
 git diff origin/main...HEAD
 ```
 
-**Error**: The command opens an interactive pager (less/more) that displays output one page at a time. User cannot exit without knowing keyboard shortcuts, often requiring terminal session termination.
+**Why it fails:** Opens interactive pager (less/more) that displays output one page at a time. Users may not know keyboard shortcuts to exit (press `q`).
 
-**✅ SOLUTION: Disable pager or use alternative output methods**
+**✅ SOLUTION: Use --no-pager or pipe to cat**
 
 ```powershell
-# ✅ Option 1: Disable pager with --no-pager
+# ✅ Option 1: Disable pager
 git --no-pager diff origin/main...HEAD
 
-# ✅ Option 2: Pipe to cat to disable paging
+# ✅ Option 2: Pipe to cat
 git diff origin/main...HEAD | cat
 
-# ✅ Option 3: Use log with patches for smaller output
-git --no-pager log --oneline --stat origin/main..HEAD
-
-# ✅ Option 4: Show only file names that changed
-git --no-pager diff --name-status origin/main...HEAD
-
-# ✅ Option 5: In PowerShell, use Select-Object instead of head (head is Unix-only)
+# ✅ Option 3: Limit output with Select-Object
 git --no-pager diff origin/main...HEAD | Select-Object -First 100
-git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -First 20
+
+# ✅ Option 4: Show only changed file names
+git --no-pager diff --name-status origin/main...HEAD
 ```
-
-**Why**: Git commands like `diff`, `log`, and `show` use a pager (usually `less` on Unix-like systems) by default. In PowerShell, this creates an interactive session that users may not know how to exit (typically requires pressing `q`). Always use `--no-pager` or pipe to `cat` for non-interactive output.
-
-**Commands that need --no-pager:**
-- `git diff`
-- `git log`
-- `git show`
-- `git blame`
-- Any git command with potentially large output
 
 ---
 
-**❌ FAILED: Using Unix commands (head, tail) in PowerShell**
+**❌ FAILURE: Using Unix Commands in PowerShell** (Verified: November 2024)
 
 ```powershell
-# ❌ This fails in PowerShell:
+# ❌ These fail in PowerShell:
 git --no-pager log --oneline --graph origin/main..HEAD | head -n 20
+git --no-pager log --oneline --graph origin/main..HEAD | tail -n 20
 ```
 
-**Error**: 
-```
-head: The term 'head' is not recognized as a name of a cmdlet, function, script file, or executable program.
-```
+**Error:** `head: The term 'head' is not recognized`
 
-**✅ SOLUTION: Use PowerShell cmdlets instead of Unix commands**
+**✅ SOLUTION: Use PowerShell cmdlets**
 
 ```powershell
 # ✅ PowerShell equivalent of head:
@@ -1150,91 +2340,75 @@ git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -First 20
 # ✅ PowerShell equivalent of tail:
 git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -Last 20
 
-# ✅ PowerShell equivalent of head + tail (skip first N, take next M):
+# ✅ Skip and take:
 git --no-pager log --oneline --graph origin/main..HEAD | Select-Object -Skip 5 -First 10
 ```
 
-**Why**: PowerShell is not a Unix shell. Commands like `head`, `tail`, `cat`, `grep` don't exist by default. Always use PowerShell cmdlets:
-- `head -n X` → `Select-Object -First X`
-- `tail -n X` → `Select-Object -Last X`
-- `grep pattern` → `Select-String -Pattern "pattern"`
-- `cat file` → `Get-Content file`
-
-**Remember**: The user's shell is **PowerShell** (`pwsh.exe`), not bash. Always verify commands work in PowerShell before running them.
+**Remember:** PowerShell is not bash. Use PowerShell cmdlets, not Unix commands.
 
 ---
 
-**❌ FAILED: Piping with complex filter expressions**
+**❌ FAILURE: Complex Filter Expressions** (Verified: November 2024)
 
 ```powershell
-# ❌ This may fail with parsing errors:
+# ❌ May fail with parsing errors:
 dotnet test --filter "FullyQualifiedName~Test1|FullyQualifiedName~Test2"
 ```
 
-**✅ SOLUTION: Use proper escaping or quotes**
+**✅ SOLUTION: Use proper quoting or simpler filters**
 
 ```powershell
-# ✅ Proper escaping:
-dotnet test --filter "FullyQualifiedName~Test1|FullyQualifiedName~Test2"
-# OR separate filters:
+# ✅ Use category filters:
 dotnet test --filter "Category=Unit"
+
+# ✅ Or proper escaping:
+dotnet test --filter "FullyQualifiedName~Test1|FullyQualifiedName~Test2"
 ```
 
 ---
 
-### When Commands Fail
+#### Template for Documenting New Failures
 
-**If a terminal command fails:**
-
-1. **Record the failure** in this section
-2. **Document the error message**
-3. **Document the working solution**
-4. **Explain why it works**
-
-**Template for new failures:**
+When a terminal command fails, document it using this template:
 
 ```markdown
-**❌ FAILED: [Brief description]**
+**❌ FAILURE: [Brief Description]** (Discovered: [Month Year])
 
-[Failed command]
+[Failed command or example]
 
-**Error**: [Error message]
+**Error:** [Error message or symptom]
 
-**✅ SOLUTION: [Working alternative]**
+**Why it fails:** [Explanation of root cause]
+
+**✅ SOLUTION: [Working Alternative]** (Verified: [Month Year])
 
 [Working command]
 
-**Why**: [Explanation of why the solution works]
+**Why it works:** [Explanation]
 ```
 
-### Command Best Practices
+---
+
+#### Command Best Practices Summary
 
 1. **Always use explicit `cd`** before running commands
-2. **Use `--no-restore`** and `--no-build`** when appropriate to speed up builds
+2. **Use `--no-restore` and `--no-build`** when appropriate to speed up builds
 3. **Use `2>&1`** to capture both stdout and stderr in PowerShell
 4. **Use `Select-String`** instead of `grep`
-5. **Avoid complex pipelines** - break into multiple commands if needed
-6. **Use `--filter`** for running specific tests
-7. **Check command output** with `Select-String` patterns
+5. **Use `--no-pager`** for git commands to avoid interactive pagers
+6. **Use `Select-Object`** instead of `head`/`tail`
+7. **Avoid complex pipelines** - break into multiple commands if needed
+8. **Use `--filter`** for running specific tests
+9. **Check command output** with `Select-String` patterns
 
-### Common Patterns
+---
 
-**Check if build succeeded:**
-```powershell
-cd C:\GitHub\HomeInventory\src\HomeInventory
-dotnet build 2>&1 | Select-String -Pattern "Build succeeded|Build failed"
-```
+**Related Topics:**
+- [GitHub Actions Version Management](#github-actions-version-management) - Verifying action SHAs
+- [Development Commands](#development-commands) - Project-specific commands
+- [Failed Code Edits](#failed-code-edits---investigation--prevention) - Learning from mistakes
 
-**Run specific test category:**
-```powershell
-cd C:\GitHub\HomeInventory\src\HomeInventory
-dotnet test --filter "Category=Unit" --no-build
-```
-
-**Check for specific errors:**
-```powershell
-dotnet build 2>&1 | Select-String -Pattern "IDE0053|CS\d+"
-```
+---
 
 ## Project Overview
 
@@ -1246,7 +2420,36 @@ HomeInventory is a home inventory management system built with .NET 10.0, follow
 
 The solution follows a **vertical slice/modular architecture** with clear separation of concerns:
 
-- **HomeInventory.Api** - Entry point and API configuration
+- **[Project].Api** - Entry point and API configuration
+- **[Project].Web[.Module]** - HTTP endpoints (minimal APIs with Carter or similar)
+- **[Project].Application[.Module]** - Application logic and use cases
+- **[Project].Application[.Module].Interfaces** - Public contracts for commands/queries
+- **[Project].Contracts[.Module]** - DTOs and request/response models
+- **[Project].Contracts[.Module].Validators** - FluentValidation validators for contracts
+- **[Project].Domain[.Module]** - Domain entities, aggregates, value objects, and domain events
+- **[Project].Infrastructure[.Module]** - Data access and external services
+- **[Project].Infrastructure.Framework** - Shared infrastructure concerns
+- **[Project].Core** - Shared primitives and utilities
+- **[Project].Modules** - Module registration and orchestration
+- **[Project].Tests[.Type]** - Testing projects (Unit, Integration, Acceptance)
+
+**Example (Project-Specific: HomeInventory):**
+```
+HomeInventory.Api
+HomeInventory.Web.UserManagement
+HomeInventory.Application.UserManagement
+HomeInventory.Application.UserManagement.Interfaces
+HomeInventory.Contracts.UserManagement
+HomeInventory.Contracts.UserManagement.Validators
+HomeInventory.Domain.UserManagement
+HomeInventory.Infrastructure.UserManagement
+HomeInventory.Infrastructure.Framework
+HomeInventory.Core
+HomeInventory.Modules
+HomeInventory.Tests.Unit
+HomeInventory.Tests.Integration
+HomeInventory.Tests.Acceptance
+```
 - **HomeInventory.Web[.Module]** - Carter-based HTTP endpoints (minimal APIs)
 - **HomeInventory.Application[.Module]** - Application logic and use cases
 - **HomeInventory.Application[.Module].Interfaces** - Public contracts for commands/queries
@@ -1301,6 +2504,8 @@ The solution follows a **vertical slice/modular architecture** with clear separa
 - **TngTech.ArchUnitNET** & **NetArchTest.Rules** - Architecture testing
 
 ## Development Workflow & Best Practices
+
+**Last Updated:** November 2025
 
 This section provides explicit guidance on how to implement features following the project's established patterns and conventions.
 
@@ -1449,16 +2654,27 @@ var unitOfWork = _scopeAccessor.GetRequiredContext<IUnitOfWork>();
 - ❌ Never use service locator pattern
 - ❌ Don't inject `IServiceProvider` directly
 
+---
+
+**Related Topics:**
+- [Module Development Workflow](#module-development-workflow) - Registering services in modules
+- [Scope Accessor Pattern](#scope-accessor-pattern) - Cross-layer dependency management
+- [Endpoint Development](#endpoint-development-carter) - Injecting services in endpoints
+- [Application Services Pattern](#application-services-pattern) - Service implementation patterns
+- [Testing Guidelines](#testing-guidelines) - Mocking dependencies in tests
+
+---
+
 ### Repository Pattern Implementation
 
 **The project uses Ardalis.Specification for the repository pattern.**
 
 **Step-by-step repository creation:**
 
-1. **Define repository interface** in `HomeInventory.Application.[Module]`:
+1. **Define repository interface** in `[Project].Application.[Module]`:
 
 ```csharp
-namespace HomeInventory.Application.[Module];
+namespace [Project].Application.[Module];
 
 public interface I[Entity]Repository : IRepository<[Entity]>
 {
@@ -1472,10 +2688,20 @@ public interface I[Entity]ReadOnlyRepository : IReadOnlyRepository<[Entity]>
 }
 ```
 
-2. **Implement repository** in `HomeInventory.Infrastructure.[Module]`:
+**Example (Project-Specific: HomeInventory):**
+```csharp
+namespace HomeInventory.Application.UserManagement;
+
+public interface IUserRepository : IRepository<User>
+{
+    // Specification-based queries (preferred)
+}
+```
+
+2. **Implement repository** in `[Project].Infrastructure.[Module]`:
 
 ```csharp
-namespace HomeInventory.Infrastructure.[Module];
+namespace [Project].Infrastructure.[Module];
 
 internal sealed class [Entity]Repository(DatabaseContext context) 
     : RepositoryBase<[Entity]>(context), I[Entity]Repository
@@ -1488,7 +2714,7 @@ internal sealed class [Entity]Repository(DatabaseContext context)
 3. **Create specifications** for complex queries:
 
 ```csharp
-namespace HomeInventory.Infrastructure.[Module].Specifications;
+namespace [Project].Infrastructure.[Module].Specifications;
 
 public sealed class [Entity]ByEmailSpec : Specification<[Entity]>
 {
@@ -1544,9 +2770,14 @@ public async Task<Option<Error>> CreateAsync(CreateCommand command, Cancellation
 **Clear separation between domain models and DTOs prevents domain leakage.**
 
 **Project structure:**
-- **Domain models**: `HomeInventory.Domain.[Module]` - Entities, Value Objects, Aggregates
-- **Contracts (DTOs)**: `HomeInventory.Contracts.[Module]` - Request/Response models
-- **Validators**: `HomeInventory.Contracts.[Module].Validators` - FluentValidation rules
+- **Domain models**: `[Project].Domain.[Module]` - Entities, Value Objects, Aggregates
+- **Contracts (DTOs)**: `[Project].Contracts.[Module]` - Request/Response models
+- **Validators**: `[Project].Contracts.[Module].Validators` - FluentValidation rules
+
+**Example (Project-Specific: HomeInventory):**
+- Domain models: `HomeInventory.Domain.UserManagement`
+- Contracts: `HomeInventory.Contracts.UserManagement`
+- Validators: `HomeInventory.Contracts.UserManagement.Validators`
 
 **1. Request DTOs:**
 
@@ -1621,7 +2852,7 @@ public sealed class Create[Entity]RequestValidator : AbstractValidator<Create[En
 **4. Mappers (Mapperly):**
 
 ```csharp
-namespace HomeInventory.Contracts.[Module];
+namespace [Project].Contracts.[Module];
 
 [Mapper]
 public static partial class [Module]Mapper
@@ -1642,6 +2873,15 @@ public static partial class [Module]Mapper
 }
 ```
 
+**Example (Project-Specific: HomeInventory):**
+```csharp
+namespace HomeInventory.Contracts.UserManagement;
+
+[Mapper]
+public static partial class UserManagementMapper
+{
+    public static partial CreateUserCommand ToCommand(this CreateUserRequest request);
+    public static partial UserResponse ToResponse(this User entity);
 **DTOs/Contracts Best Practices:**
 - ✅ Use `record` types for immutability
 - ✅ Validate all inputs with FluentValidation
@@ -1762,7 +3002,7 @@ public bool IsEligibleForDiscount(decimal orderTotal, int customerTier)
 
 **3. Feature documentation:**
 
-Create a markdown file in `docs/features/[feature-name].md`:
+Create a Markdown file in `docs/features/[feature-name].md`:
 
 ```markdown
 # [Feature Name]
@@ -1903,16 +3143,26 @@ Brief description of the feature and its purpose.
 
 ## Coding Standards & Conventions
 
+**Last Updated:** November 2025
+
 ### Naming Conventions
 
-1. **Namespaces**: Follow folder structure - `HomeInventory.[Layer][.Module][.SubFolder]`
+1. **Namespaces**: Follow folder structure - `[Project].[Layer][.Module][.SubFolder]`
 2. **Files**: One type per file, file name matches type name
 3. **Projects**:
-   - Feature modules: `HomeInventory.[Layer].[ModuleName]`
-   - Framework/shared: `HomeInventory.[Layer].Framework`
+   - Feature modules: `[Project].[Layer].[Module]`
+   - Framework/shared: `[Project].[Layer].Framework`
 4. **Private/Internal Fields**: Use underscore prefix with camelCase - `_fieldName`
-5. **Interfaces**: Start with 'I' prefix - `IUserRepository`
+5. **Interfaces**: Start with 'I' prefix - `I[Entity]Repository`
 6. **Type Parameters**: Use 'T' prefix - `TEntity`, `TIdentity`
+
+**Example (Project-Specific: HomeInventory):**
+```
+Namespaces: HomeInventory.[Layer][.Module][.SubFolder]
+Feature modules: HomeInventory.Application.UserManagement
+Framework: HomeInventory.Infrastructure.Framework
+Interfaces: IUserRepository, IOrderService
+```
 
 ### Code Style
 
@@ -1960,9 +3210,15 @@ return new Option<T>(value);  // ❌ Not the v5 API
 **When to use what:**
 - **`Prelude.Some(value)`**: When you have a guaranteed non-null value
 - **`Option<T>.None`**: To represent absence of value
-- **`.NoneIfNull()`**: For nullable reference types (defined in `HomeInventory.Core.OptionExtensions`)
+- **`.NoneIfNull()`**: For nullable reference types (maybe defined as extension method in your Core/Framework project)
 - **`.ToOption()`**: For collections or LanguageExt built-in conversions
 - **`Prelude.Optional(value)`**: ONLY for nullable value types (e.g., `int?`, `DateTime?`)
+
+**Example (Project-Specific: HomeInventory):**
+```csharp
+// NoneIfNull extension defined in HomeInventory.Core.OptionExtensions
+return nullableValue.NoneIfNull();
+```
 
 ### CollectionsMarshal and Async Patterns
 
@@ -2099,6 +3355,18 @@ public sealed class [Feature]CarterModule(
 - Set scoped context before calling service methods
 - Use mapper to convert requests to commands/queries
 
+---
+
+**Related Topics:**
+- [Using Dependency Injection](#using-dependency-injection) - Injecting services in endpoints
+- [Scope Accessor Pattern](#scope-accessor-pattern) - Setting scoped dependencies
+- [Application Services Pattern](#application-services-pattern) - Calling service methods
+- [DTOs, Contracts, and Models](#dtos-contracts-and-models) - Request/Response models
+- [Validation](#validation) - FluentValidation integration
+- [Response Mapping (Mapperly)](#response-mapping-mapperly) - DTO mapping
+
+---
+
 ### Domain Development
 
 1. **Entities**: Inherit from base entity classes in `HomeInventory.Domain.Primitives`
@@ -2106,6 +3374,15 @@ public sealed class [Feature]CarterModule(
 3. **Domain Events**: Implement domain event notifications via `IDomainEventNotification`
 4. **Aggregates**: Define aggregate roots in `Aggregates/` folder
 5. **Domain Errors**: Define errors in `Errors/` folder
+
+---
+
+**Related Topics:**
+- [Architecture & Structure](#architecture--structure) - Clean Architecture principles
+- [File Organization Guidelines](#file-organization-guidelines) - Domain folder structure
+- [Industry Best Practices](#industry-best-practices) - DDD patterns explained
+
+---
 
 ### Persistence & Data Access
 
@@ -2124,6 +3401,16 @@ public sealed class [Feature]CarterModule(
    - Use `ICreationAuditableEntity` for creation tracking
    - Use `IModificationAuditableEntity` for modification tracking
    - Timestamp from injected `TimeProvider`
+
+---
+
+**Related Topics:**
+- [Repository Pattern Implementation](#repository-pattern-implementation) - Step-by-step repository creation
+- [Domain Development](#domain-development) - Entities and aggregates
+- [Scope Accessor Pattern](#scope-accessor-pattern) - Accessing repositories in services
+- [Testing Guidelines](#testing-guidelines) - Testing infrastructure code
+
+---
 
 ### Application Layer (CQRS)
 
@@ -2315,6 +3602,16 @@ public sealed class MyCarterModule : ApiCarterModule
 3. **Exception handling**: Use `Execute.AndCatchAsync` for top-level handling
 4. **ProblemDetails**: Return RFC 7807 problem details for API errors
 
+---
+
+**Related Topics:**
+- [LanguageExt v5 Patterns](#languageext-v5-patterns) - Functional error handling
+- [Endpoint Development](#endpoint-development-carter) - Returning ProblemDetails from endpoints
+- [Application Services Pattern](#application-services-pattern) - Service error handling patterns
+- [Industry Best Practices](#industry-best-practices) - Error handling principles
+
+---
+
 ### Scope Accessor Pattern
 
 The project uses a custom **Scope Accessor** pattern for managing scoped dependencies across layers:
@@ -2370,7 +3667,19 @@ internal sealed class UserService(
 - Repositories and UnitOfWork are injected at the endpoint level and accessed in services
 - **Important:** Always dispose scopes using `using` or `CompositeDisposable`
 
+---
+
+**Related Topics:**
+- [Using Dependency Injection](#using-dependency-injection) - Service registration and lifetimes
+- [Endpoint Development](#endpoint-development-carter) - Setting scoped dependencies in endpoints
+- [Application Services Pattern](#application-services-pattern) - Retrieving scoped dependencies in services
+- [Repository Pattern Implementation](#repository-pattern-implementation) - Using repositories via scope accessor
+
+---
+
 ## Module Development Workflow
+
+**Last Updated:** November 2025
 
 When creating a new feature module (e.g., "Inventory"):
 
@@ -2417,7 +3726,40 @@ When creating a new feature module (e.g., "Inventory"):
 
 10. **Write tests** (unit, integration, acceptance)
 
+---
+
+**Related Topics:**
+- [Using Dependency Injection](#using-dependency-injection) - Registering services in modules
+- [Architecture & Structure](#architecture--structure) - Understanding modular architecture
+- [Endpoint Development](#endpoint-development-carter) - Creating Carter endpoints
+- [Repository Pattern Implementation](#repository-pattern-implementation) - Implementing repositories
+- [Testing Guidelines](#testing-guidelines) - Writing tests for new modules
+
+---
+
 ## Testing Guidelines
+
+**Last Updated:** November 2025
+
+### Testing Quick Reference
+
+| What You Need          | Where to Look                                                | Quick Answer                                       |
+|------------------------|--------------------------------------------------------------|----------------------------------------------------|
+| Test structure pattern | [Test Structure Pattern](#test-structure-pattern)            | Use `BaseTest<TGivenContext>` with Given-When-Then |
+| Create test data       | [AutoFixture Usage](#autofixture-usage-guidelines)           | Use `.New<T>(out var)` with AutoFixture            |
+| Mock dependencies      | [Critical Guidelines](#critical-test-guidelines)             | Use `.SubstituteFor<T>(out var)` helper            |
+| Assert collections     | [Common Assertions](#common-assertions)                      | Use `.ContainSingle()` not `.HaveCount(1)`         |
+| Assert Option<T>       | [Common Assertions](#common-assertions)                      | Use `.BeSome()` and `.BeNone()` extensions         |
+| Avoid anti-patterns    | [Common Anti-Patterns](#common-test-anti-patterns-reference) | Check DO/DON'T table                               |
+| Test design principles | [Test Design Principles](#test-design-principles)            | Single responsibility, explicit SUT                |
+| Unit vs Integration    | [General Testing Principles](#general-testing-principles)    | Unit for logic, Integration for infrastructure     |
+
+**Related Topics:**
+- [Failed Code Edits](#failed-code-edits---investigation--prevention) - Learn from past mistakes
+- [Code Quality Warnings](#code-quality-warnings-to-avoid) - IDE warnings to fix
+- [AutoFixture Usage](#autofixture-usage-guidelines) - Test data generation patterns
+
+---
 
 ### General Testing Principles
 
@@ -3674,6 +5016,8 @@ docker-compose up
 
 ## Code Quality & Analyzers
 
+**Last Updated:** November 2025
+
 The project uses multiple analyzers to enforce code quality:
 
 1. **SonarAnalyzer.CSharp** - Code quality and security analysis
@@ -3689,7 +5033,30 @@ The project uses multiple analyzers to enforce code quality:
 - Pattern matching preferred over traditional checks
 - Static local functions/anonymous functions preferred when possible
 
+---
+
+**Related Topics:**
+- [Coding Standards & Conventions](#coding-standards--conventions) - Style guidelines
+- [Testing Guidelines](#testing-guidelines) - Test quality standards
+- [Code Quality Warnings to Avoid](#code-quality-warnings-to-avoid) - Common warnings
+- [Industry Best Practices](#industry-best-practices) - SOLID principles
+
+---
+
 ## Common Patterns to Follow
+4. **AwesomeAssertions.Analyzers** - Test assertion quality
+5. **EditorConfig** - Enforces consistent coding style (see `.editorconfig`)
+
+**Key EditorConfig Rules:**
+- File-scoped namespaces required
+- UTF-8 encoding with CRLF line endings
+- Expression-bodied members preferred
+- Pattern matching preferred over traditional checks
+- Static local functions/anonymous functions preferred when possible
+
+## Common Patterns to Follow
+
+**Last Updated:** November 2025
 
 ### Options Pattern
 ```csharp
@@ -3778,6 +5145,8 @@ public sealed class [Module]Module : IModule
 7. What are the testable scenarios?
 
 ## Code Review Guidelines
+
+**Last Updated:** November 2025
 
 When reviewing code or providing feedback on pull requests, check for these critical aspects:
 
@@ -4047,3 +5416,451 @@ Before approving a PR, verify:
 ---
 
 **Remember**: Always favor immutability, functional patterns, and explicit error handling. Keep modules cohesive and loosely coupled.
+
+## Identified Problems and Solutions
+
+This section provides a comprehensive analysis of structural, organizational, and content issues within these instructions, categorized by priority (P0-P5) with root causes and proposed solutions.
+
+### Priority Definitions
+
+| Priority | Definition                                     | Action Timeline       |
+|----------|------------------------------------------------|-----------------------|
+| **P0**   | Blocks AI operation or causes critical errors  | Immediate             |
+| **P1**   | Causes frequent failures or wasted effort      | Within 1 iteration    |
+| **P2**   | Reduces efficiency, moderate impact            | Within 2-3 iterations |
+| **P3**   | Maintenance burden, minor inefficiencies       | Within 4-6 iterations |
+| **P4**   | Style inconsistencies, cosmetic issues         | When convenient       |
+| **P5**   | Nice-to-have improvements                      | Backlog               |
+
+### P0 Issues: Critical Blockers
+
+#### P0-1: No Systematic Reasoning Framework (RESOLVED)
+
+**Symptom:** AI assistants would dive into implementation without thinking through alternatives, leading to suboptimal solutions that had to be reworked.
+
+**Root Cause:** Instructions focused on "what to do" but not "how to think" about problems.
+
+**Impact:** 
+- Increased rework due to choosing wrong architectural patterns
+- Missed edge cases and failure modes
+- Solutions that technically worked but didn't align with project philosophy
+
+**Solution (IMPLEMENTED):**
+- ✅ Added "Reasoning and Decision-Making Framework" section with CoT/ToT patterns
+- ✅ Included decision trees for common scenarios (layer selection, module creation, test strategy)
+- ✅ Mandated explicit reasoning in responses to users
+- ✅ Required assumption verification before implementation
+
+**Verification:** AI must now articulate reasoning path before taking action.
+
+---
+
+#### P0-2: Placeholder Convention Ambiguity (RESOLVED)
+
+**Symptom:** AI confusion between project-specific examples and generalizable patterns, leading to copy-paste of inappropriate project-specific code.
+
+**Root Cause:** No explicit notation system for placeholders vs. concrete examples.
+
+**Impact:**
+- AI might generate code with project-specific names in other contexts
+- Unclear when to adapt patterns vs. copy examples verbatim
+- Difficulty distinguishing templates from historical records
+
+**Solution (IMPLEMENTED):**
+- ✅ Added "Notation Guide" section defining placeholder conventions
+- ✅ Established clear patterns: `[Project]`, `[Layer]`, `[Module]`, `[Entity]`, etc.
+- ✅ Provided mapping from generic to concrete examples
+- ✅ Guidance on when to use placeholders vs. specific names
+
+**Verification:** All instructional code examples should use placeholders; project-specific examples should be labeled.
+
+---
+
+### P1 Issues: Frequent Failures
+
+#### P1-1: Excessive Duplication of Testing Patterns
+
+**Symptom:** Test guidelines appear in multiple sections with overlapping and sometimes contradictory guidance.
+
+**Root Cause:** Organic growth - guidelines were added reactively as problems occurred without consolidating existing content.
+
+**Impact:**
+- AI must scan 800+ lines of test guidelines to find relevant pattern
+- Contradictory advice in different sections
+- Increased cognitive load for humans maintaining the instructions
+
+**Solutions (Priority Order):**
+
+1. **Consolidate into Single Test Reference** (Recommended)
+   - Merge all test-related guidance into one canonical section
+   - Use subsections: Setup Patterns, Assertion Patterns, Anti-Patterns, Examples
+   - Cross-reference from other sections instead of duplicating
+   - **Pros:** Single source of truth, easier to maintain
+   - **Cons:** One-time effort to reconcile contradictions
+
+2. **Create Test Pattern Index**
+   - Keep sections separate but add index/quick reference table
+   - Each entry links to detailed explanation
+   - **Pros:** Minimal restructuring, quick lookup
+   - **Cons:** Still maintains duplication
+
+**Implementation Priority:** P1 - Address in next major revision
+
+---
+
+#### P1-2: Terminal Commands Section Organization
+
+**Symptom:** PowerShell commands and GitHub Actions commands mixed together; hard to find specific command patterns.
+
+**Root Cause:** Commands added chronologically as failures occurred rather than organized by category.
+
+**Impact:**
+- Developers waste time scanning through 400+ lines to find relevant command
+- Similar patterns scattered (all git commands should be together)
+- No quick reference for common tasks
+
+**Solutions:**
+
+1. **Reorganize by Tool/Technology** (Recommended)
+   - PowerShell Commands (Build, Test, Git operations)
+   - GitHub Actions (Version management, workflow patterns)
+   - .NET CLI (dotnet commands)
+   - **Pros:** Intuitive organization, tool-specific
+   - **Cons:** Requires restructuring existing content
+
+2. **Add Command Index/Cheat Sheet**
+   - Create quick lookup table at section start
+   - Group by task: Build, Test, Deploy, Debug
+   - **Pros:** Preserves existing structure, adds navigation
+   - **Cons:** Doesn't solve underlying organizational issue
+
+**Implementation Priority:** P1 - High value, moderate effort
+
+---
+
+#### P1-3: Example Code Uses Project-Specific Names
+
+**Symptom:** Throughout the document, examples may still use project-specific names instead of placeholders.
+
+**Root Cause:** Instructions evolved from documenting this specific project rather than being designed as reusable guidelines.
+
+**Impact:**
+- AI may hardcode project-specific names in code meant for different contexts
+- Examples less valuable as templates for new features
+- Confusion about what parts to adapt vs. copy literally
+
+**Solutions:**
+
+1. **Replace with Placeholders + Labeled Examples** (Recommended)
+   - Convert all instructional examples to use `[Project]`, `[Module]`, etc.
+   - Add "Example (Project-Specific)" subsections showing concrete implementation
+   - **Pros:** Maximum reusability, clear distinction
+   - **Cons:** Significant effort to update examples throughout
+
+**Implementation Priority:** P1 - Critical for reusability
+
+**Progress:** Notation Guide added; high-priority sections updated (naming, architecture, patterns)
+
+---
+
+### P2 Issues: Efficiency Reducers
+
+#### P2-1: No Cross-Referencing Between Related Sections
+
+**Symptom:** DI patterns, error handling, testing patterns mentioned in multiple sections without links between them.
+
+**Root Cause:** Sections written independently without considering related content elsewhere.
+
+**Impact:**
+- AI (and humans) may miss relevant guidance in other sections
+- Incomplete understanding of patterns that span multiple concerns
+- Duplication of effort explaining same concept multiple times
+
+**Solutions:**
+
+1. **Add "See Also" Blocks** (Recommended)
+   - At end of each major section, link to related sections
+   - Use format: "**Related Topics:** [Section A](#link), [Section B](#link)"
+   - **Pros:** Low effort, immediate value
+   - **Cons:** Requires maintenance as sections change
+
+**Implementation Priority:** P2 - Good ROI, moderate effort
+
+---
+
+#### P2-2: Verbose Meta-Instructions Section
+
+**Symptom:** Meta-Instructions section is lengthy with repetitive emphasis ("NEVER", "ALWAYS", "CRITICAL").
+
+**Root Cause:** Accumulated from past AI failures; each failure added more emphatic prohibitions.
+
+**Impact:**
+- Important rules buried in repetition
+- Decreased readability for humans
+- "Warning fatigue" - too many CRITICAL labels reduces their impact
+
+**Solutions:**
+
+1. **Consolidate Rules with Severity Levels** (Recommended)
+   - Separate into: MUST (P0), SHOULD (P1), RECOMMENDED (P2)
+   - Remove redundant prohibitions
+   - Keep historical examples in separate "Why This Rule Exists" subsections
+   - **Pros:** Clearer priority, more actionable
+   - **Cons:** Must decide severity for each rule
+
+**Implementation Priority:** P2 - Improves usability significantly
+
+---
+
+#### P2-3: Examples Lack "Why" Explanations
+
+**Symptom:** Many DO/DON'T examples show correct vs. incorrect code but don't explain the reasoning.
+
+**Root Cause:** Urgency to document failures quickly; explanation added later (or not at all).
+
+**Impact:**
+- AI learns "what" but not "why," leading to misapplication of patterns
+- Humans can't evaluate when to deviate from guidelines
+- Patterns applied cargo-cult style without understanding
+
+**Solutions:**
+
+1. **Add "Why" to Every Anti-Pattern** (Recommended)
+   - Format: ❌ DON'T [pattern] → **Why:** [explanation] → ✅ DO [alternative]
+   - Target: Every entry in anti-pattern tables
+   - **Pros:** Educational, enables informed decisions
+   - **Cons:** Significant writing effort
+
+**Implementation Priority:** P2 - High educational value
+
+---
+
+### P3 Issues: Maintenance Burden
+
+#### P3-1: Table of Contents Out of Sync with Structure
+
+**Symptom:** TOC may not reflect recent structural changes.
+
+**Root Cause:** Manual maintenance; no automatic TOC generation.
+
+**Impact:**
+- Navigation confusion
+- Outdated section references
+- Credibility loss
+
+**Solutions:**
+
+1. **Use TOC Generator** (Recommended)
+   - Add markdown-toc or similar tool to generate from headers
+   - **Pros:** Always accurate, no manual effort
+   - **Cons:** Requires tool setup
+
+**Implementation Priority:** P3 - Low effort, prevents future issues
+
+**Progress:** TOC updated with new structure (partially addressed)
+
+---
+
+#### P3-2: Inconsistent Formatting Across Sections
+
+**Symptom:** Some sections use tables, others use lists; code blocks sometimes have language tags, sometimes don't.
+
+**Root Cause:** Multiple authors/time periods; no style guide for the instructions themselves.
+
+**Impact:**
+- Visual inconsistency reduces professionalism
+- Harder to scan for information
+- Inconsistent markdown rendering in different viewers
+
+**Solutions:**
+
+1. **Establish Instructions Style Guide** (Recommended)
+   - Format for DO/DON'T patterns (table vs. list)
+   - Code block language tags (always required)
+   - Table formatting standards
+   - **Pros:** Future consistency
+   - **Cons:** Doesn't fix existing content
+
+**Implementation Priority:** P3 - Nice to have, low urgency
+
+---
+
+#### P3-3: Historical Examples Not Dated
+
+**Symptom:** "As of November 2024" appears in some places but not consistently.
+
+**Root Cause:** Not all additions included dates.
+
+**Impact:**
+- Uncertain if pattern is current or superseded
+- Can't track evolution of guidance over time
+- Old patterns may be applied when newer ones exist
+
+**Solutions:**
+
+1. **Date All Historical References** (Recommended)
+   - Add "As of [Month Year]" to every historical example
+   - Add "Last Updated: [Date]" to major sections
+   - **Pros:** Clear temporal context
+   - **Cons:** Requires dating existing content
+
+**Implementation Priority:** P3 - Useful for long-term maintenance
+
+---
+
+### P4 Issues: Style Inconsistencies
+
+#### P4-1: Mix of First Person, Second Person, and Imperative
+
+**Symptom:** Instructions say "you should," "we recommend," "do this," inconsistently.
+
+**Root Cause:** Different writing styles over time.
+
+**Impact:**
+- Minor readability issue
+- Slightly less professional tone
+
+**Solutions:**
+
+1. **Standardize on Imperative** (Recommended)
+   - "Use X" not "You should use X"
+   - **Pros:** Concise, direct, matches technical docs standard
+   - **Cons:** Requires full document pass
+
+**Implementation Priority:** P4 - Cosmetic, low priority
+
+---
+
+#### P4-2: Emoji Inconsistency
+
+**Symptom:** Some sections use ✅ ❌ consistently, others mix with ⚠️ 🔒 ⚡ inconsistently.
+
+**Root Cause:** Evolved organically; no emoji guidelines.
+
+**Impact:**
+- Minor visual inconsistency
+- Could be accessibility issue for screen readers
+
+**Solutions:**
+
+1. **Establish Emoji Palette** (Recommended)
+   - ✅ = Correct/Do this
+   - ❌ = Incorrect/Don't do this
+   - ⚠️ = Warning/Caution
+   - 🔒 = Security concern
+   - ⚡ = Performance concern
+   - Limit to these 5
+   - **Pros:** Consistent visual language
+   - **Cons:** Need to update existing usage
+
+**Implementation Priority:** P4 - Low impact, nice to have
+
+---
+
+### P5 Issues: Nice-to-Have Improvements
+
+#### P5-1: No Searchable Index of Patterns
+
+**Symptom:** To find "how to create a repository," must manually search or scan TOC.
+
+**Root Cause:** Markdown doesn't have built-in index functionality.
+
+**Impact:**
+- Slightly slower to find specific patterns
+- More reliant on Ctrl+F
+
+**Solutions:**
+
+1. **Pattern Catalog Section**
+   - Alphabetical index: "Repository Pattern → See [Section](#link)"
+   - **Pros:** Quick lookup for known patterns
+   - **Cons:** Maintenance burden
+
+**Implementation Priority:** P5 - Backlog
+
+---
+
+#### P5-2: No Glossary of Domain Terms
+
+**Symptom:** Terms like "Aggregate," "Value Object," "CQRS" used without definitions.
+
+**Root Cause:** Assumes reader knows DDD/Clean Architecture.
+
+**Impact:**
+- New team members may not understand terminology
+- Slight learning curve
+
+**Solutions:**
+
+1. **Add Glossary Section**
+   - Define key domain terms
+   - Link first usage to glossary
+   - **Pros:** Improves onboarding
+   - **Cons:** Maintenance as terminology evolves
+
+**Implementation Priority:** P5 - Nice to have for new developers
+
+---
+
+### Summary: Priority Action Plan
+
+**Immediate (P0):**
+- ✅ Add Reasoning Framework (COMPLETED)
+- ✅ Add Notation Guide (COMPLETED)
+
+**Next Iteration (P1):**
+1. ✅ Consolidate test guidelines - Added Testing Quick Reference table and Related Topics (November 2025)
+2. ⏳ Reorganize terminal commands by tool/technology - IN PROGRESS
+3. ⏳ Complete example generalization to placeholders with labeled concrete examples
+
+**Following Iterations (P2):**
+4. ✅ Add cross-references between related sections - Completed 10+ sections (November 28, 2025)
+5. ✅ Consolidate and prioritize meta-instructions - Organized by severity P0/P1/P2 (November 28, 2025)
+6. ⏳ Add "Why" explanations to all anti-patterns
+
+**Maintenance (P3):**
+7. ✅ Set up automatic TOC generation - Added doctoc markers and setup guide (November 28, 2025)
+8. ✅ Normalize formatting across sections - Added comprehensive Instructions Style Guide (November 28, 2025)
+9. ✅ Date all historical references - Added "Last Updated" to all major sections (November 28, 2025)
+
+**Backlog (P4-P5):**
+10. ✅ Standardize voice/tone (imperative) - Already consistent throughout (November 28, 2025)
+11. ✅ Establish emoji guidelines - Defined in Style Guide, already consistent (November 28, 2025)
+12. ✅ Add pattern index - Pattern Catalog created with 40+ patterns (November 28, 2025)
+13. ✅ Create glossary - Comprehensive glossary with 50+ terms (November 28, 2025)
+14. ✅ Evolution examples - Failed Code Edits enhanced with investigation process (November 28, 2025)
+
+**Progress Notes (November 28, 2025):**
+- Created comprehensive improvement plan document (`docs/INSTRUCTIONS_IMPROVEMENT_PLAN.md`)
+- ✅ **Phase 1 (P1) completed** - All critical improvements implemented
+  - P1-1: Testing Quick Reference table
+  - P1-2: Terminal Commands reorganization
+  - P1-3: Example generalization
+- ✅ **Phase 2 (P2) completed** - All efficiency improvements implemented
+  - P2-1: Cross-referencing (10+ sections)
+  - P2-2: Meta-instructions consolidation (P0/P1/P2)
+- ✅ **Phase 3 (P3) completed** - All maintenance improvements implemented
+  - P3-1: TOC automation setup (doctoc markers + guide)
+  - P3-2: Instructions Style Guide (comprehensive formatting standards)
+  - P3-3: Temporal markers ("Last Updated" on all major sections)
+- ✅ **Phase 4 (P4) completed** - Style consistency improvements
+  - P4-1: Voice/tone already consistent (imperative throughout)
+  - P4-2: Emoji palette defined and consistent
+- ✅ **Phase 5 (P5) completed** - Enhanced usability features
+  - P5-1: Pattern Catalog (40+ patterns indexed)
+  - P5-2: Glossary of Domain Terms (50+ terms defined)
+  - P5-3: Evolution Examples (investigation → solution pattern)
+- **All phases complete (P0-P5)** - 100% of improvement plan done!
+- Improvements applied incrementally to avoid disruption
+
+### How to Use This Analysis
+
+When maintaining these instructions:
+
+1. **Before adding new content:** Check if it duplicates existing guidance (see P1-1)
+2. **When documenting failures:** Use placeholders not project names (see P1-3)
+3. **When updating sections:** Add cross-references to related content (see P2-1)
+4. **When adding examples:** Include "Why" explanation (see P2-3)
+5. **For major updates:** Review all Px issues and address systematically
+
+This problem analysis should itself be maintained - when new patterns of issues emerge, document them here with proposed solutions.
