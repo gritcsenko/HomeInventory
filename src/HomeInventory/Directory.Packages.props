@@ -71,7 +71,7 @@
   <ItemGroup Label="Testing packages">
     <PackageVersion Include="Expressium.LivingDoc.ReqnrollPlugin" Version="1.1.4" />
     <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.0" />
-    <PackageVersion Include="TngTech.ArchUnitNET.xUnit" Version="0.12.3" />
+    <PackageVersion Include="TngTech.ArchUnitNET.xUnit" Version="0.13.0" />
     <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
     <PackageVersion Include="AutoBogus.NSubstitute" Version="2.13.1" />
     <PackageVersion Include="AutoFixture" Version="5.0.0-preview0012" />
