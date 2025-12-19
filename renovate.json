@@ -68,6 +68,13 @@
       ]
     },
     {
+      "groupName": "TngTech ArchUnit",
+      "description": "Group ArchUnitNET packages - must stay on same version",
+      "matchPackageNames": [
+        "/^TngTech\\.ArchUnitNET/"
+      ]
+    },
+    {
       "groupName": "Ardalis Specification",
       "description": "Group Ardalis.Specification packages - must stay on same version",
       "matchPackageNames": [
