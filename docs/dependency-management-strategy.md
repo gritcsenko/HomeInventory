@@ -183,18 +183,24 @@ These package groups must be updated together because they share transitive depe
 
 **Reason:** Test framework components must be compatible.
 
-### 6. Ardalis Specification
+### 6. TngTech ArchUnit
+- `TngTech.ArchUnitNET`
+- `TngTech.ArchUnitNET.xUnit`
+
+**Reason:** xUnit extension requires specific version of core package.
+
+### 7. Ardalis Specification
 - `Ardalis.Specification`
 - `Ardalis.Specification.EntityFrameworkCore`
 
 **Reason:** Tight coupling between core and EF Core implementation.
 
-### 7. Health Checks
+### 8. Health Checks
 - All `AspNetCore.HealthChecks.*` packages
 
 **Reason:** Related packages from same ecosystem.
 
-### 8. Serilog
+### 9. Serilog
 - All `Serilog*` packages (core, sinks, enrichers)
 
 **Reason:** Logging ecosystem with shared dependencies.

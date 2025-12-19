@@ -4960,6 +4960,11 @@ When a transitive dependency is explicitly listed, Central Package Management ov
    - `LanguageExt.Sys`
    - All must stay on same version
 
+4. **TngTech ArchUnit:**
+   - `TngTech.ArchUnitNET`
+   - `TngTech.ArchUnitNET.xUnit`
+   - xUnit extension requires matching core version
+
 **Troubleshooting Commands:**
 
 ```powershell
