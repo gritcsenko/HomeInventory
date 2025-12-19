@@ -1,6 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":dependencyDashboardApproval"],
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboardApproval"
+  ],
   "dockerfile": {
     "enabled": true
   },
@@ -13,50 +16,77 @@
   "packageRules": [
     {
       "groupName": "GitHub Actions",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
       "description": "Group GitHub Actions updates together"
     },
     {
       "groupName": "Reqnroll ecosystem",
-      "matchPackagePatterns": ["^Reqnroll", "^Expressium\\.LivingDoc\\.ReqnrollPlugin$"],
-      "description": "Group Reqnroll packages to prevent transitive dependency conflicts"
+      "description": "Group Reqnroll packages to prevent transitive dependency conflicts",
+      "matchPackageNames": [
+        "/^Reqnroll/",
+        "/^Expressium\\.LivingDoc\\.ReqnrollPlugin$/"
+      ]
     },
     {
       "groupName": "Entity Framework Core",
-      "matchPackagePatterns": ["^Microsoft\\.EntityFrameworkCore"],
-      "description": "Group EF Core packages - must stay on same version"
+      "description": "Group EF Core packages - must stay on same version",
+      "matchPackageNames": [
+        "/^Microsoft\\.EntityFrameworkCore/"
+      ]
     },
     {
       "groupName": "LanguageExt",
-      "matchPackagePatterns": ["^LanguageExt\\.(Core|Rx|Sys|CodeGen|AutoFixture|UnitTesting)$"],
-      "description": "Group LanguageExt packages - must stay on same version"
+      "description": "Group LanguageExt packages - must stay on same version",
+      "matchPackageNames": [
+        "/^LanguageExt\\.(Core|Rx|Sys|CodeGen|AutoFixture|UnitTesting)$/"
+      ]
     },
     {
       "groupName": "Microsoft Extensions",
-      "matchPackagePatterns": ["^Microsoft\\.Extensions\\."],
-      "matchUpdateTypes": ["major", "minor"],
-      "description": "Group Microsoft.Extensions.* packages for coordinated updates"
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "description": "Group Microsoft.Extensions.* packages for coordinated updates",
+      "matchPackageNames": [
+        "/^Microsoft\\.Extensions\\./"
+      ]
     },
     {
       "groupName": "xUnit",
-      "matchPackagePatterns": ["^xunit", "^Microsoft\\.NET\\.Test\\.Sdk$"],
-      "description": "Group xUnit test framework packages"
+      "description": "Group xUnit test framework packages",
+      "matchPackageNames": [
+        "/^xunit/",
+        "/^Microsoft\\.NET\\.Test\\.Sdk$/"
+      ]
     },
     {
       "groupName": "Ardalis Specification",
-      "matchPackagePatterns": ["^Ardalis\\.Specification"],
-      "description": "Group Ardalis.Specification packages - must stay on same version"
+      "description": "Group Ardalis.Specification packages - must stay on same version",
+      "matchPackageNames": [
+        "/^Ardalis\\.Specification/"
+      ]
     },
     {
       "groupName": "Health Checks",
-      "matchPackagePatterns": ["^AspNetCore\\.HealthChecks\\."],
-      "description": "Group health check packages"
+      "description": "Group health check packages",
+      "matchPackageNames": [
+        "/^AspNetCore\\.HealthChecks\\./"
+      ]
     },
     {
       "groupName": "Serilog",
-      "matchPackagePatterns": ["^Serilog"],
-      "description": "Group Serilog logging packages"
+      "description": "Group Serilog logging packages",
+      "matchPackageNames": [
+        "/^Serilog/"
+      ]
     }
   ]
 }
