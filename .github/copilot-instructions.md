@@ -1,12 +1,12 @@
 # GitHub Copilot Instructions for HomeInventory
 
-<!-- START doctoc -->
-<!-- END doctoc -->
-
 ## Table of Contents
 
 ### Core AI Behavior (Universal)
 - [Notation Guide](#notation-guide)
+- [TOON Format Specification](#toon-format-specification)
+- [Pattern Catalog](#pattern-catalog)
+- [Glossary of Domain Terms](#glossary-of-domain-terms)
 - [Reasoning and Decision-Making Framework](#reasoning-and-decision-making-framework)
 - [Meta-Instructions for AI Assistants](#meta-instructions-for-ai-assistants)
 
@@ -57,58 +57,59 @@
 - [Code Review Guidelines](#code-review-guidelines)
 - [Documentation](#documentation)
 - [Additional Guidelines](#additional-guidelines)
+- [NuGet Dependency Management](#nuget-dependency-management)
+- 📖 [Concrete Examples Reference](./copilot-examples.md) - Detailed problem-solution examples
 
 ### Problem Analysis
 - [Identified Problems and Solutions](#identified-problems-and-solutions)
 
 ## Notation Guide
 
-**Last Updated:** November 2025
+**Last Updated:** December 2025
 
-Throughout this document, placeholders are used to represent project-specific values that should be substituted with actual values when implementing code. Understanding these conventions helps generalize patterns across different contexts.
+Throughout this document, placeholders represent project-specific values. Use this guide to substitute actual values when implementing code.
 
-### Placeholder Conventions
+```toon
+@placeholders
+  [Project]: Root project/solution name (HomeInventory, MyApp)
+  [Layer]: Architectural layer (Domain, Application, Infrastructure, Web)
+  [Module]: Feature module or bounded context (UserManagement, Inventory, Orders)
+  [Entity]: Domain entity or aggregate root (User, Product, Order)
+  [Feature]: Specific feature or capability (Registration, Authentication, Search)
+  [Service]: Application or domain service (UserService, OrderService)
+  [Repository]: Repository interface/implementation (UserRepository, IProductRepository)
+  [Command]: CQRS command type (RegisterUserCommand, CreateOrderCommand)
+  [Query]: CQRS query type (GetUserByEmailQuery, SearchProductsQuery)
+  [Request]: API request DTO (CreateUserRequest, UpdateOrderRequest)
+  [Response]: API response DTO (UserResponse, OrderListResponse)
+  [Error]: Domain or application error type (NotFoundError, ValidationError)
+  [Test]: Test class name (UserServiceTests, OrderValidationTests)
+  [SUT]: System Under Test (any class being tested)
+  [ProjectRoot]: File system path to project root
 
-| Placeholder              | Meaning                                | Example Values                                   |
-|--------------------------|----------------------------------------|--------------------------------------------------|
-| `[Project]`              | Root project/solution name             | `HomeInventory`, `MyApp`                         |
-| `[Layer]`                | Architectural layer                    | `Domain`, `Application`, `Infrastructure`, `Web` |
-| `[Module]`               | Feature module or bounded context      | `UserManagement`, `Inventory`, `Orders`          |
-| `[Entity]`               | Domain entity or aggregate root        | `User`, `Product`, `Order`                       |
-| `[Feature]`              | Specific feature or capability         | `Registration`, `Authentication`, `Search`       |
-| `[Service]`              | Application or domain service          | `UserService`, `OrderService`                    |
-| `[Repository]`           | Repository interface or implementation | `UserRepository`, `IProductRepository`           |
-| `[Command]`              | CQRS command type                      | `RegisterUserCommand`, `CreateOrderCommand`      |
-| `[Query]`                | CQRS query type                        | `GetUserByEmailQuery`, `SearchProductsQuery`     |
-| `[Request]`              | API request DTO                        | `CreateUserRequest`, `UpdateOrderRequest`        |
-| `[Response]`             | API response DTO                       | `UserResponse`, `OrderListResponse`              |
-| `[Error]`                | Domain or application error type       | `NotFoundError`, `ValidationError`               |
-| `[Test]` / `[TestClass]` | Test class name                        | `UserServiceTests`, `OrderValidationTests`       |
-| `[SUT]`                  | System Under Test                      | Any class being tested                           |
-| `[ProjectRoot]`          | File system path to project root       | `C:\Projects\MyApp`, `/home/user/myapp`          |
+@namespace_pattern
+  generic: "[Project].[Layer].[Module]"
+  examples:
+    - HomeInventory.Domain.UserManagement
+    - HomeInventory.Application.Inventory
+    - HomeInventory.Infrastructure.Orders
+    - HomeInventory.Web.UserManagement
 
-### Namespace Pattern Examples
+@file_path_pattern
+  generic: "[ProjectRoot]/src/[Project]/[Project].[Layer].[Module]/[EntityOrFeature].cs"
+  examples:
+    - "C:\\GitHub\\HomeInventory\\src\\HomeInventory\\HomeInventory.Domain.UserManagement\\User.cs"
 
-```csharp
-// Generic pattern
-[Project].[Layer].[Module]
-
-// Concrete examples
-HomeInventory.Domain.UserManagement
-HomeInventory.Application.Inventory
-HomeInventory.Infrastructure.Orders
-HomeInventory.Web.UserManagement
-```
-
-### File Path Pattern Examples
-
-```
-Generic pattern:
-[ProjectRoot]/src/[Project]/[Project].[Layer].[Module]/[EntityOrFeature].cs
-
-Concrete examples:
-C:\GitHub\HomeInventory\src\HomeInventory\HomeInventory.Domain.UserManagement\User.cs
-/home/dev/myapp/src/MyApp/MyApp.Application.Orders/OrderService.cs
+@usage_rule
+  placeholders_when:
+    - Explaining general patterns applicable across modules
+    - Documenting reusable architectural patterns
+    - Creating templates for new features
+  specific_names_when:
+    - Documenting actual project failures or solutions
+    - Referencing existing project code for context
+    - After explaining pattern, show concrete example
+  best_practice: "Introduce pattern with placeholders, then show project-specific example labeled 'Example (Project-Specific)'"
 ```
 
 ### Usage in Code Examples
@@ -129,100 +130,284 @@ public interface IUserRepository : IRepository<User>
 }
 ```
 
-### When to Use Placeholders vs. Specific Names
+---
 
-**Use placeholders when:**
-- Explaining general patterns applicable across modules
-- Documenting reusable architectural patterns
-- Creating templates for new features
+## TOON Format Specification
 
-**Use specific names when:**
-- Documenting actual project failures or solutions (historical record)
-- Referencing existing project code for context
-- Providing concrete examples after explaining the pattern
+**Last Updated:** December 2025
 
-**Best practice:** Introduce pattern with placeholders, then show project-specific example labeled as "Example (Project-Specific)".
+TOON (Text-Optimized Object Notation) is a structured data format optimized for LLM parsing. It provides semantic tagging and consistent schemas for documentation.
+
+### Basic Syntax
+
+```toon
+@tag_name
+  key: "value"
+  nested_key:
+    sub_key: "value"
+    - list_item
+    - another_item
+  
+  another_key: "value"
+```
+
+**Rules:**
+- Tags start with `@` (e.g., `@failure`, `@pattern`, `@glossary`)
+- Indentation defines hierarchy (2 spaces per level)
+- Strings can be quoted or unquoted
+- Lists use `-` prefix
+- Multi-line values use `|` or quotes
+
+### Common Tags
+
+```toon
+@common_tags
+  meta:
+    purpose: "File metadata (updated, purpose, usage)"
+    location: "Start of file"
+  
+  index:
+    purpose: "Quick navigation lookup"
+    structure: "category → topic → #anchor"
+  
+  glossary:
+    purpose: "Term definitions organized by category"
+    structure: "category → term: definition"
+  
+  patterns:
+    purpose: "Pattern catalog with descriptions and links"
+    structure: "category → pattern_name → description/section"
+  
+  failure:
+    purpose: "Concrete failure example"
+    required_fields: [id, discovered, category, symptom, root_cause, rule]
+    optional_fields: [wrong_code, correct_code, prevention, error]
+  
+  antipatterns:
+    purpose: "Quick reference of mistakes"
+    structure: "category → pattern → wrong/correct/reason/warning"
+  
+  quick_reference:
+    purpose: "Q&A lookup table"
+    structure: "question → answer/section"
+  
+  stack:
+    purpose: "Technology stack"
+    structure: "category → technology: description"
+```
+
+### Conversion Examples
+
+**Markdown Table → TOON:**
+
+```markdown
+| Placeholder | Meaning               | Example          |
+|-------------|-----------------------|------------------|
+| [Project]   | Project name          | HomeInventory    |
+| [Module]    | Feature module        | UserManagement   |
+```
+
+Converts to:
+
+```toon
+@placeholders
+  [Project]: Root project/solution name (HomeInventory, MyApp)
+  [Module]: Feature module or bounded context (UserManagement, Inventory)
+```
+
+**List → TOON:**
+
+```markdown
+### Testing Principles
+- Unit tests for business logic
+- Integration tests for infrastructure
+- Use Given-When-Then pattern
+```
+
+Converts to:
+
+```toon
+@testing_principles
+  unit_tests: "Business logic and domain rules"
+  integration_tests: "Infrastructure and database"
+  pattern: "Given-When-Then with BaseTest"
+```
+
+### Benefits for LLMs
+
+1. **Structured parsing** - Key-value format easier to parse than tables
+2. **Semantic tags** - `@failure`, `@pattern` indicate content type
+3. **Consistent schema** - Same structure across similar content
+4. **Compact** - Less verbose than markdown tables
+5. **Navigable** - `@index` blocks enable quick lookups
+6. **Queryable** - LLMs can match specific tags to queries
+
+### When to Use TOON
+
+✅ **Use TOON for:**
+- Glossaries and term definitions
+- Pattern catalogs
+- Technology stacks
+- Quick reference tables
+- Structured examples with consistent schema
+- Navigation indexes
+- Anti-pattern lists
+
+❌ **Don't use TOON for:**
+- Narrative explanations
+- Code examples
+- Step-by-step tutorials
+- Free-form documentation
+- Small lists (<5 items)
+
+### TOON in This Project
+
+**copilot-instructions.md** uses TOON for:
+- `@placeholders` - Notation guide
+- `@patterns` - Pattern catalog
+- `@glossary` - Domain terms
+- `@stack` - Technology stack
+- `@testing_quick_reference` - Test Q&A
+- `@test_antipatterns` - Common mistakes
+
+**copilot-examples.md** uses TOON for:
+- `@meta` - File metadata
+- `@index` - Navigation
+- `@failure` blocks - Concrete examples (12+ blocks)
+- `@antipatterns` - Quick summary
+
+---
 
 ## Pattern Catalog
 
-**Last Updated:** November 2025
+**Last Updated:** December 2025
 
-Quick reference index of all patterns documented in these instructions. Click pattern name to jump to detailed section.
+Quick reference index of all patterns. Click pattern name to jump to detailed section.
 
-### Architectural Patterns
+```toon
+@patterns
+  architectural:
+    clean_architecture:
+      description: Dependencies point inward toward domain
+      section: "#architecture--structure"
+    modular_monolith:
+      description: Feature modules with own layers
+      section: "#architecture--structure"
+    vertical_slice:
+      description: Features organized by business capability
+      section: "#architecture--structure"
+    cqrs:
+      description: Separate command/query operations
+      section: "#application-layer-cqrs"
+    ddd:
+      description: Aggregates, Entities, Value Objects
+      section: "#domain-development"
+  
+  code:
+    repository:
+      description: Data access abstraction with specifications
+      section: "#repository-pattern-implementation"
+    scope_accessor:
+      description: Cross-layer dependency management
+      section: "#scope-accessor-pattern"
+    dependency_injection:
+      description: Module-based service registration
+      section: "#using-dependency-injection"
+    options:
+      description: Strongly-typed configuration
+      section: "#common-patterns-to-follow"
+    mapper:
+      description: Compile-time DTO mapping (Mapperly)
+      section: "#response-mapping-mapperly"
+    module:
+      description: Feature module registration
+      section: "#module-development-workflow"
+  
+  testing:
+    given_when_then:
+      description: Test structure with BaseTest
+      section: "#test-structure-pattern"
+    autofixture:
+      description: Test data generation
+      section: "#autofixture-usage-guidelines"
+    substitute:
+      description: Mocking with NSubstitute
+      section: "#critical-test-guidelines"
+    test_design:
+      description: Single responsibility, explicit SUT
+      section: "#test-design-principles"
+  
+  functional:
+    option_t:
+      description: Representing optional values
+      section: "#languageext-v5-patterns"
+    either_error_t:
+      description: Error handling without exceptions
+      section: "#error-handling"
+    validation_error_t:
+      description: Accumulating validation errors
+      section: "#application-services-pattern"
+    prelude_some:
+      description: Creating non-null Option values
+      section: "#languageext-v5-patterns"
+  
+  api:
+    carter_module:
+      description: Minimal API endpoints
+      section: "#endpoint-development-carter"
+    api_versioning:
+      description: Version-based routing
+      section: "#coding-standards--conventions"
+    validation:
+      description: FluentValidation integration
+      section: "#validation"
+    problem_details:
+      description: RFC 7807 error responses
+      section: "#error-handling"
+  
+  domain:
+    aggregate_root:
+      description: Entity cluster entry point
+      section: "#domain-development"
+    entity:
+      description: Object with identity
+      section: "#domain-development"
+    value_object:
+      description: Immutable object without identity
+      section: "#domain-development"
+    domain_event:
+      description: State change notification
+      section: "#domain-development"
+    specification:
+      description: Reusable query logic
+      section: "#repository-pattern-implementation"
+  
+  infrastructure:
+    unit_of_work:
+      description: Transaction boundary
+      section: "#persistence--data-access"
+    database_context:
+      description: EF Core DbContext
+      section: "#persistence--data-access"
+    entity_configuration:
+      description: EF fluent mapping
+      section: "#persistence--data-access"
+    interceptor:
+      description: EF Core pipeline hooks
+      section: "#persistence--data-access"
+  
+  naming:
+    namespace_convention:
+      description: "[Project].[Layer].[Module]"
+      section: "#coding-standards--conventions"
+    file_organization:
+      description: One type per file
+      section: "#file-organization-guidelines"
+    placeholder_usage:
+      description: "[Project], [Module], [Entity]"
+      section: "#notation-guide"
+```
 
-| Pattern                  | Description                               | Section                                              |
-|--------------------------|-------------------------------------------|------------------------------------------------------|
-| **Clean Architecture**   | Dependencies point inward toward domain   | [Architecture & Structure](#architecture--structure) |
-| **Modular Monolith**     | Feature modules with own layers           | [Architecture & Structure](#architecture--structure) |
-| **Vertical Slice**       | Features organized by business capability | [Architecture & Structure](#architecture--structure) |
-| **CQRS**                 | Separate command/query operations         | [Application Layer (CQRS)](#application-layer-cqrs)  |
-| **Domain-Driven Design** | Aggregates, Entities, Value Objects       | [Domain Development](#domain-development)            |
-
-### Code Patterns
-
-| Pattern                  | Description                                 | Section                                                                 |
-|--------------------------|---------------------------------------------|-------------------------------------------------------------------------|
-| **Repository Pattern**   | Data access abstraction with specifications | [Repository Pattern Implementation](#repository-pattern-implementation) |
-| **Scope Accessor**       | Cross-layer dependency management           | [Scope Accessor Pattern](#scope-accessor-pattern)                       |
-| **Dependency Injection** | Module-based service registration           | [Using Dependency Injection](#using-dependency-injection)               |
-| **Options Pattern**      | Strongly-typed configuration                | [Common Patterns](#common-patterns-to-follow)                           |
-| **Mapper Pattern**       | Compile-time DTO mapping (Mapperly)         | [Response Mapping](#response-mapping-mapperly)                          |
-| **Module Pattern**       | Feature module registration                 | [Module Development Workflow](#module-development-workflow)             |
-
-### Testing Patterns
-
-| Pattern                    | Description                         | Section                                                       |
-|----------------------------|-------------------------------------|---------------------------------------------------------------|
-| **Given-When-Then**        | Test structure with BaseTest        | [Test Structure Pattern](#test-structure-pattern)             |
-| **AutoFixture Usage**      | Test data generation                | [AutoFixture Usage Guidelines](#autofixture-usage-guidelines) |
-| **Substitute Pattern**     | Mocking with NSubstitute            | [Critical Test Guidelines](#critical-test-guidelines)         |
-| **Test Design Principles** | Single responsibility, explicit SUT | [Test Design Principles](#test-design-principles)             |
-
-### Functional Patterns
-
-| Pattern                    | Description                       | Section                                                       |
-|----------------------------|-----------------------------------|---------------------------------------------------------------|
-| **Option\<T\>**            | Representing optional values      | [LanguageExt v5 Patterns](#languageext-v5-patterns)           |
-| **Either\<Error, T\>**     | Error handling without exceptions | [Error Handling](#error-handling)                             |
-| **Validation\<Error, T\>** | Accumulating validation errors    | [Application Services Pattern](#application-services-pattern) |
-| **Prelude.Some()**         | Creating non-null Option values   | [LanguageExt v5 Patterns](#languageext-v5-patterns)           |
-
-### API Patterns
-
-| Pattern            | Description                  | Section                                                       |
-|--------------------|------------------------------|---------------------------------------------------------------|
-| **Carter Module**  | Minimal API endpoints        | [Endpoint Development (Carter)](#endpoint-development-carter) |
-| **API Versioning** | Version-based routing        | [Coding Standards](#coding-standards--conventions)            |
-| **Validation**     | FluentValidation integration | [Validation](#validation)                                     |
-| **ProblemDetails** | RFC 7807 error responses     | [Error Handling](#error-handling)                             |
-
-### Domain Patterns
-
-| Pattern            | Description                       | Section                                                                 |
-|--------------------|-----------------------------------|-------------------------------------------------------------------------|
-| **Aggregate Root** | Entity cluster entry point        | [Domain Development](#domain-development)                               |
-| **Entity**         | Object with identity              | [Domain Development](#domain-development)                               |
-| **Value Object**   | Immutable object without identity | [Domain Development](#domain-development)                               |
-| **Domain Event**   | State change notification         | [Domain Development](#domain-development)                               |
-| **Specification**  | Reusable query logic              | [Repository Pattern Implementation](#repository-pattern-implementation) |
-
-### Infrastructure Patterns
-
-| Pattern                  | Description            | Section                                                |
-|--------------------------|------------------------|--------------------------------------------------------|
-| **Unit of Work**         | Transaction boundary   | [Persistence & Data Access](#persistence--data-access) |
-| **Database Context**     | EF Core DbContext      | [Persistence & Data Access](#persistence--data-access) |
-| **Entity Configuration** | EF fluent mapping      | [Persistence & Data Access](#persistence--data-access) |
-| **Interceptor**          | EF Core pipeline hooks | [Persistence & Data Access](#persistence--data-access) |
-
-### Naming Patterns
-
-| Pattern                  | Description                         | Section                                                       |
-|--------------------------|-------------------------------------|---------------------------------------------------------------|
-| **Namespace Convention** | `[Project].[Layer].[Module]`        | [Coding Standards](#coding-standards--conventions)            |
-| **File Organization**    | One type per file                   | [File Organization Guidelines](#file-organization-guidelines) |
-| **Placeholder Usage**    | `[Project]`, `[Module]`, `[Entity]` | [Notation Guide](#notation-guide)                             |
 
 ---
 
@@ -235,206 +420,90 @@ Quick reference index of all patterns documented in these instructions. Click pa
 
 ## Glossary of Domain Terms
 
-**Last Updated:** November 2025
+**Last Updated:** December 2025
+
+```toon
+@glossary
+  clean_architecture:
+    clean_architecture: "Dependencies point inward toward domain. Domain has no external dependencies."
+    layer: "Horizontal slice (Domain, Application, Infrastructure, Web) with specific responsibilities."
+    dependency_rule: "Dependencies point inward. Domain→none, Application→Domain, Infrastructure→Application, Web→Application."
+    bounded_context: "Explicit boundary within which a domain model is defined. Each module can be one."
+  
+  ddd:
+    aggregate: "Cluster of domain objects treated as single unit with root entity controlling access."
+    aggregate_root: "Entry point to aggregate. All external access goes through root. Enforces invariants."
+    entity: "Domain object with unique identity that persists over time."
+    value_object: "Immutable domain object without identity. Equality based on attribute values."
+    domain_event: "Something significant that happened. Immutable fact. Used for decoupling."
+    domain_service: "Stateless operation spanning multiple aggregates."
+    repository: "Abstraction for accessing aggregates. Collection-like interface."
+    specification: "Reusable business rule or query criteria. Can be combined."
+    invariant: "Business rule that must always be true. Enforced by aggregate root."
+    ubiquitous_language: "Common language shared by developers and domain experts."
+  
+  cqrs:
+    cqrs: "Command Query Responsibility Segregation - separate read/write operations."
+    command: "Request to change state. Returns success/error, not data."
+    query: "Request to retrieve data. No side effects."
+    command_handler: "Processes command. Validates, applies logic, persists."
+    query_handler: "Processes query. Retrieves and returns data."
+  
+  functional:
+    option_t: "Container for value that may not exist. Some(value) or None. Replaces null."
+    either_l_r: "Container with two possibilities: Left (error) or Right (success)."
+    validation_error_t: "Special Either accumulating multiple errors."
+    monad: "Design pattern for chaining operations. Supports Map, Bind, Match."
+    pure_function: "No side effects. Same input → same output."
+    immutability: "Once created, cannot change. Use records in C#."
+  
+  testing:
+    sut: "System Under Test - the component being tested."
+    gwt: "Given-When-Then test structure. Given=setup, When=action, Then=assertion."
+    aaa: "Arrange-Act-Assert - alternative name for GWT."
+    test_double: "Generic term for fake objects (mocks, stubs, fakes, spies)."
+    mock: "Verifies behavior. Records calls and expectations."
+    stub: "Provides canned responses without verification."
+    autofixture: "Library for generating test data automatically."
+  
+  api:
+    dto: "Data Transfer Object - carries data between processes."
+    request_dto: "Data structure for incoming API requests."
+    response_dto: "Data structure for outgoing API responses."
+    mapper: "Converts between DTOs and domain models. Mapperly for compile-time."
+    endpoint: "HTTP route handling requests. Carter in this project."
+    minimal_api: "ASP.NET Core API style with less ceremony."
+  
+  infrastructure:
+    repository_impl: "Data access abstraction. Uses Ardalis.Specification."
+    unit_of_work: "Coordinates writing changes. DbContext implements this."
+    specification_ardalis: "Query object pattern. Encapsulates query logic."
+    db_context: "EF Core database session. Manages entity state."
+    entity_configuration: "EF Core fluent API for mapping entities."
+    interceptor: "Hook into EF Core pipeline for cross-cutting concerns."
+    migration: "Version-controlled database schema changes."
+  
+  modules:
+    module: "Self-contained feature slice with own layers."
+    module_registration: "Adding module services to DI container via AddServicesAsync."
+    module_dependencies: "Explicit declaration of modules that must load first."
+    vertical_slice: "Feature organized by business capability, not technical layer."
+  
+  di:
+    service_lifetime: "How long instance lives: Transient, Scoped, Singleton."
+    dependency_injection: "Objects receive dependencies rather than creating them."
+    ioc_container: "Framework managing object creation and DI."
+    service_registration: "Telling DI container how to create services."
+    scope_accessor: "Custom pattern for passing scoped dependencies across layers."
+  
+  security:
+    authentication: "Verifying identity ('Who are you?'). Uses JWT."
+    authorization: "Verifying permissions ('What can you do?'). Uses policies."
+    jwt: "JSON Web Token - compact token for transmitting claims."
+    hashing: "One-way transformation. BCrypt for passwords."
+    ulid: "Universally Unique Lexicographically Sortable Identifier. Sortable by time."
+```
 
-Definitions of key terms used throughout these instructions. Terms are organized by category.
-
-### Clean Architecture Terms
-
-**Clean Architecture**  
-Architectural pattern where dependencies point inward toward the domain layer. Domain has no external dependencies; outer layers depend on inner layers.
-
-**Layer**  
-Horizontal slice of the architecture (Domain, Application, Infrastructure, Web). Each layer has specific responsibilities and dependency rules.
-
-**Dependency Rule**  
-Core principle: dependencies point inward. Domain layer has no dependencies. Application depends on Domain. Infrastructure depends on Application. Web depends on Application.
-
-**Bounded Context** (from DDD)  
-Explicit boundary within which a domain model is defined and applicable. Each module can represent a bounded context.
-
-### Domain-Driven Design (DDD) Terms
-
-**Aggregate**  
-Cluster of domain objects treated as a single unit. Has a root entity that controls access to the cluster.
-
-**Aggregate Root**  
-Entry point to an aggregate. All external access to aggregate members goes through the root. Enforces aggregate invariants.
-
-**Entity**  
-Domain object with a unique identity that persists over time. Two entities with the same attribute values but different identities are different objects.
-
-**Value Object**  
-Immutable domain object without identity. Equality based on attribute values. Examples: Money, Address, Email.
-
-**Domain Event**  
-Something significant that happened in the domain. Immutable fact about the past. Used for decoupling and eventual consistency.
-
-**Domain Service**  
-Stateless operation that doesn't naturally fit within an entity or value object. Implements domain logic that spans multiple aggregates.
-
-**Repository**  
-Abstraction for accessing aggregates. Provides collection-like interface. Hides persistence details from domain layer.
-
-**Specification**  
-Reusable business rule or query criteria. Can be combined and reused. Examples: CustomerIsActiveSpec, OrdersOverAmountSpec.
-
-**Invariant**  
-Business rule that must always be true for an aggregate. Enforced by the aggregate root.
-
-**Ubiquitous Language**  
-Common language shared by developers and domain experts. Used in code, conversations, and documentation.
-
-### CQRS Terms
-
-**CQRS** (Command Query Responsibility Segregation)  
-Pattern separating read and write operations. Commands modify state, queries return data.
-
-**Command**  
-Request to change system state. Returns success/error, not data. Examples: CreateUserCommand, UpdateOrderCommand.
-
-**Query**  
-Request to retrieve data. Does not modify state. Returns data. Examples: GetUserByIdQuery, SearchProductsQuery.
-
-**Command Handler**  
-Processes a command. Validates, applies business logic, persists changes.
-
-**Query Handler**  
-Processes a query. Retrieves and returns data without side effects.
-
-### Functional Programming Terms
-
-**Option\<T\>**  
-Container for value that may or may not exist. Replaces null. Either Some(value) or None.
-
-**Either\<L, R\>**  
-Container with two possibilities: Left (error) or Right (success value). Used for error handling.
-
-**Validation\<Error, T\>**  
-Special Either that accumulates multiple errors. Returns all validation failures, not just first one.
-
-**Monad**  
-Design pattern allowing chaining operations while maintaining context (Option, Either, Try). Supports Map, Bind, Match.
-
-**Pure Function**  
-Function with no side effects. Same input always produces same output. Easier to test and reason about.
-
-**Immutability**  
-Once created, object cannot be changed. Prevents bugs from unexpected mutations. Use records in C#.
-
-### Testing Terms
-
-**System Under Test (SUT)**  
-The component being tested. Should be explicitly defined in tests.
-
-**Given-When-Then**  
-Test structure pattern. Given = setup, When = action, Then = assertion.
-
-**Arrange-Act-Assert** (AAA)  
-Alternative name for Given-When-Then. Same concept, different terminology.
-
-**Test Double**  
-Generic term for fake objects used in testing. Includes mocks, stubs, fakes, spies.
-
-**Mock**  
-Test double that verifies behavior. Records method calls and verifies expectations.
-
-**Stub**  
-Test double that provides canned responses. Returns predefined values without verification.
-
-**AutoFixture**  
-Library for generating test data automatically. Reduces hardcoded test values.
-
-### API Terms
-
-**DTO** (Data Transfer Object)  
-Object that carries data between processes. Simple data structure without behavior.
-
-**Request DTO**  
-Data structure for incoming API requests. Examples: CreateUserRequest, UpdateOrderRequest.
-
-**Response DTO**  
-Data structure for outgoing API responses. Examples: UserResponse, OrderListResponse.
-
-**Mapper**  
-Converts between DTOs and domain models. Mapperly generates compile-time mappings.
-
-**Endpoint**  
-HTTP route that handles requests. Implemented with Carter in this project.
-
-**Minimal API**  
-ASP.NET Core API style with less ceremony. Uses Carter for organization.
-
-### Infrastructure Terms
-
-**Repository**  
-Abstraction for data access. Provides collection-like interface. Uses Ardalis.Specification in this project.
-
-**Unit of Work**  
-Maintains list of objects affected by transaction. Coordinates writing changes. DbContext implements this.
-
-**Specification** (Ardalis)  
-Query object pattern. Encapsulates query logic. Reusable and testable.
-
-**DbContext**  
-EF Core's representation of database session. Manages entity state and persistence.
-
-**Entity Configuration**  
-EF Core fluent API for mapping entities to database schema.
-
-**Interceptor**  
-Hook into EF Core pipeline. Used for cross-cutting concerns like domain events, auditing.
-
-**Migration**  
-Version-controlled database schema changes. Generated from entity models.
-
-### Module Terms
-
-**Module**  
-Self-contained feature slice with its own layers. Examples: UserManagement, Inventory.
-
-**Module Registration**  
-Process of adding module services to DI container. Happens in module's AddServicesAsync.
-
-**Module Dependencies**  
-Explicit declaration of modules that must be loaded first. Ensures correct initialization order.
-
-**Vertical Slice**  
-Feature organized by business capability, not technical layer. Each slice contains all layers for that feature.
-
-### Dependency Injection Terms
-
-**Service Lifetime**  
-How long service instance lives. Transient (per request), Scoped (per scope), Singleton (application lifetime).
-
-**Dependency Injection (DI)**  
-Pattern where objects receive dependencies rather than creating them. Improves testability and flexibility.
-
-**IoC Container**  
-Framework that manages object creation and dependency injection. Uses Microsoft.Extensions.DependencyInjection.
-
-**Service Registration**  
-Process of telling DI container how to create services. Done in module's AddServicesAsync.
-
-**Scope Accessor**  
-Custom pattern for passing scoped dependencies across layers. Used in this project.
-
-### Security Terms
-
-**Authentication**  
-Verifying user identity. "Who are you?" Uses JWT in this project.
-
-**Authorization**  
-Verifying user permissions. "What can you do?" Uses policies and requirements.
-
-**JWT** (JSON Web Token)  
-Compact token format for transmitting user claims. Used for authentication in APIs.
-
-**Hashing**  
-One-way transformation of data. Used for passwords. Uses BCrypt in this project.
-
-**ULID** (Universally Unique Lexicographically Sortable Identifier)  
-Alternative to GUID. Sortable by creation time. Used for entity IDs.
 
 ---
 
@@ -654,12 +723,38 @@ After completing any task:
 2. **Identify Patterns:** Was this a recurring issue? A new scenario?
 3. **Document:** Should this be added to instructions?
 4. **Update:** If yes, update copilot-instructions.md immediately
+5. **Optimize:** Can instructions be made more LLM-friendly?
 
 **This creates a learning feedback loop where the instructions continuously improve based on actual experience.**
 
+**Recognizing Optimization Opportunities:**
+
+When you notice any of these patterns, consider optimization:
+- ✅ **Large markdown tables** (>10 rows) → Convert to TOON format
+- ✅ **Concrete examples mixed with patterns** → Extract to copilot-examples.md
+- ✅ **Repetitive data structures** → TOON @blocks
+- ✅ **Quick reference needs** → @quick_reference or @index blocks
+- ✅ **Glossary-like content** → @glossary format
+- ✅ **Technology lists** → @stack format
+- ✅ **Pattern catalogs** → @patterns format
+- ✅ **Anti-pattern lists** → @antipatterns format
+
+**When to proactively optimize:**
+- User explicitly requests it
+- File exceeds 5000 lines
+- Many tables with key-value data
+- Concrete examples dominate (>30% of content)
+- Hard to find specific patterns quickly
+
+**When NOT to optimize:**
+- Files are already TOON-optimized
+- Content is primarily narrative/explanatory
+- User hasn't requested optimization
+- File is short (<1000 lines) and well-organized
+
 ## Meta-Instructions for AI Assistants
 
-**Last Updated:** November 2025
+**Last Updated:** December 2025
 
 ### Critical Rules (MUST) - P0
 
@@ -728,6 +823,77 @@ Before proceeding, verify:
 - Conventions established (search instructions)
 
 **Never assume** - always verify first.
+
+#### 4. Optimize Documentation for LLM Ingestion
+
+**When user requests optimization for LLM (e.g., "optimize for Copilot", "use TOON format"):**
+
+**Conditions that trigger optimization:**
+1. User explicitly asks to optimize files for LLM/Copilot
+2. User mentions TOON format or structured data
+3. Files contain large tables or repetitive data structures
+4. Concrete examples mixed with general instructions
+
+**What to optimize:**
+
+```toon
+@optimize_targets
+  tables:
+    - Convert markdown tables → TOON format
+    - Especially: mappings, glossaries, quick references
+    - Pattern: key-value pairs or structured data
+  
+  concrete_examples:
+    - Extract to separate file (copilot-examples.md)
+    - Leave generalized patterns in main instructions
+    - Add cross-references between files
+  
+  structured_data:
+    - Technology stacks → @stack
+    - Pattern catalogs → @patterns
+    - Glossaries → @glossary
+    - Quick references → @quick_reference
+    - Anti-patterns → @antipatterns
+    - Test guidelines → @testing_quick_reference
+  
+  metadata:
+    - Add @meta blocks at file start
+    - Include updated date, purpose, usage
+    - Add @index for navigation
+```
+
+**TOON format advantages for LLMs:**
+- Structured key-value parsing
+- Semantic tagging (`@failure`, `@pattern`, `@rule`)
+- Consistent schema across examples
+- More compact than markdown tables
+- Better context retrieval
+
+**Process:**
+1. Analyze files for optimization opportunities
+2. Identify tables, lists, and structured data
+3. Convert to TOON format using appropriate tags
+4. Extract concrete examples to separate file
+5. Add cross-references
+6. Verify both files parse correctly
+7. Update meta-instructions with what was learned
+
+**Example TOON conversion:**
+
+Before (Markdown table):
+```markdown
+| Pattern | Description | Section |
+|---------|-------------|---------|
+| Repository | Data access | #repo |
+```
+
+After (TOON format):
+```toon
+@patterns
+  repository:
+    description: "Data access abstraction"
+    section: "#repository-pattern"
+```
 
 ---
 
@@ -824,14 +990,16 @@ When documenting failures in instructions:
 
 ### Quick Reference: When to Update Instructions
 
-| Situation               | Update?  | Section                                                                 |
-|-------------------------|----------|-------------------------------------------------------------------------|
-| Terminal command failed | ✅ Always | [Terminal Commands](#terminal-commands-reference)                       |
-| Code edit failed        | ✅ Always | [Failed Code Edits](#failed-code-edits---investigation--prevention)     |
-| Test pattern issue      | ✅ Always | [Critical Test Guidelines](#critical-test-guidelines)                   |
-| User correction         | ✅ Always | Relevant section + these Meta-Instructions if process issue             |
-| IDE false positive      | ✅ Always | [Known IDE False Positive Warnings](#known-ide-false-positive-warnings) |
-| Discovered anti-pattern | ✅ Always | Relevant DO/DON'T section                                               |
+| Situation                    | Update?  | Section                                                                 |
+|------------------------------|----------|-------------------------------------------------------------------------|
+| Terminal command failed      | ✅ Always | [Terminal Commands](#terminal-commands-reference)                       |
+| Code edit failed             | ✅ Always | [Failed Code Edits](#failed-code-edits---investigation--prevention)     |
+| Test pattern issue           | ✅ Always | [Critical Test Guidelines](#critical-test-guidelines)                   |
+| User correction              | ✅ Always | Relevant section + these Meta-Instructions if process issue             |
+| IDE false positive           | ✅ Always | [Known IDE False Positive Warnings](#known-ide-false-positive-warnings) |
+| Discovered anti-pattern      | ✅ Always | Relevant DO/DON'T section                                               |
+| User requests LLM optimization | ✅ Always | Apply TOON format + extract examples                                    |
+| File structure improvements   | ✅ When beneficial | [TOON Format Specification](#toon-format-specification)                 |
 
 ---
 
@@ -1317,248 +1485,113 @@ public async Task<Option<Error>> CreateAsync(CreateCommand command)
 
 ## Failed Code Edits - Investigation & Prevention
 
-**Last Updated:** November 2025
+**Last Updated:** December 2025
 
-This section documents common mistakes, their investigation process, and solutions. Each entry shows the **evolution** from mistake to correction, helping you understand not just what to do, but why the mistake happened and how to avoid it.
+This section documents common mistake patterns and their generalized solutions. For detailed concrete examples with full code samples, see **[copilot-examples.md](./copilot-examples.md)**.
 
 ### Format for Documenting Failures
 
-When documenting a new failure, use this template to show the complete evolution:
+When documenting a new failure, use this template:
 
 ```markdown
 **❌ FAILURE: [Brief Description]** (Discovered: [Month Year])
 
-**Attempted:**
-[Show the code that was attempted]
+**Attempted:** [Brief description or code snippet]
+**Error:** [Error message or symptom]
+**Why it failed:** [Root cause explanation]
 
-**Error:**
-[Error message or symptom]
-
-**Investigation:**
-1. [Step taken to understand the problem]
-2. [What was discovered]
-3. [Root cause identified]
-
-**Why it failed:**
-[Explanation of the root cause]
-
-**✅ SOLUTION: [Working Alternative]** (Verified: [Month Year])
-
-[Show the working code]
-
-**Why it works:**
-[Explanation of why this approach succeeds]
-
-**Prevention:**
-[How to avoid this mistake in future]
+**✅ SOLUTION:** [Working approach]
+**Prevention:** [How to avoid in future]
 ```
 
-### Evolution Examples
+### Generalized Problem Categories
 
-These examples show the complete journey from mistake to solution, including the investigation process that led to understanding.
+#### 1. Scope and Context Issues
+
+**Problem Pattern:** Instance methods not available in lambda scope.
+
+**General Rule:** When inside a factory lambda, only static APIs are available. Instance helper methods from the containing class are not accessible.
+
+**Prevention:**
+- Use static APIs directly inside lambdas
+- Use helper methods only at class/context level
+- Remember: lambdas execute in isolated scope
+
+> 📖 **Concrete Example:** See [SubstituteFor Scope Issue](./copilot-examples.md#substitutefor-scope-issue) in copilot-examples.md
 
 ---
 
-#### Example 1: SubstituteFor() Scope Issue
+#### 2. Identity Lambda Anti-Pattern
 
-**❌ FAILURE: Using SubstituteFor() inside a lambda** (Discovered: November 2024)
+**Problem Pattern:** Using lambdas that just return their inputs without exercising any behavior.
 
-**Attempted:**
-```csharp
-New(out var contextVar, () => {
-    var substitute = SubstituteFor<IConfiguration>();  // ❌ FAILED
-    return new Context(substitute);
-});
-```
-
-**Error:**
-```
-No overload for method 'SubstituteFor' takes 0 arguments
-```
-
-**Investigation:**
-1. Checked GivenContext methods - SubstituteFor is a helper method
-2. Examined lambda scope - helpers aren't available inside lambdas
-3. Found that NSubstitute.Substitute.For<T>() is the underlying API
-4. Realized helper methods are convenience wrappers on GivenContext
-
-**Why it failed:**
-`SubstituteFor()` is a helper method on GivenContext class, not available inside lambda scope. Lambda executes in different context without access to GivenContext instance methods.
-
-**✅ SOLUTION: Use Substitute.For<T>() directly inside lambdas** (Verified: November 2024)
-
-```csharp
-New(out var contextVar, () => {
-    var substitute = Substitute.For<IConfiguration>();  // ✅ Works
-    return new Context(substitute);
-});
-```
-
-**Why it works:**
-`Substitute.For<T>()` is NSubstitute's static API, available in any scope. The helper method `SubstituteFor()` on GivenContext is just a convenience wrapper.
+**General Rule:** The "When/Invoked" section must call the actual method under test. Identity lambdas like `(x) => x` test nothing.
 
 **Prevention:**
-- Use `SubstituteFor()` helper only at GivenContext level (Given.SubstituteFor<T>(out var))
-- Use `Substitute.For<T>()` directly when inside lambdas
-- Remember: helpers are instance methods, not global functions
+- Always ask: "What method am I testing?"
+- Ensure the lambda invokes actual production code
+- The result should come from calling production code, not transforming inputs
+
+> 📖 **Concrete Example:** See [Identity Lambda Anti-Pattern](./copilot-examples.md#identity-lambda-anti-pattern) in copilot-examples.md
 
 ---
 
-#### Example 2: Identity Lambda Anti-Pattern
+#### 3. Naming Collision in CallerArgumentExpression
 
-**❌ FAILURE: Identity lambda in Invoked (doesn't test behavior)** (Discovered: November 2024)
+**Problem Pattern:** Multiple helper methods using the same parameter name cause variable storage collisions.
 
-**Attempted:**
-```csharp
-var then = When
-    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
-```
-
-**Error:**
-No compile error, but test doesn't verify any behavior.
-
-**Investigation:**
-1. Reviewed test - it passes but doesn't actually test anything
-2. Examined Invoked purpose - should invoke the method under test
-3. Realized identity lambda just returns inputs unchanged
-4. Identified that no method is being called or verified
-
-**Why it failed:**
-Identity lambdas like `(x) => x` or `(a, b) => (a, b)` don't exercise any behavior. They simply return inputs unchanged, testing nothing. The test appears to pass but provides zero value.
-
-**✅ SOLUTION: Invoke actual method under test** (Verified: November 2024)
-
-```csharp
-// ❌ BAD: Identity lambda (returns inputs unchanged)
-var then = When
-    .Invoked(firstAccessVar, secondAccessVar, static (first, second) => (first, second));
-
-// ✅ GOOD: Actually invokes the method under test
-var then = When
-    .Invoked(objVar, paramVar, static (obj, param) => obj.Method(param));
-
-// ✅ GOOD: For parameterless property getter
-var then = When
-    .Invoked(static () => HealthCheckTags.Ready);
-```
-
-**Why it works:**
-These examples actually call the code being tested. The method invocation exercises real behavior that can be verified in assertions.
+**General Rule:** CallerArgumentExpression captures the **parameter name** from the method signature, not the variable name at the call site. Different methods must use different parameter names.
 
 **Prevention:**
-- Invoked must call actual method under test
-- Never use identity lambdas like `(x) => x`
-- Ask: "What method am I testing?" and call it explicitly
+- Use unique, descriptive parameter names in each helper method
+- Example: `baseModule`, `dependentModule` instead of generic `moduleVar` in both
+
+> 📖 **Concrete Example:** See [CallerArgumentExpression Variable Collision](./copilot-examples.md#callerargumentexpression-variable-collision) in copilot-examples.md
 
 ---
 
-#### Example 3: Option Creation in LanguageExt v5
+#### 4. API Version Misuse
 
-**❌ FAILURE: Using wrong Option creation API** (Discovered: November 2024)
+**Problem Pattern:** Using the wrong API for a given type (e.g., nullable vs non-nullable).
 
-**Attempted:**
-```csharp
-return Prelude.Optional(entity);  // ❌ Wrong for non-nullable types
-```
-
-**Error:**
-```
-Cannot convert from 'Entity' to 'Entity?'
-```
-
-**Investigation:**
-1. Checked LanguageExt v5 API documentation
-2. Found `Optional()` is for nullable types (int?, DateTime?)
-3. Discovered `Some()` is for non-null reference types
-4. Learned about .NoneIfNull() extension for nullable references
-
-**Why it failed:**
-LanguageExt v5 has different APIs for different scenarios:
-- `Optional(T?)` - For nullable value types
-- `Some(T)` - For guaranteed non-null reference types
-- `.NoneIfNull()` - For nullable reference types
-
-Using `Optional()` for non-nullable reference type causes type mismatch.
-
-**✅ SOLUTION: Use Prelude.Some() for non-null values** (Verified: November 2024)
-
-```csharp
-// For guaranteed non-null values
-return entity is not null
-    ? Prelude.Some(entity)
-    : Option<Entity>.None;
-
-// Or with pattern matching
-return await query.FirstOrDefaultAsync(ct) is { } entity
-    ? Prelude.Some(entity)
-    : Option<Entity>.None;
-
-// For nullable reference types
-return nullableValue.NoneIfNull();
-```
-
-**Why it works:**
-- `Prelude.Some(value)` correctly wraps non-null values
-- Pattern matching ensures entity is not null before wrapping
-- `.NoneIfNull()` handles nullable references properly
+**General Rule:** Libraries often provide different APIs for different type scenarios. Check documentation for the correct method for your use case.
 
 **Prevention:**
-- Use `Some()` for guaranteed non-null values
-- Use `Optional()` only for nullable value types (int?, DateTime?)
-- Use `.NoneIfNull()` for nullable reference types
-- Remember the v5 API differs from v4
+- Check library documentation for v5/latest API changes
+- Understand the semantic difference between API variants
+- Use pattern matching to handle nullable types correctly
+
+> 📖 **Concrete Example:** See [Option Creation API](./copilot-examples.md#option-creation-api) in copilot-examples.md
 
 ---
 
-#### Example 4: Multiple Instructions Update Claims
+#### 5. Tool Response Verification
 
-**❌ FAILURE: Claiming instructions updated without verification** (Discovered: November 2025)
+**Problem Pattern:** Claiming success without verifying tool response.
 
-**Attempted:**
-```markdown
-AI: "I'll update the instructions now."
-[Calls replace_string_in_file]
-[Tool response shows "oldString not found"]
-AI: "Done! I've updated the instructions."  ← WRONG
-```
-
-**Error:**
-Instructions were not actually updated, but AI claimed they were. User had to check manually and ask AI to try again.
-
-**Investigation:**
-1. Reviewed tool responses - replace_string_in_file failed
-2. AI didn't check the response before claiming success
-3. Identified pattern: AI assuming success without verification
-4. User had to waste time discovering nothing was updated
-
-**Why it failed:**
-AI didn't verify the tool response before telling user the work was done. Failed edit appeared as success to user, wasting time when they tried to use non-existent updates.
-
-**✅ SOLUTION: Always verify tool responses** (Verified: November 2025)
-
-```markdown
-AI: "Let me update the instructions."
-[Calls replace_string_in_file]
-[Tool response shows "oldString not found"]
-AI: "The edit failed with 'oldString not found'. Let me read the file to find the exact text."
-[Calls read_file to locate correct text]
-AI: "Found it - the whitespace was different. Trying again with exact text."
-[Calls replace_string_in_file with correct text]
-[Tool response shows "successfully edited"]
-AI: "Done! Successfully added to [section] section."
-```
-
-**Why it works:**
-- Checks tool response before claiming success
-- Reads error message and understands why it failed
-- Takes corrective action immediately
-- Only claims success after seeing "successfully edited"
+**General Rule:** Always check tool responses before claiming completion. Failed operations should trigger immediate retry with corrected inputs.
 
 **Prevention:**
-- **ALWAYS check tool response** after every edit
-- IF failed → Read error, find correct text, retry
-- NEVER assume tool worked without verification
-- This pattern applies to ALL tool calls, not just file edits
+- **ALWAYS** check tool response after every operation
+- If failed → read error, understand cause, retry
+- Only claim success after seeing confirmation
+
+> 📖 **Concrete Example:** See [Instructions Update Verification](./copilot-examples.md#instructions-update-verification) in copilot-examples.md
+
+---
+
+#### 6. Async Boundary Constraints
+
+**Problem Pattern:** Using ref variables across await boundaries.
+
+**General Rule:** C# prohibits using ref variables after await. Use different patterns for sync vs async scenarios.
+
+**Prevention:**
+- For sync: Use ref-based optimizations (CollectionsMarshal)
+- For async: Use standard lookup patterns (TryGetValue)
+- Never try to hold refs across await
+
+> 📖 **Concrete Example:** See [CollectionsMarshal Async Pattern](./copilot-examples.md#collectionsmarshal-async-pattern) in copilot-examples.md
 
 ---
 
@@ -1603,6 +1636,7 @@ When a pattern fails, use these techniques to investigate:
 - [Critical Test Guidelines](#critical-test-guidelines) - Testing patterns and antipatterns
 - [Terminal Commands Reference](#terminal-commands-reference) - Command failures and solutions
 - [Code Quality Warnings](#code-quality-warnings-to-avoid) - Common compiler warnings
+- 📖 [Concrete Examples](./copilot-examples.md) - Full code examples for all failure patterns
 
 ---
 
@@ -1706,339 +1740,36 @@ Error: This request has been automatically failed because it uses a deprecated v
 3. Document the change with previous versions
 4. Verify the new SHA is from an official release tag, not an intermediate commit
 
-**Common GitHub Actions Mistakes & How to Avoid Them:**
+**Common GitHub Actions Mistakes - Generalized Patterns:**
 
-Based on actual failures encountered (November 2024):
+> 📖 **Concrete Examples:** See [GitHub Actions Examples](./copilot-examples.md#github-actions-examples) for full code samples and historical SHA tables.
 
-**❌ MISTAKE 1: Using assumed/guessed SHAs without verification**
-```yaml
-# ❌ WRONG - This SHA was assumed, not verified
-uses: actions/checkout@db14d8b7fea37acffdd656bd35b81b8f8b3bb8ad # v6.0.0
-# Error: "An action could not be found at the URI"
-```
-
-**✅ CORRECT - Always verify first:**
-```powershell
-# 1. Verify the correct SHA
-git ls-remote --tags https://github.com/actions/checkout.git | Select-String "v6" | Select-Object -Last 5
-# Output: 1af3b93b6815bc44a9784bd300feb67ff0d1eeb3        refs/tags/v6.0.0
-
-# 2. Use the verified SHA
-uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
-```
-
-**❌ MISTAKE 2: Updating one action at a time reactively**
-
-Instead of verifying and updating ALL actions systematically, we updated one at a time as errors appeared, resulting in:
-- 11 different actions with invalid SHAs
-- 27 total instances that needed correction
-- Multiple workflow failures
-
-**✅ CORRECT - Proactive systematic verification:**
-```powershell
-# Verify ALL actions in your workflow BEFORE updating:
-git ls-remote --tags https://github.com/actions/checkout.git | Select-String "v6" | Select-Object -Last 5
-git ls-remote --tags https://github.com/actions/setup-dotnet.git | Select-String "v5" | Select-Object -Last 5
-git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
-git ls-remote --tags https://github.com/actions/upload-artifact.git | Select-String "v5" | Select-Object -Last 5
-# ... verify ALL actions used in workflow
-```
-
-**❌ MISTAKE 3: Using outdated/deprecated SHAs**
-
-GitHub deprecates old commit SHAs, even for stable releases:
-```
-Error: This request has been automatically failed because it uses a deprecated version of `actions/cache: 6849a6489940f00c2f30c0fb92c6274307ccb58a`
-```
-
-**✅ CORRECT - Use the LATEST stable release SHA:**
-```powershell
-# Always get the LATEST version in the major version series
-git ls-remote --tags https://github.com/actions/cache.git | Select-String "v4" | Select-Object -Last 10
-# Use the most recent: v4.3.0, not v4.1.2 or v4.2.0
-```
-
-**Actions verified and corrected in this project (as of November 2024):**
-
-| Action                                    | Correct SHA                                | Version | Previous Issues          |
-|-------------------------------------------|--------------------------------------------|---------|--------------------------|
-| actions/checkout                          | `1af3b93b6815bc44a9784bd300feb67ff0d1eeb3` | v6.0.0  | Used invalid SHA         |
-| actions/setup-dotnet                      | `2016bd2012dba4e32de620c46fe006a3ac9f0602` | v5.0.1  | Used invalid SHA         |
-| actions/cache                             | `0057852bfaa89a56745cba8c7296529d2fc39830` | v4.3.0  | Multiple deprecated SHAs |
-| actions/upload-artifact                   | `330a01c490aca151604b8cf639adc76d48f6c5d4` | v5.0.0  | Used invalid SHA         |
-| ossf/scorecard-action                     | `99c09fe975337306107572b4fdf4db224cf8e2f2` | v2.4.3  | Was using v2.4.0         |
-| github/codeql-action/upload-sarif         | `5ad83d3202da6e473f763d732b591299ae4e380c` | v3      | Used invalid SHA         |
-| dorny/test-reporter                       | `894765a932a426ee30919ffd3b5fd3b53c0e26b8` | v2.2.0  | Used invalid SHA         |
-| EnricoMi/publish-unit-test-result-action  | `6e8f8c55b476f977d1c58cfbd7e337cbf86d917f` | v2      | Used invalid SHA         |
-| irongut/CodeCoverageSummary               | `51cc3a756ddcd398d447c044c02cb6aa83fdae95` | v1.3.0  | Was correct              |
-| marocchino/sticky-pull-request-comment    | `773744901bac0e8cbb5a0dc842800d45e9b2b405` | v2      | Used invalid SHA         |
-| danielpalme/ReportGenerator-GitHub-Action | `dcdfb6e704e87df6b2ed0cf123a6c9f69e364869` | v5.5.0  | Used invalid SHA         |
+| Mistake Pattern | General Rule | Prevention |
+|-----------------|--------------|------------|
+| **Using assumed/guessed SHAs** | SHAs must be verified from source repository | Always run `git ls-remote --tags` before updating |
+| **Updating reactively** | Verify ALL actions systematically, not one at a time | Check all actions in workflow before any update |
+| **Using outdated SHAs** | GitHub deprecates old SHAs even for stable releases | Always use LATEST version in major series |
+| **env/run in Scorecard job** | OpenSSF Scorecard has strict workflow restrictions | Split into separate jobs for security tools |
+| **PR passes but main fails** | Scorecard validation is lenient for PRs, strict for push | Test workflow changes on branches with push events |
 
 **Key Lesson:** If you're updating GitHub Actions, verify EVERY action's SHA with `git ls-remote` before making changes. This takes a few minutes but prevents hours of debugging workflow failures.
 
 ---
 
+**OpenSSF Scorecard Restrictions (Quick Reference):**
 
-**❌ MISTAKE 4: Using env variables or disallowed actions in OpenSSF Scorecard job**
-
-When `publish_results: true` is set in the `ossf/scorecard-action`, the workflow has **FOUR restrictions**:
+When `publish_results: true` is set, the Scorecard job has **FOUR restrictions**:
 
 1. **NO global `env` or `defaults` sections** in the workflow
-2. **NO `env` section in the job that runs Scorecard**
-3. **NO disallowed actions in the Scorecard job** (e.g., `actions/setup-dotnet`, `actions/cache`, etc.)
-4. **NO `run` steps in the Scorecard job** - ONLY steps with `uses` are allowed
+2. **NO `env` section in the Scorecard job**
+3. **NO disallowed actions** (e.g., `actions/setup-dotnet`, `actions/cache`)
+4. **NO `run` steps** - ONLY steps with `uses` are allowed
 
-This is a security restriction documented at https://github.com/ossf/scorecard-action#workflow-restrictions.
+**Solution Pattern:** Split security scanning into TWO separate jobs:
+- `vulnerability-scan` job: Can use .NET setup, cache, env vars, shell scripts
+- `scorecard` job: ONLY checkout + Scorecard action + SARIF upload
 
-**Error encountered (November 2024-2025):**
-```
-# First error (global env):
-workflow verification failed: workflow contains global env vars or defaults, 
-see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
-
-# Second error (job-level env):
-workflow verification failed: scorecard job contains env vars, 
-see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
-
-# Third error (disallowed actions):
-workflow verification failed: job has unallowed step: actions/setup-dotnet,
-see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
-
-# Fourth error (run steps):
-workflow verification failed: scorecard job must only have steps with `uses`,
-see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
-```
-
-**Why it fails:** Global environment variables, job-level environment variables, using setup/cache actions, or shell scripts in the Scorecard job could potentially be used to manipulate Scorecard results, so the action enforces these restrictions as a security measure.
-
-**Critical Discovery (November 26-27, 2025):** The validation behaves **differently** for PRs vs main branch:
-- **PR builds (`pull_request` event):** Validation is **skipped or lighter** because publishing is disabled (PRs can't publish official scores)
-- **Main builds (`push` event):** **STRICT validation enforced** when attempting to publish results to public dashboard
-
-**Result:** PR CI can be green ✅, but merge to main fails ❌ if the workflow violates any of the four restrictions!
-
-**❌ WRONG - Global env section:**
-```yaml
-name: Build
-
-env:
-  CI: true
-  DOTNET_NOLOGO: true
-
-jobs:
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ossf/scorecard-action@v2
-        with:
-          publish_results: true
-```
-
-**❌ ALSO WRONG - Env in Scorecard job:**
-```yaml
-name: Build
-
-jobs:
-  security-scan:
-    runs-on: ubuntu-latest
-    env:  # ❌ This causes "scorecard job contains env vars" error
-      CI: true
-      DOTNET_NOLOGO: true
-    steps:
-      - uses: ossf/scorecard-action@v2
-        with:
-          publish_results: true
-```
-
-**❌ ALSO WRONG - Disallowed actions in Scorecard job:**
-```yaml
-name: Build
-
-jobs:
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5  # ❌ Not allowed in Scorecard job!
-      - run: dotnet list package --vulnerable
-      - uses: ossf/scorecard-action@v2
-        with:
-          publish_results: true
-```
-
-**❌ ALSO WRONG - Run steps in Scorecard job:**
-```yaml
-name: Build
-
-jobs:
-  scorecard:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ossf/scorecard-action@v2
-        with:
-          publish_results: true
-      - name: Check results
-        run: |  # ❌ No 'run' steps allowed!
-          echo "Checking results..."
-          cat results.sarif
-      - uses: github/codeql-action/upload-sarif@v3
-```
-
-**✅ CORRECT - Separate jobs: one for vulnerability scan, one for Scorecard:**
-```yaml
-name: Build
-
-jobs:
-  vulnerability-scan:
-    runs-on: ubuntu-latest
-    env:  # ✅ OK - env in vulnerability scan job
-      CI: true
-      DOTNET_NOLOGO: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5  # ✅ OK here
-      - uses: actions/cache@v4  # ✅ OK here
-      - run: dotnet list package --vulnerable  # ✅ OK here
-  
-  scorecard:
-    runs-on: ubuntu-latest
-    # ✅ NO env section
-    steps:
-      - uses: actions/checkout@v6  # ✅ Only checkout is allowed
-      - uses: ossf/scorecard-action@v2
-        with:
-          publish_results: true
-      - uses: github/codeql-action/upload-sarif@v3  # ✅ Upload is allowed
-      # ✅ NO 'run' steps - only 'uses' allowed
-```
-
-**Solution:** 
-1. Remove global `env` section from workflow level
-2. **Split security scanning into TWO separate jobs:**
-   - `vulnerability-scan` job: Can use .NET setup, cache, env vars, shell scripts, etc.
-   - `scorecard` job: ONLY checkout + Scorecard action + SARIF upload
-3. The Scorecard job must be minimal - no setup actions, no cache, no env vars, **no run steps**
-4. Only steps with `uses` are allowed in the Scorecard job (typically just `actions/checkout`, `ossf/scorecard-action`, and `github/codeql-action/upload-sarif`)
-
-**Alternative (not recommended):** Set `publish_results: false`, but this prevents your project's security score from being publicly visible on the OpenSSF Scorecard dashboard.
-
----
-
-**❌ CRITICAL GOTCHA: PR CI Green ✅ but Main CI Red ❌**
-
-**Scenario Discovered (November 26, 2025):**
-
-A PR at commit `1d51c5a` had **green CI** ✅  
-After merge to `main` at commit `f7a7a24`, the CI **failed** ❌ with the Scorecard error.
-
-**Why This Happens:**
-
-The OpenSSF Scorecard action has **conditional validation** based on the GitHub event type:
-
-| Context          | Event Type     | Publishing                                    | Validation                | Result                          |
-|------------------|----------------|-----------------------------------------------|---------------------------|---------------------------------|
-| **Pull Request** | `pull_request` | ❌ Skipped (PRs can't publish official scores) | ⚠️ **Lighter or skipped** | ✅ **Passes** even with env vars |
-| **Push to Main** | `push`         | ✅ **Attempts to publish** to public dashboard | 🔒 **STRICT enforcement** | ❌ **Fails** if env vars present |
-
-**Root Cause:**
-- PRs run Scorecard but **don't publish** → validation is lenient
-- Main branch runs Scorecard and **attempts to publish** → strict validation kicks in
-- If the workflow has `env` in the scorecard job, it only fails **after merge**
-
-**How to Avoid:**
-1. ✅ **Always test workflow changes** by pushing directly to a test branch (triggers `push` event)
-2. ✅ **Verify the security-scan job has NO `env` section** before merging
-3. ✅ **Check merge commits** - conflicts might reintroduce the env section
-4. ✅ **Run a manual workflow_dispatch** on PRs to trigger push-like validation
-
-**Prevention:**
-This is a **known gotcha** with conditional validation. The only way to catch it is to ensure strict validation runs on PRs too, or test the exact workflow that will run on main.
-
----
-
-**❌ CRITICAL MISTAKE: Adding validation logic to Scorecard job**
-
-**Scenario Discovered (November 27, 2025):**
-
-An AI assistant attempted to add a step to parse and validate Scorecard SARIF results in the `scorecard` job:
-
-```yaml
-jobs:
-  scorecard:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ossf/scorecard-action@v2
-        with:
-          publish_results: true
-      - name: Check Scorecard Results  # ❌ WRONG
-        run: |
-          # Parse SARIF and fail on critical issues
-          ...
-      - uses: github/codeql-action/upload-sarif@v3
-```
-
-**Error:**
-```
-workflow verification failed: scorecard job must only have steps with `uses`,
-see https://github.com/ossf/scorecard-action#workflow-restrictions for details.
-```
-
-**Why it fails:** The Scorecard action's **FOURTH restriction** explicitly forbids ANY `run` steps in the Scorecard job. Only steps with `uses` are allowed. This is enforced to prevent manipulation of security scan results.
-
-**Root Cause of Mistake:**
-The AI assistant was trying to be "helpful" by adding validation logic, but violated the fundamental restriction that the Scorecard job must be **minimal and unmodifiable**.
-
-**✅ CORRECT: Let the tools do their job**
-
-The security findings are meant to be viewed in:
-1. **GitHub Security tab** (via SARIF upload to `github/codeql-action/upload-sarif`)
-2. **OpenSSF Scorecard public dashboard** (when `publish_results: true`)
-3. **Workflow run logs** (Scorecard prints the score)
-
-**Do NOT:**
-- ❌ Add `run` steps to parse SARIF results
-- ❌ Add `run` steps to fail the workflow based on score
-- ❌ Add ANY custom logic in the Scorecard job
-- ❌ Try to "improve" the Scorecard job with validation
-
-**Lesson:**
-When a security tool has explicit restrictions, **respect them**. The restrictions exist for security reasons. If you want to block on security issues, do it in a **separate job** that doesn't interfere with Scorecard publishing.
-
-**Correct Pattern for Blocking on Security Issues:**
-
-```yaml
-jobs:
-  vulnerability-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5
-      - name: Check for vulnerable packages
-        run: |
-          dotnet list package --vulnerable 2>&1 | tee vulnerable-packages.txt
-          if grep -q "has the following vulnerable packages" vulnerable-packages.txt; then
-            echo "::error::Vulnerable packages detected!"
-            exit 1
-          fi
-  
-  scorecard:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ossf/scorecard-action@v2
-        with:
-          publish_results: true
-      - uses: github/codeql-action/upload-sarif@v3
-```
-
-**Why This Works:**
-- ✅ `vulnerability-scan` job can have any logic, shell scripts, etc.
-- ✅ `scorecard` job remains minimal and compliant
-- ✅ Both jobs run independently
-- ✅ Security findings visible in GitHub Security tab
-- ✅ Vulnerable packages block the workflow
+> 📖 **Full Examples:** See [OpenSSF Scorecard Restrictions](./copilot-examples.md#openssf-scorecard-restrictions) for complete YAML examples.
 
 ---
 
@@ -2472,40 +2203,43 @@ HomeInventory.Tests.Acceptance
 
 ## Technology Stack
 
-### Core Technologies
-- **.NET 10.0** (see `global.json` for specific SDK version)
-- **ASP.NET** for Web API
-- **Carter** for minimal API endpoints
-- **Entity Framework Core** for data access
-- **Serilog** for structured logging
-
-### Key Libraries
-- **LanguageExt** - Functional programming primitives
-- **FluentValidation** - Request validation
-- **Riok.Mapperly** - Compile-time object mapping
-- **Ardalis.Specification** - Repository pattern with specifications
-- **BCrypt.Net-Next** - Password hashing
-- **Swashbuckle** - OpenAPI/Swagger documentation
-- **Scrutor** - Assembly scanning and decoration
-- **Ulid** - Unique identifiers
-- **System.IdentityModel.Tokens.Jwt** - JWT authentication
-- **Microsoft.Extensions.Options.DataAnnotations** - Options validation
-- **Microsoft.AspNetCore.Authentication.JwtBearer** - JWT authentication
-- **Microsoft.Extensions.Diagnostics.HealthChecks** - Health check infrastructure
-
-### Testing
-- **xUnit** - Testing framework
-- **Reqnroll** - BDD/Acceptance testing (SpecFlow successor)
-- **Expressium.LivingDoc.ReqnrollPlugin** - Living documentation
-- **NSubstitute** - Mocking framework
-- **AutoFixture** - Test data generation
-- **AwesomeAssertions** - Fluent assertions
-- **LanguageExt.UnitTesting** - Testing helpers for LanguageExt types
-- **TngTech.ArchUnitNET** & **NetArchTest.Rules** - Architecture testing
+```toon
+@stack
+  core:
+    runtime: ".NET 10.0 (see global.json)"
+    api: "ASP.NET Core"
+    endpoints: "Carter (minimal APIs)"
+    data_access: "Entity Framework Core"
+    logging: "Serilog (structured)"
+  
+  libraries:
+    functional: "LanguageExt"
+    validation: "FluentValidation"
+    mapping: "Riok.Mapperly (compile-time)"
+    repository: "Ardalis.Specification"
+    password: "BCrypt.Net-Next"
+    openapi: "Swashbuckle"
+    scanning: "Scrutor"
+    ids: "Ulid"
+    jwt: "System.IdentityModel.Tokens.Jwt"
+    jwt_auth: "Microsoft.AspNetCore.Authentication.JwtBearer"
+    options: "Microsoft.Extensions.Options.DataAnnotations"
+    health: "Microsoft.Extensions.Diagnostics.HealthChecks"
+  
+  testing:
+    framework: "xUnit"
+    bdd: "Reqnroll (SpecFlow successor)"
+    living_doc: "Expressium.LivingDoc.ReqnrollPlugin"
+    mocking: "NSubstitute"
+    test_data: "AutoFixture"
+    assertions: "AwesomeAssertions"
+    functional_testing: "LanguageExt.UnitTesting"
+    architecture: "TngTech.ArchUnitNET, NetArchTest.Rules"
+```
 
 ## Development Workflow & Best Practices
 
-**Last Updated:** November 2025
+**Last Updated:** December 2025
 
 This section provides explicit guidance on how to implement features following the project's established patterns and conventions.
 
@@ -3739,20 +3473,61 @@ When creating a new feature module (e.g., "Inventory"):
 
 ## Testing Guidelines
 
-**Last Updated:** November 2025
+**Last Updated:** December 2025
 
-### Testing Quick Reference
+```toon
+@testing_quick_reference
+  test_structure:
+    answer: "Use BaseTest<TGivenContext> with Given-When-Then"
+    section: "#test-structure-pattern"
+  create_test_data:
+    answer: "Use .New<T>(out var) with AutoFixture"
+    section: "#autofixture-usage-guidelines"
+  mock_dependencies:
+    answer: "Use .SubstituteFor<T>(out var) helper"
+    section: "#critical-test-guidelines"
+  assert_collections:
+    answer: "Use .ContainSingle() not .HaveCount(1)"
+    section: "#common-assertions"
+  assert_option:
+    answer: "Use .BeSome() and .BeNone() extensions"
+    section: "#common-assertions"
+  avoid_antipatterns:
+    answer: "Check DO/DON'T table"
+    section: "#common-test-anti-patterns-reference"
+  test_design:
+    answer: "Single responsibility, explicit SUT"
+    section: "#test-design-principles"
+  unit_vs_integration:
+    answer: "Unit for logic, Integration for infrastructure"
+    section: "#general-testing-principles"
 
-| What You Need          | Where to Look                                                | Quick Answer                                       |
-|------------------------|--------------------------------------------------------------|----------------------------------------------------|
-| Test structure pattern | [Test Structure Pattern](#test-structure-pattern)            | Use `BaseTest<TGivenContext>` with Given-When-Then |
-| Create test data       | [AutoFixture Usage](#autofixture-usage-guidelines)           | Use `.New<T>(out var)` with AutoFixture            |
-| Mock dependencies      | [Critical Guidelines](#critical-test-guidelines)             | Use `.SubstituteFor<T>(out var)` helper            |
-| Assert collections     | [Common Assertions](#common-assertions)                      | Use `.ContainSingle()` not `.HaveCount(1)`         |
-| Assert Option<T>       | [Common Assertions](#common-assertions)                      | Use `.BeSome()` and `.BeNone()` extensions         |
-| Avoid anti-patterns    | [Common Anti-Patterns](#common-test-anti-patterns-reference) | Check DO/DON'T table                               |
-| Test design principles | [Test Design Principles](#test-design-principles)            | Single responsibility, explicit SUT                |
-| Unit vs Integration    | [General Testing Principles](#general-testing-principles)    | Unit for logic, Integration for infrastructure     |
+@coverage_targets
+  domain_application: "80%+ (business logic)"
+  infrastructure: "60-70% (database access, specifications)"
+  web: "50-60% (mostly framework wiring)"
+  note: "Don't chase 100% - focus on business-critical paths"
+
+@unit_test_when
+  - Service registration (AddServicesAsync)
+  - Domain logic and business rules
+  - Pure functions and transformations
+  - Error handling and validation
+  - Data structure operations
+
+@integration_test_when
+  - Middleware pipeline (BuildAppAsync)
+  - Endpoint routing and handlers
+  - Authentication/Authorization flow
+  - Database queries with real DB
+  - End-to-end scenarios
+
+@dont_unit_test
+  - Framework generated code (CompilerGenerated, GeneratedCode)
+  - Simple property getters/setters
+  - Thin wrappers over framework methods
+  - Code that only calls framework APIs
+```
 
 **Related Topics:**
 - [Failed Code Edits](#failed-code-edits---investigation--prevention) - Learn from past mistakes
@@ -3844,6 +3619,8 @@ dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage"
 - Verify error handling and validation logic
 - Use AutoFixture for test data generation
 - Mock external dependencies with NSubstitute
+
+> 📖 **Concrete Failure Examples:** See [Testing Framework Examples](./copilot-examples.md#testing-framework-examples) for detailed examples of common testing mistakes and their solutions.
 
 ### Test Structure Pattern
 
@@ -4750,37 +4527,91 @@ protected override void EnsureRegistered(IServiceCollection services) =>
 
 ### Common Test Anti-Patterns Reference
 
-This section consolidates frequently encountered mistakes across test patterns:
+```toon
+@test_antipatterns
+  assertions:
+    have_count_1:
+      wrong: ".HaveCount(1)"
+      correct: ".ContainSingle()"
+      warning: FAA0001
+      reason: "Not specific enough"
+    
+    is_some_check:
+      wrong: ".IsSome.Should().BeTrue()"
+      correct: ".Should().BeSome()"
+      reason: "Verbose, less readable"
+    
+    redundant_null:
+      wrong: ".NotBeNull() before .BeOfType<T>()"
+      correct: "Just .BeOfType<T>()"
+      reason: "Redundant check"
+    
+    string_type_match:
+      wrong: "String matching on types"
+      correct: "typeof(T) direct reference"
+      reason: "Brittle, error-prone"
+    
+    dictionary_separate:
+      wrong: "ContainKey() then separate access"
+      correct: ".ContainKey(...).WhoseValue.Should()..."
+      reason: "Cleaner chain"
+    
+    service_manual:
+      wrong: "Manual lifetime lambda checks"
+      correct: ".ContainTransient<T>() / .ContainScoped<T>()"
+      reason: "Purpose-built helpers"
+  
+  structure:
+    substitute_in_new:
+      wrong: "Substitute.For<T>() in New()"
+      correct: ".SubstituteFor<T>() helper"
+      reason: "Inconsistent pattern"
+    
+    identity_lambda:
+      wrong: "(x) => x"
+      correct: "(obj, param) => obj.Method(param)"
+      reason: "Tests nothing"
+    
+    hardcoded_literals:
+      wrong: "\"test\", false, 0"
+      correct: "AutoFixture variables"
+      reason: "Reduces robustness"
+    
+    multiple_result:
+      wrong: "Multiple .Result() with shared vars"
+      correct: "Single .Result() with multiple params"
+      reason: "Verbose, inefficient"
+    
+    implicit_sut:
+      wrong: "SUT unclear in variable names"
+      correct: "Explicit Sut(out var sutVar)"
+      reason: "Unclear test intent"
+    
+    multiline_invoked:
+      wrong: "Multi-line Invoked lambda"
+      correct: "Move setup to Given"
+      warning: IDE0053
+      reason: "Mixes setup with action"
+    
+    block_body:
+      wrong: "{ } for single expression"
+      correct: "Expression body x => x.Method()"
+      warning: IDE0053
+      reason: "Unnecessary verbosity"
+    
+    redundant_type_arg:
+      wrong: ".New<T>(out IVariable<T> var)"
+      correct: ".New(out IVariable<T> var)"
+      warning: CS8597
+      reason: "Redundant specification"
 
-| Anti-Pattern                               | Why It's Wrong          | Correct Pattern                                         | Warning/Error Code |
-|--------------------------------------------|-------------------------|---------------------------------------------------------|--------------------|
-| `.HaveCount(1)`                            | Not specific enough     | `.ContainSingle()`                                      | FAA0001            |
-| `.IsSome.Should().BeTrue()`                | Verbose, less readable  | `.Should().BeSome()`                                    | -                  |
-| `.NotBeNull()` before `.BeOfType<T>()`     | Redundant check         | Just `.BeOfType<T>()`                                   | -                  |
-| String matching on types                   | Brittle, error-prone    | `typeof(T)` direct reference                            | -                  |
-| `Substitute.For<T>()` in `New()`           | Inconsistent pattern    | `.SubstituteFor<T>()` helper                            | -                  |
-| Identity lambda `(x) => x`                 | Tests nothing           | Call actual method: `(obj, param) => obj.Method(param)` | -                  |
-| Hardcoded literals in tests                | Reduces test robustness | Use AutoFixture                                         | -                  |
-| Multiple `.Result()` with shared vars      | Verbose, inefficient    | Single `.Result()` with multiple params                 | -                  |
-| Implicit SUT                               | Unclear test intent     | Explicit `Sut(out var sutVar)`                          | -                  |
-| Multi-line `Invoked` lambda                | Mixes setup with action | Move setup to `Given`                                   | IDE0053            |
-| Block body `{ }` for single expression     | Unnecessary verbosity   | Use expression body `x => x.Method()`                   | IDE0053            |
-| Type arg when out param has type           | Redundant specification | Omit type: `.New(out IVariable<T> var)`                 | CS8597             |
-
-**Quick Reference Links:**
-- Single item assertions → Use `ContainSingle()` not `HaveCount(1)` (FAA0001)
-- Option<T> assertions → Use `.BeSome()` / `.BeNone()` not `.IsSome.Should().BeTrue()`
-- Type assertions → Use `typeof(T)` not `.Name.Contains("T")`
-- Dictionary assertions → Chain `.WhoseValue.Should()...` not separate access
-- Service assertions → Use `.ContainTransient<T>()` not manual lifetime checks
-- SUT creation → Use `Sut(out var sutVar)` not `.New<T>(out var sut, ...)`
-- Lambda expressions → Use expression body for single statements (IDE0053)
-
-**Note on `.Which` Pattern**:
-- Use `.Which` after `.BeSome()` to access the inner value: `.Should().BeSome().Which.Should().Be(...)`
-- `.BeNone()` has no `.Which` since there's no value to access
-- Chain `.Which` as many times as needed: `.ContainSingle().Which.Should().BeSome().Which.Should().BeOfType<T>()`
-
+@which_pattern
+  rule: "Chain .Which to access inner values"
+  examples:
+    - ".Should().BeSome().Which.Should().Be(...)"
+    - ".ContainSingle().Which.Should().BeSome().Which.Should().BeOfType<T>()"
+  note: ".BeNone() has no .Which since no value"
+```
 
 ### Integration Test Pattern
 
@@ -5013,6 +4844,139 @@ docker-compose up
 6. **OpenAPI**: All endpoints documented and accessible via Swagger UI
 7. **Docker**: Application is containerized and can run in Docker/Kubernetes
 8. **Feature Flags**: Use `Microsoft.FeatureManagement` for toggling features
+
+## NuGet Dependency Management
+
+**Last Updated:** December 2025
+
+> 📖 **Comprehensive Guide:** See [Dependency Management Strategy](../docs/dependency-management-strategy.md) for the complete multi-layered prevention approach.
+
+### Coordinated Dependency Updates
+
+**Problem:** When automated bots update packages individually, transitive dependency conflicts can occur, causing CI failures on both branches.
+
+**Note:** This project uses **Renovate** for all dependency updates (NuGet packages, Docker images, GitHub Actions). Renovate provides sophisticated grouping to prevent transitive dependency conflicts.
+
+**Example Scenario (Discovered: December 2025):**
+
+Two separate PRs updating:
+- `Reqnroll.xUnit` 3.2.1 → 3.3.0 (requires Reqnroll 3.3.0)
+- `Expressium.LivingDoc.ReqnrollPlugin` 1.1.4 → 1.1.6 (requires Reqnroll.CustomPlugin 3.3.0)
+
+**Error:**
+```
+NU1107: Version conflict detected for Reqnroll
+  → Expressium.LivingDoc.ReqnrollPlugin 1.1.6 → Reqnroll.CustomPlugin 3.3.0 → Reqnroll (>= 3.3.0 && < 4.0.0)
+  → Reqnroll.xUnit 3.2.1 → Reqnroll (= 3.2.1)
+```
+
+**Root Cause:** Each PR updates one package, but they share transitive dependencies with incompatible version requirements. Neither PR can merge individually.
+
+**✅ Solution: Coordinated Update**
+
+Update **both packages together** in a single PR:
+
+```xml
+<!-- Directory.Packages.props -->
+<ItemGroup Label="Testing packages">
+  <!-- Both must be updated together -->
+  <PackageVersion Include="Reqnroll.xUnit" Version="3.3.0" />
+  <PackageVersion Include="Expressium.LivingDoc.ReqnrollPlugin" Version="1.1.6" />
+</ItemGroup>
+```
+
+**Verification Steps:**
+
+1. **Restore packages:**
+   ```powershell
+   dotnet restore
+   ```
+
+2. **Check transitive versions:**
+   ```powershell
+   dotnet list package --include-transitive | Select-String -Pattern "Reqnroll"
+   ```
+
+3. **Expected output (all aligned):**
+   ```
+   > Reqnroll.xUnit                           3.3.0
+   > Expressium.LivingDoc.ReqnrollPlugin      1.1.6
+   > Reqnroll                                 3.3.0  (transitive)
+   > Reqnroll.CustomPlugin                    3.3.0  (transitive)
+   ```
+
+**Prevention (Sustainable Solution):**
+
+✅ **Configure Renovate to group related packages** (see `renovate.json`):
+
+```json
+{
+  "packageRules": [
+    {
+      "groupName": "Reqnroll ecosystem",
+      "matchPackagePatterns": ["^Reqnroll", "^Expressium\\.LivingDoc\\.ReqnrollPlugin$"],
+      "description": "Group Reqnroll packages to prevent transitive dependency conflicts"
+    }
+  ]
+}
+```
+
+This ensures Renovate creates **one PR** updating all related packages together, avoiding conflicts automatically.
+
+✅ **Pin transitive dependencies explicitly** in `Directory.Packages.props`:
+
+```xml
+<!-- Explicitly pin transitive dependencies to prevent version conflicts -->
+<PackageVersion Include="Reqnroll" Version="3.3.0" />
+<PackageVersion Include="Reqnroll.xUnit" Version="3.3.0" />
+<PackageVersion Include="Expressium.LivingDoc.ReqnrollPlugin" Version="1.1.6" />
+```
+
+When a transitive dependency is explicitly listed, Central Package Management overrides any conflicting transitive version requirements.
+
+**Additional Prevention:**
+
+- ✅ **Check transitive dependencies** before merging individual updates
+- ✅ **Use `dotnet list package --outdated`** to identify coordinated updates needed
+- ✅ **Review Renovate grouping** periodically as new dependencies are added
+
+**Common Dependency Groups (HomeInventory):**
+
+1. **Reqnroll ecosystem:**
+   - `Reqnroll.xUnit`
+   - `Expressium.LivingDoc.ReqnrollPlugin`
+   - Both share transitive dependency on `Reqnroll` core
+
+2. **Microsoft.EntityFrameworkCore:**
+   - `Microsoft.EntityFrameworkCore`
+   - `Microsoft.EntityFrameworkCore.Relational`
+   - `Microsoft.EntityFrameworkCore.Analyzers`
+   - `Microsoft.EntityFrameworkCore.Tools`
+   - All must stay on same version
+
+3. **LanguageExt:**
+   - `LanguageExt.Core`
+   - `LanguageExt.Rx`
+   - `LanguageExt.Sys`
+   - All must stay on same version
+
+**Troubleshooting Commands:**
+
+```powershell
+# Show all transitive dependencies
+dotnet list package --include-transitive
+
+# Show outdated packages
+dotnet list package --outdated
+
+# Show version conflicts
+dotnet restore --verbosity detailed 2>&1 | Select-String "NU1107|NU1608"
+
+# Force package restore
+dotnet restore --force --no-cache
+```
+
+---
 
 ## Code Quality & Analyzers
 
