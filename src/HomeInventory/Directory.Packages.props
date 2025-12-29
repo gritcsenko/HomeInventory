@@ -19,9 +19,9 @@
     <PackageVersion Include="Flurl" Version="4.0.0" />
     <PackageVersion Include="KubernetesClient" Version="18.0.13" />
     <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
-    <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-71" />
-    <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-71" />
-    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-71" />
+    <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-74" />
+    <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-74" />
+    <PackageVersion Include="LanguageExt.Sys" Version="5.0.0-beta-74" />
     <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="18.0.2" />
     <PackageVersion Include="Riok.Mapperly" Version="4.3.1" />
     <PackageVersion Include="Scalar.Aspire" Version="0.8.8" />
