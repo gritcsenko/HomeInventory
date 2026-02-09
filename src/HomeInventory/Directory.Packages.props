@@ -69,7 +69,7 @@
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup Label="Testing packages">
-    <PackageVersion Include="Expressium.LivingDoc.ReqnrollPlugin" Version="1.1.8" />
+    <PackageVersion Include="Expressium.LivingDoc.ReqnrollPlugin" Version="1.2.0" />
     <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.2" />
     <PackageVersion Include="TngTech.ArchUnitNET.xUnit" Version="0.13.2" />
     <PackageVersion Include="AutoBogus.Conventions" Version="2.13.1" />
