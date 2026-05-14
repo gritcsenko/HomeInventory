@@ -12,7 +12,7 @@ jobs:
       - name: "Checkout Repository"
         uses: actions/checkout@v6
       - name: Dependency Review
-        uses: actions/dependency-review-action@v5.0.0
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           # ([String]). Representing a path to a configuration file local to the repository or in an external repository.
           # Possible values: An absolute path to a local file or an external file.
