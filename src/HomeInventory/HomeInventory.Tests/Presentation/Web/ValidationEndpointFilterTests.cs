@@ -104,7 +104,7 @@ public sealed class ValidationEndpointFilterTests() : BaseTest<ValidationEndpoin
             .SubstituteFor<IValidationContextFactory<Guid>, Guid, IValidationContext>(out var contextFactoryVar, argVar, validationContextVar, static (f, arg, ctx) => f.CreateContext(arg).Returns(ctx))
             .New<ProblemDetails>(out var detailsVar)
             .SubstituteFor<IProblemDetailsFactory, ValidationFailure, string, ProblemDetails>(out var problemFactoryVar, failureVar, traceIdVar, detailsVar, static (p, f, t, d) =>
-                p.ConvertToProblem(Arg.Is((IReadOnlyCollection<Error> c) => c.Count == 1 && c.OfType<ValidationError>().Single().Message == f.ErrorMessage && c.OfType<ValidationError>().Single().Value == f.AttemptedValue), t).Returns(d))
+                p.ConvertToProblem(Arg.Is((IReadOnlyCollection<Error>? c) => c != null && c.Count == 1 && c.OfType<ValidationError>().Single(e => e.Message == f.ErrorMessage).Value == f.AttemptedValue), t).Returns(d))
             .Sut(out var sutVar, contextFactoryVar, problemFactoryVar);
 
         var then = await When
