@@ -95,8 +95,8 @@ public class CorrelationIdMiddlewareTests : BaseTest
             .When(static f => f.OnStarting(Arg.Any<Func<object, Task>>(), Arg.Any<object>()))
             .Do(static ci =>
             {
-                var func = ci.Arg<Func<object, Task>>();
-                var state = ci.Arg<object>();
+                var func = ci.ArgAt<Func<object, Task>>(0);
+                var state = ci.ArgAt<object>(1);
                 func(state);
             });
 

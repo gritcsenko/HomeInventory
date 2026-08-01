@@ -48,8 +48,8 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             // .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
             .SubstituteFor(out IVariable<IUserService> userServiceVar, registerRequestVar, userIdResultVar, (s, r, u) =>
             {
-                s.RegisterAsync(Arg.Is<RegisterCommand>(c => c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(Option<Error>.None);
-                s.GetUserIdAsync(Arg.Is<UserIdQuery>(q => q.Email.Value == r.Email), Cancellation.Token).Returns(QueryResult.From(u));
+                s.RegisterAsync(Arg.Is<RegisterCommand>(c => c != null && c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(Option<Error>.None);
+                s.GetUserIdAsync(Arg.Is<UserIdQuery>(q => q != null && q.Email.Value == r.Email), Cancellation.Token).Returns(QueryResult.From(u));
             })
             .InitializeHostAsync();
         Given
@@ -71,7 +71,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
         await Given
             .New<RegisterRequest>(out var registerRequestVar)
             .New<DuplicateEmailError>(out var errorVar)
-            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerRequestVar, errorVar, (s, r, e) => s.RegisterAsync(Arg.Is<RegisterCommand>(c => c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(e))
+            .SubstituteFor(out IVariable<IUserService> userServiceVar, registerRequestVar, errorVar, (s, r, e) => s.RegisterAsync(Arg.Is<RegisterCommand>(c => c != null && c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(e))
             .InitializeHostAsync();
         Given
             .HttpContext(out var contextVar)

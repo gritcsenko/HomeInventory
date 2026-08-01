@@ -46,7 +46,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             // .Map<LoginRequest>(out var loginRequestVar).To<AuthenticateQuery>(out var authenticateQueryVar)
             // .Map<AuthenticateResult>(out var authenticateResultVar).To<LoginResponse>(out var loginResponseVar)
             .SubstituteFor(out IVariable<IUserService> userServiceVar, loginRequestVar, authenticateResultVar, (s, l, r) =>
-                s.AuthenticateAsync(Arg.Is<AuthenticateQuery>(q => q.Email.Value == l.Email && q.Password == l.Password), Cancellation.Token)
+                s.AuthenticateAsync(Arg.Is<AuthenticateQuery>(q => q != null && q.Email.Value == l.Email && q.Password == l.Password), Cancellation.Token)
                     .Returns(QueryResult.From(r)))
             .Sut(out var sutVar)
             .InitializeHostAsync();
@@ -69,7 +69,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .New<LoginRequest>(out var loginRequestVar)
             .New<InvalidCredentialsError>(out var errorVar)
             .SubstituteFor(out IVariable<IUserService> userServiceVar, loginRequestVar, errorVar, (s, l, e) =>
-                s.AuthenticateAsync(Arg.Is<AuthenticateQuery>(q => q.Email.Value == l.Email && q.Password == l.Password), Cancellation.Token)
+                s.AuthenticateAsync(Arg.Is<AuthenticateQuery>(q => q != null && q.Email.Value == l.Email && q.Password == l.Password), Cancellation.Token)
                     .Returns(QueryResult.From<AuthenticateResult>(e)))
             .Sut(out var sutVar)
             .InitializeHostAsync();
