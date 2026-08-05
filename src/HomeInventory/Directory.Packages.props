@@ -6,7 +6,7 @@
   <ItemGroup Label="Security-patched transitive packages">
     <PackageVersion Include="MessagePack" Version="2.5.301" />
     <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
-    <PackageVersion Include="AngleSharp" Version="1.5.0" />
+    <PackageVersion Include="AngleSharp" Version="1.7.1" />
   </ItemGroup>
   <ItemGroup Label="Run-time packages">
     <PackageVersion Include="Ardalis.Specification" Version="9.3.1" />
