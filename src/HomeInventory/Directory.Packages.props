@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup Label="Security-patched transitive packages">
     <PackageVersion Include="MessagePack" Version="3.1.10" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="2.12.2" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="3.10.2" />
     <PackageVersion Include="AngleSharp" Version="1.8.2" />
   </ItemGroup>
   <ItemGroup Label="Run-time packages">
