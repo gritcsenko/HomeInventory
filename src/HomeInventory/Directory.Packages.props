@@ -107,7 +107,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.34.0.3385" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.35.0.4138" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
   </ItemGroup>
