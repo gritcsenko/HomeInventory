@@ -22,7 +22,7 @@
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
     <PackageVersion Include="Carter" Version="10.0.0" />
     <PackageVersion Include="FastExpressionCompiler" Version="6.0.0" />
-    <PackageVersion Include="FluentValidation" Version="12.1.1" />
+    <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
     <PackageVersion Include="KubernetesClient" Version="19.0.2" />
     <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
