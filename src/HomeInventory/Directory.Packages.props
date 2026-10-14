@@ -24,7 +24,7 @@
     <PackageVersion Include="FastExpressionCompiler" Version="6.0.0" />
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="Flurl" Version="4.0.0" />
-    <PackageVersion Include="KubernetesClient" Version="19.0.2" />
+    <PackageVersion Include="KubernetesClient" Version="21.0.8" />
     <PackageVersion Include="LanguageExt.CodeGen" Version="4.4.8" />
     <PackageVersion Include="LanguageExt.Core" Version="5.0.0-beta-78" />
     <PackageVersion Include="LanguageExt.Rx" Version="5.0.0-beta-78" />
