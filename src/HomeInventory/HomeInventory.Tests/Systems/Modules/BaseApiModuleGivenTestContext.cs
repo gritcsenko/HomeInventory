@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using Carter;
 using HomeInventory.Api;
 using HomeInventory.Domain;
@@ -56,9 +55,6 @@ public class BaseApiModuleGivenTestContext<TGiven, TModule> : GivenContext<TGive
             .AddSingleton<IScopeFactory, ScopeFactory>()
             .AddSingleton<IScopeContainer, ScopeContainer>()
             .AddSingleton<IScopeAccessor, ScopeAccessor>()
-            .AddOptions(new ApiVersioningOptions())
-            .AddSubstitute<IReportApiVersions>()
-            .AddSubstitute<IApiVersionParameterSource>()
             .AddSubstitute<IValidatorLocator>()
             .AddSingleton(ErrorMappingBuilder.CreateDefault().Build())
             .AddOptions(new ApiBehaviorOptions())
