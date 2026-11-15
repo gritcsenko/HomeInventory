@@ -3,11 +3,17 @@ using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Commands;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
+using HomeInventory.Core;
 using HomeInventory.Contracts.UserManagement;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.UserManagement.Errors;
+using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Web.Framework.Infrastructure;
+using HomeInventory.Web.UserManagement;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -57,12 +63,13 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, static (sut, body, userService, context, ct) => sut.RegisterAsync(body, userService, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, static (_, body, userService, context, ct) => UserManagementCarterModule.RegisterAsync(body, userService, context.RequestServices.GetRequiredService<IUserRepository>(), context.RequestServices.GetRequiredService<IUnitOfWork>(), context, context.RequestServices.GetRequiredService<IScopeAccessor>(), context.RequestServices.GetRequiredService<IProblemDetailsFactory>(), context.RequestServices.GetRequiredService<ContractsMapper>(), ct));
 
         then
             .Result(userIdResultVar, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<RegisterResponse>>()
-                    .Which.Value!.UserId.Should().Be(expected.UserId.ToString()));
+                    .Which.Value.Should().BeOfType<RegisterResponse>()
+                    .Which.UserId.Should().Be(expected.UserId.ToString()));
     }
 
     [Fact]
@@ -78,7 +85,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             .Sut(out var sutVar);
 
         var then = await When
-            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, (sut, body, userService, context, ct) => sut.RegisterAsync(body, userService, null!, null!, context, ct));
+            .InvokedAsync(sutVar, registerRequestVar, userServiceVar, contextVar, static (_, body, userService, context, ct) => UserManagementCarterModule.RegisterAsync(body, userService, context.RequestServices.GetRequiredService<IUserRepository>(), context.RequestServices.GetRequiredService<IUnitOfWork>(), context, context.RequestServices.GetRequiredService<IScopeAccessor>(), context.RequestServices.GetRequiredService<IProblemDetailsFactory>(), context.RequestServices.GetRequiredService<ContractsMapper>(), ct));
 
         then
             .Result(errorVar, (actual, error) =>

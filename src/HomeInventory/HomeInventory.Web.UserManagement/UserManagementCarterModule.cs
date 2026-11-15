@@ -13,12 +13,8 @@ using HomeInventory.Application.UserManagement.Interfaces;
 
 namespace HomeInventory.Web.UserManagement;
 
-public class UserManagementCarterModule(IScopeAccessor scopeAccessor, IProblemDetailsFactory problemDetailsFactory, ContractsMapper mapper) : ApiCarterModule
+public class UserManagementCarterModule : ApiCarterModule
 {
-    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
-    private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
-    private readonly ContractsMapper _mapper = mapper;
-
     protected override string PathPrefix => "/api/users/manage";
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
@@ -26,25 +22,25 @@ public class UserManagementCarterModule(IScopeAccessor scopeAccessor, IProblemDe
             .AllowAnonymous()
             .WithValidationOf<RegisterRequest>();
 
-    public async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserService userService, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
+    public static async Task<Results<Ok<RegisterResponse>, ProblemHttpResult>> RegisterAsync([FromBody] RegisterRequest body, [FromServices] IUserService userService, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, [FromServices] IScopeAccessor scopeAccessor, [FromServices] IProblemDetailsFactory problemDetailsFactory, [FromServices] ContractsMapper mapper, CancellationToken cancellationToken = default)
     {
         using var scopes = new CompositeDisposable(
-            _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
-            _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
+            scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
+            scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
-        var command = _mapper.ToCommand(body);
+        var command = mapper.ToCommand(body);
         var result = await userService.RegisterAsync(command, cancellationToken);
         return await result.Match<Task<Results<Ok<RegisterResponse>, ProblemHttpResult>>>(
             async error =>
             {
-                var problem = _problemDetailsFactory.ConvertToProblem([error], context.TraceIdentifier);
+                var problem = problemDetailsFactory.ConvertToProblem([error], context.TraceIdentifier);
                 return await Task.FromResult(TypedResults.Problem(problem));
             },
             async () =>
             {
-                var query = _mapper.ToQuery(body);
+                var query = mapper.ToQuery(body);
                 var queryResult = await userService.GetUserIdAsync(query, cancellationToken);
-                return _problemDetailsFactory.MatchToOk(queryResult, _mapper.ToResponse, context.TraceIdentifier);
+                return problemDetailsFactory.MatchToOk(queryResult, mapper.ToResponse, context.TraceIdentifier);
             });
     }
 }
