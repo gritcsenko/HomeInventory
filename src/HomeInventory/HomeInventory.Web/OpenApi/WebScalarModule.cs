@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using HomeInventory.Modules.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,13 +14,6 @@ public sealed class WebScalarModule : BaseModule
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         context.Services
             .AddEndpointsApiExplorer()
-            .AddApiVersioning(static options =>
-            {
-                options.DefaultApiVersion = new(1);
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.ApiVersionReader = new QueryStringApiVersionReader();
-            })
-            .AddApiExplorer(static options => options.GroupNameFormat = "'v'VVV")
             .AddOpenApi();
     }
 
@@ -30,8 +22,7 @@ public sealed class WebScalarModule : BaseModule
         await base.BuildAppAsync(context, cancellationToken);
 
         context.EndpointRouteBuilder
-            .MapOpenApi()
-            .WithDocumentPerVersion();
+            .MapOpenApi();
         context.EndpointRouteBuilder
             .MapScalarApiReference();
     }

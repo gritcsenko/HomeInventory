@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Asp.Versioning;
 using HomeInventory.Web.OpenApi;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace HomeInventory.Tests.Modules;
 
@@ -9,6 +9,6 @@ public class WebScalarModuleTests() : BaseModuleTest<WebScalarModule>(static () 
 {
     protected override void EnsureRegistered(IServiceCollection services) =>
         services.Should()
-            .Contain(d => d.ServiceType == typeof(IApiVersionReader));
+            .Contain(d => d.ServiceType == typeof(IApiDescriptionGroupCollectionProvider));
 }
 

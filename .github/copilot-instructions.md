@@ -3282,18 +3282,12 @@ public static partial class [Module]Mapper
 
 ### API Versioning
 
-API versioning is built into the `ApiCarterModule` base class:
+API versioning is **not used** (Asp.Versioning packages were removed). `ApiCarterModule` only maps a route group at `PathPrefix`; OpenAPI is served by `Microsoft.AspNetCore.OpenApi` (`AddOpenApi`/`MapOpenApi`) and Scalar.
 
 ```csharp
 public sealed class MyCarterModule : ApiCarterModule
 {
     protected override string PathPrefix => "/api/resource";
-
-    // Constructor - call MapToApiVersion to use a different version than v1 (default)
-    public MyCarterModule()
-    {
-        MapToApiVersion(new ApiVersion(2)); // Use v2 instead of default v1
-    }
 
     protected override void AddRoutes(RouteGroupBuilder group)
     {
@@ -3301,15 +3295,6 @@ public sealed class MyCarterModule : ApiCarterModule
     }
 }
 ```
-
-**Versioning Conventions:**
-- Default API version is 1.0
-- Version is specified in query string: `/api/resource?api-version=1`
-- All endpoints automatically versioned through `ApiCarterModule`
-- Use `protected override string PathPrefix` to specify the base path (required)
-- Call `MapToApiVersion(new ApiVersion(x))` in constructor to use a different version
-- If no version is specified, defaults to v1
-- Version set configured in `WebSwaggerModule`
 
 ### Logging
 
@@ -4839,7 +4824,7 @@ docker-compose up
 1. **Central Package Management**: All package versions in `Directory.Packages.props`
 2. **Configuration**: Use strongly-typed options pattern with validation
 3. **Health Checks**: Implement health checks for all critical dependencies
-4. **API Versioning**: Use `Asp.Versioning.Mvc.ApiExplorer` for versioning
+4. **API Versioning**: Not used (Asp.Versioning removed); add explicitly if multiple API versions are needed
 5. **Authentication**: JWT bearer token authentication for secured endpoints
 6. **OpenAPI**: All endpoints documented and accessible via Swagger UI
 7. **Docker**: Application is containerized and can run in Docker/Kubernetes

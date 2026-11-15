@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
     <PackageReference Include="Carter" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
