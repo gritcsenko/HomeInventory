@@ -1,3 +1,5 @@
+using HomeInventory.Domain.Primitives;
+using HomeInventory.Domain.UserManagement.Persistence;
 using HomeInventory.Web.UserManagement;
 using Microsoft.Extensions.Configuration;
 
@@ -8,6 +10,9 @@ public sealed class UserManagementModuleTestContext(BaseTest test) : BaseApiModu
     protected override void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         base.AddServices(services, configuration);
-        services.AddScoped<ContractsMapper>();
+        services
+            .AddScoped<ContractsMapper>()
+            .AddSubstitute<IUserRepository>()
+            .AddSubstitute<IUnitOfWork>();
     }
 }

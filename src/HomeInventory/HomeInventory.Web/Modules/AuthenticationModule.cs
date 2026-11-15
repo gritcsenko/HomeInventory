@@ -14,12 +14,8 @@ using Microsoft.AspNetCore.Routing;
 
 namespace HomeInventory.Web.Modules;
 
-public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, IScopeAccessor scopeAccessor, ContractsMapper mapper) : ApiCarterModule
+public class AuthenticationModule : ApiCarterModule
 {
-    private readonly IProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
-    private readonly IScopeAccessor _scopeAccessor = scopeAccessor;
-    private readonly ContractsMapper _mapper = mapper;
-
     protected override string PathPrefix => "/api/authentication";
 
     protected override void AddRoutes(RouteGroupBuilder group) =>
@@ -27,14 +23,14 @@ public class AuthenticationModule(IProblemDetailsFactory problemDetailsFactory, 
             .AllowAnonymous()
             .WithValidationOf<LoginRequest>(static s => s.IncludeAllRuleSets());
 
-    public async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, [FromServices] IUserService userService, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, CancellationToken cancellationToken = default)
+    public static async Task<Results<Ok<LoginResponse>, ProblemHttpResult>> LoginAsync([FromBody] LoginRequest body, [FromServices] IUserService userService, [FromServices] IUserRepository userRepository, [FromServices] IUnitOfWork unitOfWork, HttpContext context, [FromServices] IProblemDetailsFactory problemDetailsFactory, [FromServices] IScopeAccessor scopeAccessor, [FromServices] ContractsMapper mapper, CancellationToken cancellationToken = default)
     {
         using var scopes = new CompositeDisposable(
-            _scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
-            _scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
+            scopeAccessor.GetScope<IUserRepository>().Set(userRepository),
+            scopeAccessor.GetScope<IUnitOfWork>().Set(unitOfWork));
 
-        var query = _mapper.ToQuery(body);
+        var query = mapper.ToQuery(body);
         var result = await userService.AuthenticateAsync(query, cancellationToken);
-        return _problemDetailsFactory.MatchToOk(result, _mapper.ToResponse, context.TraceIdentifier);
+        return problemDetailsFactory.MatchToOk(result, mapper.ToResponse, context.TraceIdentifier);
     }
 }

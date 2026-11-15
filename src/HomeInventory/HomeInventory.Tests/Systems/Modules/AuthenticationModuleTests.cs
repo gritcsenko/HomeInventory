@@ -3,10 +3,17 @@ using HomeInventory.Application.Framework.Messaging;
 using HomeInventory.Application.UserManagement.Interfaces;
 using HomeInventory.Application.UserManagement.Interfaces.Queries;
 using HomeInventory.Contracts;
+using HomeInventory.Core;
+using HomeInventory.Domain.Primitives;
 using HomeInventory.Domain.Errors;
+using HomeInventory.Domain.UserManagement.Persistence;
+using HomeInventory.Web;
+using HomeInventory.Web.Framework.Infrastructure;
+using HomeInventory.Web.Modules;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeInventory.Tests.Systems.Modules;
 
@@ -52,12 +59,13 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sutVar, loginRequestVar, userServiceVar, contextVar, static (sut, body, userService, context, ct) => sut.LoginAsync(body, userService, null!, null!, context, ct));
+            .InvokedAsync(sutVar, loginRequestVar, userServiceVar, contextVar, static (_, body, userService, context, ct) => AuthenticationModule.LoginAsync(body, userService, context.RequestServices.GetRequiredService<IUserRepository>(), context.RequestServices.GetRequiredService<IUnitOfWork>(), context, context.RequestServices.GetRequiredService<IProblemDetailsFactory>(), context.RequestServices.GetRequiredService<IScopeAccessor>(), context.RequestServices.GetRequiredService<ContractsMapper>(), ct));
 
         then
             .Result(authenticateResultVar, static (actual, expected) =>
                 actual.Result.Should().BeOfType<Ok<LoginResponse>>()
-                    .Which.Value!.Id.Should().Be(expected.Id.ToString()));
+                    .Which.Value.Should().BeOfType<LoginResponse>()
+                    .Which.Id.Should().Be(expected.Id.ToString()));
     }
 
     [Fact]
@@ -75,7 +83,7 @@ public class AuthenticationModuleTests() : BaseApiModuleTests<AuthenticationModu
             .InitializeHostAsync();
 
         var then = await When
-            .InvokedAsync(sutVar, loginRequestVar, userServiceVar, contextVar, (sut, body, userService, context, ct) => sut.LoginAsync(body, userService, null!, null!, context, ct));
+            .InvokedAsync(sutVar, loginRequestVar, userServiceVar, contextVar, static (_, body, userService, context, ct) => AuthenticationModule.LoginAsync(body, userService, context.RequestServices.GetRequiredService<IUserRepository>(), context.RequestServices.GetRequiredService<IUnitOfWork>(), context, context.RequestServices.GetRequiredService<IProblemDetailsFactory>(), context.RequestServices.GetRequiredService<IScopeAccessor>(), context.RequestServices.GetRequiredService<ContractsMapper>(), ct));
 
         then
             .Result(errorVar, (actual, error) =>
