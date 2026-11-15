@@ -1775,6 +1775,10 @@ When `publish_results: true` is set, the Scorecard job has **FOUR restrictions**
 
 ## GitHub Actions Version Management
 
+**❌ FAILURE: setup-dotnet installs LTS instead of the global.json SDK** (Discovered: November 2026)
+
+`actions/setup-dotnet` v6.1.0 maps `rollForward: latestMajor` to the LTS channel ([actions/setup-dotnet#802](https://github.com/actions/setup-dotnet/issues/802)). With `sdk.version` `11.0.100`, CI installed 10.0.404 and `dotnet restore` failed with "A compatible .NET SDK was not found". Do not pass `global-json-file` for that policy, and do not combine it with `dotnet-version` (the action still appends an empty version and rejects it). Install the version from `src/HomeInventory/global.json` via `.github/actions/setup-dotnet` so the SDK version is declared once.
+
 > **CRITICAL:** Always verify the SHA for every GitHub Action you use. Using an incorrect SHA can cause workflow failures, security issues, or silent breakage. Never trust the SHA in documentation or release notes—always check it yourself.
 
 ### Step-by-step: How to verify a GitHub Action SHA
