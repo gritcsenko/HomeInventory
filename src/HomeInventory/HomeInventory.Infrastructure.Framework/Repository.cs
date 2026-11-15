@@ -75,7 +75,7 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
         await Set().AnyAsync(cancellationToken);
 
     public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
-        ToEntity(Set()).ToAsyncEnumerable();
+        ToEntity(Set()).AsAsyncEnumerable();
 
     public async Task<Option<TAggregateRoot>> FindFirstOptionAsync(ISpecification<TPersistent> specification, CancellationToken cancellationToken = default)
     {
