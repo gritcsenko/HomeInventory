@@ -9,7 +9,7 @@ public interface IQueryResult<TResponse> : IQueryResult
 
     TResult Match<TResult>(Func<TResponse, TResult> onSuccess, Func<Error, TResult> onFail);
 
-    Unit IfSuccess(Action<TResponse> onSuccess);
+    void IfSuccess(Action<TResponse> onSuccess);
 
     bool Equals(TResponse other);
 }

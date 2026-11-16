@@ -23,7 +23,7 @@ public static class AssertionExtensions
 
     public static OptionalAssertions<T> Should<T>(this Optional<T> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
-    public static LanguageExtValidationAssertions<Error, T> Should<T>(this Validation<Error, T> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
+    public static ValidatedAssertions<Error, T> Should<T>(this Validated<T, Error> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
     public static QueryResultAssertions<T> Should<T>(this IQueryResult<T> actualValue) where T : notnull => new(actualValue, AssertionChain.GetOrCreate());
 

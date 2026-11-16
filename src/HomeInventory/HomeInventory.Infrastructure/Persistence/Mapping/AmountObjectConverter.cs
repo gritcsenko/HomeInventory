@@ -8,7 +8,7 @@ internal sealed class AmountObjectConverter(IAmountFactory factory) : ObjectConv
 {
     private readonly IAmountFactory _factory = factory;
 
-    public override Validation<Error, Amount> TryConvert(ProductAmountModel source)
+    public override Validated<Amount, Error> TryConvert(ProductAmountModel source)
     {
         var unit = AmountUnit.Parse(source.UnitName);
         return _factory.Create(source.Value, unit);

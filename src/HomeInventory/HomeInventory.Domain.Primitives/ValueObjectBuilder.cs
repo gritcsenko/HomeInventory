@@ -15,18 +15,18 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
         return (TSelf)this;
     }
 
-    public Validation<Error, TObject> Build() =>
+    public Validated<TObject, Error> Build() =>
         _value
             .Select(Validate)
-            .Select(validation => validation.Map(ToObject))
-            .Match(Functional.Identity<Validation<Error, TObject>>(), static () => Statics.ValueNotSpecified);
+            .Select(validation => validation.Select(ToObject))
+            .IfNone(Statics.ValueNotSpecified);
 
     public void Reset() =>
         _value = None.Value;
 
     protected abstract TObject ToObject(TValue value);
 
-    protected virtual Validation<Error, TValue> Validate(TValue? value) =>
+    protected virtual Validated<TValue, Error> Validate(TValue? value) =>
         value is null ? Statics.ValueNotSpecified : value;
 }
 

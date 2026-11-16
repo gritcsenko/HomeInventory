@@ -60,11 +60,11 @@ public static class OptionalExtensions
         where T : class =>
         value is not null ? value : Optional<T>.None;
 
-    public static Validation<Error, T> ErrorIfNone<T>(this Optional<Validation<Error, T>> option, Func<Error> errorFactory) =>
+    public static Validated<T, Error> ErrorIfNone<T>(this Optional<Validated<T, Error>> option, Func<Error> errorFactory) =>
         option.IfNone(() => errorFactory());
 
-    public static Validation<Error, T> ErrorIfNone<T>(this Optional<T> option, Error error) =>
-        option.Select(x => (Validation<Error, T>)x).IfNone(error);
+    public static Validated<T, Error> ErrorIfNone<T>(this Optional<T> option, Error error) =>
+        option.Select(x => (Validated<T, Error>)x).IfNone(error);
 
     public static Optional<T> ToOptional<T>(this T? nullable)
         where T : struct =>

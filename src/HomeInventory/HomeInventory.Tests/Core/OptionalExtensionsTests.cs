@@ -228,10 +228,10 @@ public sealed class OptionalExtensionsTests : BaseTest
     }
 
     [Fact]
-    public void ErrorIfNone_ShouldReturnValidation_WhenHasValidation()
+    public void ErrorIfNone_ShouldReturnValidated_WhenHasValidated()
     {
-        Validation<Error, Guid> validation = _value;
-        Optional<Validation<Error, Guid>> optional = validation;
+        Validated<Guid, Error> validated = _value;
+        Optional<Validated<Guid, Error>> optional = validated;
 
         var actual = optional.ErrorIfNone(static () => Error.New("fail"));
 
@@ -239,10 +239,10 @@ public sealed class OptionalExtensionsTests : BaseTest
     }
 
     [Fact]
-    public void ErrorIfNone_ShouldReturnFactoryError_WhenNoValidation()
+    public void ErrorIfNone_ShouldReturnFactoryError_WhenNoValidated()
     {
         var expected = Error.New("fail");
-        Optional<Validation<Error, Guid>> optional = None.Value;
+        Optional<Validated<Guid, Error>> optional = None.Value;
 
         var actual = optional.ErrorIfNone(() => expected);
 

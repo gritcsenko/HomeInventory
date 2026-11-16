@@ -2,12 +2,12 @@ using LanguageExt.Traits;
 
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class LanguageExtValidationAssertions<TFail, TSuccess>(Validation<TFail, TSuccess> instance, AssertionChain assertionChain) : ReferenceTypeAssertions<Validation<TFail, TSuccess>, LanguageExtValidationAssertions<TFail, TSuccess>>(instance, assertionChain)
+public class ValidatedAssertions<TFail, TSuccess>(Validated<TSuccess, TFail> instance, AssertionChain assertionChain) : ReferenceTypeAssertions<Validated<TSuccess, TFail>, ValidatedAssertions<TFail, TSuccess>>(instance, assertionChain)
     where TFail : Monoid<TFail>
 {
     protected override string Identifier => "validation";
 
-    public AndWhichConstraint<LanguageExtValidationAssertions<TFail, TSuccess>, TFail> BeFail(string because = "", params object[] becauseArgs)
+    public AndWhichConstraint<ValidatedAssertions<TFail, TSuccess>, TFail> BeFail(string because = "", params object[] becauseArgs)
     {
         CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
@@ -16,11 +16,11 @@ public class LanguageExtValidationAssertions<TFail, TSuccess>(Validation<TFail, 
                 .ForCondition(subject => subject.IsFail)
                 .FailWith("but found to be {0}.", Subject));
 
-        var failValue = Subject.Match(Fail: f => f, Succ: _ => default!);
+        var failValue = Subject.Match(_ => default!, x => x);
         return new(this, failValue);
     }
 
-    public AndWhichConstraint<LanguageExtValidationAssertions<TFail, TSuccess>, TSuccess> BeSuccess(string because = "", params object[] becauseArgs)
+    public AndWhichConstraint<ValidatedAssertions<TFail, TSuccess>, TSuccess> BeSuccess(string because = "", params object[] becauseArgs)
     {
         CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
@@ -29,19 +29,19 @@ public class LanguageExtValidationAssertions<TFail, TSuccess>(Validation<TFail, 
                 .ForCondition(subject => subject.IsSuccess)
                 .FailWith("but found to be {0}.", Subject));
 
-        var successValue = Subject.Match(Fail: _ => default!, Succ: s => s);
+        var successValue = Subject.Match(x => x, _ => default!);
         return new(this, successValue);
     }
 
-    public AndConstraint<LanguageExtValidationAssertions<TFail, TSuccess>> BeSuccess(Action<TSuccess> action, string because = "", params object[] becauseArgs)
+    public AndConstraint<ValidatedAssertions<TFail, TSuccess>> BeSuccess(Action<TSuccess> action, string because = "", params object[] becauseArgs)
     {
         BeSuccess(because, becauseArgs);
-        Subject.Success(action).Left(_ => { });
+        Subject.IfSuccess(action);
 
         return new(this);
     }
 
-    public AndConstraint<LanguageExtValidationAssertions<TFail, TSuccess>> Be(TSuccess expected, string because = "", params object[] becauseArgs)
+    public AndConstraint<ValidatedAssertions<TFail, TSuccess>> Be(TSuccess expected, string because = "", params object[] becauseArgs)
     {
         CurrentAssertionChain
             .BecauseOf(because, becauseArgs)

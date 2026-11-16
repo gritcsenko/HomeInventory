@@ -59,16 +59,22 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
         }
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-        var result = await CreateUserAsync(command, cancellationToken)
-            .MapAsync(async user =>
+        var validated = await CreateUserAsync(command, cancellationToken);
+        var result = await validated
+            .SelectAsync(async user =>
             {
                 user.OnUserCreated(_eventIdSupplier, _timeProvider);
                 await userRepository.AddAsync(user, cancellationToken);
                 await SaveChangesAsync<RegisterCommand>(scope, cancellationToken);
-                return Option<Error>.None;
+                return None.Value;
             });
 
-        return result.IfFail(errors => Error.Many(errors)).Match(e => new Optional<Error>(e), Optional<Error>.None);
+        if (!result.IsSuccess(out _, out var error))
+        {
+            return error;
+        }
+
+        return None.Value;
     }
 
     private async Task SaveChangesAsync<TRequest>(TransactionScope transactionScope, CancellationToken cancellationToken)
@@ -89,7 +95,7 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
         transactionScope.Complete();
     }
 
-    private static Validation<Error, UserIdResult> CreateUserIdResult(User user) =>
+    private static Validated<UserIdResult, Error> CreateUserIdResult(User user) =>
         new UserIdResult(user.Id);
 
     private static AuthenticateResult CreateAuthenticateResult((string token, UserId id) t) =>
@@ -104,12 +110,12 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
     private async Task<bool> IsPasswordMatchAsync(User user, string password, CancellationToken cancellationToken) =>
         await _hasher.VarifyHashAsync(password, user.PasswordHash, cancellationToken);
 
-    private async Task<Validation<Error, User>> CreateUserAsync(RegisterCommand command, CancellationToken cancellationToken = default) =>
+    private async Task<Validated<User, Error>> CreateUserAsync(RegisterCommand command, CancellationToken cancellationToken = default) =>
         await UserId
             .CreateBuilder()
             .WithNewId()
             .Build()
-            .MapAsync(async id => await CreateUserAsync(command, id, cancellationToken));
+            .SelectAsync(async id => await CreateUserAsync(command, id, cancellationToken));
 
     private async Task<User> CreateUserAsync(RegisterCommand command, UserId id, CancellationToken cancellationToken) =>
         new(id)

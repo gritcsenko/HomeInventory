@@ -13,10 +13,10 @@ public readonly union Optional<T>(T, None) : IEquatable<Optional<T>>, IReadOnlyC
     public static None None { get; } = None.Value;
 
     public bool IsNone =>
-        this == None;
+        Value is None;
 
     public bool IsSome =>
-        !IsNone;
+        Value is T;
 
     public int Count => IsSome ? 1 : 0;
 
