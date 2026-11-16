@@ -59,7 +59,7 @@ internal sealed class AmountValueObjectConverterTestsGivenContext : GivenContext
         {
             var rnd = new Random();
             var items = EnumerationItemsCollection.CreateFor<AmountUnit>();
-            fixture.Customize<AmountUnit>(c => c.FromFactory(() => (AmountUnit)rnd.Peek(items)));
+            fixture.Customize<AmountUnit>(c => c.FromFactory(() => rnd.Peek(items).ThrowIfNone(() => new InvalidOperationException("No units"))));
         }
     }
 

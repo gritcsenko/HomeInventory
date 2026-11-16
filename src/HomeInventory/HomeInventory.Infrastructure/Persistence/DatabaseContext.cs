@@ -20,13 +20,13 @@ internal class DatabaseContext(DbContextOptions<DatabaseContext> options, Publis
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    public Option<TEntity> FindTracked<TEntity>(Func<TEntity, bool> condition)
+    public Optional<TEntity> FindTracked<TEntity>(Func<TEntity, bool> condition)
         where TEntity : class =>
         ChangeTracker
             .Entries<TEntity>()
             .Select(static e => e.Entity)
             .Where(condition)
-            .ToOption();
+            .ToOptional();
 
     public DbSet<TEntity> GetDbSet<TEntity>()
         where TEntity : class =>

@@ -11,7 +11,7 @@ public class AmountTests : BaseTest
     [Fact]
     public void Equals_Should_ReturnTrueIfSameValueAndUnit()
     {
-        var a = new Amount(Fixture.Create<decimal>(), (AmountUnit)new Random().Peek(_items));
+        var a = new Amount(Fixture.Create<decimal>(), new Random().Peek(_items).ThrowIfNone(() => new InvalidOperationException("No units")));
         var b = new Amount(a.Value, a.Unit);
 
         var result = a.Equals(b);
@@ -22,7 +22,7 @@ public class AmountTests : BaseTest
     [Fact]
     public void OpEquality_Should_ReturnTrueIfSameValueAndUnit()
     {
-        var a = new Amount(Fixture.Create<decimal>(), (AmountUnit)new Random().Peek(_items));
+        var a = new Amount(Fixture.Create<decimal>(), new Random().Peek(_items).ThrowIfNone(() => new InvalidOperationException("No units")));
         var b = new Amount(a.Value, a.Unit);
 
         var result = a == b;
@@ -33,7 +33,7 @@ public class AmountTests : BaseTest
     [Fact]
     public void OpInequality_Should_ReturnFalseIfSameValueAndUnit()
     {
-        var a = new Amount(Fixture.Create<decimal>(), (AmountUnit)new Random().Peek(_items));
+        var a = new Amount(Fixture.Create<decimal>(), new Random().Peek(_items).ThrowIfNone(() => new InvalidOperationException("No units")));
         var b = new Amount(a.Value, a.Unit);
 
         var result = a != b;

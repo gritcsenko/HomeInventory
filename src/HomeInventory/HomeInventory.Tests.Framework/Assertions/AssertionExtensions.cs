@@ -21,7 +21,7 @@ public static class AssertionExtensions
 
     public static OkResultAssertions<TValue> Should<TValue>(this Ok<TValue> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
-    public static LanguageExtOptionAssertions<T> Should<T>(this Option<T> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
+    public static OptionalAssertions<T> Should<T>(this Optional<T> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 
     public static LanguageExtValidationAssertions<Error, T> Should<T>(this Validation<Error, T> actualValue) => new(actualValue, AssertionChain.GetOrCreate());
 

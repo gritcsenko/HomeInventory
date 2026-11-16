@@ -77,13 +77,12 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     public IAsyncEnumerable<TAggregateRoot> GetAllAsync(CancellationToken cancellationToken = default) =>
         ToEntity(Set()).AsAsyncEnumerable();
 
-    public async Task<Option<TAggregateRoot>> FindFirstOptionAsync(ISpecification<TPersistent> specification, CancellationToken cancellationToken = default)
+    public async Task<Optional<TAggregateRoot>> FindFirstOptionAsync(ISpecification<TPersistent> specification, CancellationToken cancellationToken = default)
     {
         var query = ApplySpecification(Set(), specification);
         var projected = ToEntity(query);
-        return await projected.FirstOrDefaultAsync(cancellationToken) is { } entity
-            ? Prelude.Some(entity)
-            : Option<TAggregateRoot>.None;
+        var item = await projected.FirstOrDefaultAsync(cancellationToken);
+        return item.NoneIfNull();
     }
 
     public async Task<bool> HasAsync(ISpecification<TPersistent> specification, CancellationToken cancellationToken = default)
@@ -134,8 +133,8 @@ public abstract class Repository<TPersistent, TAggregateRoot, TIdentifier>(IData
     private TPersistent ToModel(TAggregateRoot entity) =>
         _context.FindTracked<TPersistent>(m => m.Id.Equals(entity.Id))
             .Match(
-                Some: existing => _mapper.ToPersistent(entity, existing),
-                None: () => _mapper.ToPersistent(entity));
+                onSome: existing => _mapper.ToPersistent(entity, existing),
+                onNone: () => _mapper.ToPersistent(entity));
 
     private IQueryable<TAggregateRoot> ToEntity(IQueryable<TPersistent> query) =>
         _mapper.FromPersistent(query);

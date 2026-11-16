@@ -10,5 +10,5 @@ public interface IScope<TContext> : IScope
 {
     IDisposable Set(TContext context);
 
-    Option<TContext> Get();
+    Optional<TContext> Get();
 }

@@ -32,4 +32,18 @@ public static class DictionaryExtensions
             return newValue;
         }
     }
+
+    extension<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary)
+        where TKey : notnull
+    {
+        public Optional<TValue> GetValueOrNone(TKey key)
+        {
+            if (dictionary.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+
+            return None.Value;
+        }
+    }
 }

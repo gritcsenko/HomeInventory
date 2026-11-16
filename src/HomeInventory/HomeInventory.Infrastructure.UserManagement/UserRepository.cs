@@ -15,15 +15,12 @@ internal sealed class UserRepository(IDatabaseContext context, ISpecificationEva
     public async Task<bool> IsUserHasEmailAsync(Email email, CancellationToken cancellationToken = default) =>
         await HasAsync(new UserHasEmailSpecification(email), cancellationToken);
 
-    public async Task<Option<User>> FindFirstByEmailUserOptionalAsync(Email email, CancellationToken cancellationToken = default) =>
+    public async Task<Optional<User>> FindFirstByEmailUserOptionalAsync(Email email, CancellationToken cancellationToken = default) =>
         await FindFirstOptionAsync(new UserHasEmailSpecification(email), cancellationToken);
 
     public async Task<bool> HasPermissionAsync(UserId userId, string permission, CancellationToken cancellationToken = default)
     {
-        var userResult = await FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken)
-            .Convert(static _ => true);
-#pragma warning disable CA1849 // Call async methods when in an async method
-        return userResult.IfNone(false);
-#pragma warning restore CA1849 // Call async methods when in an async method
+        var item = await FindFirstOptionAsync(new ByIdFilterSpecification<UserModel, UserId>(userId), cancellationToken);
+        return item.Select(static _ => true).IfNone(false);
     }
 }

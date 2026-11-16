@@ -17,4 +17,14 @@ public static class CollectionExtensions
             }
         }
     }
+
+    public static Optional<T> PeekOrNone<T>(this Stack<T> stack)
+    {
+        if (stack.TryPeek(out var item))
+        {
+            return item;
+        }
+
+        return Optional<T>.None;
+    }
 }

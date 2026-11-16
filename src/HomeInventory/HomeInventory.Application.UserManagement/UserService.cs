@@ -26,12 +26,13 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
 
     public async Task<IQueryResult<AuthenticateResult>> AuthenticateAsync(AuthenticateQuery query, CancellationToken cancellationToken = default)
     {
-        var result = await TryFindUserAsync(query, cancellationToken)
+        var optional = await TryFindUserAsync(query, cancellationToken);
+        var result = await optional
             .IfAsync((user, t) => IsPasswordMatchAsync(user, query.Password, t), cancellationToken)
-            .ConvertAsync(async (user, t) => (token: await _tokenGenerator.GenerateTokenAsync(user, t), id: user.Id), cancellationToken);
+            .SelectAsync(async (user, t) => (token: await _tokenGenerator.GenerateTokenAsync(user, t), id: user.Id), cancellationToken);
 
         var validationResult = result
-            .Map(CreateAuthenticateResult)
+            .Select(CreateAuthenticateResult)
             .ErrorIfNone(InvalidCredentialsError.Instance);
 
         return QueryResult.From(validationResult);
@@ -43,12 +44,12 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
 
         var result = await userRepository.FindFirstByEmailUserOptionalAsync(query.Email, cancellationToken);
         var validationResult = result
-            .Map(CreateUserIdResult)
+            .Select(CreateUserIdResult)
             .ErrorIfNone(() => new NotFoundError($"User with email {query.Email} was not found"));
         return QueryResult.From(validationResult);
     }
 
-    public async Task<Option<Error>> RegisterAsync(RegisterCommand command, CancellationToken cancellationToken = default)
+    public async Task<Optional<Error>> RegisterAsync(RegisterCommand command, CancellationToken cancellationToken = default)
     {
         var userRepository = _scopeAccessor.GetRequiredContext<IUserRepository>();
 
@@ -67,7 +68,7 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
                 return Option<Error>.None;
             });
 
-        return result.IfFail(errors => Error.Many(errors));
+        return result.IfFail(errors => Error.Many(errors)).Match(e => new Optional<Error>(e), Optional<Error>.None);
     }
 
     private async Task SaveChangesAsync<TRequest>(TransactionScope transactionScope, CancellationToken cancellationToken)
@@ -94,7 +95,7 @@ internal class UserService(IAuthenticationTokenGenerator tokenGenerator, IPasswo
     private static AuthenticateResult CreateAuthenticateResult((string token, UserId id) t) =>
         new(t.id, t.token);
 
-    private async Task<Option<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken)
+    private async Task<Optional<User>> TryFindUserAsync(AuthenticateQuery request, CancellationToken cancellationToken)
     {
         var userRepository = _scopeAccessor.GetRequiredContext<IUserRepository>();
         return await userRepository.FindFirstByEmailUserOptionalAsync(request.Email, cancellationToken);
