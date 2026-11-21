@@ -137,7 +137,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Run OpenSSF Scorecard
-        uses: ossf/scorecard-action@fa7117db83c52d787ae5a89f350999701505d78e # v2.5.0
+        uses: ossf/scorecard-action@23f22cd43608bae7a1f1fa2603d7314dee9538a5 # v2.6.0
         with:
           results_file: results.sarif
           results_format: sarif
@@ -285,7 +285,7 @@ jobs:
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
       - name: Create code coverage report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5f3701a41d14548c9b8e575a5c235230e515cbc0 # v5.6.0
+        uses: danielpalme/ReportGenerator-GitHub-Action@70c37c4d588cff5bf9cf190830c6f01dfcfb884b # v5.6.1
         if: ${{ success() || steps.report.conclusion == 'failure' }}
         with:
           reports: "./src/HomeInventory/coverage.cobertura.xml" # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
