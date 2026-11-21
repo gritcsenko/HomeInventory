@@ -54,7 +54,7 @@ public class UserManagementModuleTests() : BaseApiModuleTests<UserManagementModu
             // .Map<UserIdResult>(out var userIdResultVar).To<RegisterResponse>(out var registerResponseVar)
             .SubstituteFor(out IVariable<IUserService> userServiceVar, registerRequestVar, userIdResultVar, (s, r, u) =>
             {
-                s.RegisterAsync(Arg.Is<RegisterCommand>(c => c != null && c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(Option<Error>.None);
+                s.RegisterAsync(Arg.Is<RegisterCommand>(c => c != null && c.Email.Value == r.Email && c.Password == r.Password), Cancellation.Token).Returns(Optional<Error>.None);
                 s.GetUserIdAsync(Arg.Is<UserIdQuery>(q => q != null && q.Email.Value == r.Email), Cancellation.Token).Returns(QueryResult.From(u));
             })
             .InitializeHostAsync();

@@ -1,10 +1,10 @@
 namespace HomeInventory.Tests.Framework.Assertions;
 
-public class LanguageExtOptionAssertions<T>(Option<T> instance, AssertionChain assertionChain) : ReferenceTypeAssertions<Option<T>, LanguageExtOptionAssertions<T>>(instance, assertionChain)
+public class OptionalAssertions<T>(Optional<T> instance, AssertionChain assertionChain) : ReferenceTypeAssertions<Optional<T>, OptionalAssertions<T>>(instance, assertionChain)
 {
     protected override string Identifier => "option";
 
-    public AndConstraint<LanguageExtOptionAssertions<T>> BeNone(string because = "", params object[] becauseArgs)
+    public AndConstraint<OptionalAssertions<T>> BeNone(string because = "", params object[] becauseArgs)
     {
         CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
@@ -16,7 +16,7 @@ public class LanguageExtOptionAssertions<T>(Option<T> instance, AssertionChain a
         return new(this);
     }
 
-    public AndWhichConstraint<LanguageExtOptionAssertions<T>, T> BeSome(string because = "", params object[] becauseArgs)
+    public AndWhichConstraint<OptionalAssertions<T>, T> BeSome(string because = "", params object[] becauseArgs)
     {
         CurrentAssertionChain
             .BecauseOf(because, becauseArgs)
@@ -25,11 +25,11 @@ public class LanguageExtOptionAssertions<T>(Option<T> instance, AssertionChain a
                 .ForCondition(subject => subject.IsSome)
                 .FailWith("but found to be None."));
 
-        var value = Subject.Match(Some: v => v, None: () => default!);
+        var value = Subject.Match(onSome: v => v, onNone: () => default!);
         return new(this, value);
     }
 
-    public AndConstraint<LanguageExtOptionAssertions<T>> BeSome(Action<T> action, string because = "", params object[] becauseArgs)
+    public AndConstraint<OptionalAssertions<T>> BeSome(Action<T> action, string because = "", params object[] becauseArgs)
     {
         BeSome(because, becauseArgs);
         Subject.IfSome(action);
@@ -37,7 +37,7 @@ public class LanguageExtOptionAssertions<T>(Option<T> instance, AssertionChain a
         return new(this);
     }
 
-    public AndConstraint<LanguageExtOptionAssertions<T>> Be(T expected, string because = "", params object[] becauseArgs)
+    public AndConstraint<OptionalAssertions<T>> Be(T expected, string because = "", params object[] becauseArgs)
     {
         CurrentAssertionChain
             .BecauseOf(because, becauseArgs)

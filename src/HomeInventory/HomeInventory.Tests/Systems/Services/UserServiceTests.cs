@@ -68,7 +68,7 @@ public class UserServiceTests : BaseTest
     {
         // Given
         var query = Fixture.Create<AuthenticateQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Option<User>.None);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional<User>.None);
 
         var sut = CreateSut();
 
@@ -132,7 +132,7 @@ public class UserServiceTests : BaseTest
     {
         // Given
         var query = Fixture.Create<UserIdQuery>();
-        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Option<User>.None);
+        _userRepository.FindFirstByEmailUserOptionalAsync(query.Email, Cancellation.Token).Returns(Optional<User>.None);
 
         var sut = CreateSut();
 

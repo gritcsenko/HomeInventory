@@ -4,7 +4,7 @@ namespace HomeInventory.Web.Framework;
 
 public sealed record SectionPath(string Path)
 {
-    public Option<SectionPath> GetParentOptional() => ConfigurationPath.GetParentPath(Path).NoneIfNull().Map(ToSectionPath);
+    public Optional<SectionPath> GetParentOptional() => ConfigurationPath.GetParentPath(Path).NoneIfNull().Select(ToSectionPath);
 
     public static implicit operator SectionPath(string path) => ToSectionPath(path);
 
