@@ -25,7 +25,7 @@ internal sealed class ModuleMetadataCollection(IEnumerable<IModule> modules) : I
             var source = graph.GetOrAddNode(meta, static (n, v) => n.Value == v);
             foreach (var reference in meta.GetDependencies(loadableModules))
             {
-                reference.Do(r =>
+                reference.IfSome(r =>
                 {
                     var target = graph.GetOrAddNode(r, static (n, v) => n.Value == v);
                     graph.AddEdge(source, target, r.ModuleType);
@@ -47,7 +47,7 @@ internal sealed class ModuleMetadataCollection(IEnumerable<IModule> modules) : I
             initialCount = loadable.Count;
             foreach (var meta in loadable.Memo())
             {
-                if (!await AllowedToLoadAsync(meta) || !await meta.GetDependencies(_metadata).AllAsync(async o => o.IsSome && await AllowedToLoadAsync((ModuleMetadata)o)))
+                if (!await AllowedToLoadAsync(meta) || !await meta.GetDependencies(_metadata).AllAsync(async o => o.IsSome(out var m) && await AllowedToLoadAsync(m)))
                 {
                     loadable.Remove(meta);
                 }

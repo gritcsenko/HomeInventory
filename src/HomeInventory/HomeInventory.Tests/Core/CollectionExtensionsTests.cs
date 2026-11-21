@@ -28,7 +28,30 @@ public sealed class CollectionExtensionsTests : BaseTest
         collection.Received(1).Add(item);
     }
 
-    private sealed class CollectionSubject<T> : List<T>, ICollection<T>
+    [Fact]
+    public void PeekOrNone_ShouldReturnTop_WhenStackIsNotEmpty()
+    {
+        var expected = Fixture.Create<Guid>();
+        var stack = new Stack<Guid>([Fixture.Create<Guid>(), expected]);
+
+        var actual = stack.PeekOrNone();
+
+        using var scope = new AssertionScope();
+        actual.Should().Be(expected);
+        stack.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public void PeekOrNone_ShouldReturnNone_WhenStackIsEmpty()
+    {
+        var stack = new Stack<Guid>();
+
+        var actual = stack.PeekOrNone();
+
+        actual.Should().BeNone();
+    }
+
+    private sealed class CollectionSubject<T>: List<T>, ICollection<T>
     {
         public bool IsAddCalled { get; private set; }
 

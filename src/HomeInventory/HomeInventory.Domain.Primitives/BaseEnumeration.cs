@@ -10,7 +10,7 @@ public abstract class BaseEnumeration<TSelf>(string name, object key) : ValueObj
     protected static IReadOnlyCollection<TSelf> Items => _lazyItems.Value;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1000:Do not declare static members on generic types", Justification = "Interface implementation")]
-    public static Option<TSelf> TryParse(string text) => _lazyItems.Value[text];
+    public static Optional<TSelf> TryParse(string text) => _lazyItems.Value[text];
 
     public override string ToString() => $"{GetComponent(0)} ({GetComponent(1)})";
 }

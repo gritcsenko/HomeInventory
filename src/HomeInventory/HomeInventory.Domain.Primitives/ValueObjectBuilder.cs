@@ -7,7 +7,7 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
     where TObject : IValueObject<TObject>
     where TValue : notnull
 {
-    private Option<TValue> _value = Option<TValue>.None;
+    private Optional<TValue> _value = None.Value;
 
     public TSelf WithValue(TValue value)
     {
@@ -15,18 +15,18 @@ public abstract class ValueObjectBuilder<TSelf, TObject, TValue> : IValueObjectB
         return (TSelf)this;
     }
 
-    public Validation<Error, TObject> Build() =>
+    public Validated<TObject, Error> Build() =>
         _value
-            .Map(Validate)
-            .Map(validation => validation.Map(ToObject))
-            .Match(Functional.Identity<Validation<Error, TObject>>(), static () => Statics.ValueNotSpecified);
+            .Select(Validate)
+            .Select(validation => validation.Select(ToObject))
+            .IfNone(Statics.ValueNotSpecified);
 
     public void Reset() =>
-        _value = Option<TValue>.None;
+        _value = None.Value;
 
     protected abstract TObject ToObject(TValue value);
 
-    protected virtual Validation<Error, TValue> Validate(TValue? value) =>
+    protected virtual Validated<TValue, Error> Validate(TValue? value) =>
         value is null ? Statics.ValueNotSpecified : value;
 }
 

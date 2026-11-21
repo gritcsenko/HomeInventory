@@ -2,5 +2,5 @@ namespace HomeInventory.Domain.ValueObjects;
 
 public interface IAmountFactory
 {
-    Validation<Error, Amount> Create(decimal value, AmountUnit unit);
+    Validated<Amount, Error> Create(decimal value, AmountUnit unit);
 }

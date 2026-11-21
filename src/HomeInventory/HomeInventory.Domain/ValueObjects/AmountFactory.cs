@@ -2,16 +2,16 @@ namespace HomeInventory.Domain.ValueObjects;
 
 internal sealed class AmountFactory : IAmountFactory
 {
-    public Validation<Error, Amount> Create(decimal value, AmountUnit unit) =>
+    public Validated<Amount, Error> Create(decimal value, AmountUnit unit) =>
         new UnitValidator(unit)
             .Validate(value)
-            .Bind<Amount>(static t => new Amount(t.Value, t.Unit));
+            .Select<Amount>(static t => new Amount(t.Value, t.Unit));
 
     private readonly ref struct UnitValidator(AmountUnit unit)
     {
         private readonly AmountUnit _unit = unit;
 
-        public Validation<Error, (decimal Value, AmountUnit Unit)> Validate(decimal value)
+        public Validated<(decimal Value, AmountUnit Unit), Error> Validate(decimal value)
         {
             var validator = SelectValidator();
             return validator(value)

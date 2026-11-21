@@ -5,7 +5,7 @@ public class BuilderObjectConverter<TBuilder, TObject, TValue> : ObjectConverter
     where TBuilder : IValueObjectBuilder<TBuilder, TObject, TValue>
     where TObject : class, IValueObject<TObject>, IBuildableObject<TObject, TBuilder>
 {
-    public sealed override Validation<Error, TObject> TryConvert(TValue source) =>
+    public sealed override Validated<TObject, Error> TryConvert(TValue source) =>
         TObject
             .CreateBuilder()
             .WithValue(source)

@@ -14,11 +14,11 @@ internal sealed class ErrorMapping(HttpStatusCode defaultError, HttpStatusCode d
 
     public HttpStatusCode GetError(Type? errorType) => GetErrorCore(errorType).IfNone(_defaultError);
 
-    private Option<HttpStatusCode> GetErrorCore(Type? type)
+    private Optional<HttpStatusCode> GetErrorCore(Type? type)
     {
         while (type is not null)
         {
-            if (_errorMapping.TryGetValue(type) is { IsSome: true } result)
+            if (_errorMapping.GetValueOrNone(type).IsSome(out var result))
             {
                 return result;
             }
@@ -26,6 +26,6 @@ internal sealed class ErrorMapping(HttpStatusCode defaultError, HttpStatusCode d
             type = type.BaseType;
         }
 
-        return Option<HttpStatusCode>.None;
+        return None.Value;
     }
 }

@@ -10,24 +10,24 @@ public sealed class VariableValues<T> : IVariableValues
 
     public async Task AddAsync(Func<Task<T>> createValueFunc) => AddCore(await createValueFunc());
 
-    public Option<PropertyValue<T>> TrySet(int index, Func<T> createValueFunc)
+    public Optional<PropertyValue<T>> TrySet(int index, Func<T> createValueFunc)
     {
         if (index < 0 || index >= _values.Count)
         {
-            return Option<PropertyValue<T>>.None;
+            return None.Value;
         }
 
         return _values[index] = createValueFunc();
     }
 
-    public Option<PropertyValue<T>> TryGet(int index) =>
+    public Optional<PropertyValue<T>> TryGet(int index) =>
         index < 0 || index >= _values.Count
-            ? Option<PropertyValue<T>>.None
+            ? None.Value
             : _values[index];
 
-    public Option<PropertyValue<T>> TryGetOrAdd(int index, Func<T> createValueFunc) =>
+    public Optional<PropertyValue<T>> TryGetOrAdd(int index, Func<T> createValueFunc) =>
         index < 0 || index > _values.Count
-            ? Option<PropertyValue<T>>.None
+            ? None.Value
             : GetOrAdd(index, createValueFunc);
 
     public IEnumerable<T> Values() => _values.Select(static x => x.Value);

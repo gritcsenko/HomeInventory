@@ -31,7 +31,7 @@ public static class LayerDependencies
         var option = _dependencies.GetNodeOptional(source, static (n, v) => ReferenceEquals(n.Value, v));
         var otherLayers = GetAllLayers().Except([source]);
         return option.Match<IEnumerable<IObjectProvider<IType>>>(
-            Some: x => otherLayers.Except(x.Outgoing.Select(static e => e.Destination.Value)),
-            None: () => otherLayers);
+            onSome: x => otherLayers.Except(x.Outgoing.Select(static e => e.Destination.Value)),
+            onNone: () => otherLayers);
     }
 }

@@ -9,13 +9,13 @@ public static class FixtureExtensions
         where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>, IValuableIdentifierObject<TId, Ulid> =>
         fixture
             .CustomizeUlid()
-            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(static s => (TId)TId.CreateBuilder().WithValue(s.Supply()).Build());
+            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(static s => TId.CreateBuilder().WithValue(s.Supply()).Build().ThrowIfFailed(_ => new InvalidOperationException()));
 
     public static IFixture CustomizeId<TId>(this IFixture fixture, DateTimeOffset timeStamp, Random? random = null)
         where TId : class, IUlidBuildable<TId>, IUlidIdentifierObject<TId>, IValuableIdentifierObject<TId, Ulid> =>
         fixture
             .CustomizeUlid(timeStamp, random)
-            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(static s => (TId)TId.CreateBuilder().WithValue(s.Supply()).Build());
+            .CustomizeFromFactory<TId, IIdSupplier<Ulid>>(static s => TId.CreateBuilder().WithValue(s.Supply()).Build().ThrowIfFailed(_ => new InvalidOperationException()));
 
     public static IFixture CustomizeEmail(this IFixture fixture) =>
         fixture

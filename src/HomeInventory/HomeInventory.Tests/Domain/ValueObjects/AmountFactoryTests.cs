@@ -16,8 +16,7 @@ public class AmountFactoryTests : BaseTest
         var result = sut.Create(value, unknownUnit);
 
         using var scope = new AssertionScope();
-        result.IsSuccess.Should().BeTrue();
-        var amount = (Amount)result;
+        var amount = result.Should().BeSuccess().Subject;
         amount.Value.Should().Be(value);
         amount.Unit.Should().Be(unknownUnit);
     }
@@ -32,8 +31,7 @@ public class AmountFactoryTests : BaseTest
         var result = sut.Create(value, unknownUnit);
 
         using var scope = new AssertionScope();
-        result.IsSuccess.Should().BeTrue();
-        var amount = (Amount)result;
+        var amount = result.Should().BeSuccess().Subject;
         amount.Value.Should().Be(value);
         amount.Unit.Should().Be(unknownUnit);
     }
@@ -79,8 +77,7 @@ public class AmountFactoryTests : BaseTest
         {
             var result = sut.Create(value, unit);
 
-            result.IsSuccess.Should().BeTrue(unit.Name);
-            var amount = (Amount)result;
+            var amount = result.Should().BeSuccess(unit.Name).Subject;
             amount.Value.Should().Be(value, unit.Name);
             amount.Unit.Should().Be(unit);
         }

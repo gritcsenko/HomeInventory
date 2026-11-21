@@ -10,5 +10,5 @@ public interface IUserService
 
     Task<IQueryResult<UserIdResult>> GetUserIdAsync(UserIdQuery query, CancellationToken cancellationToken = default);
 
-    Task<Option<Error>> RegisterAsync(RegisterCommand command, CancellationToken cancellationToken = default);
+    Task<Optional<Error>> RegisterAsync(RegisterCommand command, CancellationToken cancellationToken = default);
 }
